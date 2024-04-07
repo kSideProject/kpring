@@ -20,4 +20,18 @@ dependencies {
 
     // default test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("io.projectreactor:reactor-test")
+
+    // jwt
+    implementation("io.jsonwebtoken:jjwt-api:0.11.2")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.2")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.2")
+
+    // db
+    runtimeOnly("com.mysql:mysql-connector-j")
+    runtimeOnly("io.asyncer:r2dbc-mysql")
+    implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
+
+    // dev tool
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
 }

@@ -10,6 +10,9 @@ dependencies {
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
+    // validation
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+
     // webflux
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
@@ -27,11 +30,9 @@ dependencies {
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.2")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.2")
 
-    // db
-    runtimeOnly("com.mysql:mysql-connector-j")
-    runtimeOnly("io.asyncer:r2dbc-mysql")
-    implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
-
     // dev tool
     developmentOnly("org.springframework.boot:spring-boot-devtools")
+
+    // core module
+    api(project(":core"))
 }

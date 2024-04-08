@@ -24,7 +24,7 @@ class TokenService(
     private lateinit var signingKey: SecretKey
 
     @PostConstruct
-    private fun init() {
+    fun init() {
         signingKey = Keys.hmacShaKeyFor(secretKey.toByteArray(StandardCharsets.UTF_8))
             ?: throw IllegalStateException("토큰을 발급하기 위한 key가 적절하지 않습니다.")
     }
@@ -68,7 +68,7 @@ class TokenService(
             .signWith(signingKey, SignatureAlgorithm.HS256)
             .compact()
 
-        return "Bearer ".plus(token) to expiredAt.toLocalDateTime()
+        return "Bearer $token" to expiredAt.toLocalDateTime()
     }
 
     private fun Calendar.toLocalDateTime(): LocalDateTime {

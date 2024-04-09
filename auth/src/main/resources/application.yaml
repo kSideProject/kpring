@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: auth
+
+jwt:
+  access:
+    duration: 3600000 # 1hour ms
+  refresh:
+    duration: 86400000 # 1day ms
+  secret: "7310017347f7c684c8db4dd693f05a79f329b573bdf656410c8720af925f52fd"

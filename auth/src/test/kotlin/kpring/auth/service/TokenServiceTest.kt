@@ -3,6 +3,7 @@ package kpring.auth.service
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.date.shouldBeBefore
 import io.kotest.matchers.string.shouldNotHaveLength
+import io.mockk.mockk
 import kpring.core.auth.dto.request.CreateTokenRequest
 import java.time.LocalDateTime
 
@@ -10,7 +11,8 @@ class TokenServiceTest : BehaviorSpec({
     val tokenService = TokenService(
         accessDuration = 1000, // 1s
         refreshDuration = 10000, // 10s
-        secretKey = "testsecretkey-dfasdfasdfasdfasdfasdfsadfasdfasdfasdfasdf"
+        secretKey = "testsecretkey-dfasdfasdfasdfasdfasdfsadfasdfasdfasdfasdf",
+        mockk()
     )
 
     beforeTest {

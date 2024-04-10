@@ -20,9 +20,10 @@ class AuthController(
             .body(tokenInfo)
     }
 
-    @DeleteMapping("/token")
-    suspend fun expireToken(): ResponseEntity<*> {
-        TODO()
+    @DeleteMapping("/token/{tokenData}")
+    suspend fun expireToken(@PathVariable("tokenData") token: String): ResponseEntity<Any> {
+        tokenService.expireToken(token)
+        return ResponseEntity.ok().build()
     }
 
     @GetMapping("/token")

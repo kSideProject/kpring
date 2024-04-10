@@ -2,8 +2,8 @@ package kpring.auth.api
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
-import io.kotest.assertions.print.print
 import io.kotest.core.spec.style.BehaviorSpec
+import io.mockk.coEvery
 import io.mockk.coJustRun
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
@@ -22,7 +22,6 @@ import org.springframework.restdocs.ManualRestDocumentation
 import org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint
 import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.documentationConfiguration
 import org.springframework.test.web.reactive.server.WebTestClient
-import org.springframework.test.web.reactive.server.expectBody
 import java.time.LocalDateTime
 
 @WebFluxTest(controllers = [AuthController::class])
@@ -118,7 +117,7 @@ class AuthControllerTest(
                     accessToken = "testToken",
                     accessExpireAt = LocalDateTime.of(1900, 1, 1, 0, 0, 0)
                 )
-                every { tokenService.createAccessToken(any()) } returns response
+                coEvery { tokenService.reCreateAccessToken(any()) } returns response
 
                 webTestClient.get().uri(url)
                     .header("Authorization", "test token")

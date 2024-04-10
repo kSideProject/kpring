@@ -16,7 +16,7 @@ class AuthController(
     suspend fun createToken(@Validated @RequestBody request: CreateTokenRequest): ResponseEntity<*> {
         val tokenInfo = tokenService.createToken(request)
         return ResponseEntity.ok()
-            .headers { it["Authorization"] = tokenInfo.accessToken }
+            .header("Authorization", "Bearer ${tokenInfo.accessToken}")
             .body(tokenInfo)
     }
 
@@ -28,9 +28,9 @@ class AuthController(
 
     @GetMapping("/token")
     suspend fun recreateAccessToken(@RequestHeader("Authorization") refreshToken: String): ResponseEntity<*> {
-        val response = tokenService.createAccessToken(refreshToken)
+        val response = tokenService.reCreateAccessToken(refreshToken)
         return ResponseEntity.ok()
-            .header("Authorization", response.accessToken)
+            .header("Authorization", "Bearer ${response.accessToken}")
             .body(response)
     }
 

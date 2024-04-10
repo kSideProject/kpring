@@ -56,10 +56,19 @@ class TokenService(
         tokenRepository.expireToken(tokenId, expiredAt)
     }
 
-    fun createAccessToken(refreshToken: String): ReCreateAccessTokenResponse {
+    suspend fun reCreateAccessToken(refreshToken: String): ReCreateAccessTokenResponse {
+        val claims = refreshToken.claim()
+        if (claims.type() != TokenType.REFRESH ||
+            tokenRepository.isExpired(refreshToken)
+        ) {
+            throw IllegalArgumentException("잘못된 토큰의 타입입니다.")
+        }
+        val userId = claims.userId()
+        val nickname = claims.nickname()
+        val accessTokenInfo = createJwtToken(CreateTokenRequest(userId, nickname), TokenType.ACCESS)
         return ReCreateAccessTokenResponse(
-            "test",
-            LocalDateTime.now()
+            accessToken = accessTokenInfo.token,
+            accessExpireAt = accessTokenInfo.expireAt,
         )
     }
 
@@ -80,6 +89,7 @@ class TokenService(
             .setId(tokenId)
             .setClaims(
                 mutableMapOf<String, Any>(
+                    "userId" to info.id,
                     "id" to tokenId,
                     "type" to type,
                     "nickname" to info.nickname
@@ -90,7 +100,7 @@ class TokenService(
             .signWith(signingKey, SignatureAlgorithm.HS256)
             .compact()
 
-        return TokenInfo("Bearer $token", expiredAt.toLocalDateTime(), tokenId)
+        return TokenInfo(token, expiredAt.toLocalDateTime(), tokenId)
     }
 
     private fun String.claim(): Claims {
@@ -101,21 +111,15 @@ class TokenService(
             .body
     }
 
-    private fun Claims.tokenId(): String {
-        return this.get("id", String::class.java)
-    }
+    private fun Claims.userId() = this.get("userId", String::class.java)
+    private fun Claims.tokenId() = this.get("id", String::class.java)
+    private fun Claims.nickname() = this.get("nickname", String::class.java)
+    private fun Claims.type() = TokenType.valueOf(this.get("type", String::class.java))
+    private fun Claims.expiredAt() = LocalDateTime.ofInstant(this.expiration.toInstant(), ZoneId.of("Asia/Seoul"))
+    private fun Calendar.toLocalDateTime() = LocalDateTime.ofInstant(this.time.toInstant(), ZoneId.of("Asia/Seoul"))
 
-    private fun Claims.expiredAt(): LocalDateTime {
-        val expiration: Date = this.expiration
-        return LocalDateTime.ofInstant(expiration.toInstant(), ZoneId.of("Asia/Seoul"))
-    }
-
-    private fun Calendar.toLocalDateTime(): LocalDateTime {
-        return LocalDateTime.ofInstant(this.time.toInstant(), ZoneId.of("Asia/Seoul"))
-    }
-
-    private fun Calendar.plus(duration: Int): Calendar {
-        this.add(Calendar.MILLISECOND, duration)
+    private fun Calendar.plus(milliseconds: Int): Calendar {
+        this.add(Calendar.MILLISECOND, milliseconds)
         return this
     }
 

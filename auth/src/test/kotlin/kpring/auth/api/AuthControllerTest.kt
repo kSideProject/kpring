@@ -2,6 +2,7 @@ package kpring.auth.api
 
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.BehaviorSpec
+import io.mockk.coJustRun
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import kpring.auth.api.v1.AuthController
@@ -108,7 +109,13 @@ class AuthControllerTest(
             }
 
             When("DELETE") {
-                webTestClient.delete().uri(url)
+
+                coJustRun { tokenService.expireToken(any()) }
+                webTestClient.delete().uri("$url/{}")
+                    .exchange()
+                    .expectStatus().isOk
+                    .expectBody()
+                    .restDoc("delete_api.v1.token") { }
             }
         }
 

@@ -16,7 +16,6 @@ fun WebTestClient.BodyContentSpec.restDoc(
     if (builder.responseHeader != null) snippets.add(builder.responseHeader!!)
     if (builder.responseBody != null) snippets.add(builder.responseBody!!)
 
-    if (snippets.isEmpty()) throw IllegalArgumentException("must input api spec at restDoc()")
     return this.consumeWith(WebTestClientRestDocumentation.document(identifier, *snippets.toTypedArray()))
 }
 

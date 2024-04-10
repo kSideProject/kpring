@@ -9,6 +9,7 @@ import kpring.auth.dto.TokenInfo
 import kpring.auth.repository.ExpireTokenRepository
 import kpring.core.auth.dto.request.CreateTokenRequest
 import kpring.core.auth.dto.response.CreateTokenResponse
+import kpring.core.auth.dto.response.ReCreateAccessTokenResponse
 import kpring.core.auth.enums.TokenType
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -32,6 +33,7 @@ class TokenService(
         signingKey = Keys.hmacShaKeyFor(secretKey.toByteArray(StandardCharsets.UTF_8))
             ?: throw IllegalStateException("토큰을 발급하기 위한 key가 적절하지 않습니다.")
     }
+
     /*
      business logic
      */
@@ -52,6 +54,13 @@ class TokenService(
         val tokenId = claim.tokenId()
         val expiredAt = claim.expiredAt()
         tokenRepository.expireToken(tokenId, expiredAt)
+    }
+
+    fun createAccessToken(refreshToken: String): ReCreateAccessTokenResponse {
+        return ReCreateAccessTokenResponse(
+            "test",
+            LocalDateTime.now()
+        )
     }
 
     /*
@@ -109,4 +118,5 @@ class TokenService(
         this.add(Calendar.MILLISECOND, duration)
         return this
     }
+
 }

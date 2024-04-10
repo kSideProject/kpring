@@ -27,8 +27,11 @@ class AuthController(
     }
 
     @GetMapping("/token")
-    suspend fun recreateAccessToken(): ResponseEntity<*> {
-        TODO()
+    suspend fun recreateAccessToken(@RequestHeader("Authorization") refreshToken: String): ResponseEntity<*> {
+        val response = tokenService.createAccessToken(refreshToken)
+        return ResponseEntity.ok()
+            .header("Authorization", response.accessToken)
+            .body(response)
     }
 
     @GetMapping("/validation")

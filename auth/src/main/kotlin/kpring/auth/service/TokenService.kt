@@ -4,6 +4,7 @@ import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.security.Keys
 import jakarta.annotation.PostConstruct
+import kpring.auth.dto.TokenInfo
 import kpring.core.auth.dto.request.CreateTokenRequest
 import kpring.core.auth.dto.response.CreateTokenResponse
 import kpring.core.auth.enums.TokenType
@@ -37,26 +38,28 @@ class TokenService(
         val refreshResult = createJwtToken(request, TokenType.REFRESH)
 
         return CreateTokenResponse(
-            accessToken = accessResult.first,
-            accessExpireAt = accessResult.second,
-            refreshToken = refreshResult.first,
-            refreshExpireAt = refreshResult.second
+            accessToken = accessResult.token,
+            accessExpireAt = accessResult.expireAt,
+            refreshToken = refreshResult.token,
+            refreshExpireAt = refreshResult.expireAt
         )
     }
 
     /*
      util method
      */
-    private fun createJwtToken(info: CreateTokenRequest, type: TokenType): Pair<String, LocalDateTime> {
+    private fun createJwtToken(info: CreateTokenRequest, type: TokenType): TokenInfo {
         val duration = when (type) {
             TokenType.REFRESH -> refreshDuration
             TokenType.ACCESS -> accessDuration
         }
 
+        val tokenId = "${info.id}${UUID.randomUUID()}"
         val expiredAt = Calendar.getInstance().plus(duration)
 
         val token = Jwts.builder()
             .setSubject(info.id)
+            .setId(tokenId)
             .setClaims(
                 mutableMapOf<String, Any>(
                     "type" to type,
@@ -68,7 +71,7 @@ class TokenService(
             .signWith(signingKey, SignatureAlgorithm.HS256)
             .compact()
 
-        return "Bearer $token" to expiredAt.toLocalDateTime()
+        return TokenInfo("Bearer $token", expiredAt.toLocalDateTime(), tokenId)
     }
 
     private fun Calendar.toLocalDateTime(): LocalDateTime {

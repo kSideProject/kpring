@@ -28,6 +28,9 @@ dependencies {
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.2")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.2")
 
+    // reactive redis
+    implementation("org.springframework.boot:spring-boot-starter-data-redis-reactive")
+
     // test module
     testImplementation(project(":test"))
 

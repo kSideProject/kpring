@@ -1,24 +1,27 @@
 package kpring.auth.service
 
+import io.jsonwebtoken.security.Keys
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.date.shouldBeBefore
+import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldNotHaveLength
 import io.mockk.coEvery
 import io.mockk.mockk
 import kpring.auth.repository.ExpireTokenRepository
+import kpring.auth.util.toToken
 import kpring.core.auth.dto.request.CreateTokenRequest
-import java.lang.IllegalArgumentException
+import kpring.core.auth.enums.TokenType
+import java.nio.charset.StandardCharsets
 import java.time.LocalDateTime
 
 class TokenServiceTest : BehaviorSpec({
-    val tokenRepository : ExpireTokenRepository = mockk()
+    val tokenRepository: ExpireTokenRepository = mockk()
     val tokenService = TokenService(
-        accessDuration = 1000, // 1s
-        refreshDuration = 10000, // 10s
-        secretKey = "testsecretkey-dfasdfasdfasdfasdfasdfsadfasdfasdfasdfasdf",
-        tokenRepository
+        accessDuration = 100000, // 100s
+        refreshDuration = 1000000, // 1000s
+        secretKey = "testsecretkey-dfasdfasdfasdfasdfasdfsadfasdfasdfasdfasdf", tokenRepository
     )
 
     beforeTest {
@@ -27,8 +30,7 @@ class TokenServiceTest : BehaviorSpec({
 
     Given("유저의 id와 유저 닉네임이 주어질 때") {
         val request = CreateTokenRequest(
-            id = "testUserId",
-            nickname = "test user"
+            id = "testUserId", nickname = "test user"
         )
 
         When("토큰을 생성하면") {
@@ -46,13 +48,10 @@ class TokenServiceTest : BehaviorSpec({
 
     Given("토큰이 주어졌을 때") {
         val tokenInfo = tokenService.createToken(
-            CreateTokenRequest(
-                id = "test", nickname = "test nick"
-            )
+            CreateTokenRequest(id = "test", nickname = "test nick")
         )
 
         When("토큰을 재생성하면") {
-
             coEvery { tokenRepository.isExpired(any()) } returns false
             val newTokenInfo = tokenService.reCreateAccessToken(tokenInfo.refreshToken)
             Then("새로운 엑세스 토큰을 반환한다.") {
@@ -60,21 +59,46 @@ class TokenServiceTest : BehaviorSpec({
             }
         }
 
-        When("토큰이 유효하지 않다면"){
-            then("타입이 Refresh가 아니라면 예외를 발생시킨다.") {
+        When("타입이 Refresh가 아니라면") {
+            then("토큰 재생성시 예외가 발생한다.") {
                 coEvery { tokenRepository.isExpired(any()) } returns false
                 shouldThrow<IllegalArgumentException> {
                     tokenService.reCreateAccessToken(tokenInfo.accessToken)
                 }
             }
+        }
 
-            then("만료 처리된 토큰이라면 예외를 발생시킨다.") {
-                coEvery { tokenRepository.isExpired(any()) } returns true
+        When("토큰이 유효하지 않다면") {
+            val otherKey =
+                Keys.hmacShaKeyFor("invalid jwt secret key testtesttesttesttest".toByteArray(StandardCharsets.UTF_8))
+                    ?: throw IllegalStateException("토큰을 발급하기 위한 key가 적절하지 않습니다.")
+            coEvery { tokenRepository.isExpired(any()) } returns false
+            val invalidTokenInfo = CreateTokenRequest("invalid", "invalid")
+                .toToken(TokenType.REFRESH, otherKey, 100000)
+            then("토큰 검증시 isValid 응답은 false다.") {
+                val response = tokenService.checkToken(invalidTokenInfo.token)
+                response.isValid shouldBe false
+            }
+
+            then("토큰 재성시 예외가 발생한다.") {
                 shouldThrow<IllegalArgumentException> {
-                    tokenService.reCreateAccessToken(tokenInfo.accessToken)
+                    tokenService.reCreateAccessToken(invalidTokenInfo.token)
                 }
             }
 
+            When("만료 처리가 되었다면") {
+                coEvery { tokenRepository.isExpired(any()) } returns true
+                then("토큰 검증시 isValid 응답은 false다.") {
+                    val response = tokenService.checkToken(tokenInfo.accessToken)
+                    response.isValid shouldBe false
+                }
+
+                then("토큰 재성시 예외가 발생한다.") {
+                    shouldThrow<IllegalArgumentException> {
+                        tokenService.reCreateAccessToken(tokenInfo.accessToken)
+                    }
+                }
+            }
         }
     }
 })

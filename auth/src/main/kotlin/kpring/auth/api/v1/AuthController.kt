@@ -28,14 +28,16 @@ class AuthController(
 
     @GetMapping("/token")
     suspend fun recreateAccessToken(@RequestHeader("Authorization") refreshToken: String): ResponseEntity<*> {
-        val response = tokenService.reCreateAccessToken(refreshToken)
+        val response = tokenService.reCreateAccessToken(refreshToken.removePrefix("Bearer "))
         return ResponseEntity.ok()
             .header("Authorization", "Bearer ${response.accessToken}")
             .body(response)
     }
 
     @GetMapping("/validation")
-    suspend fun validateToken(): ResponseEntity<*> {
-        TODO()
+    suspend fun validateToken(@RequestHeader("Authorization") token: String): ResponseEntity<*> {
+        val response = tokenService.checkToken(token.removePrefix("Bearer "))
+        return ResponseEntity.ok()
+            .body(response)
     }
 }

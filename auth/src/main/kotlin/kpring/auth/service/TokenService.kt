@@ -1,5 +1,6 @@
 package kpring.auth.service
 
+import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.security.Keys
 import jakarta.annotation.PostConstruct
 import kpring.auth.repository.ExpireTokenRepository
@@ -67,7 +68,11 @@ class TokenService(
     }
 
     suspend fun checkToken(token: String): TokenValidationResponse {
-        val jwt = token.toObject(signingKey)
-        return TokenValidationResponse(!tokenRepository.isExpired(token), jwt.type)
+        return try {
+            val jwt = token.toObject(signingKey)
+            TokenValidationResponse(!tokenRepository.isExpired(token), jwt.type)
+        } catch (ex: ExpiredJwtException) {
+            TokenValidationResponse(false, null)
+        }
     }
 }

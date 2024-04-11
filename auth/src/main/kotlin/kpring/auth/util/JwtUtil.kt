@@ -1,6 +1,7 @@
 package kpring.auth.util
 
 import io.jsonwebtoken.Claims
+import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import kpring.auth.dto.JwtToken
@@ -35,6 +36,10 @@ fun CreateTokenRequest.toToken(type: TokenType, signingKey: SecretKey, duration:
     return TokenInfo(token, expiredAt.toLocalDateTime(), tokenId)
 }
 
+/**
+ * @throws ExpiredJwtException 토큰이 만료된 경우
+ * @throws RuntimeException 유효하지 않은 토큰인 경우
+ */
 fun String.toObject(key: SecretKey): JwtToken {
     try {
         val claims = Jwts.parserBuilder()
@@ -50,6 +55,8 @@ fun String.toObject(key: SecretKey): JwtToken {
             userId = claims.userId(),
             expiredAt = claims.expiredAt()
         )
+    } catch (ex: ExpiredJwtException) {
+        throw ex
     } catch (ex: RuntimeException) {
         throw IllegalArgumentException("잘못된 토큰의 타입입니다.", ex)
     }

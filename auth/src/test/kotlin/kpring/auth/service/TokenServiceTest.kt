@@ -20,10 +20,11 @@ class TokenServiceTest : BehaviorSpec({
     val tokenRepository: ExpireTokenRepository = mockk()
     val accessDuration = 100000 // 100s
     val refreshDuration = 1000000 // 1000s
+    val secretKey = "testsecretkey-dfasdfasdfasdfasdfasdfsadfasdfasdfasdfasdf"
     val tokenService = TokenService(
         accessDuration = accessDuration,
         refreshDuration = refreshDuration,
-        secretKey = "testsecretkey-dfasdfasdfasdfasdfasdfsadfasdfasdfasdfasdf", tokenRepository
+        secretKey = secretKey, tokenRepository
     )
 
     beforeTest {
@@ -90,10 +91,21 @@ class TokenServiceTest : BehaviorSpec({
             }
         }
 
-        When("만료 처리가 되었다면") {
+        When("만료된 토큰이라면") {
             coEvery { tokenRepository.isExpired(any()) } returns true
             then("토큰 검증시 isValid 응답은 false다.") {
                 val response = tokenService.checkToken(tokenInfo.accessToken)
+                response.isValid shouldBe false
+            }
+        }
+
+        When("만료 처리가 되었다면") {
+            val validKey = Keys.hmacShaKeyFor(secretKey.toByteArray(StandardCharsets.UTF_8))
+                ?: throw IllegalStateException("토큰을 발급하기 위한 key가 적절하지 않습니다.")
+            val expiredToken = CreateTokenRequest("test", "nick").toToken(TokenType.ACCESS, validKey, 0).token
+            coEvery { tokenRepository.isExpired(any()) } returns true
+            then("토큰 검증시 isValid 응답은 false다.") {
+                val response = tokenService.checkToken(expiredToken)
                 response.isValid shouldBe false
             }
 

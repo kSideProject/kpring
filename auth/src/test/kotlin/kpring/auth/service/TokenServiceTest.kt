@@ -18,9 +18,11 @@ import java.time.LocalDateTime
 
 class TokenServiceTest : BehaviorSpec({
     val tokenRepository: ExpireTokenRepository = mockk()
+    val accessDuration = 100000 // 100s
+    val refreshDuration = 1000000 // 1000s
     val tokenService = TokenService(
-        accessDuration = 100000, // 100s
-        refreshDuration = 1000000, // 1000s
+        accessDuration = accessDuration,
+        refreshDuration = refreshDuration,
         secretKey = "testsecretkey-dfasdfasdfasdfasdfasdfsadfasdfasdfasdfasdf", tokenRepository
     )
 
@@ -38,9 +40,9 @@ class TokenServiceTest : BehaviorSpec({
             then("엑세스 토큰과 리프레시 토큰이 생성된다.") {
                 response.apply {
                     accessToken shouldNotHaveLength 0
-                    accessExpireAt shouldBeBefore LocalDateTime.now().plusSeconds(1)
+                    accessExpireAt shouldBeBefore LocalDateTime.now().plusSeconds((accessDuration / 1000).toLong())
                     refreshToken shouldNotHaveLength 0
-                    refreshExpireAt shouldBeBefore LocalDateTime.now().plusSeconds(10)
+                    refreshExpireAt shouldBeBefore LocalDateTime.now().plusSeconds((refreshDuration / 1000).toLong())
                 }
             }
         }
@@ -75,28 +77,29 @@ class TokenServiceTest : BehaviorSpec({
             coEvery { tokenRepository.isExpired(any()) } returns false
             val invalidTokenInfo = CreateTokenRequest("invalid", "invalid")
                 .toToken(TokenType.REFRESH, otherKey, 100000)
+            then("토큰 검증시 예외가 발생한다.") {
+                shouldThrow<IllegalArgumentException> {
+                    tokenService.checkToken(invalidTokenInfo.token)
+                }
+            }
+
+            then("토큰 재생성시 예외가 발생한다.") {
+                shouldThrow<IllegalArgumentException> {
+                    tokenService.reCreateAccessToken(invalidTokenInfo.token)
+                }
+            }
+        }
+
+        When("만료 처리가 되었다면") {
+            coEvery { tokenRepository.isExpired(any()) } returns true
             then("토큰 검증시 isValid 응답은 false다.") {
-                val response = tokenService.checkToken(invalidTokenInfo.token)
+                val response = tokenService.checkToken(tokenInfo.accessToken)
                 response.isValid shouldBe false
             }
 
             then("토큰 재성시 예외가 발생한다.") {
                 shouldThrow<IllegalArgumentException> {
-                    tokenService.reCreateAccessToken(invalidTokenInfo.token)
-                }
-            }
-
-            When("만료 처리가 되었다면") {
-                coEvery { tokenRepository.isExpired(any()) } returns true
-                then("토큰 검증시 isValid 응답은 false다.") {
-                    val response = tokenService.checkToken(tokenInfo.accessToken)
-                    response.isValid shouldBe false
-                }
-
-                then("토큰 재성시 예외가 발생한다.") {
-                    shouldThrow<IllegalArgumentException> {
-                        tokenService.reCreateAccessToken(tokenInfo.accessToken)
-                    }
+                    tokenService.reCreateAccessToken(tokenInfo.accessToken)
                 }
             }
         }

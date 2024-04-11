@@ -3,6 +3,7 @@ package kpring.auth.util
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
+import kpring.auth.dto.JwtToken
 import kpring.auth.dto.TokenInfo
 import kpring.core.auth.dto.request.CreateTokenRequest
 import kpring.core.auth.enums.TokenType
@@ -34,22 +35,34 @@ fun CreateTokenRequest.toToken(type: TokenType, signingKey: SecretKey, duration:
     return TokenInfo(token, expiredAt.toLocalDateTime(), tokenId)
 }
 
-fun String.claim(signingKey: SecretKey): Claims {
-    return Jwts.parserBuilder()
-        .setSigningKey(signingKey)
-        .build()
-        .parseClaimsJws(this)
-        .body
+fun String.toObject(key: SecretKey): JwtToken {
+    try {
+        val claims = Jwts.parserBuilder()
+            .setSigningKey(key)
+            .build()
+            .parseClaimsJws(this.removePrefix("Bearer "))
+            .body
+
+        return JwtToken(
+            id = claims.tokenId(),
+            type = claims.type(),
+            nickname = claims.nickname(),
+            userId = claims.userId(),
+            expiredAt = claims.expiredAt()
+        )
+    } catch (ex: RuntimeException) {
+        throw IllegalArgumentException("잘못된 토큰의 타입입니다.", ex)
+    }
 }
 
-fun Claims.userId() = this.get("userId", String::class.java)
-fun Claims.tokenId() = this.get("id", String::class.java)
-fun Claims.nickname() = this.get("nickname", String::class.java)
-fun Claims.type() = TokenType.valueOf(this.get("type", String::class.java))
+private fun Claims.userId() = this.get("userId", String::class.java)
+private fun Claims.tokenId() = this.get("id", String::class.java)
+private fun Claims.nickname() = this.get("nickname", String::class.java)
+private fun Claims.type() = TokenType.valueOf(this.get("type", String::class.java))
 
-fun Claims.expiredAt() = LocalDateTime.ofInstant(this.expiration.toInstant(), ZoneId.of("Asia/Seoul"))
-fun Calendar.toLocalDateTime() = LocalDateTime.ofInstant(this.time.toInstant(), ZoneId.of("Asia/Seoul"))
-fun Calendar.plus(milliseconds: Int): Calendar {
+private fun Claims.expiredAt() = LocalDateTime.ofInstant(this.expiration.toInstant(), ZoneId.of("Asia/Seoul"))
+private fun Calendar.toLocalDateTime() = LocalDateTime.ofInstant(this.time.toInstant(), ZoneId.of("Asia/Seoul"))
+private fun Calendar.plus(milliseconds: Int): Calendar {
     this.add(Calendar.MILLISECOND, milliseconds)
     return this
 }

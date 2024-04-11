@@ -12,7 +12,7 @@ class ErrorApi {
 
     private val logger = LoggerFactory.getLogger(ErrorApi::class.java)
 
-    @ExceptionHandler(WebExchangeBindException::class)
+    @ExceptionHandler(WebExchangeBindException::class, IllegalArgumentException::class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     fun handleWhenRequestValidationFailed() {
     }

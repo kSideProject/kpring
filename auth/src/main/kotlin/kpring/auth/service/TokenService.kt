@@ -3,7 +3,8 @@ package kpring.auth.service
 import io.jsonwebtoken.security.Keys
 import jakarta.annotation.PostConstruct
 import kpring.auth.repository.ExpireTokenRepository
-import kpring.auth.util.*
+import kpring.auth.util.toObject
+import kpring.auth.util.toToken
 import kpring.core.auth.dto.request.CreateTokenRequest
 import kpring.core.auth.dto.response.CreateTokenResponse
 import kpring.core.auth.dto.response.ReCreateAccessTokenResponse
@@ -45,38 +46,28 @@ class TokenService(
     }
 
     suspend fun expireToken(token: String) {
-        val claim = token.claim(signingKey)
-        val tokenId = claim.tokenId()
-        val expiredAt = claim.expiredAt()
-        tokenRepository.expireToken(tokenId, expiredAt)
+        val jwt = token.toObject(signingKey)
+        tokenRepository.expireToken(jwt.id, jwt.expiredAt)
     }
 
     suspend fun reCreateAccessToken(refreshToken: String): ReCreateAccessTokenResponse {
-        try {
-            val claims = refreshToken.claim(signingKey)
-            if (claims.type() != TokenType.REFRESH ||
-                tokenRepository.isExpired(refreshToken)
-            ) throw IllegalArgumentException("잘못된 토큰의 타입입니다.")
+        val jwt = refreshToken.toObject(signingKey)
+        if (jwt.type != TokenType.REFRESH || tokenRepository.isExpired(refreshToken))
+            throw IllegalArgumentException("잘못된 토큰의 타입입니다.")
 
-            return claims.run {
-                val accessTokenInfo = CreateTokenRequest(userId(), nickname())
-                    .toToken(TokenType.ACCESS, signingKey, accessDuration)
-                ReCreateAccessTokenResponse(
-                    accessToken = accessTokenInfo.token,
-                    accessExpireAt = accessTokenInfo.expireAt,
-                )
-            }
-        } catch (exception: RuntimeException) {
-            throw IllegalArgumentException("잘못된 토큰 타입니다.")
+        return jwt.run {
+            val accessTokenInfo = CreateTokenRequest(userId, nickname)
+                .toToken(TokenType.ACCESS, signingKey, accessDuration)
+
+            ReCreateAccessTokenResponse(
+                accessToken = accessTokenInfo.token,
+                accessExpireAt = accessTokenInfo.expireAt,
+            )
         }
     }
 
     suspend fun checkToken(token: String): TokenValidationResponse {
-        return try {
-            val type = token.claim(signingKey).type()
-            TokenValidationResponse(!tokenRepository.isExpired(token), type)
-        } catch (ex: RuntimeException) { // 토큰이 유효하지 않은 경우 예외를 발생시키지 않는다.
-            TokenValidationResponse(false, null)
-        }
+        val jwt = token.toObject(signingKey)
+        return TokenValidationResponse(!tokenRepository.isExpired(token), jwt.type)
     }
 }

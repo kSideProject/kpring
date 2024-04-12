@@ -23,5 +23,9 @@ dependencies {
     implementation("io.kotest.extensions:kotest-extensions-spring:1.1.3")
     implementation("org.springframework.restdocs:spring-restdocs-asciidoctor")
 
+    // open api3
+    implementation("com.epages:restdocs-api-spec-mockmvc:0.19.2")
+    implementation("com.epages:restdocs-api-spec-webtestclient:0.19.2")
+
     implementation("org.springframework.boot:spring-boot-starter-test")
 }

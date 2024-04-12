@@ -85,7 +85,7 @@ class AuthControllerTest(
                     .expectHeader().valuesMatch("Authorization", "Bearer .+")
                     .expectBody()
                     .json(objectMapper.writeValueAsString(response))
-                    .restDoc("post_api.v1.token", "test") {
+                    .restDoc("post_api.v1.token", "토큰 생성") {
                         request {
                             header {
                                 "Content-Type" mean "application/json"
@@ -127,7 +127,7 @@ class AuthControllerTest(
                     .expectStatus().isOk
                     .expectBody()
                     .json(objectMapper.writeValueAsString(response))
-                    .restDoc("get_api.v1.token", "test") {
+                    .restDoc("get_api.v1.token", "토큰 재발급(갱신)") {
                         request {
                             header {
                                 "Authorization" mean "jwt access token 정보"
@@ -155,7 +155,7 @@ class AuthControllerTest(
                     .expectStatus().isOk
                     .expectBody().apply {
                         isEmpty()
-                        restDoc("delete_api.v1.token", "test") { }
+                        restDoc("delete_api.v1.token", "토큰 만료(삭제)") { }
                     }
             }
         }
@@ -174,7 +174,7 @@ class AuthControllerTest(
                     .exchange()
                     .expectStatus().isOk
                     .expectBody().json(objectMapper.writeValueAsString(response))
-                    .restDoc("get_api.v1.validation", "test") {
+                    .restDoc("get_api.v1.validation", "토큰 검증") {
                         request {
                             header { "Authorization" mean "검증할 토큰 정보" }
                         }
@@ -189,6 +189,5 @@ class AuthControllerTest(
                     }
             }
         }
-
     },
 )

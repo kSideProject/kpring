@@ -85,7 +85,7 @@ class AuthControllerTest(
                     .expectHeader().valuesMatch("Authorization", "Bearer .+")
                     .expectBody()
                     .json(objectMapper.writeValueAsString(response))
-                    .restDoc("post_api.v1.token") {
+                    .restDoc("post_api.v1.token", "test") {
                         request {
                             header {
                                 "Content-Type" mean "application/json"
@@ -105,9 +105,9 @@ class AuthControllerTest(
 
                             body {
                                 "accessToken" type "String" mean "jwt access token"
-                                "accessExpireAt" type "yyyy-MM-dd hh:mm:ss" mean "jwt access token 만료시간"
+                                "accessExpireAt" type "String" mean "jwt access token 만료시간입니다. 형식은 yyyy-MM-dd hh:mm:ss을 제공합니다."
                                 "refreshToken" type "String" mean "jwt refresh token"
-                                "refreshExpireAt" type "yyyy-MM-dd hh:mm:ss" mean "jwt refresh token 만료시간"
+                                "refreshExpireAt" type "String" mean "jwt refresh token 만료시간 형식은 yyyy-MM-dd hh:mm:ss을 제공합니다."
                             }
                         }
                     }
@@ -127,7 +127,7 @@ class AuthControllerTest(
                     .expectStatus().isOk
                     .expectBody()
                     .json(objectMapper.writeValueAsString(response))
-                    .restDoc("get_api.v1.token") {
+                    .restDoc("get_api.v1.token", "test") {
                         request {
                             header {
                                 "Authorization" mean "jwt access token 정보"
@@ -141,7 +141,7 @@ class AuthControllerTest(
 
                             body {
                                 "accessToken" type "String" mean "jwt access token"
-                                "accessExpireAt" type "yyyy-MM-dd hh:mm:ss" mean "jwt access token 만료시간"
+                                "accessExpireAt" type "String" mean "jwt access token 만료시간 형식은 yyyy-MM-dd hh:mm:ss을 제공합니다."
                             }
                         }
                     }
@@ -155,7 +155,7 @@ class AuthControllerTest(
                     .expectStatus().isOk
                     .expectBody().apply {
                         isEmpty()
-                        restDoc("delete_api.v1.token") { }
+                        restDoc("delete_api.v1.token", "test") { }
                     }
             }
         }
@@ -174,7 +174,7 @@ class AuthControllerTest(
                     .exchange()
                     .expectStatus().isOk
                     .expectBody().json(objectMapper.writeValueAsString(response))
-                    .restDoc("get_api.v1.validation") {
+                    .restDoc("get_api.v1.validation", "test") {
                         request {
                             header { "Authorization" mean "검증할 토큰 정보" }
                         }

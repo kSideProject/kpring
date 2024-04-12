@@ -6,6 +6,8 @@ plugins {
 
     // asciidoctor plugin
     id("org.asciidoctor.jvm.convert") version "3.3.2"
+    // open api3
+    id("com.epages.restdocs-api-spec") version "0.19.2"
 }
 
 dependencies {
@@ -62,4 +64,12 @@ tasks.test {
 tasks.asciidoctor {
     inputs.dir(project.extra["snippetsDir"]!!)
     dependsOn(tasks.test)
+}
+
+openapi3 {
+    setServer("http://localhost:8080")
+    title = "MyApp"
+    description = "API document"
+    version = "0.1.0"
+    format = "yaml"
 }

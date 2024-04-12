@@ -1,11 +1,12 @@
 package kpring.test.restdoc.dsl
 
+import com.epages.restdocs.apispec.WebTestClientRestDocumentationWrapper.document
 import org.springframework.restdocs.snippet.Snippet
-import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation
 import org.springframework.test.web.reactive.server.WebTestClient
 
 fun WebTestClient.BodyContentSpec.restDoc(
     identifier: String,
+    description: String,
     config: RestDocBuilder.() -> Unit,
 ): WebTestClient.BodyContentSpec {
     val builder = RestDocBuilder()
@@ -16,7 +17,13 @@ fun WebTestClient.BodyContentSpec.restDoc(
     if (builder.responseHeader != null) snippets.add(builder.responseHeader!!)
     if (builder.responseBody != null) snippets.add(builder.responseBody!!)
 
-    return this.consumeWith(WebTestClientRestDocumentation.document(identifier, *snippets.toTypedArray()))
+    return this.consumeWith(
+        document(
+            identifier = identifier,
+            description = description,
+            snippets = snippets.toTypedArray()
+        )
+    )
 }
 
 class RestDocBuilder {

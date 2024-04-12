@@ -1,23 +1,27 @@
 package kpring.auth.api
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.BehaviorSpec
+import io.mockk.coEvery
+import io.mockk.coJustRun
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import kpring.auth.api.v1.AuthController
 import kpring.auth.service.TokenService
 import kpring.core.auth.dto.request.CreateTokenRequest
 import kpring.core.auth.dto.response.CreateTokenResponse
+import kpring.core.auth.dto.response.ReCreateAccessTokenResponse
+import kpring.core.auth.dto.response.TokenValidationResponse
+import kpring.core.auth.enums.TokenType
+import kpring.test.restdoc.dsl.restDoc
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
 import org.springframework.context.ApplicationContext
 import org.springframework.http.MediaType
 import org.springframework.restdocs.ManualRestDocumentation
-import org.springframework.restdocs.headers.HeaderDocumentation.*
 import org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint
-import org.springframework.restdocs.payload.PayloadDocumentation.*
-import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.document
 import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.documentationConfiguration
 import org.springframework.test.web.reactive.server.WebTestClient
 import java.time.LocalDateTime
@@ -31,6 +35,7 @@ import java.time.LocalDateTime
 )
 class AuthControllerTest(
     private val applicationContext: ApplicationContext,
+    private val objectMapper: ObjectMapper,
     @MockkBean val tokenService: TokenService,
 ) : BehaviorSpec(
     {
@@ -55,12 +60,14 @@ class AuthControllerTest(
             val url = "/api/v1/token"
             When("POST") {
 
-                every { tokenService.createToken(any()) } returns CreateTokenResponse(
+                val response = CreateTokenResponse(
                     accessToken = "Bearer access token",
                     accessExpireAt = LocalDateTime.of(2000, 1, 1, 0, 0, 0),
                     refreshToken = "Bearer refresh token",
                     refreshExpireAt = LocalDateTime.of(2000, 1, 1, 0, 1, 0),
                 )
+
+                every { tokenService.createToken(any()) } returns response
 
                 webTestClient
                     .post()
@@ -77,44 +84,110 @@ class AuthControllerTest(
                     .expectHeader().contentType(MediaType.APPLICATION_JSON)
                     .expectHeader().valuesMatch("Authorization", "Bearer .+")
                     .expectBody()
-                    .consumeWith(
-                        document(
-                            "post_api.v1.token",
-                            requestHeaders(
-                                headerWithName("Content-Type").description("application/json"),
-                            ),
-                            requestFields(
-                                fieldWithPath("id").description("유저 식별 아이디").type(String),
-                                fieldWithPath("nickname").description("닉네임").type(String)
-                            ),
+                    .json(objectMapper.writeValueAsString(response))
+                    .restDoc("post_api.v1.token", "test") {
+                        request {
+                            header {
+                                "Content-Type" mean "application/json"
+                            }
 
-                            responseHeaders(
-                                headerWithName("Authorization").description("jwt access token 정보"),
-                                headerWithName("Content-Type").description("application/json"),
-                            ),
-                            responseFields(
-                                fieldWithPath("accessToken").description("jwt access token").type(String),
-                                fieldWithPath("accessExpireAt").description("jwt access token 만료시간")
-                                    .type("yyyy-MM-dd hh:mm:ss"),
-                                fieldWithPath("refreshToken").description("jwt refresh token").type(String),
-                                fieldWithPath("refreshExpireAt").description("jwt refresh token 만료시간")
-                                    .type("yyyy-MM-dd hh:mm:ss"),
-                            ),
-                        ),
-                    )
+                            body {
+                                "id" type "String" mean "유저 식별 아이디"
+                                "nickname" type "String" mean "닉네임"
+                            }
+                        }
+
+                        response {
+                            header {
+                                "Authorization" mean "jwt access token 정보"
+                                "Content-Type" mean "application/json"
+                            }
+
+                            body {
+                                "accessToken" type "String" mean "jwt access token"
+                                "accessExpireAt" type "String" mean "jwt access token 만료시간입니다. 형식은 yyyy-MM-dd hh:mm:ss을 제공합니다."
+                                "refreshToken" type "String" mean "jwt refresh token"
+                                "refreshExpireAt" type "String" mean "jwt refresh token 만료시간 형식은 yyyy-MM-dd hh:mm:ss을 제공합니다."
+                            }
+                        }
+                    }
             }
 
             When("GET") {
+
+                val response = ReCreateAccessTokenResponse(
+                    accessToken = "testToken",
+                    accessExpireAt = LocalDateTime.of(1900, 1, 1, 0, 0, 0)
+                )
+                coEvery { tokenService.reCreateAccessToken(any()) } returns response
+
                 webTestClient.get().uri(url)
+                    .header("Authorization", "test token")
+                    .exchange()
+                    .expectStatus().isOk
+                    .expectBody()
+                    .json(objectMapper.writeValueAsString(response))
+                    .restDoc("get_api.v1.token", "test") {
+                        request {
+                            header {
+                                "Authorization" mean "jwt access token 정보"
+                            }
+                        }
+
+                        response {
+                            header {
+                                "Authorization" mean "jwt access token 정보"
+                            }
+
+                            body {
+                                "accessToken" type "String" mean "jwt access token"
+                                "accessExpireAt" type "String" mean "jwt access token 만료시간 형식은 yyyy-MM-dd hh:mm:ss을 제공합니다."
+                            }
+                        }
+                    }
             }
 
             When("DELETE") {
-                webTestClient.delete().uri(url)
+
+                coJustRun { tokenService.expireToken(any()) }
+                webTestClient.delete().uri("$url/{}")
+                    .exchange()
+                    .expectStatus().isOk
+                    .expectBody().apply {
+                        isEmpty()
+                        restDoc("delete_api.v1.token", "test") { }
+                    }
             }
         }
 
         Given("/api/v1/validation") {
             val url = "/api/v1/validation"
+            val testToken = "Bearer testtoken"
+            val response = TokenValidationResponse(isValid = true, type = TokenType.ACCESS)
+
+            coEvery { tokenService.checkToken(any()) } returns TokenValidationResponse(true, TokenType.ACCESS)
+
+            When("GET") {
+
+                webTestClient.get().uri(url)
+                    .header("Authorization", testToken)
+                    .exchange()
+                    .expectStatus().isOk
+                    .expectBody().json(objectMapper.writeValueAsString(response))
+                    .restDoc("get_api.v1.validation", "test") {
+                        request {
+                            header { "Authorization" mean "검증할 토큰 정보" }
+                        }
+
+                        response {
+                            header { "Content-type" mean "entity type" }
+                            body {
+                                "isValid" type "Boolean" mean "토큰이 유효한지 여부를 나타냅니다."
+                                "type" type "String" mean "ACCESS  또는 REFRESH 값을 가지며 검증한 토큰의 타입입니다. 만약 유효하지 않은 토큰이라면 존재하지 않습니다."
+                            }
+                        }
+                    }
+            }
         }
 
     },

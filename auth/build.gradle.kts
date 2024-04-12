@@ -6,11 +6,13 @@ plugins {
 
     // asciidoctor plugin
     id("org.asciidoctor.jvm.convert") version "3.3.2"
+    // open api3
+    id("com.epages.restdocs-api-spec") version "0.19.2"
 }
 
 dependencies {
     // core module
-    api(project(":core"))
+    implementation(project(":core"))
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
@@ -27,6 +29,12 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-api:0.11.2")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.2")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.2")
+
+    // reactive redis
+    implementation("org.springframework.boot:spring-boot-starter-data-redis-reactive")
+
+    // test module
+    testImplementation(project(":test"))
 
     // dev tool
     developmentOnly("org.springframework.boot:spring-boot-devtools")
@@ -56,4 +64,12 @@ tasks.test {
 tasks.asciidoctor {
     inputs.dir(project.extra["snippetsDir"]!!)
     dependsOn(tasks.test)
+}
+
+openapi3 {
+    setServer("http://localhost:8080")
+    title = "MyApp"
+    description = "API document"
+    version = "0.1.0"
+    format = "yaml"
 }

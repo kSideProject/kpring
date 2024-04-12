@@ -16,22 +16,28 @@ class AuthController(
     suspend fun createToken(@Validated @RequestBody request: CreateTokenRequest): ResponseEntity<*> {
         val tokenInfo = tokenService.createToken(request)
         return ResponseEntity.ok()
-            .headers { it["Authorization"] = tokenInfo.accessToken }
+            .header("Authorization", "Bearer ${tokenInfo.accessToken}")
             .body(tokenInfo)
     }
 
-    @DeleteMapping("/token")
-    suspend fun expireToken(): ResponseEntity<*> {
-        TODO()
+    @DeleteMapping("/token/{tokenData}")
+    suspend fun expireToken(@PathVariable("tokenData") token: String): ResponseEntity<Any> {
+        tokenService.expireToken(token)
+        return ResponseEntity.ok().build()
     }
 
     @GetMapping("/token")
-    suspend fun recreateAccessToken(): ResponseEntity<*> {
-        TODO()
+    suspend fun recreateAccessToken(@RequestHeader("Authorization") refreshToken: String): ResponseEntity<*> {
+        val response = tokenService.reCreateAccessToken(refreshToken.removePrefix("Bearer "))
+        return ResponseEntity.ok()
+            .header("Authorization", "Bearer ${response.accessToken}")
+            .body(response)
     }
 
     @GetMapping("/validation")
-    suspend fun validateToken(): ResponseEntity<*> {
-        TODO()
+    suspend fun validateToken(@RequestHeader("Authorization") token: String): ResponseEntity<*> {
+        val response = tokenService.checkToken(token.removePrefix("Bearer "))
+        return ResponseEntity.ok()
+            .body(response)
     }
 }

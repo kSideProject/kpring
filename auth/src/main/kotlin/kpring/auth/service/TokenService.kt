@@ -1,18 +1,19 @@
 package kpring.auth.service
 
-import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.SignatureAlgorithm
+import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.security.Keys
 import jakarta.annotation.PostConstruct
+import kpring.auth.repository.ExpireTokenRepository
+import kpring.auth.util.toObject
+import kpring.auth.util.toToken
 import kpring.core.auth.dto.request.CreateTokenRequest
 import kpring.core.auth.dto.response.CreateTokenResponse
+import kpring.core.auth.dto.response.ReCreateAccessTokenResponse
+import kpring.core.auth.dto.response.TokenValidationResponse
 import kpring.core.auth.enums.TokenType
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.nio.charset.StandardCharsets
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.util.*
 import javax.crypto.SecretKey
 
 @Service
@@ -20,6 +21,7 @@ class TokenService(
     @Value("\${jwt.access.duration}") private val accessDuration: Int,
     @Value("\${jwt.refresh.duration}") private val refreshDuration: Int,
     @Value("\${jwt.secret}") private val secretKey: String,
+    private val tokenRepository: ExpireTokenRepository,
 ) {
     private lateinit var signingKey: SecretKey
 
@@ -33,50 +35,44 @@ class TokenService(
      business logic
      */
     fun createToken(request: CreateTokenRequest): CreateTokenResponse {
-        val accessResult = createJwtToken(request, TokenType.ACCESS)
-        val refreshResult = createJwtToken(request, TokenType.REFRESH)
+        val accessResult = request.toToken(TokenType.ACCESS, signingKey, accessDuration)
+        val refreshResult = request.toToken(TokenType.REFRESH, signingKey, refreshDuration)
 
         return CreateTokenResponse(
-            accessToken = accessResult.first,
-            accessExpireAt = accessResult.second,
-            refreshToken = refreshResult.first,
-            refreshExpireAt = refreshResult.second
+            accessToken = accessResult.token,
+            accessExpireAt = accessResult.expireAt,
+            refreshToken = refreshResult.token,
+            refreshExpireAt = refreshResult.expireAt
         )
     }
 
-    /*
-     util method
-     */
-    private fun createJwtToken(info: CreateTokenRequest, type: TokenType): Pair<String, LocalDateTime> {
-        val duration = when (type) {
-            TokenType.REFRESH -> refreshDuration
-            TokenType.ACCESS -> accessDuration
-        }
+    suspend fun expireToken(token: String) {
+        val jwt = token.toObject(signingKey)
+        tokenRepository.expireToken(jwt.id, jwt.expiredAt)
+    }
 
-        val expiredAt = Calendar.getInstance().plus(duration)
+    suspend fun reCreateAccessToken(refreshToken: String): ReCreateAccessTokenResponse {
+        val jwt = refreshToken.toObject(signingKey)
+        if (jwt.type != TokenType.REFRESH || tokenRepository.isExpired(refreshToken))
+            throw IllegalArgumentException("잘못된 토큰의 타입입니다.")
 
-        val token = Jwts.builder()
-            .setSubject(info.id)
-            .setClaims(
-                mutableMapOf<String, Any>(
-                    "type" to type,
-                    "nickname" to info.nickname
-                )
+        return jwt.run {
+            val accessTokenInfo = CreateTokenRequest(userId, nickname)
+                .toToken(TokenType.ACCESS, signingKey, accessDuration)
+
+            ReCreateAccessTokenResponse(
+                accessToken = accessTokenInfo.token,
+                accessExpireAt = accessTokenInfo.expireAt,
             )
-            .setIssuedAt(Date())
-            .setExpiration(expiredAt.time)
-            .signWith(signingKey, SignatureAlgorithm.HS256)
-            .compact()
-
-        return "Bearer $token" to expiredAt.toLocalDateTime()
+        }
     }
 
-    private fun Calendar.toLocalDateTime(): LocalDateTime {
-        return LocalDateTime.ofInstant(this.time.toInstant(), ZoneId.of("Asia/Seoul"))
-    }
-
-    private fun Calendar.plus(duration: Int): Calendar {
-        this.add(Calendar.MILLISECOND, duration)
-        return this
+    suspend fun checkToken(token: String): TokenValidationResponse {
+        return try {
+            val jwt = token.toObject(signingKey)
+            TokenValidationResponse(!tokenRepository.isExpired(token), jwt.type)
+        } catch (ex: ExpiredJwtException) {
+            TokenValidationResponse(false, null)
+        }
     }
 }

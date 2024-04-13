@@ -1,7 +1,5 @@
 package kpring.auth.api.v1
 
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kpring.auth.service.TokenService
 import kpring.core.auth.dto.request.CreateTokenRequest
 import org.springframework.http.ResponseEntity

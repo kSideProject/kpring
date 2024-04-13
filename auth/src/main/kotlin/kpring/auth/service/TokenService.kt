@@ -1,8 +1,8 @@
 package kpring.auth.service
 
-import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.security.Keys
 import jakarta.annotation.PostConstruct
+import kpring.auth.exception.TokenExpiredException
 import kpring.auth.repository.ExpireTokenRepository
 import kpring.auth.util.toObject
 import kpring.auth.util.toToken
@@ -53,8 +53,8 @@ class TokenService(
 
     suspend fun reCreateAccessToken(refreshToken: String): ReCreateAccessTokenResponse {
         val jwt = refreshToken.toObject(signingKey)
-        if (jwt.type != TokenType.REFRESH || tokenRepository.isExpired(refreshToken))
-            throw IllegalArgumentException("잘못된 토큰의 타입입니다.")
+        if (jwt.type != TokenType.REFRESH) throw IllegalArgumentException("잘못된 토큰의 타입입니다.")
+        if(tokenRepository.isExpired(refreshToken)) throw TokenExpiredException("토큰이 만료되었습니다.")
 
         return jwt.run {
             val accessTokenInfo = CreateTokenRequest(userId, nickname)
@@ -71,7 +71,7 @@ class TokenService(
         return try {
             val jwt = token.toObject(signingKey)
             TokenValidationResponse(!tokenRepository.isExpired(token), jwt.type)
-        } catch (ex: ExpiredJwtException) {
+        } catch (ex: TokenExpiredException) {
             TokenValidationResponse(false, null)
         }
     }

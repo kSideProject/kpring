@@ -1,5 +1,7 @@
 package kpring.auth.api.v1
 
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kpring.auth.service.TokenService
 import kpring.core.auth.dto.request.CreateTokenRequest
 import org.springframework.http.ResponseEntity
@@ -22,7 +24,7 @@ class AuthController(
 
     @DeleteMapping("/token/{tokenData}")
     suspend fun expireToken(@PathVariable("tokenData") token: String): ResponseEntity<Any> {
-        tokenService.expireToken(token)
+        coroutineScope { async{tokenService.expireToken(token) } }.await()
         return ResponseEntity.ok().build()
     }
 

@@ -24,7 +24,7 @@ class AuthController(
 
     @DeleteMapping("/token/{tokenData}")
     suspend fun expireToken(@PathVariable("tokenData") token: String): ResponseEntity<Any> {
-        coroutineScope { async{tokenService.expireToken(token) } }.await()
+        tokenService.expireToken(token)
         return ResponseEntity.ok().build()
     }
 

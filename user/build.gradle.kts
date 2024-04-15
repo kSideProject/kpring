@@ -5,6 +5,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.4"
     kotlin("jvm") version "1.9.23"
     kotlin("plugin.spring") version "1.9.23"
+    kotlin("plugin.jpa") version "1.9.23"
 }
 
 group = "kpring"
@@ -19,9 +20,20 @@ repositories {
 }
 
 dependencies {
+    // JPA
+    implementation ("org.springframework.boot:spring-boot-starter-data-jpa")
+    // WEB
+    implementation ("org.springframework.boot:spring-boot-starter-web")
+    // JACKSON
+    implementation ("com.fasterxml.jackson.module:jackson-module-kotlin")
+    // H2
+    runtimeOnly ("com.h2database:h2")
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+    // TEST
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 }
 
 tasks.withType<KotlinCompile> {

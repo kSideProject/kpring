@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import kpring.auth.dto.JwtToken
 import kpring.auth.dto.TokenInfo
+import kpring.auth.exception.TokenExpiredException
 import kpring.core.auth.dto.request.CreateTokenRequest
 import kpring.core.auth.enums.TokenType
 import java.time.LocalDateTime
@@ -56,7 +57,7 @@ fun String.toObject(key: SecretKey): JwtToken {
             expiredAt = claims.expiredAt()
         )
     } catch (ex: ExpiredJwtException) {
-        throw ex
+        throw TokenExpiredException(ex)
     } catch (ex: RuntimeException) {
         throw IllegalArgumentException("잘못된 토큰의 타입입니다.", ex)
     }

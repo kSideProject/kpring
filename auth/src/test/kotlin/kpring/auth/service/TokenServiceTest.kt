@@ -9,6 +9,7 @@ import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldNotHaveLength
 import io.mockk.coEvery
 import io.mockk.mockk
+import kpring.auth.exception.TokenExpiredException
 import kpring.auth.repository.ExpireTokenRepository
 import kpring.auth.util.toToken
 import kpring.core.auth.dto.request.CreateTokenRequest
@@ -102,7 +103,7 @@ class TokenServiceTest : BehaviorSpec({
         When("만료 처리가 되었다면") {
             val validKey = Keys.hmacShaKeyFor(secretKey.toByteArray(StandardCharsets.UTF_8))
                 ?: throw IllegalStateException("토큰을 발급하기 위한 key가 적절하지 않습니다.")
-            val expiredToken = CreateTokenRequest("test", "nick").toToken(TokenType.ACCESS, validKey, 0).token
+            val expiredToken = CreateTokenRequest("test", "nick").toToken(TokenType.ACCESS, validKey, -1).token
             coEvery { tokenRepository.isExpired(any()) } returns true
             then("토큰 검증시 isValid 응답은 false다.") {
                 val response = tokenService.checkToken(expiredToken)
@@ -110,8 +111,8 @@ class TokenServiceTest : BehaviorSpec({
             }
 
             then("토큰 재성시 예외가 발생한다.") {
-                shouldThrow<IllegalArgumentException> {
-                    tokenService.reCreateAccessToken(tokenInfo.accessToken)
+                shouldThrow<TokenExpiredException> {
+                    tokenService.reCreateAccessToken(expiredToken)
                 }
             }
         }

@@ -22,14 +22,21 @@ class RestDocRequestBuilder {
             snippets.add(requestFields(*builder.bodyFields.toTypedArray()))
     }
 
-    fun query(config: RestDocQueryPathBuilder.() -> Unit) {
-        val builder = RestDocQueryPathBuilder()
+    fun query(config: RestDocQueryParamBuilder.() -> Unit) {
+        val builder = RestDocQueryParamBuilder()
         builder.config()
         if (builder.queryDescriptors.isNotEmpty())
             snippets.add(RequestDocumentation.queryParameters(*builder.queryDescriptors.toTypedArray()))
     }
 
-    fun snippet(snippet: Snippet){
+    fun path(config: RestDocPathParamBuilder.() -> Unit) {
+        val builder = RestDocPathParamBuilder()
+        builder.config()
+        if (builder.pathDescriptors.isNotEmpty())
+            snippets.add(RequestDocumentation.pathParameters(*builder.pathDescriptors.toTypedArray()))
+    }
+
+    fun snippet(snippet: Snippet) {
         snippets.add(snippet)
     }
 }

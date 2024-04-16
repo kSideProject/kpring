@@ -34,6 +34,9 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    // kotest
+    testImplementation("io.kotest:kotest-assertions-core")
+    testImplementation("io.kotest:kotest-runner-junit5-jvm:5.8.0")
 }
 
 tasks.withType<KotlinCompile> {

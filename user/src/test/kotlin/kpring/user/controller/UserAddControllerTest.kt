@@ -1,7 +1,7 @@
 package kpring.user.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import kpring.user.dto.request.FriendsRequestDto
+import kpring.user.dto.request.AddFriendRequest
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -25,12 +25,10 @@ class UserAddControllerTest {
     @Test
     @WithMockUser(username = "testUser", roles = ["USER"])
     fun `친구추가 성공케이스`() {
-        val friendsRequestDto = FriendsRequestDto(
-            userId = 1L,
-            friendIds = listOf(2L, 3L)
-        )
+        val userId = 1L;
+        val friendsRequestDto = AddFriendRequest(friendId = 2L)
 
-        mockMvc.post("/users/friends/add") {
+        mockMvc.post("/api/v1/user/{userId}/friend/{friendId}", userId, 2) {
             contentType = MediaType.APPLICATION_JSON
             content = objectMapper.writeValueAsString(friendsRequestDto)
         }.andExpect {
@@ -45,12 +43,10 @@ class UserAddControllerTest {
     @Test
     @WithMockUser(username = "testUser", roles = ["USER"])
     fun `친구추가_실패케이스`() {
-        val friendsRequestDto = FriendsRequestDto(
-            userId = -1L, // 유효하지 않은 사용자 아이디
-            friendIds = listOf(2L, 3L)
-        )
+        val userId = -1L // 유효하지 않은 사용자 아이디
+        val friendsRequestDto = AddFriendRequest(friendId = 2L)
 
-        mockMvc.post("/users/friends/add") {
+        mockMvc.post("/api/v1/user/{userId}/friend/{friendId}", userId, 2) {
             contentType = MediaType.APPLICATION_JSON
             content = objectMapper.writeValueAsString(friendsRequestDto)
         }.andExpect {

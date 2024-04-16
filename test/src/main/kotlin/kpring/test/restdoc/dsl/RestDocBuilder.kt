@@ -48,15 +48,12 @@ class RestDocBuilder {
     fun request(config: RestDocRequestBuilder.() -> Unit) {
         val builder = RestDocRequestBuilder()
         builder.config()
-        if (builder.headerSnippet != null) snippets.add(builder.headerSnippet!!)
-        if (builder.bodySnippet != null) snippets.add(builder.bodySnippet!!)
-        if (builder.querySnippet != null) snippets.add(builder.querySnippet!!)
+        snippets.addAll(builder.snippets)
     }
 
     fun response(config: RestDocResponseBuilder.() -> Unit) {
         val builder = RestDocResponseBuilder()
         builder.config()
-        if (builder.headerSnippet != null) snippets.add(builder.headerSnippet!!)
-        if (builder.bodySnippet != null) snippets.add(builder.bodySnippet!!)
+        snippets.addAll(builder.snippets)
     }
 }

@@ -22,7 +22,7 @@ class RestDocRequestBuilder {
             snippets.add(requestFields(*builder.bodyFields.toTypedArray()))
     }
 
-    fun field(config: RestDocFieldBuilder.() -> Unit) {
+    fun query(config: RestDocFieldBuilder.() -> Unit) {
         val builder = RestDocFieldBuilder()
         builder.config()
         if (builder.queryDescriptors.isNotEmpty())

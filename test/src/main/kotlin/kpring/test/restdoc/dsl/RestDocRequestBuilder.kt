@@ -22,8 +22,8 @@ class RestDocRequestBuilder {
             snippets.add(requestFields(*builder.bodyFields.toTypedArray()))
     }
 
-    fun query(config: RestDocFieldBuilder.() -> Unit) {
-        val builder = RestDocFieldBuilder()
+    fun query(config: RestDocQueryPathBuilder.() -> Unit) {
+        val builder = RestDocQueryPathBuilder()
         builder.config()
         if (builder.queryDescriptors.isNotEmpty())
             snippets.add(RequestDocumentation.queryParameters(*builder.queryDescriptors.toTypedArray()))

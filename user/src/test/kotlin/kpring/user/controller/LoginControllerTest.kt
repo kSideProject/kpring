@@ -14,7 +14,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.delete
 import org.springframework.test.web.servlet.post
 
 @WebMvcTest(controllers = [LoginController::class])
@@ -89,7 +88,7 @@ class LoginControllerTest(
             every { loginService.logout(request) } returns Unit
 
             // when
-            val result = mockMvc.delete("/api/v1/logout") {
+            val result = mockMvc.post("/api/v1/logout") {
                 contentType = MediaType.APPLICATION_JSON
                 content = objectMapper.writeValueAsString(request)
             }.andDo { print() }
@@ -106,7 +105,7 @@ class LoginControllerTest(
             every { loginService.logout(request) } throws IllegalArgumentException("Invalid token")
 
             // when
-            val result = mockMvc.delete("/api/v1/logout") {
+            val result = mockMvc.post("/api/v1/logout") {
                 contentType = MediaType.APPLICATION_JSON
                 content = objectMapper.writeValueAsString(request)
             }.andDo { print() }
@@ -123,7 +122,7 @@ class LoginControllerTest(
             every { loginService.logout(request) } throws RuntimeException("Internal server error")
 
             // when
-            val result = mockMvc.delete("/api/v1/logout") {
+            val result = mockMvc.post("/api/v1/logout") {
                 contentType = MediaType.APPLICATION_JSON
                 content = objectMapper.writeValueAsString(request)
             }.andDo { print() }

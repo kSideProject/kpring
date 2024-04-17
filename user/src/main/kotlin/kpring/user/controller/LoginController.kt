@@ -20,7 +20,7 @@ class LoginController(val loginService: LoginService) {
             .body(response)
     }
 
-    @DeleteMapping("/logout")
+    @PostMapping("/logout")
     fun logout(
         @RequestBody request: LogoutRequest
     ): ResponseEntity<Any> {

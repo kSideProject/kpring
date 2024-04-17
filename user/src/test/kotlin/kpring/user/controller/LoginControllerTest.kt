@@ -44,6 +44,21 @@ class LoginControllerTest(
             }
         }
 
-        
+        scenario("400 BAD_REQUEST 로그인 실패") {
+            // given
+            val request = LoginRequest.builder().email("test@gmail.com").build()
+            every { loginService.login(request) } throws IllegalArgumentException("Invalid email")
+
+            // when
+            val result = mockMvc.post("/api/v1/login") {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(request)
+            }
+
+            // then
+            result.andExpect {
+                status { isBadRequest() }
+            }
+        }
     }
 })

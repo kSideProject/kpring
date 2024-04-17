@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     id("org.springframework.boot") version "3.2.4"
     id("io.spring.dependency-management") version "1.1.4"
@@ -8,15 +6,8 @@ plugins {
     kotlin("plugin.jpa") version "1.9.23"
 }
 
-group = "kpring"
-version = "0.0.1-SNAPSHOT"
-
 java {
     sourceCompatibility = JavaVersion.VERSION_21
-}
-
-repositories {
-    mavenCentral()
 }
 
 dependencies {
@@ -35,6 +26,7 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok")
 
     // TEST
+    testImplementation(project(":test"))
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -45,15 +37,8 @@ dependencies {
     testImplementation("io.mockk:mockk:1.13.10")
     testImplementation("com.ninja-squad:springmockk:4.0.2")
     testImplementation("io.kotest.extensions:kotest-extensions-spring:1.1.3")
-}
 
-tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        freeCompilerArgs += "-Xjsr305=strict"
-        jvmTarget = "21"
-    }
-}
-
-tasks.withType<Test> {
-    useJUnitPlatform()
+    // Spring rest docs
+    implementation("org.springframework.restdocs:spring-restdocs-mockmvc")
+    implementation("org.springframework.restdocs:spring-restdocs-asciidoctor")
 }

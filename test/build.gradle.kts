@@ -19,6 +19,7 @@ dependencies {
     implementation("io.mockk:mockk:1.13.10")
     implementation("com.ninja-squad:springmockk:4.0.2")
     // Spring rest docs
+    implementation("org.springframework.restdocs:spring-restdocs-mockmvc")
     implementation("org.springframework.restdocs:spring-restdocs-webtestclient")
     implementation("io.kotest.extensions:kotest-extensions-spring:1.1.3")
     implementation("org.springframework.restdocs:spring-restdocs-asciidoctor")

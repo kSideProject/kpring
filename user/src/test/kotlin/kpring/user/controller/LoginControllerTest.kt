@@ -59,7 +59,10 @@ class LoginControllerTest(
             result.andExpect {
                 status { isOk() }
                 content { json(objectMapper.writeValueAsString(response)) }
-            }.restDoc("login200", "로그인 API")
+            }
+
+            // docs
+            result.restDoc("login200", "로그인 API")
             {
                 request {
                     body { "email" type "String" mean "email" }
@@ -88,6 +91,14 @@ class LoginControllerTest(
             result.andExpect {
                 status { isBadRequest() }
             }
+
+            // docs
+            result.restDoc("login400", "로그인 API")
+            {
+                request {
+                    body { "email" type "String" mean "email" }
+                }
+            }
         }
 
         scenario("500 INTERNAL_SERVER_ERROR 로그인 실패") {
@@ -104,6 +115,14 @@ class LoginControllerTest(
             // then
             result.andExpect {
                 status { isInternalServerError() }
+            }
+
+            // docs
+            result.restDoc("login500", "로그인 API")
+            {
+                request {
+                    body { "email" type "String" mean "email" }
+                }
             }
         }
     }
@@ -124,6 +143,17 @@ class LoginControllerTest(
             result.andExpect {
                 status { isOk() }
             }
+
+            // docs
+            result.restDoc("logout200", "로그아웃 API")
+            {
+                request {
+                    body {
+                        "accessToken" type "String" mean "accessToken"
+                        "refreshToken" type "String" mean "refreshToken"
+                    }
+                }
+            }
         }
 
         scenario("400 BAD_REQUEST 로그아웃 실패") {
@@ -141,6 +171,17 @@ class LoginControllerTest(
             result.andExpect {
                 status { isBadRequest() }
             }
+
+            // docs
+            result.restDoc("logout400", "로그아웃 API")
+            {
+                request {
+                    body {
+                        "accessToken" type "String" mean "accessToken"
+                        "refreshToken" type "String" mean "refreshToken"
+                    }
+                }
+            }
         }
 
         scenario("500 INTERNAL_SERVER_ERROR 로그아웃 실패") {
@@ -157,6 +198,17 @@ class LoginControllerTest(
             // then
             result.andExpect {
                 status { isInternalServerError() }
+            }
+
+            // docs
+            result.restDoc("logout500", "로그아웃 API")
+            {
+                request {
+                    body {
+                        "accessToken" type "String" mean "accessToken"
+                        "refreshToken" type "String" mean "refreshToken"
+                    }
+                }
             }
         }
     }

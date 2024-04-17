@@ -1,8 +1,10 @@
 package kpring.user.dto.result;
 
-import org.jetbrains.annotations.Nullable;
+import lombok.Builder;
 
+@Builder
 public record LoginResponse(
-        String token
+        String accessToken,
+        String refreshToken
 ) {
 }

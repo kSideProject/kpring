@@ -13,7 +13,7 @@ import org.springframework.test.web.servlet.post
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class UserAddControllerTest {
+class UserControllerTest {
 
     @Autowired
     private lateinit var mockMvc: MockMvc

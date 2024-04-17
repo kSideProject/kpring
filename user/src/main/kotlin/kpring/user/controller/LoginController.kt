@@ -15,7 +15,7 @@ class LoginController(val loginService: LoginService) {
         val response = loginService.login(request)
         return ResponseEntity
             .ok()
-            .header("Authorization", response.token)
+            .header("Authorization", response.accessToken)
             .body(response)
     }
 

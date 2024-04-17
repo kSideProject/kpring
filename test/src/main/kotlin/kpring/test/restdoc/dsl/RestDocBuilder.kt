@@ -1,7 +1,7 @@
 package kpring.test.restdoc.dsl
 
-import com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper
 import com.epages.restdocs.apispec.WebTestClientRestDocumentationWrapper
+import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation
 import org.springframework.restdocs.snippet.Snippet
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.servlet.ResultActionsDsl
@@ -33,11 +33,7 @@ fun ResultActionsDsl.restDoc(
 
     this.andDo {
         handle(
-            MockMvcRestDocumentationWrapper.document(
-                identifier = identifier,
-                description = description,
-                snippets = builder.snippets.toTypedArray()
-            )
+            MockMvcRestDocumentation.document(identifier, *builder.snippets.toTypedArray())
         )
     }
 }

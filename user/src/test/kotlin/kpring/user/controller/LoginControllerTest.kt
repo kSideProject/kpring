@@ -34,7 +34,7 @@ class LoginControllerTest(
             val result = mockMvc.post("/api/v1/login") {
                 contentType = MediaType.APPLICATION_JSON
                 content = objectMapper.writeValueAsString(request)
-            }
+            }.andDo { print() }
 
             // then
             result.andExpect {
@@ -53,11 +53,28 @@ class LoginControllerTest(
             val result = mockMvc.post("/api/v1/login") {
                 contentType = MediaType.APPLICATION_JSON
                 content = objectMapper.writeValueAsString(request)
-            }
+            }.andDo { print() }
 
             // then
             result.andExpect {
                 status { isBadRequest() }
+            }
+        }
+
+        scenario("500 INTERNAL_SERVER_ERROR 로그인 실패") {
+            // given
+            val request = LoginRequest.builder().email("test@naver.com").build()
+            every { loginService.login(request) } throws RuntimeException("Internal server error")
+
+            // when
+            val result = mockMvc.post("/api/v1/login") {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(request)
+            }.andDo { print() }
+
+            // then
+            result.andExpect {
+                status { isInternalServerError() }
             }
         }
     }

@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class LoginService {
 
+    /**
+    @throws IllegalArgumentException if request is invalid
+    @throws RuntimeException if an unexpected error occurs
+     */
     public LoginResponse login(LoginRequest request) {
         return null;
     }

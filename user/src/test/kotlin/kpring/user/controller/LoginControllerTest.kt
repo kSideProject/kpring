@@ -5,6 +5,7 @@ import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.FeatureSpec
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
+import kpring.test.restdoc.dsl.restDoc
 import kpring.user.dto.request.LoginRequest
 import kpring.user.dto.request.LogoutRequest
 import kpring.user.dto.result.LoginResponse
@@ -13,17 +14,33 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.MediaType
-import org.springframework.test.web.servlet.MockMvc
+import org.springframework.restdocs.ManualRestDocumentation
+import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation
 import org.springframework.test.web.servlet.post
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers
+import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
+import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import org.springframework.web.context.WebApplicationContext
 
 @WebMvcTest(controllers = [LoginController::class])
 @ExtendWith(value = [MockKExtension::class])
 @AutoConfigureMockMvc
 class LoginControllerTest(
-    val mockMvc: MockMvc,
+    val context: WebApplicationContext,
     val objectMapper: ObjectMapper,
     @MockkBean val loginService: LoginService,
 ) : FeatureSpec({
+
+    val restDocumentation = ManualRestDocumentation()
+    val mockMvc = MockMvcBuilders.webAppContextSetup(context)
+        .alwaysDo<DefaultMockMvcBuilder>(MockMvcResultHandlers.print())
+        .apply<DefaultMockMvcBuilder>(
+            MockMvcRestDocumentation.documentationConfiguration(restDocumentation)
+        )
+        .build()
+
+    beforeSpec { restDocumentation.beforeTest(this.javaClass, "login controller") }
+    afterSpec { restDocumentation.afterTest() }
 
     feature("API : login API") {
         scenario("200 OK 로그인 성공") {
@@ -41,8 +58,18 @@ class LoginControllerTest(
             // then
             result.andExpect {
                 status { isOk() }
-                header { string("Authorization", "accessToken") }
                 content { json(objectMapper.writeValueAsString(response)) }
+            }.restDoc("login200", "로그인 API")
+            {
+                request {
+                    body { "email" type "String" mean "email" }
+                }
+                response {
+                    body {
+                        "accessToken" type "String" mean "accessToken"
+                        "refreshToken" type "String" mean "refreshToken"
+                    }
+                }
             }
         }
 

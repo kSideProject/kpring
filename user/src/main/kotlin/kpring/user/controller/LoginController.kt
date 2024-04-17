@@ -1,6 +1,7 @@
 package kpring.user.controller
 
 import kpring.user.dto.request.LoginRequest
+import kpring.user.dto.request.LogoutRequest
 import kpring.user.service.LoginService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -21,9 +22,9 @@ class LoginController(val loginService: LoginService) {
 
     @DeleteMapping("/logout")
     fun logout(
-        @RequestHeader("Authorization") token: String,
+        @RequestBody request: LogoutRequest
     ): ResponseEntity<Any> {
-        loginService.logout(token)
+        loginService.logout(request)
         return ResponseEntity.ok().build()
     }
 }

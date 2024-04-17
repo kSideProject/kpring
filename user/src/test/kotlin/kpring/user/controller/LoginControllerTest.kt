@@ -6,6 +6,7 @@ import io.kotest.core.spec.style.FeatureSpec
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import kpring.user.dto.request.LoginRequest
+import kpring.user.dto.request.LogoutRequest
 import kpring.user.dto.result.LoginResponse
 import kpring.user.service.LoginService
 import org.junit.jupiter.api.extension.ExtendWith
@@ -13,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.delete
 import org.springframework.test.web.servlet.post
 
 @WebMvcTest(controllers = [LoginController::class])
@@ -23,6 +25,7 @@ class LoginControllerTest(
     val objectMapper: ObjectMapper,
     @MockkBean val loginService: LoginService,
 ) : FeatureSpec({
+
     feature("API : login API") {
         scenario("200 OK 로그인 성공") {
             // given
@@ -68,6 +71,59 @@ class LoginControllerTest(
 
             // when
             val result = mockMvc.post("/api/v1/login") {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(request)
+            }.andDo { print() }
+
+            // then
+            result.andExpect {
+                status { isInternalServerError() }
+            }
+        }
+    }
+
+    feature("API : logout API") {
+        scenario("200 OK 로그아웃 성공") {
+            // given
+            val request = LogoutRequest.builder().accessToken("accessToken").refreshToken("refreshToken").build()
+            every { loginService.logout(request) } returns Unit
+
+            // when
+            val result = mockMvc.delete("/api/v1/logout") {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(request)
+            }.andDo { print() }
+
+            // then
+            result.andExpect {
+                status { isOk() }
+            }
+        }
+
+        scenario("400 BAD_REQUEST 로그아웃 실패") {
+            // given
+            val request = LogoutRequest.builder().accessToken("accessToken").refreshToken("refreshToken").build()
+            every { loginService.logout(request) } throws IllegalArgumentException("Invalid token")
+
+            // when
+            val result = mockMvc.delete("/api/v1/logout") {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(request)
+            }.andDo { print() }
+
+            // then
+            result.andExpect {
+                status { isBadRequest() }
+            }
+        }
+
+        scenario("500 INTERNAL_SERVER_ERROR 로그아웃 실패") {
+            // given
+            val request = LogoutRequest.builder().accessToken("accessToken").refreshToken("refreshToken").build()
+            every { loginService.logout(request) } throws RuntimeException("Internal server error")
+
+            // when
+            val result = mockMvc.delete("/api/v1/logout") {
                 contentType = MediaType.APPLICATION_JSON
                 content = objectMapper.writeValueAsString(request)
             }.andDo { print() }

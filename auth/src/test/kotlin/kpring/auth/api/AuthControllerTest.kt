@@ -12,6 +12,7 @@ import io.mockk.mockk
 import kpring.auth.api.v1.AuthController
 import kpring.auth.service.TokenService
 import kpring.core.auth.dto.request.CreateTokenRequest
+import kpring.core.auth.dto.request.TokenValidationRequest
 import kpring.core.auth.dto.response.CreateTokenResponse
 import kpring.core.auth.dto.response.ReCreateAccessTokenResponse
 import kpring.core.auth.dto.response.TokenValidationResponse
@@ -63,6 +64,10 @@ class AuthControllerTest(
             When("POST") {
 
                 then("200 OK") {
+                    val request = CreateTokenRequest(
+                        id = "test",
+                        nickname = "mock user",
+                    )
                     val response = CreateTokenResponse(
                         accessToken = "Bearer access token",
                         accessExpireAt = LocalDateTime.of(2000, 1, 1, 0, 0, 0),
@@ -76,12 +81,7 @@ class AuthControllerTest(
                         .post()
                         .uri(url)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .bodyValue(
-                            CreateTokenRequest(
-                                id = "test",
-                                nickname = "mock user",
-                            ),
-                        )
+                        .bodyValue(request)
                         .exchange()
                         .expectStatus().isOk
                         .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -135,8 +135,15 @@ class AuthControllerTest(
                 }
 
                 then("500 INTERNAL SERVER ERROR") {
+
+                    val request = CreateTokenRequest(
+                        id = "test",
+                        nickname = "mock user",
+                    )
+
                     every { tokenService.createToken(any()) } throws NullPointerException("서버에서 오류가 발생하는 경우")
                     webTestClient.post().uri(url)
+                        .bodyValue(request)
                         .exchange()
                         .expectStatus().isEqualTo(500)
                         .expectBody()
@@ -147,83 +154,6 @@ class AuthControllerTest(
                 }
             }
 
-            When("GET") {
-                val response = ReCreateAccessTokenResponse(
-                    accessToken = "testToken",
-                    accessExpireAt = LocalDateTime.of(1900, 1, 1, 0, 0, 0)
-                )
-                then("200 OK") {
-                    coEvery { tokenService.reCreateAccessToken(any()) } returns response
-
-                    webTestClient.get().uri(url)
-                        .header("Authorization", "test token")
-                        .exchange()
-                        .expectStatus().isOk
-                        .expectBody()
-                        .json(objectMapper.writeValueAsString(response))
-                        .restDoc("get_api.v1.token", "토큰 재발급(갱신)") {
-                            request {
-                                header {
-                                    "Authorization" mean "jwt access token 정보"
-                                }
-                            }
-
-                            response {
-                                header {
-                                    "Authorization" mean "jwt access token 정보"
-                                }
-
-                                body {
-                                    "accessToken" type "String" mean "jwt access token"
-                                    "accessExpireAt" type "String" mean "jwt access token 만료시간 형식은 yyyy-MM-dd hh:mm:ss을 제공합니다."
-                                }
-                            }
-                        }
-                }
-
-                then("400 BAD REQUEST") {
-
-                    coEvery { tokenService.reCreateAccessToken(any()) } returns response
-
-                    webTestClient.get().uri(url)
-                        .exchange()
-                        .expectStatus().isBadRequest
-                        .expectBody()
-                        .restDoc(
-                            identifier = "get_api.v1.token_400",
-                            description = "필요한 파라미터를 모두 입력하지 않은 사용자 실수인 경우"
-                        ) { }
-                }
-
-                then("403 FORBIDDEN") {
-
-                    coEvery { tokenService.reCreateAccessToken(any()) } throws ExpiredJwtException(mockk(), mockk(), "")
-
-                    webTestClient.get().uri(url)
-                        .exchange()
-                        .expectStatus().isBadRequest
-                        .expectBody()
-                        .restDoc(
-                            identifier = "get_api.v1.token_403",
-                            description = "유효하지 않은 토큰인 경우"
-                        ) { }
-                }
-
-                then("500 INTERNAL SERVER ERROR") {
-
-                    coEvery { tokenService.reCreateAccessToken(any()) } throws NullPointerException("서버 오류")
-
-                    webTestClient.get().uri(url)
-                        .header("Authorization", "test token")
-                        .exchange()
-                        .expectStatus().isEqualTo(500)
-                        .expectBody()
-                        .restDoc(
-                            identifier = "get_api.v1.token_500",
-                            description = "서버 내부 오류시"
-                        ) { }
-                }
-            }
 
             When("DELETE") {
 
@@ -278,24 +208,110 @@ class AuthControllerTest(
             }
         }
 
+        Given("/api/v1/access_token") {
+            val url = "/api/v1/access_token"
+
+
+            When("POST") {
+                val response = ReCreateAccessTokenResponse(
+                    accessToken = "testToken",
+                    accessExpireAt = LocalDateTime.of(1900, 1, 1, 0, 0, 0)
+                )
+                then("200 OK") {
+                    coEvery { tokenService.reCreateAccessToken(any()) } returns response
+
+                    webTestClient.post().uri(url)
+                        .header("Authorization", "test token")
+                        .exchange()
+                        .expectStatus().isOk
+                        .expectBody()
+                        .json(objectMapper.writeValueAsString(response))
+                        .restDoc("post.v1.token", "토큰 재발급(갱신)") {
+                            request {
+                                header {
+                                    "Authorization" mean "jwt access token 정보"
+                                }
+                            }
+
+                            response {
+                                header {
+                                    "Authorization" mean "jwt access token 정보"
+                                }
+
+                                body {
+                                    "accessToken" type "String" mean "jwt access token"
+                                    "accessExpireAt" type "String" mean "jwt access token 만료시간 형식은 yyyy-MM-dd hh:mm:ss을 제공합니다."
+                                }
+                            }
+                        }
+                }
+
+                then("400 BAD REQUEST") {
+
+                    coEvery { tokenService.reCreateAccessToken(any()) } returns response
+
+                    webTestClient.post().uri(url)
+                        .exchange()
+                        .expectStatus().isBadRequest
+                        .expectBody()
+                        .restDoc(
+                            identifier = "post.v1.token_400",
+                            description = "필요한 파라미터를 모두 입력하지 않은 사용자 실수인 경우"
+                        ) { }
+                }
+
+                then("403 FORBIDDEN") {
+
+                    coEvery { tokenService.reCreateAccessToken(any()) } throws ExpiredJwtException(mockk(), mockk(), "")
+
+                    webTestClient.post().uri(url)
+                        .exchange()
+                        .expectStatus().isBadRequest
+                        .expectBody()
+                        .restDoc(
+                            identifier = "post.v1.token_403",
+                            description = "유효하지 않은 토큰인 경우"
+                        ) { }
+                }
+
+                then("500 INTERNAL SERVER ERROR") {
+
+                    coEvery { tokenService.reCreateAccessToken(any()) } throws NullPointerException("서버 오류")
+
+                    webTestClient.post().uri(url)
+                        .header("Authorization", "test token")
+                        .exchange()
+                        .expectStatus().isEqualTo(500)
+                        .expectBody()
+                        .restDoc(
+                            identifier = "post.v1.token_500",
+                            description = "서버 내부 오류시"
+                        ) { }
+                }
+            }
+        }
+
         Given("/api/v1/validation") {
             val url = "/api/v1/validation"
             val testToken = "Bearer testtoken"
-            val response = TokenValidationResponse(isValid = true, type = TokenType.ACCESS)
+            val request = TokenValidationRequest(userId = "testUserId")
 
-            coEvery { tokenService.checkToken(any()) } returns TokenValidationResponse(true, TokenType.ACCESS)
+            coEvery { tokenService.checkToken(any(), any()) } returns TokenValidationResponse(true, TokenType.ACCESS)
 
-            When("GET") {
+            When("POST") {
 
+                val response = TokenValidationResponse(isValid = true, type = TokenType.ACCESS)
                 then("200 OK") {
-                    webTestClient.get().uri(url)
+                    webTestClient.post().uri(url)
                         .header("Authorization", testToken)
+                        .bodyValue(request)
                         .exchange()
                         .expectStatus().isOk
                         .expectBody().json(objectMapper.writeValueAsString(response))
-                        .restDoc("get_api.v1.validation", "토큰 검증") {
+                        .restDoc("post.v1.validation200", "토큰 검증") {
                             request {
                                 header { "Authorization" mean "검증할 토큰 정보" }
+                                body { "userId" type "String" mean "사용자 식별 아이디" }
                             }
 
                             response {
@@ -310,31 +326,33 @@ class AuthControllerTest(
 
                 then("400 BAD REQUEST") {
                     val token = ""
-                    coEvery { tokenService.checkToken(token) } returns TokenValidationResponse(false, null)
-                    webTestClient.get()
+                    coEvery { tokenService.checkToken(token, any()) } returns response
+                    webTestClient.post()
                         .uri(url)
+                        .header("Authorization", token)
                         .exchange()
                         .expectStatus().isBadRequest
                         .expectBody()
                         .restDoc(
-                            identifier = "get_api.v1.validation",
+                            identifier = "post.v1.validation400",
                             description = "필요한 파라미터를 모두 입력하지 않은 사용자 실수인 경우"
-                        ) { }
+                        ) {}
                 }
 
                 then("500 INTERNAL SERVER ERROR") {
                     val token = "validateToken500"
-                    coEvery { tokenService.checkToken(token) } throws NullPointerException("server error")
-                    webTestClient.get()
+                    coEvery { tokenService.checkToken(token, any()) } throws NullPointerException("server error")
+                    webTestClient.post()
                         .uri(url)
                         .header("Authorization", token)
+                        .bodyValue(request)
                         .exchange()
                         .expectStatus().isEqualTo(500)
                         .expectBody()
                         .restDoc(
-                            identifier = "get_api.v1.validation",
+                            identifier = "post.v1.validation500",
                             description = "서버 내부 오류시"
-                        ) { }
+                        ) { request { body { "userId" type "String" mean "사용자 식별 아이디" } } }
                 }
             }
         }

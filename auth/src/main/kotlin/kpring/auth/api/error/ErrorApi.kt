@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.bind.support.WebExchangeBindException
 import org.springframework.web.server.MissingRequestValueException
+import org.springframework.web.server.ServerWebInputException
 
 @RestControllerAdvice
 class ErrorApi {
@@ -18,7 +19,8 @@ class ErrorApi {
     @ExceptionHandler(
         WebExchangeBindException::class,
         IllegalArgumentException::class,
-        MissingRequestValueException::class
+        MissingRequestValueException::class,
+        ServerWebInputException::class
     )
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     fun handleWhenRequestValidationFailed() {

@@ -1,26 +1,47 @@
 package kpring.user.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.kotest.core.spec.style.AnnotationSpec
 import kpring.user.dto.request.AddFriendRequest
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
+import org.springframework.restdocs.ManualRestDocumentation
+import org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint
+import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation
 import org.springframework.security.test.context.support.WithMockUser
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.post
+import org.springframework.test.context.event.annotation.AfterTestMethod
+import org.springframework.test.context.event.annotation.BeforeTestMethod
+import org.springframework.test.web.reactive.server.WebTestClient
+import org.springframework.web.context.WebApplicationContext
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class UserControllerTest {
+class UserControllerTest(
+    webContext: WebApplicationContext,
+    val restDocument: ManualRestDocumentation = ManualRestDocumentation(),
+) : AnnotationSpec() {
 
-    @Autowired
-    private lateinit var mockMvc: MockMvc
+    private val webTestClient = WebTestClient.bindToApplicationContext(webContext)
+        .configureClient()
+        .filter(
+            WebTestClientRestDocumentation.documentationConfiguration(restDocument)
+                .operationPreprocessors()
+                .withRequestDefaults(prettyPrint())
+                .withResponseDefaults(prettyPrint())
+        )
+        .build()
 
-    @Autowired
-    private lateinit var objectMapper: ObjectMapper
+    @BeforeTestMethod
+    fun beforeTest() {
+        restDocument.beforeTest(this.javaClass, "user controller")
+    }
 
+    @AfterTestMethod
+    fun afterTest() {
+        restDocument.afterTest()
+    }
 
     @Test
     @WithMockUser(username = "testUser", roles = ["USER"])
@@ -28,16 +49,13 @@ class UserControllerTest {
         val userId = 1L;
         val friendsRequestDto = AddFriendRequest(friendId = 2L)
 
-        mockMvc.post("/api/v1/user/{userId}/friend/{friendId}", userId, 2) {
-            contentType = MediaType.APPLICATION_JSON
-            content = objectMapper.writeValueAsString(friendsRequestDto)
-        }.andExpect {
-            status { isOk() }
-            content {
-//                jsonPath("$.status").value("SUCCESS")
-//                jsonPath("$.message").value("Friends added successfully")
-            }
-        }
+        webTestClient.post()
+            .uri("/api/v1/user/{userId}/friend/{friendId}", userId, 2)
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(friendsRequestDto)
+            .exchange()
+            .expectStatus().isOk
+            .expectBody()
     }
 
     @Test
@@ -46,15 +64,12 @@ class UserControllerTest {
         val userId = -1L // 유효하지 않은 사용자 아이디
         val friendsRequestDto = AddFriendRequest(friendId = 2L)
 
-        mockMvc.post("/api/v1/user/{userId}/friend/{friendId}", userId, 2) {
-            contentType = MediaType.APPLICATION_JSON
-            content = objectMapper.writeValueAsString(friendsRequestDto)
-        }.andExpect {
-            status { isBadRequest() }
-            content {
-//                jsonPath("$.status").value("FAILURE")
-//                jsonPath("$.message").value("Invalid user id")
-            }
-        }
+        webTestClient.post()
+            .uri("/api/v1/user/{userId}/friend/{friendId}", userId, 2)
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(friendsRequestDto)
+            .exchange()
+            .expectStatus().isBadRequest
+            .expectBody()
     }
 }

@@ -7,6 +7,7 @@ import kpring.auth.repository.ExpireTokenRepository
 import kpring.auth.util.toObject
 import kpring.auth.util.toToken
 import kpring.core.auth.dto.request.CreateTokenRequest
+import kpring.core.auth.dto.request.TokenValidationRequest
 import kpring.core.auth.dto.response.CreateTokenResponse
 import kpring.core.auth.dto.response.ReCreateAccessTokenResponse
 import kpring.core.auth.dto.response.TokenValidationResponse
@@ -54,7 +55,7 @@ class TokenService(
     suspend fun reCreateAccessToken(refreshToken: String): ReCreateAccessTokenResponse {
         val jwt = refreshToken.toObject(signingKey)
         if (jwt.type != TokenType.REFRESH) throw IllegalArgumentException("잘못된 토큰의 타입입니다.")
-        if(tokenRepository.isExpired(refreshToken)) throw TokenExpiredException("토큰이 만료되었습니다.")
+        if (tokenRepository.isExpired(refreshToken)) throw TokenExpiredException("토큰이 만료되었습니다.")
 
         return jwt.run {
             val accessTokenInfo = CreateTokenRequest(userId, nickname)
@@ -67,10 +68,14 @@ class TokenService(
         }
     }
 
-    suspend fun checkToken(token: String): TokenValidationResponse {
+    suspend fun checkToken(token: String, request: TokenValidationRequest): TokenValidationResponse {
         return try {
             val jwt = token.toObject(signingKey)
-            TokenValidationResponse(!tokenRepository.isExpired(token), jwt.type)
+
+            val isValid = request.userId == jwt.userId  &&
+                    !tokenRepository.isExpired(token)
+
+            TokenValidationResponse(isValid, jwt.type)
         } catch (ex: TokenExpiredException) {
             TokenValidationResponse(false, null)
         }

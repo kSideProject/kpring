@@ -13,6 +13,7 @@ import kpring.auth.exception.TokenExpiredException
 import kpring.auth.repository.ExpireTokenRepository
 import kpring.auth.util.toToken
 import kpring.core.auth.dto.request.CreateTokenRequest
+import kpring.core.auth.dto.request.TokenValidationRequest
 import kpring.core.auth.enums.TokenType
 import java.nio.charset.StandardCharsets
 import java.time.LocalDateTime
@@ -74,14 +75,14 @@ class TokenServiceTest : BehaviorSpec({
 
         When("토큰이 유효하지 않다면") {
             val otherKey =
-                Keys.hmacShaKeyFor("invalid jwt secret key testtesttesttesttest".toByteArray(StandardCharsets.UTF_8))
-                    ?: throw IllegalStateException("토큰을 발급하기 위한 key가 적절하지 않습니다.")
+                Keys.hmacShaKeyFor("invalid jwt secret key testtesttesttesttest".toByteArray(StandardCharsets.UTF_8))!!
             coEvery { tokenRepository.isExpired(any()) } returns false
             val invalidTokenInfo = CreateTokenRequest("invalid", "invalid")
                 .toToken(TokenType.REFRESH, otherKey, 100000)
             then("토큰 검증시 예외가 발생한다.") {
                 shouldThrow<IllegalArgumentException> {
-                    tokenService.checkToken(invalidTokenInfo.token)
+                    val request = TokenValidationRequest(userId = "testUserId");
+                    tokenService.checkToken(invalidTokenInfo.token, request)
                 }
             }
 
@@ -95,7 +96,8 @@ class TokenServiceTest : BehaviorSpec({
         When("만료된 토큰이라면") {
             coEvery { tokenRepository.isExpired(any()) } returns true
             then("토큰 검증시 isValid 응답은 false다.") {
-                val response = tokenService.checkToken(tokenInfo.accessToken)
+                val request = TokenValidationRequest(userId = "testUserId");
+                val response = tokenService.checkToken(tokenInfo.accessToken, request)
                 response.isValid shouldBe false
             }
         }
@@ -106,7 +108,8 @@ class TokenServiceTest : BehaviorSpec({
             val expiredToken = CreateTokenRequest("test", "nick").toToken(TokenType.ACCESS, validKey, -1).token
             coEvery { tokenRepository.isExpired(any()) } returns true
             then("토큰 검증시 isValid 응답은 false다.") {
-                val response = tokenService.checkToken(expiredToken)
+                val request = TokenValidationRequest(userId = "testUserId");
+                val response = tokenService.checkToken(expiredToken, request)
                 response.isValid shouldBe false
             }
 

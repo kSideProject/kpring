@@ -1,0 +1,16 @@
+services:
+  redis:
+    image: redis:alpine
+    command: redis-server --port 6379
+    container_name: "auth_redis"
+    ports:
+      - "6379:6379"
+
+  swagger-server:
+    image: swaggerapi/swagger-ui
+    ports:
+      - "8000:8080"
+    volumes:
+      - "./build/api-spec/openapi3.yaml:/usr/share/nginx/html/openapi.yaml"
+    environment:
+      URL: ./openapi.yaml

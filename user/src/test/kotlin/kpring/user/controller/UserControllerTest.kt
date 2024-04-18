@@ -7,8 +7,10 @@ import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import kpring.test.restdoc.dsl.restDoc
 import kpring.user.dto.request.CreateUserRequest
+import kpring.user.dto.request.UpdateUserProfileRequest
 import kpring.user.dto.result.CreateUserResponse
 import kpring.user.dto.result.FailMessageResponse
+import kpring.user.dto.result.UpdateUserProfileResponse
 import kpring.user.exception.ErrorCode
 import kpring.user.exception.ExceptionWrapper
 import kpring.user.service.UserService
@@ -213,7 +215,50 @@ class UserControllerTest(
                         }
                     }
             }
+        }
 
+        describe("회원정보 수정 API") {
+            it("회원정보 수정 성공") {
+                // given
+                val userId = 1L
+                val request = UpdateUserProfileRequest.builder().email("test@test.com").build()
+                val response = UpdateUserProfileResponse.builder().build()
+                every { userService.updateProfile(userId, request) } returns response
+
+                // when
+                val result = webTestClient.patch()
+                    .uri("/api/v1/user/{userId}", userId)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .bodyValue(request)
+                    .exchange()
+
+                // then
+                val docsRoot = result
+                    .expectStatus().isOk
+                    .expectBody().json(objectMapper.writeValueAsString(response))
+
+                // docs
+                docsRoot
+                    .restDoc(
+                        identifier = "updateUser200",
+                        description = "회원정보 수정 API"
+                    )
+                    {
+                        request {
+                            header {
+                                "Content-Type" mean "application/json"
+                            }
+                            body {
+                                "email" type String mean "이메일"
+                            }
+                        }
+                        response {
+                            body {
+                                "email" type String mean "이메일"
+                            }
+                        }
+                    }
+            }
         }
     }
 ) {

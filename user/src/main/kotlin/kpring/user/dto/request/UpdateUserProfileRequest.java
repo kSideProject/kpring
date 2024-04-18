@@ -1,4 +1,9 @@
 package kpring.user.dto.request;
 
-public record UpdateUserProfileRequest() {
+import lombok.Builder;
+
+@Builder
+public record UpdateUserProfileRequest(
+        String email
+) {
 }

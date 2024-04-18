@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: user
+
+auth:
+  url: "http://localhost:8080/api/v1"

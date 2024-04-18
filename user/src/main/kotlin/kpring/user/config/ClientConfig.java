@@ -1,6 +1,6 @@
 package kpring.user.config;
 
-import kpring.user.client.AuthClient;
+import kpring.core.auth.client.AuthClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +13,7 @@ public class ClientConfig {
 
     @Value("${auth.url}")
     private String authUrl;
+
     @Bean
     AuthClient authClient() {
         var restClient = RestClient.builder()

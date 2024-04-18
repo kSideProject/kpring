@@ -10,5 +10,5 @@ interface UserService {
     fun getProfile(userId: Long): GetUserProfileResponse
     fun updateProfile(userId: Long, request: UpdateUserProfileRequest): UpdateUserProfileResponse
     fun exitUser(userId: Long): Boolean
-    fun createUser(userId: Long, request: CreateUserRequest): CreateUserResponse
+    fun createUser(request: CreateUserRequest): CreateUserResponse
 }

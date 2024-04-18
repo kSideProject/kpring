@@ -21,12 +21,11 @@ class UserController(val userService: UserService) {
         return ResponseEntity.ok(response)
     }
 
-    @PostMapping("/user/{userId}")
+    @PostMapping("/user")
     fun createUser(
-        @PathVariable userId: Long,
         @RequestBody request: CreateUserRequest,
     ): ResponseEntity<CreateUserResponse> {
-        val response = userService.createUser(userId, request)
+        val response = userService.createUser(request)
         return ResponseEntity.ok(response)
     }
     @PatchMapping("/user/{userId}")

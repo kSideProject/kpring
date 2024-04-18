@@ -1,4 +1,9 @@
 package kpring.user.dto.request;
 
-public record CreateUserRequest() {
+import lombok.Builder;
+
+@Builder
+public record CreateUserRequest(
+        String email
+) {
 }

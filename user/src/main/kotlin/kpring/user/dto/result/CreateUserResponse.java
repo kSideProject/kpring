@@ -1,4 +1,9 @@
 package kpring.user.dto.result;
 
-public record CreateUserResponse() {
+import lombok.Builder;
+
+@Builder
+public record CreateUserResponse(
+) {
+
 }

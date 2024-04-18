@@ -26,7 +26,7 @@ class UserServiceImpl(
         TODO("Not yet implemented")
     }
 
-    override fun createUser(userId: Long, request: CreateUserRequest): CreateUserResponse {
+    override fun createUser(request: CreateUserRequest): CreateUserResponse {
         TODO("Not yet implemented")
     }
 }

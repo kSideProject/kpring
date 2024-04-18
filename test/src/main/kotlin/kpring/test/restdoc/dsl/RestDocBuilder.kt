@@ -1,8 +1,10 @@
 package kpring.test.restdoc.dsl
 
-import com.epages.restdocs.apispec.WebTestClientRestDocumentationWrapper.document
+import com.epages.restdocs.apispec.WebTestClientRestDocumentationWrapper
+import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation
 import org.springframework.restdocs.snippet.Snippet
 import org.springframework.test.web.reactive.server.WebTestClient
+import org.springframework.test.web.servlet.ResultActionsDsl
 
 fun WebTestClient.BodyContentSpec.restDoc(
     identifier: String,
@@ -11,39 +13,43 @@ fun WebTestClient.BodyContentSpec.restDoc(
 ): WebTestClient.BodyContentSpec {
     val builder = RestDocBuilder()
     builder.config()
-    val snippets = mutableListOf<Snippet>()
-    if (builder.requestHeader != null) snippets.add(builder.requestHeader!!)
-    if (builder.requestBody != null) snippets.add(builder.responseBody!!)
-    if (builder.responseHeader != null) snippets.add(builder.responseHeader!!)
-    if (builder.responseBody != null) snippets.add(builder.responseBody!!)
 
     return this.consumeWith(
-        document(
+        WebTestClientRestDocumentationWrapper.document(
             identifier = identifier,
             description = description,
-            snippets = snippets.toTypedArray()
+            snippets = builder.snippets.toTypedArray()
         )
     )
 }
 
+fun ResultActionsDsl.restDoc(
+    identifier: String,
+    description: String,
+    config: RestDocBuilder.() -> Unit,
+) {
+    val builder = RestDocBuilder()
+    builder.config()
+
+    this.andDo {
+        handle(
+            MockMvcRestDocumentation.document(identifier, *builder.snippets.toTypedArray())
+        )
+    }
+}
+
 class RestDocBuilder {
 
-    var requestHeader: Snippet? = null
-    var requestBody: Snippet? = null
-    var responseHeader: Snippet? = null
-    var responseBody: Snippet? = null
-
+    val snippets = mutableListOf<Snippet>()
     fun request(config: RestDocRequestBuilder.() -> Unit) {
         val builder = RestDocRequestBuilder()
         builder.config()
-        requestHeader = builder.headerSnippet
-        requestBody = builder.bodySnippet
+        snippets.addAll(builder.snippets)
     }
 
     fun response(config: RestDocResponseBuilder.() -> Unit) {
         val builder = RestDocResponseBuilder()
         builder.config()
-        responseHeader = builder.headerSnippet
-        responseBody = builder.bodySnippet
+        snippets.addAll(builder.snippets)
     }
 }

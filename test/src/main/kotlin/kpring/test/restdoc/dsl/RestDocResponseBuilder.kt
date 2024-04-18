@@ -6,19 +6,22 @@ import org.springframework.restdocs.snippet.Snippet
 
 class RestDocResponseBuilder {
 
-    var headerSnippet: Snippet? = null
-    var bodySnippet: Snippet? = null
+    val snippets = mutableListOf<Snippet>()
     fun header(config: RestDocHeaderBuilder.() -> Unit) {
         val builder = RestDocHeaderBuilder()
         builder.config()
         if (builder.headerFields.isNotEmpty())
-            headerSnippet = HeaderDocumentation.responseHeaders(*builder.headerFields.toTypedArray())
+            snippets.add(HeaderDocumentation.responseHeaders(*builder.headerFields.toTypedArray()))
     }
 
     fun body(config: RestDocBodyBuilder.() -> Unit) {
         val builder = RestDocBodyBuilder()
         builder.config()
         if (builder.bodyFields.isNotEmpty())
-            bodySnippet = responseFields(*builder.bodyFields.toTypedArray())
+            snippets.add(responseFields(*builder.bodyFields.toTypedArray()))
+    }
+
+    fun snippet(snippet: Snippet){
+        snippets.add(snippet)
     }
 }

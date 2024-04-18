@@ -125,7 +125,7 @@ class UserControllerTest(
                     }
             }
 
-            it("회원가입 실패 : 필수입력 값 미전송"){
+            it("회원가입 실패 : 필수입력 값 미전송") {
                 // given
                 val request = CreateUserRequest.builder().build()
                 val responseMessage = "필수 입력값이 누락되었습니다."
@@ -168,6 +168,52 @@ class UserControllerTest(
                         }
                     }
             }
+
+            it("회원가입 실패 : 서버 내부 오류") {
+                // given
+                val request = CreateUserRequest.builder().email("test@email.com").build()
+                val exception = RuntimeException("서버 내부 오류")
+                val response = FailMessageResponse.builder().message("서버 오류").build()
+                every { userService.createUser(request) } throws exception
+
+                // when
+                val result = webTestClient.post()
+                    .uri("/api/v1/user")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .bodyValue(request)
+                    .exchange()
+
+                // then
+                val docsRoot = result
+                    .expectStatus().is5xxServerError
+                    .expectBody().json(
+                        objectMapper.writeValueAsString(response)
+                    )
+
+                // docs
+                docsRoot
+                    .restDoc(
+                        identifier = "createUser500",
+                        description = "회원가입 API"
+                    )
+                    {
+                        request {
+                            header {
+                                "Content-Type" mean "application/json"
+                            }
+                            body {
+                                "email" type String mean "이메일"
+                            }
+                        }
+
+                        response {
+                            body {
+                                "message" type String mean "에러 메시지"
+                            }
+                        }
+                    }
+            }
+
         }
     }
 ) {

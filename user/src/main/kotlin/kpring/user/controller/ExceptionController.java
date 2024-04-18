@@ -44,8 +44,10 @@ public class ExceptionController {
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<Void> handleRuntimeException(RuntimeException e) {
+    public ResponseEntity<FailMessageResponse> handleRuntimeException(RuntimeException e) {
         log.error("Internal server error", e);
-        return ResponseEntity.internalServerError().build();
+        var response = FailMessageResponse.builder().message("서버 오류").build();
+        return ResponseEntity.internalServerError()
+                .body(response);
     }
 }

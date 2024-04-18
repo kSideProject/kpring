@@ -116,6 +116,56 @@ class UserControllerTest(
                                 "email" type String mean "이메일"
                             }
                         }
+
+                        response {
+                            body {
+                                "message" type String mean "에러 메시지"
+                            }
+                        }
+                    }
+            }
+
+            it("회원가입 실패 : 필수입력 값 미전송"){
+                // given
+                val request = CreateUserRequest.builder().build()
+                val responseMessage = "필수 입력값이 누락되었습니다."
+                val response = FailMessageResponse.builder().message(responseMessage).build()
+
+                // when
+                val result = webTestClient.post()
+                    .uri("/api/v1/user")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .bodyValue(request)
+                    .exchange()
+
+                // then
+                val docsRoot = result
+                    .expectStatus().isBadRequest
+                    .expectBody().json(
+                        objectMapper.writeValueAsString(response)
+                    )
+
+                // docs
+                docsRoot
+                    .restDoc(
+                        identifier = "createUser400",
+                        description = "회원가입 API"
+                    )
+                    {
+                        request {
+                            header {
+                                "Content-Type" mean "application/json"
+                            }
+                            body {
+                                "email" type String mean "이메일"
+                            }
+                        }
+
+                        response {
+                            body {
+                                "message" type String mean "에러 메시지"
+                            }
+                        }
                     }
             }
         }

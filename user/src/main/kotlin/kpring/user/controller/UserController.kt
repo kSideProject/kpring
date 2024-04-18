@@ -7,6 +7,7 @@ import kpring.user.dto.result.GetUserProfileResponse
 import kpring.user.dto.result.UpdateUserProfileResponse
 import kpring.user.service.UserService
 import org.springframework.http.ResponseEntity
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -23,7 +24,7 @@ class UserController(val userService: UserService) {
 
     @PostMapping("/user")
     fun createUser(
-        @RequestBody request: CreateUserRequest,
+        @Validated @RequestBody request: CreateUserRequest,
     ): ResponseEntity<CreateUserResponse> {
         val response = userService.createUser(request)
         return ResponseEntity.ok(response)

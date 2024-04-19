@@ -5,6 +5,9 @@ import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.DescribeSpec
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
+import kpring.core.auth.client.AuthClient
+import kpring.core.auth.dto.response.TokenValidationResponse
+import kpring.core.auth.enums.TokenType
 import kpring.test.restdoc.dsl.restDoc
 import kpring.user.dto.request.CreateUserRequest
 import kpring.user.dto.request.UpdateUserProfileRequest
@@ -17,6 +20,7 @@ import kpring.user.service.UserService
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.restdocs.ManualRestDocumentation
 import org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint
 import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation
@@ -29,6 +33,7 @@ class UserControllerTest(
     val objectMapper: ObjectMapper,
     webContext: WebApplicationContext,
     val restDocument: ManualRestDocumentation = ManualRestDocumentation(),
+    @MockkBean val authClient: AuthClient,
     @MockkBean val userService: UserService,
 ) : DescribeSpec(
     {
@@ -222,12 +227,18 @@ class UserControllerTest(
                 // given
                 val userId = 1L
                 val request = UpdateUserProfileRequest.builder().email("test@test.com").build()
-                val response = UpdateUserProfileResponse.builder().build()
+                val response = UpdateUserProfileResponse.builder().email("test@test.com").build()
                 every { userService.updateProfile(userId, request) } returns response
+                every { authClient.validateToken(any(), any()) }.returns(
+                    ResponseEntity.ok(
+                        TokenValidationResponse(true, TokenType.ACCESS)
+                    )
+                )
 
                 // when
                 val result = webTestClient.patch()
                     .uri("/api/v1/user/{userId}", userId)
+                    .header("Authorization", "Bearer token")
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(request)
                     .exchange()
@@ -255,6 +266,96 @@ class UserControllerTest(
                         response {
                             body {
                                 "email" type String mean "이메일"
+                            }
+                        }
+                    }
+            }
+
+            it("회원정보 수정 실패 : 권한이 없는 토큰") {
+                // given
+                val userId = 1L
+                val request = UpdateUserProfileRequest.builder().email("test@test.com").build()
+                val response = FailMessageResponse.builder().message(ErrorCode.NOT_ALLOWED.message).build()
+                every { authClient.validateToken(any(), any()) }.returns(
+                    ResponseEntity.ok(
+                        TokenValidationResponse(false, null)
+                    )
+                )
+
+                // when
+                val result = webTestClient.patch()
+                    .uri("/api/v1/user/{userId}", userId)
+                    .header("Authorization", "Bearer token")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .bodyValue(request)
+                    .exchange()
+
+                // then
+                val docsRoot = result
+                    .expectStatus().isForbidden
+                    .expectBody().json(objectMapper.writeValueAsString(response))
+
+                // docs
+                docsRoot
+                    .restDoc(
+                        identifier = "updateUser403",
+                        description = "회원정보 수정 API"
+                    )
+                    {
+                        request {
+                            header {
+                                "Content-Type" mean "application/json"
+                            }
+                            body {
+                                "email" type String mean "이메일"
+                            }
+                        }
+                        response {
+                            body {
+                                "message" type String mean "에러 메시지"
+                            }
+                        }
+                    }
+            }
+
+            it("회원정보 수정 실패 : 서버 내부 오류") {
+                // given
+                val userId = 1L
+                val request = UpdateUserProfileRequest.builder().email("test@test.com").build()
+                val response = FailMessageResponse.serverError
+                every { authClient.validateToken(any(), any()) } throws RuntimeException("서버 내부 오류")
+
+                // when
+                val result = webTestClient.patch()
+                    .uri("/api/v1/user/{userId}", userId)
+                    .header("Authorization", "Bearer token")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .bodyValue(request)
+                    .exchange()
+
+                // then
+                val docsRoot = result
+                    .expectStatus().isEqualTo(500)
+                    .expectBody().json(objectMapper.writeValueAsString(response))
+
+                // docs
+                docsRoot
+                    .restDoc(
+                        identifier = "updateUser500",
+                        description = "회원정보 수정 API"
+                    )
+                    {
+                        request {
+                            header {
+                                "Content-Type" mean "application/json"
+                            }
+                            body {
+                                "email" type String mean "이메일"
+                            }
+                        }
+                        response {
+                            body {
+                                "message" type String mean "에러 메시지"
                             }
                         }
                     }

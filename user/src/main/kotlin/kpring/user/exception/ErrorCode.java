@@ -6,6 +6,7 @@ public enum ErrorCode {
     // BAD_REQUEST
     ALREADY_EXISTS_EMAIL(HttpStatus.BAD_REQUEST, 4001, "Email already exists"),
     INVALID_EMAIL(HttpStatus.BAD_REQUEST, 4002, "Invalid email"),
+    NOT_ALLOWED(HttpStatus.FORBIDDEN, 4003, "Not allowed"), // 권한이 없는 경우
     ;
     public final HttpStatus status;
     public final int code;
@@ -17,7 +18,7 @@ public enum ErrorCode {
         this.message = message;
     }
 
-    public boolean isServerError(){
+    public boolean isServerError() {
         return status.is5xxServerError();
     }
 }

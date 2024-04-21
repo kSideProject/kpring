@@ -445,6 +445,39 @@ class UserControllerTest(
                         }
                     }
             }
+
+            it("조회 실패 : 서버 내부 오류") {
+                // given
+                val userId = 1L
+                val token = "Bearer test"
+                every { authClient.validateToken(any(), any()) } throws RuntimeException("서버 내부 오류")
+                val response = FailMessageResponse.serverError
+
+                // when
+                val result = webTestClient.get()
+                    .uri("/api/v1/user/{userId}", userId)
+                    .header("Authorization", token)
+                    .exchange()
+
+                // then
+                val docsRoot = result
+                    .expectStatus().isEqualTo(500)
+                    .expectBody().json(objectMapper.writeValueAsString(response))
+
+                // docs
+                docsRoot
+                    .restDoc(
+                        identifier = "getUserProfile500",
+                        description = "프로필 조회 API"
+                    )
+                    {
+                        request {
+                            path { "userId" mean "사용자 아이디" }
+                            header { "Authorization" mean "Bearer token" }
+                        }
+                        response { body { "message" type String mean "에러 메시지" } }
+                    }
+            }
         }
     }
 ) {

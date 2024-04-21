@@ -6,6 +6,7 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import kpring.core.auth.client.AuthClient
+import kpring.core.auth.dto.request.TokenValidationRequest
 import kpring.core.auth.dto.response.TokenValidationResponse
 import kpring.core.auth.enums.TokenType
 import kpring.test.restdoc.dsl.restDoc
@@ -13,6 +14,7 @@ import kpring.user.dto.request.CreateUserRequest
 import kpring.user.dto.request.UpdateUserProfileRequest
 import kpring.user.dto.result.CreateUserResponse
 import kpring.user.dto.result.FailMessageResponse
+import kpring.user.dto.result.GetUserProfileResponse
 import kpring.user.dto.result.UpdateUserProfileResponse
 import kpring.user.exception.ErrorCode
 import kpring.user.exception.ExceptionWrapper
@@ -356,6 +358,52 @@ class UserControllerTest(
                         response {
                             body {
                                 "message" type String mean "에러 메시지"
+                            }
+                        }
+                    }
+            }
+        }
+
+        describe("프로필 조회 API") {
+            it("조회 성공") {
+                // given
+                val userId = 1L
+                val token = "Bearer test"
+                val validationRequest = TokenValidationRequest(userId.toString())
+                val response = GetUserProfileResponse.builder().email("test@test.com").build()
+                every { authClient.validateToken(token, validationRequest) } returns ResponseEntity
+                    .ok(TokenValidationResponse(true, TokenType.ACCESS))
+                every { userService.getProfile(userId) } returns response
+
+                // when
+                val result = webTestClient.get()
+                    .uri("/api/v1/user/{userId}", userId)
+                    .header("Authorization", token)
+                    .exchange()
+
+                // then
+                val docsRoot = result
+                    .expectStatus().isOk
+                    .expectBody().json(objectMapper.writeValueAsString(response))
+
+                // docs
+                docsRoot
+                    .restDoc(
+                        identifier = "getUserProfile200",
+                        description = "프로필 조회 API"
+                    )
+                    {
+                        request {
+                            path {
+                                "userId" mean "사용자 아이디"
+                            }
+                            header {
+                                "Authorization" mean "Bearer token"
+                            }
+                        }
+                        response {
+                            body {
+                                "email" type String mean "이메일"
                             }
                         }
                     }

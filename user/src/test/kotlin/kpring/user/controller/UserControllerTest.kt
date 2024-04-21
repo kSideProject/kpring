@@ -3,11 +3,11 @@ package kpring.user.controller
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.DescribeSpec
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import io.mockk.verify
 import kpring.core.auth.client.AuthClient
-import kpring.core.auth.dto.request.TokenValidationRequest
 import kpring.core.auth.dto.response.TokenValidationResponse
 import kpring.core.auth.enums.TokenType
 import kpring.test.restdoc.dsl.restDoc
@@ -54,6 +54,8 @@ class UserControllerTest(
         beforeSpec { restDocument.beforeTest(this.javaClass, "user controller") }
 
         afterSpec { restDocument.afterTest() }
+
+        afterTest { clearMocks(authClient) }
 
         describe("회원가입 API") {
 
@@ -324,9 +326,10 @@ class UserControllerTest(
             it("회원정보 수정 실패 : 서버 내부 오류") {
                 // given
                 val userId = 1L
+                val token = "Bearer token"
                 val request = UpdateUserProfileRequest.builder().email("test@test.com").build()
                 val response = FailMessageResponse.serverError
-                every { authClient.validateToken(any(), any()) } throws RuntimeException("서버 내부 오류")
+                every { authClient.validateToken(token, any()) } throws RuntimeException("서버 내부 오류")
 
                 // when
                 val result = webTestClient.patch()
@@ -369,10 +372,9 @@ class UserControllerTest(
             it("탈퇴 성공") {
                 // given
                 val userId = 1L
-                val token = "Bearer token"
-                val validationRequest = TokenValidationRequest(userId.toString())
+                val token = "Bearer deleteToken"
                 val validationResponse = TokenValidationResponse(true, TokenType.ACCESS)
-                every { authClient.validateToken(token, validationRequest) } returns ResponseEntity.ok(
+                every { authClient.validateToken(any(), any()) } returns ResponseEntity.ok(
                     validationResponse
                 )
                 every { userService.exitUser(userId) } returns true
@@ -384,7 +386,7 @@ class UserControllerTest(
                     .exchange()
 
                 // then
-                verify(exactly = 1) { authClient.validateToken(token, any()) }
+                verify(exactly = 1) { authClient.validateToken(any(), any()) }
                 val docsRoot = result
                     .expectStatus().isOk
                     .expectBody()
@@ -408,10 +410,9 @@ class UserControllerTest(
             it("탈퇴 실패 : 권한이 없는 토큰") {
                 // given
                 val userId = 1L
-                val token = "Bearer token"
-                val validationRequest = TokenValidationRequest(userId.toString())
+                val token = "Bearer deleteTokenForbidden"
                 val validationResponse = TokenValidationResponse(false, null)
-                every { authClient.validateToken(token, validationRequest) } returns ResponseEntity.ok(
+                every { authClient.validateToken(any(), any()) } returns ResponseEntity.ok(
                     validationResponse
                 )
 
@@ -422,7 +423,7 @@ class UserControllerTest(
                     .exchange()
 
                 // then
-                verify(exactly = 1) { authClient.validateToken(token, any()) }
+                verify(exactly = 1) { authClient.validateToken(any(), any()) }
                 val docsRoot = result
                     .expectStatus().isForbidden
                     .expectBody()
@@ -454,7 +455,7 @@ class UserControllerTest(
                     .exchange()
 
                 // then
-                verify(exactly = 1) { authClient.validateToken(token, any()) }
+                verify(exactly = 1) { authClient.validateToken(any(), any()) }
                 val docsRoot = result
                     .expectStatus().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
                     .expectBody()
@@ -469,6 +470,9 @@ class UserControllerTest(
                         request {
                             path { "userId" mean "사용자 아이디" }
                             header { "Authorization" mean "jwt 토큰 정보" }
+                        }
+                        response {
+                            body { "message" type "String" mean "에러 메시지" }
                         }
                     }
             }

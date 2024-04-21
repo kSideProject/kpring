@@ -56,8 +56,11 @@ class UserController(
         @RequestHeader("Authorization") token: String,
         @PathVariable userId: Long,
     ): ResponseEntity<Any> {
+        val validationResult = authClient.validateToken(token, TokenValidationRequest(userId = userId.toString()))
+        if(!validationResult.body!!.isValid){
+            throw ExceptionWrapper(ErrorCode.NOT_ALLOWED)
+        }
         val isExit = userService.exitUser(userId)
-
         return if (isExit) {
             ResponseEntity.ok().build()
         } else {

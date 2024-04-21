@@ -408,6 +408,43 @@ class UserControllerTest(
                         }
                     }
             }
+
+            it("조회 실패 : 권한이 없는 토큰") {
+                // given
+                val userId = 1L
+                val token = "Bearer test"
+                val validationRequest = TokenValidationRequest(userId.toString())
+                val response = FailMessageResponse.builder().message(ErrorCode.NOT_ALLOWED.message).build()
+                every { authClient.validateToken(token, validationRequest) } returns ResponseEntity
+                    .ok(TokenValidationResponse(false, null))
+
+                // when
+                val result = webTestClient.get()
+                    .uri("/api/v1/user/{userId}", userId)
+                    .header("Authorization", token)
+                    .exchange()
+
+                // then
+                val docsRoot = result
+                    .expectStatus().isForbidden
+                    .expectBody().json(objectMapper.writeValueAsString(response))
+
+                // docs
+                docsRoot
+                    .restDoc(
+                        identifier = "getUserProfile403",
+                        description = "프로필 조회 API"
+                    )
+                    {
+                        request {
+                            path { "userId" mean "사용자 아이디" }
+                            header { "Authorization" mean "Bearer token" }
+                        }
+                        response {
+                            body { "message" type String mean "에러 메시지" }
+                        }
+                    }
+            }
         }
     }
 ) {

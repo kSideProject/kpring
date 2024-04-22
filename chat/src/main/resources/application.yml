@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: chat
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      user: root
+      password: 58155815
+      database: mongodb
+
+  main:
+    allow-bean-definition-overriding: true
+server:
+  port: 8081

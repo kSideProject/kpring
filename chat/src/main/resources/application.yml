@@ -9,7 +9,5 @@ spring:
       password: 58155815
       database: mongodb
 
-  main:
-    allow-bean-definition-overriding: true
 server:
   port: 8081

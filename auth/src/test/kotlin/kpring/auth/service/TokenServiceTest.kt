@@ -13,7 +13,6 @@ import kpring.auth.exception.TokenExpiredException
 import kpring.auth.repository.ExpireTokenRepository
 import kpring.auth.util.toToken
 import kpring.core.auth.dto.request.CreateTokenRequest
-import kpring.core.auth.dto.request.TokenValidationRequest
 import kpring.core.auth.enums.TokenType
 import java.nio.charset.StandardCharsets
 import java.time.LocalDateTime
@@ -81,8 +80,7 @@ class TokenServiceTest : BehaviorSpec({
                 .toToken(TokenType.REFRESH, otherKey, 100000)
             then("토큰 검증시 예외가 발생한다.") {
                 shouldThrow<IllegalArgumentException> {
-                    val request = TokenValidationRequest(userId = "testUserId");
-                    tokenService.checkToken(invalidTokenInfo.token, request)
+                    tokenService.checkToken(invalidTokenInfo.token)
                 }
             }
 
@@ -96,8 +94,7 @@ class TokenServiceTest : BehaviorSpec({
         When("만료된 토큰이라면") {
             coEvery { tokenRepository.isExpired(any()) } returns true
             then("토큰 검증시 isValid 응답은 false다.") {
-                val request = TokenValidationRequest(userId = "testUserId");
-                val response = tokenService.checkToken(tokenInfo.accessToken, request)
+                val response = tokenService.checkToken(tokenInfo.accessToken)
                 response.isValid shouldBe false
             }
         }
@@ -108,8 +105,7 @@ class TokenServiceTest : BehaviorSpec({
             val expiredToken = CreateTokenRequest("test", "nick").toToken(TokenType.ACCESS, validKey, -1).token
             coEvery { tokenRepository.isExpired(any()) } returns true
             then("토큰 검증시 isValid 응답은 false다.") {
-                val request = TokenValidationRequest(userId = "testUserId");
-                val response = tokenService.checkToken(expiredToken, request)
+                val response = tokenService.checkToken(expiredToken)
                 response.isValid shouldBe false
             }
 

@@ -2,7 +2,6 @@ package kpring.auth.api.v1
 
 import kpring.auth.service.TokenService
 import kpring.core.auth.dto.request.CreateTokenRequest
-import kpring.core.auth.dto.request.TokenValidationRequest
 import kpring.core.auth.dto.response.CreateTokenResponse
 import kpring.core.auth.dto.response.ReCreateAccessTokenResponse
 import kpring.core.auth.dto.response.TokenValidationResponse
@@ -47,9 +46,8 @@ class AuthController(
     @PostMapping("/validation")
     suspend fun validateToken(
         @RequestHeader("Authorization") token: String,
-        @Validated @RequestBody request: TokenValidationRequest,
     ): ResponseEntity<TokenValidationResponse> {
-        val response = tokenService.checkToken(token.removePrefix("Bearer "), request)
+        val response = tokenService.checkToken(token.removePrefix("Bearer "))
         return ResponseEntity.ok()
             .body(response)
     }

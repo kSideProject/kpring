@@ -1,4 +1,9 @@
 package kpring.user.dto.result;
 
-public record GetUserProfileResponse() {
+import lombok.Builder;
+
+@Builder
+public record GetUserProfileResponse(
+        String email
+) {
 }

@@ -1,7 +1,6 @@
 package kpring.core.auth.client;
 
 import kpring.core.auth.dto.request.CreateTokenRequest;
-import kpring.core.auth.dto.request.TokenValidationRequest;
 import kpring.core.auth.dto.response.CreateTokenResponse;
 import kpring.core.auth.dto.response.ReCreateAccessTokenResponse;
 import kpring.core.auth.dto.response.TokenValidationResponse;
@@ -33,7 +32,6 @@ public interface AuthClient {
 
     @PostExchange("/api/v1/validation")
     ResponseEntity<TokenValidationResponse> validateToken(
-            @RequestHeader("Authorization") String token,
-            @RequestBody TokenValidationRequest request
+            @RequestHeader("Authorization") String token
     );
 }

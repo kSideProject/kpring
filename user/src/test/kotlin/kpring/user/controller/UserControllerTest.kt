@@ -8,7 +8,6 @@ import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import io.mockk.verify
 import kpring.core.auth.client.AuthClient
-import kpring.core.auth.dto.request.TokenValidationRequest
 import kpring.core.auth.dto.response.TokenValidationResponse
 import kpring.core.auth.enums.TokenType
 import kpring.test.restdoc.dsl.restDoc
@@ -236,9 +235,9 @@ class UserControllerTest(
                 val request = UpdateUserProfileRequest.builder().email("test@test.com").build()
                 val response = UpdateUserProfileResponse.builder().email("test@test.com").build()
                 every { userService.updateProfile(userId, request) } returns response
-                every { authClient.validateToken(any(), any()) }.returns(
+                every { authClient.validateToken(any()) }.returns(
                     ResponseEntity.ok(
-                        TokenValidationResponse(true, TokenType.ACCESS)
+                        TokenValidationResponse(true, TokenType.ACCESS, userId.toString())
                     )
                 )
 
@@ -283,9 +282,9 @@ class UserControllerTest(
                 val userId = 1L
                 val request = UpdateUserProfileRequest.builder().email("test@test.com").build()
                 val response = FailMessageResponse.builder().message(ErrorCode.NOT_ALLOWED.message).build()
-                every { authClient.validateToken(any(), any()) }.returns(
+                every { authClient.validateToken(any()) }.returns(
                     ResponseEntity.ok(
-                        TokenValidationResponse(false, null)
+                        TokenValidationResponse(false, null, null)
                     )
                 )
 
@@ -331,7 +330,7 @@ class UserControllerTest(
                 val token = "Bearer token"
                 val request = UpdateUserProfileRequest.builder().email("test@test.com").build()
                 val response = FailMessageResponse.serverError
-                every { authClient.validateToken(token, any()) } throws RuntimeException("서버 내부 오류")
+                every { authClient.validateToken(token) } throws RuntimeException("서버 내부 오류")
 
                 // when
                 val result = webTestClient.patch()
@@ -375,10 +374,9 @@ class UserControllerTest(
                 // given
                 val userId = 1L
                 val token = "Bearer test"
-                val validationRequest = TokenValidationRequest(userId.toString())
                 val response = GetUserProfileResponse.builder().email("test@test.com").build()
-                every { authClient.validateToken(token, validationRequest) } returns ResponseEntity
-                    .ok(TokenValidationResponse(true, TokenType.ACCESS))
+                every { authClient.validateToken(token) } returns ResponseEntity
+                    .ok(TokenValidationResponse(true, TokenType.ACCESS, userId.toString()))
                 every { userService.getProfile(userId) } returns response
 
                 // when
@@ -419,10 +417,9 @@ class UserControllerTest(
                 // given
                 val userId = 1L
                 val token = "Bearer test"
-                val validationRequest = TokenValidationRequest(userId.toString())
                 val response = FailMessageResponse.builder().message(ErrorCode.NOT_ALLOWED.message).build()
-                every { authClient.validateToken(token, validationRequest) } returns ResponseEntity
-                    .ok(TokenValidationResponse(false, null))
+                every { authClient.validateToken(token) } returns ResponseEntity
+                    .ok(TokenValidationResponse(false, null, null))
 
                 // when
                 val result = webTestClient.get()
@@ -456,7 +453,7 @@ class UserControllerTest(
                 // given
                 val userId = 1L
                 val token = "Bearer test"
-                every { authClient.validateToken(any(), any()) } throws RuntimeException("서버 내부 오류")
+                every { authClient.validateToken(any()) } throws RuntimeException("서버 내부 오류")
                 val response = FailMessageResponse.serverError
 
                 // when
@@ -490,9 +487,8 @@ class UserControllerTest(
             it("탈퇴 성공") {
                 // given
                 val userId = 1L
-                val token = "Bearer deleteToken"
-                val validationResponse = TokenValidationResponse(true, TokenType.ACCESS)
-                every { authClient.validateToken(any(), any()) } returns ResponseEntity.ok(
+                val validationResponse = TokenValidationResponse(true, TokenType.ACCESS, userId.toString())
+                every { authClient.validateToken(any()) } returns ResponseEntity.ok(
                     validationResponse
                 )
                 every { userService.exitUser(userId) } returns true
@@ -504,7 +500,7 @@ class UserControllerTest(
                     .exchange()
 
                 // then
-                verify(exactly = 1) { authClient.validateToken(any(), any()) }
+                verify(exactly = 1) { authClient.validateToken(any()) }
                 val docsRoot = result
                     .expectStatus().isOk
                     .expectBody()
@@ -528,9 +524,8 @@ class UserControllerTest(
             it("탈퇴 실패 : 권한이 없는 토큰") {
                 // given
                 val userId = 1L
-                val token = "Bearer deleteTokenForbidden"
-                val validationResponse = TokenValidationResponse(false, null)
-                every { authClient.validateToken(any(), any()) } returns ResponseEntity.ok(
+                val validationResponse = TokenValidationResponse(false, null, null)
+                every { authClient.validateToken(any()) } returns ResponseEntity.ok(
                     validationResponse
                 )
 
@@ -541,7 +536,7 @@ class UserControllerTest(
                     .exchange()
 
                 // then
-                verify(exactly = 1) { authClient.validateToken(any(), any()) }
+                verify(exactly = 1) { authClient.validateToken(any()) }
                 val docsRoot = result
                     .expectStatus().isForbidden
                     .expectBody()
@@ -564,7 +559,7 @@ class UserControllerTest(
                 // given
                 val userId = 1L
                 val token = "Bearer token"
-                every { authClient.validateToken(token, any()) } throws RuntimeException("서버 내부 오류")
+                every { authClient.validateToken(token) } throws RuntimeException("서버 내부 오류")
 
                 // when
                 val result = webTestClient.delete()
@@ -573,7 +568,7 @@ class UserControllerTest(
                     .exchange()
 
                 // then
-                verify(exactly = 1) { authClient.validateToken(any(), any()) }
+                verify(exactly = 1) { authClient.validateToken(any()) }
                 val docsRoot = result
                     .expectStatus().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
                     .expectBody()

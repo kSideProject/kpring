@@ -15,7 +15,7 @@ class ChatContoller (
     fun createChat(
         @Validated @RequestBody request: CreateChatRequest
     ): ResponseEntity<*> {
-        var result = chatService.createChat(request)
+        val result = chatService.createChat(request)
         return ResponseEntity.ok()
             .body(result)
     }

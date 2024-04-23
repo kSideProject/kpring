@@ -15,7 +15,7 @@ class Chat(
 
     var isDeleted: Boolean = false
 
-    var sentAt: LocalDateTime = LocalDateTime.now()
+    val sentAt: LocalDateTime = LocalDateTime.now()
 
     fun deleted() {
         isDeleted = true

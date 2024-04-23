@@ -12,7 +12,6 @@ import io.mockk.mockk
 import kpring.auth.api.v1.AuthController
 import kpring.auth.service.TokenService
 import kpring.core.auth.dto.request.CreateTokenRequest
-import kpring.core.auth.dto.request.TokenValidationRequest
 import kpring.core.auth.dto.response.CreateTokenResponse
 import kpring.core.auth.dto.response.ReCreateAccessTokenResponse
 import kpring.core.auth.dto.response.TokenValidationResponse
@@ -294,24 +293,21 @@ class AuthControllerTest(
         Given("/api/v1/validation") {
             val url = "/api/v1/validation"
             val testToken = "Bearer testtoken"
-            val request = TokenValidationRequest(userId = "testUserId")
 
-            coEvery { tokenService.checkToken(any(), any()) } returns TokenValidationResponse(true, TokenType.ACCESS)
+            coEvery { tokenService.checkToken(any()) } returns TokenValidationResponse(true, TokenType.ACCESS, "testUserId")
 
             When("POST") {
 
-                val response = TokenValidationResponse(isValid = true, type = TokenType.ACCESS)
+                val response = TokenValidationResponse(isValid = true, type = TokenType.ACCESS, userId = "testUserId")
                 then("200 OK") {
                     webTestClient.post().uri(url)
                         .header("Authorization", testToken)
-                        .bodyValue(request)
                         .exchange()
                         .expectStatus().isOk
                         .expectBody().json(objectMapper.writeValueAsString(response))
                         .restDoc("post.v1.validation200", "토큰 검증") {
                             request {
                                 header { "Authorization" mean "검증할 토큰 정보" }
-                                body { "userId" type "String" mean "사용자 식별 아이디" }
                             }
 
                             response {
@@ -319,6 +315,7 @@ class AuthControllerTest(
                                 body {
                                     "isValid" type "Boolean" mean "토큰이 유효한지 여부를 나타냅니다."
                                     "type" type "String" mean "ACCESS  또는 REFRESH 값을 가지며 검증한 토큰의 타입입니다. 만약 유효하지 않은 토큰이라면 존재하지 않습니다."
+                                    "userId" type "String" mean "토큰에 저장된 유저의 id"
                                 }
                             }
                         }
@@ -326,10 +323,9 @@ class AuthControllerTest(
 
                 then("400 BAD REQUEST") {
                     val token = ""
-                    coEvery { tokenService.checkToken(token, any()) } returns response
+                    coEvery { tokenService.checkToken(token) } returns response
                     webTestClient.post()
                         .uri(url)
-                        .header("Authorization", token)
                         .exchange()
                         .expectStatus().isBadRequest
                         .expectBody()
@@ -341,18 +337,17 @@ class AuthControllerTest(
 
                 then("500 INTERNAL SERVER ERROR") {
                     val token = "validateToken500"
-                    coEvery { tokenService.checkToken(token, any()) } throws NullPointerException("server error")
+                    coEvery { tokenService.checkToken(token) } throws NullPointerException("server error")
                     webTestClient.post()
                         .uri(url)
                         .header("Authorization", token)
-                        .bodyValue(request)
                         .exchange()
                         .expectStatus().isEqualTo(500)
                         .expectBody()
                         .restDoc(
                             identifier = "post.v1.validation500",
                             description = "서버 내부 오류시"
-                        ) { request { body { "userId" type "String" mean "사용자 식별 아이디" } } }
+                        ) { }
                 }
             }
         }

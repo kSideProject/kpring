@@ -6,7 +6,8 @@ import java.time.LocalDateTime
 
 @Document(collection = "chats")
 class Chat(
-    val room: String,
+    val userId: String,
+    val roomId: String,
     val nickname: String,
     val content: String
 ) {

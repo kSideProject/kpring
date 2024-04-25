@@ -2,8 +2,8 @@ package kpring.user.service;
 
 import kpring.user.dto.request.AddFriendRequest;
 import kpring.user.dto.result.AddFriendResponse;
-import kpring.user.dto.result.DeleteFriendResponse;
-import kpring.user.dto.result.GetFriendsResponse;
+import kpring.user.dto.response.DeleteFriendResponse;
+import kpring.user.dto.response.GetFriendsResponse;
 import kpring.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 

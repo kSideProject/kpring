@@ -1,6 +1,6 @@
 package kpring.user.controller;
 
-import kpring.user.dto.result.FailMessageResponse;
+import kpring.user.dto.response.FailMessageResponse;
 import kpring.user.exception.ExceptionWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

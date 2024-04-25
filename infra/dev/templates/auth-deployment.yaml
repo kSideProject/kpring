@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.auth.name }}
+  namespace: {{ .Release.namespace }}
+  labels:
+    app: {{ .Values.auth.name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.auth.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.auth.name }}
+    spec:
+      containers:
+        - name: {{ .Values.auth.name }}
+          image: {{ .Values.auth.image }}
+          ports:
+            - containerPort: {{ .Values.auth.port }}
+          env:
+            - name: REDIS_HOST
+              value: {{ .Values.redis.name }}
+            - name: REDIS_PORT
+              value: "{{ .Values.redis.port }}"
+            - name: JWT_ACCESS_DURATION
+              valueFrom:
+                configMapKeyRef:
+                  name: auth-config
+                  key: jwt.access.duration
+            - name: JWT_REFRESH_DURATION
+              valueFrom:
+                configMapKeyRef:
+                  name: auth-config
+                  key: jwt.refresh.duration

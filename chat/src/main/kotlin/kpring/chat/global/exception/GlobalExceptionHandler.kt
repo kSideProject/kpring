@@ -1,4 +1,4 @@
-package kpring.chat.exception
+package kpring.chat.global.exception
 
 import kpring.core.global.dto.response.ApiResponse
 import org.springframework.http.HttpStatus

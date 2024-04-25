@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: chat
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      user: root
+      password: 58155815
+      database: mongodb
+
+server:
+  port: 8081
+
+auth:
+  url: "http://localhost:8080/"

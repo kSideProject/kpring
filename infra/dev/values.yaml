@@ -1,6 +1,7 @@
 # Default values for kpring.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
+namespace: local-kpring
 
 replicaCount: 1
 
@@ -105,3 +106,18 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+# auth service
+auth:
+  name: auth-application
+  image: localhost:5000/auth-application:latest
+  port: 8080
+  jwt:
+    duration:
+      access: "3600000"
+      refresh: "86400000"
+
+redis:
+  name: redis
+  image: redis:alpine
+  port: 6379

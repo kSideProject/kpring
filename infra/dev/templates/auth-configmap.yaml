@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auth-config
+  namespace: {{ .Release.namespace }}
+  labels:
+    app: auth
+data:
+  jwt.access.duration:  "{{ .Values.auth.jwt.duration.access }}"
+  jwt.refresh.duration: "{{ .Values.auth.jwt.duration.refresh }}"

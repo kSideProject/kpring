@@ -2,9 +2,9 @@ package kpring.user.service
 
 import kpring.user.dto.request.CreateUserRequest
 import kpring.user.dto.request.UpdateUserProfileRequest
-import kpring.user.dto.result.CreateUserResponse
-import kpring.user.dto.result.GetUserProfileResponse
-import kpring.user.dto.result.UpdateUserProfileResponse
+import kpring.user.dto.response.CreateUserResponse
+import kpring.user.dto.response.GetUserProfileResponse
+import kpring.user.dto.response.UpdateUserProfileResponse
 import kpring.user.repository.UserRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

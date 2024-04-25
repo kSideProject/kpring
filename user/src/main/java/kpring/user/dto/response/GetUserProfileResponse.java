@@ -1,4 +1,4 @@
-package kpring.user.dto.result;
+package kpring.user.dto.response;
 
 import lombok.Builder;
 

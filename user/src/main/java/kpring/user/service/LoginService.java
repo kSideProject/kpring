@@ -2,7 +2,7 @@ package kpring.user.service;
 
 import kpring.user.dto.request.LoginRequest;
 import kpring.user.dto.request.LogoutRequest;
-import kpring.user.dto.result.LoginResponse;
+import kpring.user.dto.response.LoginResponse;
 import org.springframework.stereotype.Service;
 
 @Service

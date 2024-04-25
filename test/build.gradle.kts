@@ -1,3 +1,5 @@
+import org.springframework.boot.gradle.tasks.bundling.BootJar
+
 plugins {
     id("org.springframework.boot") version "3.2.4"
     id("io.spring.dependency-management") version "1.1.4"
@@ -29,4 +31,10 @@ dependencies {
     implementation("com.epages:restdocs-api-spec-webtestclient:0.19.2")
 
     implementation("org.springframework.boot:spring-boot-starter-test")
+}
+
+tasks {
+    withType<BootJar> {
+        enabled = false
+    }
 }

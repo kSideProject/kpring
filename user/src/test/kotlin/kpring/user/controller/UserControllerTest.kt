@@ -13,10 +13,10 @@ import kpring.core.auth.enums.TokenType
 import kpring.test.restdoc.dsl.restDoc
 import kpring.user.dto.request.CreateUserRequest
 import kpring.user.dto.request.UpdateUserProfileRequest
-import kpring.user.dto.result.CreateUserResponse
-import kpring.user.dto.result.FailMessageResponse
-import kpring.user.dto.result.GetUserProfileResponse
-import kpring.user.dto.result.UpdateUserProfileResponse
+import kpring.user.dto.response.CreateUserResponse
+import kpring.user.dto.response.FailMessageResponse
+import kpring.user.dto.response.GetUserProfileResponse
+import kpring.user.dto.response.UpdateUserProfileResponse
 import kpring.user.exception.ErrorCode
 import kpring.user.exception.ExceptionWrapper
 import kpring.user.service.UserService

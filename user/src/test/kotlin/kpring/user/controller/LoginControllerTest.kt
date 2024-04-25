@@ -8,7 +8,7 @@ import io.mockk.junit5.MockKExtension
 import kpring.test.restdoc.dsl.restDoc
 import kpring.user.dto.request.LoginRequest
 import kpring.user.dto.request.LogoutRequest
-import kpring.user.dto.result.LoginResponse
+import kpring.user.dto.response.LoginResponse
 import kpring.user.service.LoginService
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc

@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: ${SPRING_PROFILES_ACTIVE:local}
+    active: ${APPLICATION_PROFILE:local}
   application:
     name: auth
   data:

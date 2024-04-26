@@ -1,0 +1,16 @@
+{{- if eq .Values.profile "local" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.swagger.name }}
+  namespace: {{ .Release.namespace }}
+spec:
+  type: NodePort
+  ports:
+    - port: {{ .Values.swagger.port }}
+      targetPort: {{ .Values.swagger.port }}
+      nodePort: {{ .Values.swagger.nodePort }}
+      protocol: TCP
+  selector:
+    app: {{ .Values.swagger.name }}
+{{- end }}

@@ -74,6 +74,7 @@ openapi3 {
     description = "API document"
     version = "0.1.0"
     format = "yaml"
+    outputDirectory = "src/main/resources/static"
 }
 
 jib {
@@ -89,3 +90,5 @@ jib {
         jvmFlags = listOf("-Xms512m", "-Xmx512m")
     }
 }
+
+tasks.getByName("jib").dependsOn("openapi3")

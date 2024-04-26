@@ -6,4 +6,4 @@ metadata:
   labels:
     app: profile
 data:
-  profile: {{ .Values.profile }}
+  profile: {{ .Values.global.profile }}

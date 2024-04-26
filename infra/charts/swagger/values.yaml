@@ -1,0 +1,6 @@
+# swagger ui service
+service:
+  name: swagger-ui
+  image: swaggerapi/swagger-ui
+  port: 8080
+  nodePort: 30000

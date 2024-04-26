@@ -107,6 +107,9 @@ tolerations: []
 
 affinity: {}
 
+# profile
+profile: local
+
 # auth service
 auth:
   name: auth-application

@@ -1,0 +1,12 @@
+{{- if .Values.global.enable.auth }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auth-config
+  namespace: {{ .Release.namespace }}
+  labels:
+    app: auth
+data:
+  jwt.access.duration:  "{{ .Values.service.jwt.duration.access }}"
+  jwt.refresh.duration: "{{ .Values.service.jwt.duration.refresh }}"
+{{- end }}

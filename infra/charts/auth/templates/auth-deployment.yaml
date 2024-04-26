@@ -1,26 +1,26 @@
-{{- if .Values.enable.auth }}
+{{- if .Values.global.enable.auth }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.auth.name }}
+  name: {{ .Values.service.name }}
   namespace: {{ .Release.namespace }}
   labels:
-    app: {{ .Values.auth.name }}
+    app: {{ .Values.service.name }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ .Values.auth.name }}
+      app: {{ .Values.service.name }}
   template:
     metadata:
       labels:
-        app: {{ .Values.auth.name }}
+        app: {{ .Values.service.name }}
     spec:
       containers:
-        - name: {{ .Values.auth.name }}
-          image: {{ .Values.auth.image }}
+        - name: {{ .Values.service.name }}
+          image: {{ .Values.service.image }}
           ports:
-            - containerPort: {{ .Values.auth.port }}
+            - containerPort: {{ .Values.service.port }}
           env:
             - name: REDIS_HOST
               value: {{ .Values.redis.name }}

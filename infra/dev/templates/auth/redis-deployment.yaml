@@ -1,3 +1,4 @@
+{{- if .Values.enable.auth }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -20,3 +21,4 @@ spec:
           image: redis:alpine
           ports:
             - containerPort: 6379
+{{- end }}

@@ -1,3 +1,4 @@
+{{- if .Values.enable.auth }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -35,3 +36,9 @@ spec:
                 configMapKeyRef:
                   name: auth-config
                   key: jwt.refresh.duration
+            - name: APPLICATION_PROFILE
+              valueFrom:
+                configMapKeyRef:
+                  name: profile-config
+                  key: profile
+{{- end }}

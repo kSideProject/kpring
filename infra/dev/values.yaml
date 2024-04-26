@@ -107,11 +107,19 @@ tolerations: []
 
 affinity: {}
 
+# service enable setting
+enable:
+  auth: true
+
+# profile
+profile: local
+
 # auth service
 auth:
   name: auth-application
   image: localhost:5000/auth-application:latest
   port: 8080
+  nodePort: 30001
   jwt:
     duration:
       access: "3600000"
@@ -121,3 +129,10 @@ redis:
   name: redis
   image: redis:alpine
   port: 6379
+
+# swagger ui service
+swagger:
+  name: swagger-ui
+  image: swaggerapi/swagger-ui
+  port: 8080
+  nodePort: 30000

@@ -69,11 +69,12 @@ tasks.asciidoctor {
 }
 
 openapi3 {
-    setServer("http://localhost:8080")
-    title = "MyApp"
+    setServer("http://localhost:30001")
+    title = "Auth API"
     description = "API document"
     version = "0.1.0"
     format = "yaml"
+    outputDirectory = "src/main/resources/static"
 }
 
 jib {
@@ -89,3 +90,5 @@ jib {
         jvmFlags = listOf("-Xms512m", "-Xmx512m")
     }
 }
+
+tasks.getByName("jib").dependsOn("openapi3")

@@ -44,7 +44,6 @@ dependencies {
     testImplementation("io.kotest.extensions:kotest-extensions-spring:1.1.3")
 
     // Spring rest docs
-    implementation("org.springframework.restdocs:spring-restdocs-mockmvc")
     implementation("org.springframework.restdocs:spring-restdocs-webtestclient")
     implementation("org.springframework.restdocs:spring-restdocs-asciidoctor")
 }

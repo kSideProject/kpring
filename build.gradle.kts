@@ -28,7 +28,7 @@ allprojects {
     }
 }
 
-// enable tasks bootJar
+// disable tasks bootJar
 tasks.withType<BootJar> {
     enabled = false
 }

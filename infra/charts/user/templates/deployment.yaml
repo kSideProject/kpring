@@ -1,4 +1,4 @@
-{{- if eq .Values.global.profile "local" }}
+{{- if .Values.global.enable.user}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -21,4 +21,12 @@ spec:
           image: {{ .Values.service.image }}
           ports:
             - containerPort: {{ .Values.service.port }}
-{{ end }}
+          env:
+            - name: AUTH_SERVICE_URL
+              value: {{ .Values.api.authServiceUrl }}
+            - name: APPLICATION_PROFILE
+              valueFrom:
+                configMapKeyRef:
+                  name: profile-config
+                  key: profile
+  {{- end }}

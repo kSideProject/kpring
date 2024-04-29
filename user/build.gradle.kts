@@ -49,8 +49,8 @@ dependencies {
 }
 
 openapi3 {
-    setServer("http://localhost:30001")
-    title = "Auth API"
+    setServer("http://localhost:30002")
+    title = "User API"
     description = "API document"
     version = "0.1.0"
     format = "yaml"
@@ -62,7 +62,7 @@ jib {
         image = "eclipse-temurin:21-jre"
     }
     to {
-        image = "localhost:5000/auth-application"
+        image = "localhost:5000/user-application"
         setAllowInsecureRegistries(true)
         tags = setOf("latest")
     }

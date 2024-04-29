@@ -4,6 +4,11 @@ plugins {
     kotlin("jvm") version "1.9.23"
     kotlin("plugin.spring") version "1.9.23"
     kotlin("plugin.jpa") version "1.9.23"
+
+    // open api3
+    id("com.epages.restdocs-api-spec") version "0.19.2"
+    // jib
+    id("com.google.cloud.tools.jib") version "3.4.0"
 }
 
 dependencies {
@@ -39,7 +44,31 @@ dependencies {
     testImplementation("io.kotest.extensions:kotest-extensions-spring:1.1.3")
 
     // Spring rest docs
-    implementation("org.springframework.restdocs:spring-restdocs-mockmvc")
     implementation("org.springframework.restdocs:spring-restdocs-webtestclient")
     implementation("org.springframework.restdocs:spring-restdocs-asciidoctor")
 }
+
+openapi3 {
+    setServer("http://localhost:30002")
+    title = "User API"
+    description = "API document"
+    version = "0.1.0"
+    format = "yaml"
+    outputDirectory = "src/main/resources/static"
+}
+
+jib {
+    from {
+        image = "eclipse-temurin:21-jre"
+    }
+    to {
+        image = "localhost:5000/user-application"
+        setAllowInsecureRegistries(true)
+        tags = setOf("latest")
+    }
+    container {
+        jvmFlags = listOf("-Xms512m", "-Xmx512m")
+    }
+}
+
+tasks.getByName("jib").dependsOn("openapi3")

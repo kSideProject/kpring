@@ -1,0 +1,9 @@
+# user service
+service:
+  name: user-application
+  image: localhost:5000/user-application:latest
+  port: 8080
+  nodePort: 30002
+
+api:
+  authServiceUrl: auth-application/api/v1

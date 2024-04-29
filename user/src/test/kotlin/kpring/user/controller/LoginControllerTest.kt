@@ -11,20 +11,17 @@ import kpring.user.dto.request.LogoutRequest
 import kpring.user.dto.response.LoginResponse
 import kpring.user.service.LoginService
 import org.junit.jupiter.api.extension.ExtendWith
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.MediaType
 import org.springframework.restdocs.ManualRestDocumentation
-import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation
-import org.springframework.test.web.servlet.post
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers
-import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
-import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint
+import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.documentationConfiguration
+import org.springframework.test.web.reactive.server.WebTestClient
+import org.springframework.test.web.servlet.client.MockMvcWebTestClient
 import org.springframework.web.context.WebApplicationContext
 
 @WebMvcTest(controllers = [LoginController::class])
 @ExtendWith(value = [MockKExtension::class])
-@AutoConfigureMockMvc
 class LoginControllerTest(
     val context: WebApplicationContext,
     val objectMapper: ObjectMapper,
@@ -32,14 +29,17 @@ class LoginControllerTest(
 ) : FeatureSpec({
 
     val restDocumentation = ManualRestDocumentation()
-    val mockMvc = MockMvcBuilders.webAppContextSetup(context)
-        .alwaysDo<DefaultMockMvcBuilder>(MockMvcResultHandlers.print())
-        .apply<DefaultMockMvcBuilder>(
-            MockMvcRestDocumentation.documentationConfiguration(restDocumentation)
+    val webTestClient: WebTestClient = MockMvcWebTestClient.bindToApplicationContext(context)
+        .configureClient()
+        .filter(
+            documentationConfiguration(restDocumentation)
+                .operationPreprocessors()
+                .withRequestDefaults(prettyPrint())
+                .withResponseDefaults(prettyPrint())
         )
         .build()
 
-    beforeSpec { restDocumentation.beforeTest(this.javaClass, "login controller") }
+    beforeSpec { restDocumentation.beforeTest(javaClass, "login controller") }
     afterSpec { restDocumentation.afterTest() }
 
     feature("API : login API") {
@@ -50,19 +50,17 @@ class LoginControllerTest(
             every { loginService.login(request) } returns response
 
             // when
-            val result = mockMvc.post("/api/v1/login") {
-                contentType = MediaType.APPLICATION_JSON
-                content = objectMapper.writeValueAsString(request)
-            }.andDo { print() }
+            val result = webTestClient.post().uri("/api/v1/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(request)
+                .exchange()
 
             // then
-            result.andExpect {
-                status { isOk() }
-                content { json(objectMapper.writeValueAsString(response)) }
-            }
+            val document = result.expectStatus().isOk
+                .expectBody().json(objectMapper.writeValueAsString(response))
 
             // docs
-            result.restDoc("login200", "로그인 API")
+            document.restDoc("login200", "로그인 API")
             {
                 request {
                     body { "email" type "String" mean "email" }
@@ -82,18 +80,18 @@ class LoginControllerTest(
             every { loginService.login(request) } throws IllegalArgumentException("Invalid email")
 
             // when
-            val result = mockMvc.post("/api/v1/login") {
-                contentType = MediaType.APPLICATION_JSON
-                content = objectMapper.writeValueAsString(request)
-            }.andDo { print() }
+            val result = webTestClient.post().uri("/api/v1/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(request)
+                .exchange()
 
             // then
-            result.andExpect {
-                status { isBadRequest() }
-            }
+            val document = result
+                .expectStatus().isBadRequest
+                .expectBody()
 
             // docs
-            result.restDoc("login400", "로그인 API")
+            document.restDoc("login400", "로그인 API")
             {
                 request {
                     body { "email" type "String" mean "email" }
@@ -107,18 +105,18 @@ class LoginControllerTest(
             every { loginService.login(request) } throws RuntimeException("Internal server error")
 
             // when
-            val result = mockMvc.post("/api/v1/login") {
-                contentType = MediaType.APPLICATION_JSON
-                content = objectMapper.writeValueAsString(request)
-            }.andDo { print() }
+            val result = webTestClient.post().uri("/api/v1/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(request)
+                .exchange()
 
             // then
-            result.andExpect {
-                status { isInternalServerError() }
-            }
+            val document = result
+                .expectStatus().is5xxServerError
+                .expectBody()
 
             // docs
-            result.restDoc("login500", "로그인 API")
+            document.restDoc("login500", "로그인 API")
             {
                 request {
                     body { "email" type "String" mean "email" }
@@ -134,18 +132,17 @@ class LoginControllerTest(
             every { loginService.logout(request) } returns Unit
 
             // when
-            val result = mockMvc.post("/api/v1/logout") {
-                contentType = MediaType.APPLICATION_JSON
-                content = objectMapper.writeValueAsString(request)
-            }.andDo { print() }
+            val result = webTestClient.post().uri("/api/v1/logout")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(request)
+                .exchange()
 
             // then
-            result.andExpect {
-                status { isOk() }
-            }
+            val document = result.expectStatus().isOk
+                .expectBody()
 
             // docs
-            result.restDoc("logout200", "로그아웃 API")
+            document.restDoc("logout200", "로그아웃 API")
             {
                 request {
                     body {
@@ -162,18 +159,17 @@ class LoginControllerTest(
             every { loginService.logout(request) } throws IllegalArgumentException("Invalid token")
 
             // when
-            val result = mockMvc.post("/api/v1/logout") {
-                contentType = MediaType.APPLICATION_JSON
-                content = objectMapper.writeValueAsString(request)
-            }.andDo { print() }
+            val result = webTestClient.post().uri("/api/v1/logout")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(request)
+                .exchange()
 
             // then
-            result.andExpect {
-                status { isBadRequest() }
-            }
+            val document = result.expectStatus().isBadRequest
+                .expectBody()
 
             // docs
-            result.restDoc("logout400", "로그아웃 API")
+            document.restDoc("logout400", "로그아웃 API")
             {
                 request {
                     body {
@@ -190,18 +186,17 @@ class LoginControllerTest(
             every { loginService.logout(request) } throws RuntimeException("Internal server error")
 
             // when
-            val result = mockMvc.post("/api/v1/logout") {
-                contentType = MediaType.APPLICATION_JSON
-                content = objectMapper.writeValueAsString(request)
-            }.andDo { print() }
+            val result = webTestClient.post().uri("/api/v1/logout")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(request)
+                .exchange()
 
             // then
-            result.andExpect {
-                status { isInternalServerError() }
-            }
+            val document = result.expectStatus().is5xxServerError
+                .expectBody()
 
             // docs
-            result.restDoc("logout500", "로그아웃 API")
+            document.restDoc("logout500", "로그아웃 API")
             {
                 request {
                     body {

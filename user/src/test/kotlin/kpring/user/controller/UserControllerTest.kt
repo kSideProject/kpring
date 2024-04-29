@@ -27,7 +27,7 @@ import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.restdocs.ManualRestDocumentation
 import org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint
-import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation
+import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.documentationConfiguration
 import org.springframework.test.web.servlet.client.MockMvcWebTestClient
 import org.springframework.web.context.WebApplicationContext
 
@@ -36,16 +36,16 @@ import org.springframework.web.context.WebApplicationContext
 class UserControllerTest(
     val objectMapper: ObjectMapper,
     webContext: WebApplicationContext,
-    val restDocument: ManualRestDocumentation = ManualRestDocumentation(),
     @MockkBean val authClient: AuthClient,
     @MockkBean val userService: UserService,
 ) : DescribeSpec(
     {
 
+        val restDocument = ManualRestDocumentation()
         val webTestClient = MockMvcWebTestClient.bindToApplicationContext(webContext)
             .configureClient()
             .filter(
-                WebTestClientRestDocumentation.documentationConfiguration(restDocument)
+                documentationConfiguration(restDocument)
                     .operationPreprocessors()
                     .withRequestDefaults(prettyPrint())
                     .withResponseDefaults(prettyPrint())
@@ -87,7 +87,7 @@ class UserControllerTest(
                                 "Content-Type" mean "application/json"
                             }
                             body {
-                                "email" type String mean "이메일"
+                                "email" type "String" mean "이메일"
                             }
                         }
                     }
@@ -126,13 +126,13 @@ class UserControllerTest(
                                 "Content-Type" mean "application/json"
                             }
                             body {
-                                "email" type String mean "이메일"
+                                "email" type "String" mean "이메일"
                             }
                         }
 
                         response {
                             body {
-                                "message" type String mean "에러 메시지"
+                                "message" type "String" mean "에러 메시지"
                             }
                         }
                     }
@@ -170,13 +170,13 @@ class UserControllerTest(
                                 "Content-Type" mean "application/json"
                             }
                             body {
-                                "email" type String mean "이메일"
+                                "email" type "String" mean "이메일"
                             }
                         }
 
                         response {
                             body {
-                                "message" type String mean "에러 메시지"
+                                "message" type "String" mean "에러 메시지"
                             }
                         }
                     }
@@ -215,13 +215,13 @@ class UserControllerTest(
                                 "Content-Type" mean "application/json"
                             }
                             body {
-                                "email" type String mean "이메일"
+                                "email" type "String" mean "이메일"
                             }
                         }
 
                         response {
                             body {
-                                "message" type String mean "에러 메시지"
+                                "message" type "String" mean "에러 메시지"
                             }
                         }
                     }
@@ -266,12 +266,12 @@ class UserControllerTest(
                                 "Content-Type" mean "application/json"
                             }
                             body {
-                                "email" type String mean "이메일"
+                                "email" type "String" mean "이메일"
                             }
                         }
                         response {
                             body {
-                                "email" type String mean "이메일"
+                                "email" type "String" mean "이메일"
                             }
                         }
                     }
@@ -313,12 +313,12 @@ class UserControllerTest(
                                 "Content-Type" mean "application/json"
                             }
                             body {
-                                "email" type String mean "이메일"
+                                "email" type "String" mean "이메일"
                             }
                         }
                         response {
                             body {
-                                "message" type String mean "에러 메시지"
+                                "message" type "String" mean "에러 메시지"
                             }
                         }
                     }
@@ -357,12 +357,12 @@ class UserControllerTest(
                                 "Content-Type" mean "application/json"
                             }
                             body {
-                                "email" type String mean "이메일"
+                                "email" type "String" mean "이메일"
                             }
                         }
                         response {
                             body {
-                                "message" type String mean "에러 메시지"
+                                "message" type "String" mean "에러 메시지"
                             }
                         }
                     }
@@ -407,7 +407,7 @@ class UserControllerTest(
                         }
                         response {
                             body {
-                                "email" type String mean "이메일"
+                                "email" type "String" mean "이메일"
                             }
                         }
                     }
@@ -444,7 +444,7 @@ class UserControllerTest(
                             header { "Authorization" mean "Bearer token" }
                         }
                         response {
-                            body { "message" type String mean "에러 메시지" }
+                            body { "message" type "String" mean "에러 메시지" }
                         }
                     }
             }
@@ -478,7 +478,7 @@ class UserControllerTest(
                             path { "userId" mean "사용자 아이디" }
                             header { "Authorization" mean "Bearer token" }
                         }
-                        response { body { "message" type String mean "에러 메시지" } }
+                        response { body { "message" type "String" mean "에러 메시지" } }
                     }
             }
         }
@@ -592,35 +592,4 @@ class UserControllerTest(
         }
     }
 ) {
-
-
-//    @Test
-//    @WithMockUser(username = "testUser", roles = ["USER"])
-//    fun `친구추가 성공케이스`() {
-//        val userId = 1L;
-//        val friendsRequestDto = AddFriendRequest(friendId = 2L)
-//
-//        webTestClient.post()
-//            .uri("/api/v1/user/{userId}/friend/{friendId}", userId, 2)
-//            .contentType(MediaType.APPLICATION_JSON)
-//            .bodyValue(friendsRequestDto)
-//            .exchange()
-//            .expectStatus().isOk
-//            .expectBody()
-//    }
-//
-//    @Test
-//    @WithMockUser(username = "testUser", roles = ["USER"])
-//    fun `친구추가_실패케이스`() {
-//        val userId = -1L // 유효하지 않은 사용자 아이디
-//        val friendsRequestDto = AddFriendRequest(friendId = 2L)
-//
-//        webTestClient.post()
-//            .uri("/api/v1/user/{userId}/friend/{friendId}", userId, 2)
-//            .contentType(MediaType.APPLICATION_JSON)
-//            .bodyValue(friendsRequestDto)
-//            .exchange()
-//            .expectStatus().isBadRequest
-//            .expectBody()
-//    }
 }

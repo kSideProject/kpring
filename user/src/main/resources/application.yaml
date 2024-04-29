@@ -1,6 +1,8 @@
 spring:
+  profiles:
+    active: ${APPLICATION_PROFILE:local}
   application:
     name: user
 
 auth:
-  url: "http://localhost:8080/api/v1"
+  url: ${AUTH_SERVICE_URL:http://localhost:8080/api/v1}

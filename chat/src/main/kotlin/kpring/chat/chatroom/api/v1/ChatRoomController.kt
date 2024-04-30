@@ -21,8 +21,12 @@ class ChatRoomController (
         @RequestHeader("Authorization") token: String
     ): ResponseEntity<*> {
         val tokenResponse = authClient.validateToken(token)
-        val userId = tokenResponse.body?.userId ?: throw GlobalException(ErrorCode.INVALID_TOKEN_BODY)
-
+        val body = tokenResponse.body?: throw GlobalException(ErrorCode.INVALID_TOKEN_BODY)
+        val userId = body.userId?: throw GlobalException(ErrorCode.USERID_NOT_EXIST)
+        val isValid = body.isValid
+        if(!isValid){
+            throw GlobalException(ErrorCode.INVALID_TOKEN)
+        }
         val result = chatRoomService.createChatRoom(request, userId)
         return ResponseEntity.ok().body(result)
     }

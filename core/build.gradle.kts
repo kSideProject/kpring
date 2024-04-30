@@ -12,8 +12,10 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     // validation
     implementation("org.springframework.boot:spring-boot-starter-validation")
+    // tomcat
+    compileOnly("org.springframework.boot:spring-boot-starter-web")
     // netty
-    implementation("org.springframework.boot:spring-boot-starter-webflux")
+    compileOnly("org.springframework.boot:spring-boot-starter-webflux")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }

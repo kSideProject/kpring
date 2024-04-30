@@ -1,4 +1,4 @@
-package kpring.user.config
+package kpring.core.global.config
 
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
@@ -8,7 +8,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
 @Profile("local")
 @Configuration
-class StaticResourceConfig : WebMvcConfigurer{
+class WebMvcStaticResourceConfig : WebMvcConfigurer{
 
     override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
         registry.addResourceHandler("/static/**")
@@ -16,8 +16,8 @@ class StaticResourceConfig : WebMvcConfigurer{
     }
 
     override fun addCorsMappings(registry: CorsRegistry) {
-        registry.addMapping("/static/**")
-            .allowedOriginPatterns("*")
+        registry.addMapping("/**")
+            .allowedOriginPatterns("http://localhost*")
             .allowedMethods("GET", "POST", "DELETE", "PUT", "FETCH")
     }
 }

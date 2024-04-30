@@ -13,11 +13,11 @@ class ChatRoom(
 
     val createdAt: LocalDateTime = LocalDateTime.now()
 
-    fun getUsers(): MutableList<String>{
+    fun getUsers(): List<String>{
         return members
     }
 
-    fun addUsers(list : MutableList<String>){
+    fun addUsers(list : List<String>){
         members.addAll(list)
     }
 

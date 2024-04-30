@@ -12,10 +12,7 @@ class ChatRoomService(
     fun createChatRoom(
         request: CreateChatRoomRequest,
         userId: String
-    ): String {
-
+    ){
         val chatRoom = chatRoomRepository.save(ChatRoom(request.users))
-
-        return "success"
     }
 }

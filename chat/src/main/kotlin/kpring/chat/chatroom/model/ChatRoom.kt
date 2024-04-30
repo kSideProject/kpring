@@ -5,11 +5,11 @@ import org.springframework.data.mongodb.core.mapping.Document
 import java.time.LocalDateTime
 
 @Document(collection = "chatrooms")
-class ChatRoom(
-    var members : MutableList<String>
-){
+class ChatRoom{
     @Id
     var id: String? = null
+
+    var members : MutableList<String> = mutableListOf()
 
     val createdAt: LocalDateTime = LocalDateTime.now()
 

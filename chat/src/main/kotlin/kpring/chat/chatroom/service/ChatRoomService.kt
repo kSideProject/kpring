@@ -13,6 +13,8 @@ class ChatRoomService(
         request: CreateChatRoomRequest,
         userId: String
     ){
-        val chatRoom = chatRoomRepository.save(ChatRoom(request.users))
+        val chatRoom = ChatRoom()
+        chatRoom.addUsers(request.users)
+        val savedChatRoom = chatRoomRepository.save(chatRoom)
     }
 }

@@ -4,5 +4,5 @@ import jakarta.validation.constraints.NotNull
 
 data class CreateChatRoomRequest (
     @field:NotNull
-    var users : MutableList<String>
+    var users : List<String>
 )

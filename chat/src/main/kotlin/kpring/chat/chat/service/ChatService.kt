@@ -14,14 +14,12 @@ class ChatService(
      */
     fun createChat(
         request: CreateChatRequest, userId: String
-    ): String {
+    ) {
 
         val chat = chatRepository.save(
             Chat(
                 userId = userId, roomId = request.room, nickname = request.nickname, content = request.content
             )
         )
-
-        return "success"
     }
 }

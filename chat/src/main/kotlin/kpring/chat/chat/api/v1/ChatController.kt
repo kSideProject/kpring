@@ -20,21 +20,14 @@ class ChatContoller(
         @Validated @RequestBody request: CreateChatRequest, @RequestHeader("Authorization") token: String
     ): ResponseEntity<*> {
         val tokenResponse = authClient.validateToken(token)
-        val userId = tokenResponse.body?.userId ?: throw GlobalException(ErrorCode.INVALID_TOKEN_BODY)
+        var body = tokenResponse.body?: throw GlobalException(ErrorCode.INVALID_TOKEN_BODY)
+        val userId = body.userId?: throw GlobalException(ErrorCode.USERID_NOT_EXIST)
+        var isValid = body.isValid
+        if(!isValid){
+            throw GlobalException(ErrorCode.INVALID_TOKEN)
+        }
 
         val result = chatService.createChat(request, userId)
         return ResponseEntity.ok().body(result)
     }
-
-//    @GetMapping("/chat")
-//    fun getChats(
-//        @Validated @RequestParam roomId: String,
-//        @RequestHeader("Authorization") token: String
-//    ): ResponseEntity<*> {
-//        val tokenResponse = authClient.validateToken(token)
-//        val userId = tokenResponse.body?.userId ?: throw GlobalException(ErrorCode.INVALID_TOKEN_BODY)
-//
-//        val result = chatService.getChats(roomId, userId)
-//        return ResponseEntity.ok().body(result)
-//    }
 }

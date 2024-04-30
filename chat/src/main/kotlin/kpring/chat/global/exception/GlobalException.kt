@@ -1,4 +1,4 @@
-package kpring.chat.exception
+package kpring.chat.global.exception
 
 class GlobalException(private val errorCode: ErrorCode) : RuntimeException() {
 

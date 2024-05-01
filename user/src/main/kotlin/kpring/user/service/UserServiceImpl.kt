@@ -5,7 +5,9 @@ import kpring.user.dto.request.UpdateUserProfileRequest
 import kpring.user.dto.response.CreateUserResponse
 import kpring.user.dto.response.GetUserProfileResponse
 import kpring.user.dto.response.UpdateUserProfileResponse
+import kpring.user.entity.User
 import kpring.user.repository.UserRepository
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -13,12 +15,17 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class UserServiceImpl(
     private val userRepository: UserRepository,
+    private val passwordEncoder: PasswordEncoder,
+    private val userValidationService: UserValidationService
 ) : UserService {
     override fun getProfile(userId: Long): GetUserProfileResponse {
         TODO("Not yet implemented")
     }
 
-    override fun updateProfile(userId: Long, request: UpdateUserProfileRequest): UpdateUserProfileResponse {
+    override fun updateProfile(
+        userId: Long,
+        request: UpdateUserProfileRequest
+    ): UpdateUserProfileResponse {
         TODO("Not yet implemented")
     }
 
@@ -27,6 +34,19 @@ class UserServiceImpl(
     }
 
     override fun createUser(request: CreateUserRequest): CreateUserResponse {
-        TODO("Not yet implemented")
+        val password = passwordEncoder.encode(request.password)
+
+        userValidationService.validateDuplicateEmail(request.email)
+        userValidationService.validatePasswordMatch(request.password, request.passwordCheck)
+
+        val user = userRepository.save(
+            User(
+                email = request.email,
+                password = password,
+                username = request.username
+            )
+        );
+
+        return CreateUserResponse(user.id, user.email);
     }
 }

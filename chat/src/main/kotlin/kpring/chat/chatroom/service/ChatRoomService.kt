@@ -4,6 +4,7 @@ import kpring.chat.chatroom.model.ChatRoom
 import kpring.chat.chatroom.repository.ChatRoomRepository
 import kpring.core.chat.chatroom.dto.request.CreateChatRoomRequest
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
 
 @Service
 class ChatRoomService(
@@ -13,7 +14,7 @@ class ChatRoomService(
         request: CreateChatRoomRequest,
         userId: String
     ){
-        val chatRoom = ChatRoom()
+        val chatRoom = ChatRoom(LocalDateTime.now())
         chatRoom.addUsers(request.users)
         val savedChatRoom = chatRoomRepository.save(chatRoom)
     }

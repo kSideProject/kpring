@@ -5,13 +5,14 @@ import org.springframework.data.mongodb.core.mapping.Document
 import java.time.LocalDateTime
 
 @Document(collection = "chatrooms")
-class ChatRoom{
+class ChatRoom(
+    val createdAt: LocalDateTime
+){
     @Id
     var id: String? = null
 
     var members : MutableList<String> = mutableListOf()
 
-    val createdAt: LocalDateTime = LocalDateTime.now()
 
     fun getUsers(): List<String>{
         return members

@@ -1,10 +1,10 @@
-package kpring.chat.api.v1
+package kpring.chat.chat.api.v1
 
-import kpring.chat.exception.ErrorCode
-import kpring.chat.exception.GlobalException
-import kpring.chat.service.ChatService
+import kpring.chat.global.exception.ErrorCode
+import kpring.chat.global.exception.GlobalException
+import kpring.chat.chat.service.ChatService
 import kpring.core.auth.client.AuthClient
-import kpring.core.chat.dto.request.CreateChatRequest
+import kpring.core.chat.chat.dto.request.CreateChatRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
@@ -20,7 +20,12 @@ class ChatContoller(
         @Validated @RequestBody request: CreateChatRequest, @RequestHeader("Authorization") token: String
     ): ResponseEntity<*> {
         val tokenResponse = authClient.validateToken(token)
-        val userId = tokenResponse.body?.userId ?: throw GlobalException(ErrorCode.INVALID_TOKEN_BODY)
+        var body = tokenResponse.body?: throw GlobalException(ErrorCode.INVALID_TOKEN_BODY)
+        val userId = body.userId?: throw GlobalException(ErrorCode.USERID_NOT_EXIST)
+        var isValid = body.isValid
+        if(!isValid){
+            throw GlobalException(ErrorCode.INVALID_TOKEN)
+        }
 
         val result = chatService.createChat(request, userId)
         return ResponseEntity.ok().body(result)

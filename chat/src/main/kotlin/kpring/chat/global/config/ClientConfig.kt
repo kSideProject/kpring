@@ -1,4 +1,4 @@
-package kpring.chat.config
+package kpring.chat.global.config
 
 import kpring.core.auth.client.AuthClient
 import org.springframework.beans.factory.annotation.Value

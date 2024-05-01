@@ -18,7 +18,7 @@ class ChatService(
 
         val chat = chatRepository.save(
             Chat(
-                userId = userId, roomId = request.room, nickname = request.nickname, content = request.content
+                userId = userId, roomId = request.room, content = request.content
             )
         )
     }

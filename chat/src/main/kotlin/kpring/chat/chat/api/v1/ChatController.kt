@@ -26,6 +26,16 @@ class ChatController(
         return ResponseEntity.ok().body(result)
     }
 
+    @GetMapping("/chat/{chatRoomId}")
+    fun getChatsByChatRoom(
+        @PathVariable("chatRoomId") chatRoomId : String,
+        @RequestHeader("Authorization") token: String
+    ): ResponseEntity<*> {
+        val userId = validateToken(authClient.validateToken(token));
+        val result = chatService.getChatsByChatRoom(chatRoomId,userId);
+        return ResponseEntity.ok().body(result);
+    }
+
     private fun validateToken(tokenResponse :  ResponseEntity<TokenValidationResponse>) : String
     {
         val body = tokenResponse.body?: throw GlobalException(ErrorCode.INVALID_TOKEN_BODY)

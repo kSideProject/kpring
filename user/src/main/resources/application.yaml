@@ -3,6 +3,11 @@ spring:
     active: ${APPLICATION_PROFILE:local}
   application:
     name: user
+  datasource:
+    username: root
+    password: 2435800
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/kpring
 
 auth:
   url: ${AUTH_SERVICE_URL:http://localhost:8080/api/v1}

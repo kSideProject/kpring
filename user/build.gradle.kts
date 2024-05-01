@@ -13,18 +13,22 @@ plugins {
 
 dependencies {
     implementation(project(":core"))
+    // MySQL
+    implementation("com.mysql:mysql-connector-j")
     // JPA
-    implementation ("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     // WEB
-    implementation ("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-web")
     // JACKSON
-    implementation ("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     // H2
-    runtimeOnly ("com.h2database:h2")
+    runtimeOnly("com.h2database:h2")
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     // validation
     implementation("org.springframework.boot:spring-boot-starter-validation")
+    // security
+    implementation("org.springframework.boot:spring-boot-starter-security")
 
     // lombok
     compileOnly("org.projectlombok:lombok")

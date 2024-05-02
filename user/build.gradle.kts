@@ -14,15 +14,14 @@ plugins {
 dependencies {
     implementation(project(":core"))
     // MySQL
-    implementation("com.mysql:mysql-connector-j")
+    runtimeOnly("com.mysql:mysql-connector-j")
     // JPA
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     // WEB
     implementation("org.springframework.boot:spring-boot-starter-web")
     // JACKSON
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    // H2
-    runtimeOnly("com.h2database:h2")
+
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     // validation

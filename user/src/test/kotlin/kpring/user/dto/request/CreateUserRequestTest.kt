@@ -14,6 +14,21 @@ class CreateUserRequestTest : StringSpec({
         val violation = validator.validate(request)
         violation.isEmpty() shouldBe true
     }
+
+    "잘못된 이메일 형식으로 인해 CreateUserRequestTest 생성 실패" {
+        val request = CreateUserRequest(
+            "wrongEmail",
+            TEST_PASSWORD,
+            TEST_PASSWORD_CHECK,
+            TEST_USERNAME
+        )
+
+        val violations = validator.validate(request)
+        violations.forEach { violation ->
+            violation.message shouldBe "invalid email"
+        }
+    }
+
 }) {
     companion object {
         private const val TEST_EMAIL = "test@email.com"

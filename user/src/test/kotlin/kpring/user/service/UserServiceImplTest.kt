@@ -1,10 +1,13 @@
 package kpring.user.service
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.*
 import kpring.user.dto.request.CreateUserRequest
 import kpring.user.entity.User
+import kpring.user.exception.ErrorCode
+import kpring.user.exception.ExceptionWrapper
 import kpring.user.repository.UserRepository
 import org.springframework.security.crypto.password.PasswordEncoder
 
@@ -66,6 +69,19 @@ class UserServiceImplTest() : FunSpec({
             )
         }
     }
+
+    test("회원가입_실패_이메일중복케이스") {
+        every { userValidationService.validateDuplicateEmail(TEST_EMAIL) } throws
+                ExceptionWrapper(ErrorCode.ALREADY_EXISTS_EMAIL)
+
+        val exception = shouldThrow<ExceptionWrapper> {
+            userValidationService.validateDuplicateEmail(createUserRequest.email)
+        }
+        exception.errorCode.message shouldBe "Email already exists"
+
+        verify { userRepository.save(any()) wasNot Called }
+    }
+
 //    test("친구추가_성공") {
 //        val user = User(id = 1L, username = "user1", followers = mutableSetOf(), followees = mutableSetOf())
 //        val friend = User(id = 2L, username = "user2", followers = mutableSetOf(), followees = mutableSetOf())

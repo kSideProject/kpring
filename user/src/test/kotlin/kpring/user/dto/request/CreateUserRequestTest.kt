@@ -29,6 +29,22 @@ class CreateUserRequestTest : StringSpec({
         }
     }
 
+    "잘못된 비밀번호의 형태로 인해 CreateUserRequest 생성 실패" {
+        val request = CreateUserRequest(
+            TEST_EMAIL,
+            "wrongPassword",
+            TEST_PASSWORD_CHECK,
+            TEST_USERNAME
+        )
+
+        val violations = validator.validate(request)
+        violations.forEach { violation ->
+            violation.message shouldBe "비밀번호는 최소 8자에서 15자 사이, " +
+                    "대문자와 소문자, 숫자가 포함되어야 하며, " +
+                    "특수문자 (!, @, #, $)도 사용할 수 있습니다."
+        }
+    }
+
 }) {
     companion object {
         private const val TEST_EMAIL = "test@email.com"

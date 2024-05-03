@@ -45,6 +45,21 @@ class CreateUserRequestTest : StringSpec({
         }
     }
 
+    "잘못된 닉네임의 형태로 인해 CreateUserRequest 생성 실패" {
+        val request = CreateUserRequest(
+            TEST_EMAIL,
+            TEST_PASSWORD,
+            TEST_PASSWORD_CHECK,
+            "wrongNickname!"
+        )
+
+        val violations = validator.validate(request)
+        violations.forEach { violation ->
+            violation.message shouldBe "닉네임은 영문 대소문자, 숫자, 한글로 구성되어야 하며, " +
+                    "1자 이상 32자 이하여야 합니다."
+        }
+    }
+
 }) {
     companion object {
         private const val TEST_EMAIL = "test@email.com"

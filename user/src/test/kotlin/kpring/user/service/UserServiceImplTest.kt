@@ -1,21 +1,71 @@
 package kpring.user.service
 
 import io.kotest.core.spec.style.FunSpec
-import kpring.user.dto.request.AddFriendRequest
-import kpring.user.dto.result.AddFriendResponse
+import io.kotest.matchers.shouldBe
+import io.mockk.*
+import kpring.user.dto.request.CreateUserRequest
 import kpring.user.entity.User
 import kpring.user.repository.UserRepository
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertThrows
-import org.mockito.Mockito.*
-import java.util.*
+import org.springframework.security.crypto.password.PasswordEncoder
 
 class UserServiceImplTest() : FunSpec({
-
-    val userRepository: UserRepository = mock()
-//    var userService: UserServiceImpl = UserServiceImpl(userRepository)
+    val userRepository: UserRepository = mockk()
+    val passwordEncoder: PasswordEncoder = mockk()
+    val userValidationService: UserValidationService = mockk()
+    val userService = UserServiceImpl(
+        userRepository,
+        passwordEncoder,
+        userValidationService
+    )
     val friendService = FriendService(userRepository)
+    lateinit var createUserRequest: CreateUserRequest
 
+    beforeTest {
+        createUserRequest = CreateUserRequest(
+            TEST_EMAIL,
+            TEST_PASSWORD,
+            TEST_PASSWORD,
+            TEST_USERNAME
+        )
+        clearMocks(userRepository, passwordEncoder, userValidationService, answers = true)
+    }
+
+    test("회원가입_성공") {
+        val userId = 1L
+        val user = User(
+            userId,
+            createUserRequest.username,
+            createUserRequest.email,
+            createUserRequest.password
+        )
+
+        every { userValidationService.validateDuplicateEmail(createUserRequest.email) } just Runs
+        every {
+            userValidationService.validatePasswordMatch(
+                createUserRequest.password,
+                createUserRequest.passwordCheck
+            )
+        } just Runs
+
+        every { userRepository.existsByEmail(createUserRequest.email) } returns false
+        every { passwordEncoder.encode(createUserRequest.password) } returns ENCODED_PASSWORD
+        every { userRepository.save(any()) } returns user
+
+        val response = userService.createUser(createUserRequest)
+
+        verify { userRepository.save(any()) }
+
+        userId shouldBe response.id
+        createUserRequest.email shouldBe response.email
+
+        verify { userValidationService.validateDuplicateEmail(createUserRequest.email) }
+        verify {
+            userValidationService.validatePasswordMatch(
+                createUserRequest.password,
+                createUserRequest.passwordCheck
+            )
+        }
+    }
 //    test("친구추가_성공") {
 //        val user = User(id = 1L, username = "user1", followers = mutableSetOf(), followees = mutableSetOf())
 //        val friend = User(id = 2L, username = "user2", followers = mutableSetOf(), followees = mutableSetOf())
@@ -54,4 +104,12 @@ class UserServiceImplTest() : FunSpec({
 //
 //        verify(userRepository).findById(userId)
 //    }
-})
+}) {
+    companion object {
+        private const val TEST_EMAIL = "test@email.com"
+        private const val TEST_PASSWORD = "Password123!"
+        private const val ENCODED_PASSWORD = "EncodedPassword123!"
+        private const val TEST_USERNAME = "test"
+        private const val MISMATCHED_PASSWORD = "MismatchedPassword123!"
+    }
+}

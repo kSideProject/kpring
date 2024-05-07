@@ -1,6 +1,6 @@
 package kpring.chat.chat.model
 
-import kpring.chat.global.model.BaseTimeWithUpdateAndDelete
+import kpring.chat.global.model.BaseTime
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 
@@ -9,18 +9,12 @@ class Chat(
     val userId: String,
     val roomId: String,
     val content: String,
-) : BaseTimeWithUpdateAndDelete() {
+) : BaseTime() {
     @Id
     var id: String? = null
 
-    var isDeleted: Boolean = false
-    var isEdited: Boolean = false
-
-    fun delete() {
-        isDeleted = true
+    fun isEdited(): Boolean {
+        return !createdAt.equals(updatedAt)
     }
 
-    fun edit() {
-        isEdited = true
-    }
 }

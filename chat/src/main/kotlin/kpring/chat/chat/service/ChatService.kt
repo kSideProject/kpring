@@ -34,22 +34,16 @@ class ChatService(
         chatRoomId: String, userId: String
     ) : List<ChatResponse>{
 
-        checkIfUserBelongToChatRoom(chatRoomId, userId)
+        //check if there is a chatroom with the chatRoomId and the user is one of the members
+        if(!chatRoomRepository.existsByIdAndMembersContaining(chatRoomId,userId)){
+            throw GlobalException(ErrorCode.UNAUTHORIZED_CHATROOM)
+        }
+        //find chats by chatRoomId and convert them into DTOs
         val chats : List<Chat> = chatRepository.findAllByRoomId(chatRoomId)
         val chatResponses = chats.map { chat ->
             ChatResponse(chat.roomId, chat.isDeleted, chat.isEdited, chat.sentAt, chat.content)
         }
 
         return chatResponses
-    }
-
-    fun checkIfUserBelongToChatRoom(chatRoomId: String, userId: String) {
-        val chatroom : ChatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow{GlobalException(ErrorCode.CHATROOM_NOT_FOUND)}
-        for(member in chatroom.getUsers()){
-            if(member.equals(userId)){
-                return;
-            }
-        }
-        throw GlobalException(ErrorCode.UNAUTHORIZED_CHATROOM)
     }
 }

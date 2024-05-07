@@ -1,8 +1,8 @@
 package kpring.chat.chat.api.v1
 
+import kpring.chat.chat.service.ChatService
 import kpring.chat.global.exception.ErrorCode
 import kpring.chat.global.exception.GlobalException
-import kpring.chat.chat.service.ChatService
 import kpring.core.auth.client.AuthClient
 import kpring.core.auth.dto.response.TokenValidationResponse
 import kpring.core.chat.chat.dto.request.CreateChatRequest
@@ -18,30 +18,29 @@ class ChatController(
 
     @PostMapping("/chat")
     fun createChat(
-        @Validated @RequestBody request: CreateChatRequest,
-        @RequestHeader("Authorization") token: String
+        @Validated @RequestBody request: CreateChatRequest, @RequestHeader("Authorization") token: String
     ): ResponseEntity<*> {
-        val userId = getUserId(authClient.validateToken(token));
+        val userId = getUserId(authClient.validateToken(token))
         val result = chatService.createChat(request, userId)
         return ResponseEntity.ok().body(result)
     }
 
     @GetMapping("/chat/{chatRoomId}")
     fun getChatsByChatRoom(
-        @PathVariable("chatRoomId") chatRoomId : String,
-        @RequestHeader("Authorization") token: String
+        @PathVariable("chatRoomId") chatRoomId: String, @RequestHeader("Authorization") token: String
     ): ResponseEntity<*> {
-        val userId = getUserId(authClient.validateToken(token));
-        val result = chatService.getChatsByChatRoom(chatRoomId,userId);
-        return ResponseEntity.ok().body(result);
+        val userId = getUserId(authClient.validateToken(token))
+        val result = chatService.getChatsByChatRoom(chatRoomId, userId)
+        return ResponseEntity.ok().body(result)
     }
 
-    private fun getUserId(tokenResponse :  ResponseEntity<TokenValidationResponse>) : String
-    {
-        val body = tokenResponse.body?: throw GlobalException(ErrorCode.INVALID_TOKEN_BODY)
-        val userId = body.userId?: throw GlobalException(ErrorCode.USERID_NOT_EXIST)
-        if(!body.isValid){ throw GlobalException(ErrorCode.INVALID_TOKEN) }
+    private fun getUserId(tokenResponse: ResponseEntity<TokenValidationResponse>): String {
+        val body = tokenResponse.body ?: throw GlobalException(ErrorCode.INVALID_TOKEN_BODY)
+        val userId = body.userId ?: throw GlobalException(ErrorCode.USERID_NOT_EXIST)
+        if (!body.isValid) {
+            throw GlobalException(ErrorCode.INVALID_TOKEN)
+        }
 
-        return userId;
+        return userId
     }
 }

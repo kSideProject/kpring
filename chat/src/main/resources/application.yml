@@ -14,3 +14,5 @@ server:
 
 auth:
   url: "http://localhost:8080/"
+page:
+  size: 100

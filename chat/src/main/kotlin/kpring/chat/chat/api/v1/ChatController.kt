@@ -21,7 +21,7 @@ class ChatController(
         @Validated @RequestBody request: CreateChatRequest,
         @RequestHeader("Authorization") token: String
     ): ResponseEntity<*> {
-        val userId = validateToken(authClient.validateToken(token));
+        val userId = getUserId(authClient.validateToken(token));
         val result = chatService.createChat(request, userId)
         return ResponseEntity.ok().body(result)
     }
@@ -31,12 +31,12 @@ class ChatController(
         @PathVariable("chatRoomId") chatRoomId : String,
         @RequestHeader("Authorization") token: String
     ): ResponseEntity<*> {
-        val userId = validateToken(authClient.validateToken(token));
+        val userId = getUserId(authClient.validateToken(token));
         val result = chatService.getChatsByChatRoom(chatRoomId,userId);
         return ResponseEntity.ok().body(result);
     }
 
-    private fun validateToken(tokenResponse :  ResponseEntity<TokenValidationResponse>) : String
+    private fun getUserId(tokenResponse :  ResponseEntity<TokenValidationResponse>) : String
     {
         val body = tokenResponse.body?: throw GlobalException(ErrorCode.INVALID_TOKEN_BODY)
         val userId = body.userId?: throw GlobalException(ErrorCode.USERID_NOT_EXIST)

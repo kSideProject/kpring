@@ -25,12 +25,14 @@ class ChatController(
         return ResponseEntity.ok().body(result)
     }
 
-    @GetMapping("/chat/{chatRoomId}")
+    @GetMapping("/chat/{chatRoomId}/{page}")
     fun getChatsByChatRoom(
-        @PathVariable("chatRoomId") chatRoomId: String, @RequestHeader("Authorization") token: String
+        @PathVariable("chatRoomId") chatRoomId: String,
+        @PathVariable("page") page: Int,
+        @RequestHeader("Authorization") token: String
     ): ResponseEntity<*> {
         val userId = getUserId(authClient.validateToken(token))
-        val result = chatService.getChatsByChatRoom(chatRoomId, userId)
+        val result = chatService.getChatsByChatRoom(chatRoomId, userId, page)
         return ResponseEntity.ok().body(result)
     }
 

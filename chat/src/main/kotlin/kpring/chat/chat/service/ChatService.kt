@@ -7,16 +7,17 @@ import kpring.chat.global.exception.ErrorCode
 import kpring.chat.global.exception.GlobalException
 import kpring.core.chat.chat.dto.request.CreateChatRequest
 import kpring.core.chat.chat.dto.response.ChatResponse
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 
 @Service
 class ChatService(
-    private val chatRepository: ChatRepository, private val chatRoomRepository: ChatRoomRepository
+    private val chatRepository: ChatRepository,
+    private val chatRoomRepository: ChatRoomRepository,
+    @Value("\${page.size}") val pageSize: Int = 100
 ) {
-
-    val pageSize: Int = 2
 
     /*
      business logic
@@ -45,7 +46,7 @@ class ChatService(
         //find chats by chatRoomId and convert them into DTOs
         val chats: List<Chat> = chatRepository.findAllByRoomId(chatRoomId, pageable)
         val chatResponses = chats.map { chat ->
-            ChatResponse(chat.roomId, chat.isDeleted, chat.isEdited, chat.createdAt, chat.content)
+            ChatResponse(chat.roomId,chat.isEdited(),chat.createdAt, chat.content)
         }
 
         return chatResponses

@@ -1,18 +1,19 @@
 package kpring.chat.global.model
 
-import jakarta.persistence.EntityListeners
-import jakarta.persistence.MappedSuperclass
 import org.springframework.data.annotation.CreatedDate
-import org.springframework.data.jpa.domain.support.AuditingEntityListener
+import org.springframework.data.annotation.LastModifiedDate
 import java.time.LocalDateTime
 
-@EntityListeners(AuditingEntityListener::class)
-@MappedSuperclass
 abstract class BaseTime {
-    @CreatedDate
+
     lateinit var createdAt: LocalDateTime
 
+    @LastModifiedDate
+    var updatedAt: LocalDateTime ?= null;
+
     init {
-        createdAt = LocalDateTime.now()
+        val now : LocalDateTime = LocalDateTime.now()
+        createdAt = now
+        updatedAt = now
     }
 }

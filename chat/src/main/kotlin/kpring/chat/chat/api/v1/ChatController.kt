@@ -18,7 +18,8 @@ class ChatController(
 
     @PostMapping("/chat")
     fun createChat(
-        @Validated @RequestBody request: CreateChatRequest, @RequestHeader("Authorization") token: String
+        @Validated @RequestBody request: CreateChatRequest,
+        @RequestHeader("Authorization") token: String
     ): ResponseEntity<*> {
         val userId = getUserId(authClient.validateToken(token))
         val result = chatService.createChat(request, userId)

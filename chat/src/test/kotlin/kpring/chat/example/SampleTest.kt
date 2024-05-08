@@ -24,7 +24,7 @@ class SampleTest(
         // given
         repeat(5){ idx ->
             chatRepository.save(
-                Chat("testUserId", "testRoomId", "testNickname$idx", "testContent")
+                Chat("testUserId", "testRoomId", "testContent$idx")
             )
         }
 
@@ -35,11 +35,12 @@ class SampleTest(
         )
 
         // then
-        result shouldHaveSize 5
+
         result.forEach {
             it.userId shouldBe "testUserId"
-            println("${it.nickname} : ${it.content}")
+            println("${it.id} : ${it.content}")
         }
+        result shouldHaveSize 5
     }
 
     it("query dsl 적용 테스트 : 다중 조건") {
@@ -47,23 +48,24 @@ class SampleTest(
         chatRepository.deleteAll()
         repeat(5){ idx ->
             chatRepository.save(
-                Chat("testUserId", "testRoomId", "testNickname$idx", "testContent")
+                Chat("testUserId", "testRoomId", "testContent$idx")
             )
         }
 
         // when
         val result = chatRepository.findAll(
             QChat.chat.userId.eq("testUserId")
-                .and(QChat.chat.nickname.contains("testNickname"))
+                .and(QChat.chat.content.contains("testContent"))
                 .and(null), // null을 적용하면 조건이 적용되지 않는다.
-            QChat.chat.nickname.desc()
+            QChat.chat.content.desc()
         )
 
         // then
-        result shouldHaveSize 5
+
         result.forEach {
             it.userId shouldBe "testUserId"
-            println("${it.nickname} : ${it.content}")
+            println("${it.roomId} : ${it.content}")
         }
+        result shouldHaveSize 5
     }
 })

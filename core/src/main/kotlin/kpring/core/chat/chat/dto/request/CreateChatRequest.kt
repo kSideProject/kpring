@@ -7,7 +7,5 @@ data class CreateChatRequest (
     @field:NotNull
     val room: String,
     @field:NotBlank
-    val nickname: String,
-    @field:NotBlank
     val content: String
 )

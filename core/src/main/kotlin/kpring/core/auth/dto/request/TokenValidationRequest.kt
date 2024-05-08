@@ -4,6 +4,6 @@ import jakarta.validation.constraints.NotBlank
 
 @Deprecated("삭제 예정입니다.")
 data class TokenValidationRequest(
-    @NotBlank
-    val userId: String
+  @NotBlank
+  val userId: String,
 )

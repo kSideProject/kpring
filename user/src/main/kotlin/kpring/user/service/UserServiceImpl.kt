@@ -14,39 +14,40 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 @Transactional
 class UserServiceImpl(
-    private val userRepository: UserRepository,
-    private val passwordEncoder: PasswordEncoder,
-    private val userValidationService: UserValidationService
+  private val userRepository: UserRepository,
+  private val passwordEncoder: PasswordEncoder,
+  private val userValidationService: UserValidationService,
 ) : UserService {
-    override fun getProfile(userId: Long): GetUserProfileResponse {
-        TODO("Not yet implemented")
-    }
+  override fun getProfile(userId: Long): GetUserProfileResponse {
+    TODO("Not yet implemented")
+  }
 
-    override fun updateProfile(
-        userId: Long,
-        request: UpdateUserProfileRequest
-    ): UpdateUserProfileResponse {
-        TODO("Not yet implemented")
-    }
+  override fun updateProfile(
+    userId: Long,
+    request: UpdateUserProfileRequest,
+  ): UpdateUserProfileResponse {
+    TODO("Not yet implemented")
+  }
 
-    override fun exitUser(userId: Long): Boolean {
-        TODO("Not yet implemented")
-    }
+  override fun exitUser(userId: Long): Boolean {
+    TODO("Not yet implemented")
+  }
 
-    override fun createUser(request: CreateUserRequest): CreateUserResponse {
-        val password = passwordEncoder.encode(request.password)
+  override fun createUser(request: CreateUserRequest): CreateUserResponse {
+    val password = passwordEncoder.encode(request.password)
 
-        userValidationService.validateDuplicateEmail(request.email)
-        userValidationService.validatePasswordMatch(request.password, request.passwordCheck)
+    userValidationService.validateDuplicateEmail(request.email)
+    userValidationService.validatePasswordMatch(request.password, request.passwordCheck)
 
-        val user = userRepository.save(
-            User(
-                email = request.email,
-                password = password,
-                username = request.username
-            )
-        );
+    val user =
+      userRepository.save(
+        User(
+          email = request.email,
+          password = password,
+          username = request.username,
+        ),
+      )
 
-        return CreateUserResponse(user.id, user.email);
-    }
+    return CreateUserResponse(user.id, user.email)
+  }
 }

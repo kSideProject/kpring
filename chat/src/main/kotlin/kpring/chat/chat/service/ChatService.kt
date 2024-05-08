@@ -7,19 +7,23 @@ import org.springframework.stereotype.Service
 
 @Service
 class ChatService(
-    private val chatRepository: ChatRepository
+  private val chatRepository: ChatRepository,
 ) {
-    /*
-     business logic
-     */
-    fun createChat(
-        request: CreateChatRequest, userId: String
-    ) {
-
-        val chat = chatRepository.save(
-            Chat(
-                userId = userId, roomId = request.room, nickname = request.nickname, content = request.content
-            )
-        )
-    }
+  /*
+   business logic
+   */
+  fun createChat(
+    request: CreateChatRequest,
+    userId: String,
+  ) {
+    val chat =
+      chatRepository.save(
+        Chat(
+          userId = userId,
+          roomId = request.room,
+          nickname = request.nickname,
+          content = request.content,
+        ),
+      )
+  }
 }

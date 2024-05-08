@@ -1,51 +1,51 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.springframework.boot") version "3.2.4"
-    id("io.spring.dependency-management") version "1.1.4"
-    kotlin("jvm") version "1.9.23"
-    kotlin("plugin.spring") version "1.9.23"
+  id("org.springframework.boot") version "3.2.4"
+  id("io.spring.dependency-management") version "1.1.4"
+  kotlin("jvm") version "1.9.23"
+  kotlin("plugin.spring") version "1.9.23"
 }
 
 group = "kpring"
 version = "0.0.1-SNAPSHOT"
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
+  sourceCompatibility = JavaVersion.VERSION_21
 }
 
 repositories {
-    mavenCentral()
+  mavenCentral()
 }
 
 dependencies {
-    // core module
-    api(project(":core"))
+  // core module
+  api(project(":core"))
 
-    // webflux
-    implementation("org.springframework.boot:spring-boot-starter-webflux")
+  // webflux
+  implementation("org.springframework.boot:spring-boot-starter-webflux")
 
-    // mongodb
-    implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
+  // mongodb
+  implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
 
-    //web
-    implementation("org.springframework.boot:spring-boot-starter-web")
+  // web
+  implementation("org.springframework.boot:spring-boot-starter-web")
 
-    // validation
-    implementation("org.springframework.boot:spring-boot-starter-validation")
+  // validation
+  implementation("org.springframework.boot:spring-boot-starter-validation")
 
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
+  implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+  implementation("org.jetbrains.kotlin:kotlin-reflect")
+  testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        freeCompilerArgs += "-Xjsr305=strict"
-        jvmTarget = "21"
-    }
+  kotlinOptions {
+    freeCompilerArgs += "-Xjsr305=strict"
+    jvmTarget = "21"
+  }
 }
 
 tasks.withType<Test> {
-    useJUnitPlatform()
+  useJUnitPlatform()
 }

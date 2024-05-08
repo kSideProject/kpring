@@ -17,61 +17,63 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/v1")
 class UserController(
-    val userService: UserService,
-    val authClient: AuthClient,
+  val userService: UserService,
+  val authClient: AuthClient,
 ) {
+  @GetMapping("/user/{userId}")
+  fun getUserProfile(
+    @RequestHeader("Authorization") token: String,
+    @PathVariable userId: Long,
+  ): ResponseEntity<GetUserProfileResponse> {
+    checkRequestUserHasPermission(token, userId.toString())
+    val response = userService.getProfile(userId)
+    return ResponseEntity.ok(response)
+  }
 
-    @GetMapping("/user/{userId}")
-    fun getUserProfile(
-        @RequestHeader("Authorization") token: String,
-        @PathVariable userId: Long,
-    ): ResponseEntity<GetUserProfileResponse> {
-        checkRequestUserHasPermission(token, userId.toString())
-        val response = userService.getProfile(userId)
-        return ResponseEntity.ok(response)
+  @PostMapping("/user")
+  fun createUser(
+    @Validated @RequestBody request: CreateUserRequest,
+  ): ResponseEntity<CreateUserResponse> {
+    val response = userService.createUser(request)
+    return ResponseEntity.ok(response)
+  }
+
+  @PatchMapping("/user/{userId}")
+  fun updateUserProfile(
+    @RequestHeader("Authorization") token: String,
+    @PathVariable userId: Long,
+    @RequestBody request: UpdateUserProfileRequest,
+  ): ResponseEntity<UpdateUserProfileResponse> {
+    checkRequestUserHasPermission(token, userId.toString())
+    val response = userService.updateProfile(userId, request)
+    return ResponseEntity.ok(response)
+  }
+
+  @DeleteMapping("/user/{userId}")
+  fun exitUser(
+    @RequestHeader("Authorization") token: String,
+    @PathVariable userId: Long,
+  ): ResponseEntity<Any> {
+    checkRequestUserHasPermission(token, userId.toString())
+    val isExit = userService.exitUser(userId)
+
+    return if (isExit) {
+      ResponseEntity.ok().build()
+    } else {
+      ResponseEntity.badRequest().build()
     }
+  }
 
-    @PostMapping("/user")
-    fun createUser(
-        @Validated @RequestBody request: CreateUserRequest,
-    ): ResponseEntity<CreateUserResponse> {
-        val response = userService.createUser(request)
-        return ResponseEntity.ok(response)
+  private fun checkRequestUserHasPermission(
+    token: String,
+    userId: String,
+  ) {
+    val validationResult = authClient.validateToken(token)
+    if (!validationResult.body!!.isValid || userId != validationResult.body!!.userId) {
+      throw ExceptionWrapper(ErrorCode.NOT_ALLOWED)
     }
-
-    @PatchMapping("/user/{userId}")
-    fun updateUserProfile(
-        @RequestHeader("Authorization") token: String,
-        @PathVariable userId: Long,
-        @RequestBody request: UpdateUserProfileRequest,
-    ): ResponseEntity<UpdateUserProfileResponse> {
-        checkRequestUserHasPermission(token, userId.toString())
-        val response = userService.updateProfile(userId, request)
-        return ResponseEntity.ok(response)
+    if (validationResult.body!!.type != TokenType.ACCESS) {
+      throw ExceptionWrapper(ErrorCode.BAD_REQUEST)
     }
-
-    @DeleteMapping("/user/{userId}")
-    fun exitUser(
-        @RequestHeader("Authorization") token: String,
-        @PathVariable userId: Long,
-    ): ResponseEntity<Any> {
-        checkRequestUserHasPermission(token, userId.toString())
-        val isExit = userService.exitUser(userId)
-
-        return if (isExit) {
-            ResponseEntity.ok().build()
-        } else {
-            ResponseEntity.badRequest().build()
-        }
-    }
-
-    private fun checkRequestUserHasPermission(token: String, userId: String) {
-        val validationResult = authClient.validateToken(token)
-        if (!validationResult.body!!.isValid || userId != validationResult.body!!.userId) {
-            throw ExceptionWrapper(ErrorCode.NOT_ALLOWED)
-        }
-        if (validationResult.body!!.type != TokenType.ACCESS) {
-            throw ExceptionWrapper(ErrorCode.BAD_REQUEST)
-        }
-    }
+  }
 }

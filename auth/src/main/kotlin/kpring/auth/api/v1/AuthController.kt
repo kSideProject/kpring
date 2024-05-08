@@ -12,43 +12,42 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/v1")
 class AuthController(
-    private val tokenService: TokenService,
+  private val tokenService: TokenService,
 ) {
+  @PostMapping("/token")
+  suspend fun createToken(
+    @Validated @RequestBody request: CreateTokenRequest,
+  ): ResponseEntity<CreateTokenResponse> {
+    val tokenInfo = tokenService.createToken(request)
+    return ResponseEntity.ok()
+      .header("Authorization", "Bearer ${tokenInfo.accessToken}")
+      .body(tokenInfo)
+  }
 
-    @PostMapping("/token")
-    suspend fun createToken(
-        @Validated @RequestBody request: CreateTokenRequest,
-    ): ResponseEntity<CreateTokenResponse> {
-        val tokenInfo = tokenService.createToken(request)
-        return ResponseEntity.ok()
-            .header("Authorization", "Bearer ${tokenInfo.accessToken}")
-            .body(tokenInfo)
-    }
+  @DeleteMapping("/token/{tokenData}")
+  suspend fun expireToken(
+    @PathVariable("tokenData") token: String,
+  ): ResponseEntity<Any> {
+    tokenService.expireToken(token)
+    return ResponseEntity.ok().build()
+  }
 
-    @DeleteMapping("/token/{tokenData}")
-    suspend fun expireToken(
-        @PathVariable("tokenData") token: String,
-    ): ResponseEntity<Any> {
-        tokenService.expireToken(token)
-        return ResponseEntity.ok().build()
-    }
+  @PostMapping("/access_token")
+  suspend fun recreateAccessToken(
+    @RequestHeader("Authorization") refreshToken: String,
+  ): ResponseEntity<ReCreateAccessTokenResponse> {
+    val response = tokenService.reCreateAccessToken(refreshToken.removePrefix("Bearer "))
+    return ResponseEntity.ok()
+      .header("Authorization", "Bearer ${response.accessToken}")
+      .body(response)
+  }
 
-    @PostMapping("/access_token")
-    suspend fun recreateAccessToken(
-        @RequestHeader("Authorization") refreshToken: String,
-    ): ResponseEntity<ReCreateAccessTokenResponse> {
-        val response = tokenService.reCreateAccessToken(refreshToken.removePrefix("Bearer "))
-        return ResponseEntity.ok()
-            .header("Authorization", "Bearer ${response.accessToken}")
-            .body(response)
-    }
-
-    @PostMapping("/validation")
-    suspend fun validateToken(
-        @RequestHeader("Authorization") token: String,
-    ): ResponseEntity<TokenValidationResponse> {
-        val response = tokenService.checkToken(token.removePrefix("Bearer "))
-        return ResponseEntity.ok()
-            .body(response)
-    }
+  @PostMapping("/validation")
+  suspend fun validateToken(
+    @RequestHeader("Authorization") token: String,
+  ): ResponseEntity<TokenValidationResponse> {
+    val response = tokenService.checkToken(token.removePrefix("Bearer "))
+    return ResponseEntity.ok()
+      .body(response)
+  }
 }

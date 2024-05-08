@@ -6,19 +6,19 @@ import java.time.LocalDateTime
 
 @Document(collection = "chats")
 class Chat(
-    val userId: String,
-    val roomId: String,
-    val nickname: String,
-    val content: String
+  val userId: String,
+  val roomId: String,
+  val nickname: String,
+  val content: String,
 ) {
-    @Id
-    var id: String? = null
+  @Id
+  var id: String? = null
 
-    var isDeleted: Boolean = false
+  var isDeleted: Boolean = false
 
-    val sentAt: LocalDateTime = LocalDateTime.now()
+  val sentAt: LocalDateTime = LocalDateTime.now()
 
-    fun deleted() {
-        isDeleted = true
-    }
+  fun deleted() {
+    isDeleted = true
+  }
 }

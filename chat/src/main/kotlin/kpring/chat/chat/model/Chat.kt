@@ -1,9 +1,11 @@
 package kpring.chat.chat.model
 
+import jakarta.persistence.Entity
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import java.time.LocalDateTime
 
+@Entity
 @Document(collection = "chats")
 class Chat(
     val userId: String,
@@ -16,7 +18,7 @@ class Chat(
 
     var isDeleted: Boolean = false
 
-    val sentAt: LocalDateTime = LocalDateTime.now()
+    var sentAt: LocalDateTime = LocalDateTime.now()
 
     fun deleted() {
         isDeleted = true

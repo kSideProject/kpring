@@ -13,6 +13,12 @@ class User(
     @Column(nullable = false)
     var username: String,
 
+    @Column(nullable = false)
+    var email: String,
+
+    @Column(nullable = false)
+    var password : String,
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "user_followers",

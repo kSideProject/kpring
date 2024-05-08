@@ -8,6 +8,8 @@ plugins {
     id("org.asciidoctor.jvm.convert") version "3.3.2"
     // open api3
     id("com.epages.restdocs-api-spec") version "0.19.2"
+    // jib
+    id("com.google.cloud.tools.jib") version "3.4.0"
 }
 
 dependencies {
@@ -67,9 +69,26 @@ tasks.asciidoctor {
 }
 
 openapi3 {
-    setServer("http://localhost:8080")
-    title = "MyApp"
+    setServer("http://localhost:30001")
+    title = "Auth API"
     description = "API document"
     version = "0.1.0"
     format = "yaml"
+    outputDirectory = "src/main/resources/static"
 }
+
+jib {
+    from {
+        image = "eclipse-temurin:21-jre"
+    }
+    to {
+        image = "localhost:5000/auth-application"
+        setAllowInsecureRegistries(true)
+        tags = setOf("latest")
+    }
+    container {
+        jvmFlags = listOf("-Xms512m", "-Xmx512m")
+    }
+}
+
+tasks.getByName("jib").dependsOn("openapi3")

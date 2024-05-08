@@ -6,6 +6,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.4"
     kotlin("jvm") version "1.9.23"
     kotlin("plugin.spring") version "1.9.23"
+    kotlin("kapt") version "1.9.23"
 }
 
 allprojects {
@@ -28,7 +29,7 @@ allprojects {
     }
 }
 
-// enable tasks bootJar
+// disable tasks bootJar
 tasks.withType<BootJar> {
     enabled = false
 }

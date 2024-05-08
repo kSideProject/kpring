@@ -1,0 +1,44 @@
+{{- if .Values.global.enable.auth }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.service.name }}
+  namespace: {{ .Release.namespace }}
+  labels:
+    app: {{ .Values.service.name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.service.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.service.name }}
+    spec:
+      containers:
+        - name: {{ .Values.service.name }}
+          image: {{ .Values.service.image }}
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          env:
+            - name: REDIS_HOST
+              value: {{ .Values.redis.name }}
+            - name: REDIS_PORT
+              value: "{{ .Values.redis.port }}"
+            - name: JWT_ACCESS_DURATION
+              valueFrom:
+                configMapKeyRef:
+                  name: auth-config
+                  key: jwt.access.duration
+            - name: JWT_REFRESH_DURATION
+              valueFrom:
+                configMapKeyRef:
+                  name: auth-config
+                  key: jwt.refresh.duration
+            - name: APPLICATION_PROFILE
+              valueFrom:
+                configMapKeyRef:
+                  name: profile-config
+                  key: profile
+{{- end }}

@@ -37,7 +37,7 @@ class ChatService(
         chatRoomId: String, userId: String, page: Int
     ): List<ChatResponse> {
 
-        checkIfAuthorized(chatRoomId, userId);
+        checkIfAuthorized(chatRoomId, userId)
 
         //find chats by chatRoomId and convert them into DTOs
         val pageable: Pageable = PageRequest.of(page, pageSize)
@@ -46,16 +46,16 @@ class ChatService(
         return convertChatsToResponses(chats)
     }
 
-    fun checkIfAuthorized(chatRoomId: String, userId: String){
+    fun checkIfAuthorized(chatRoomId: String, userId: String) {
         //check if there is a chatroom with the chatRoomId and the user is one of the members
         if (!chatRoomRepository.existsByIdAndMembersContaining(chatRoomId, userId)) {
             throw GlobalException(ErrorCode.UNAUTHORIZED_CHATROOM)
         }
     }
 
-    fun convertChatsToResponses(chats: List<Chat>) : List<ChatResponse>{
+    fun convertChatsToResponses(chats: List<Chat>): List<ChatResponse> {
         val chatResponses = chats.map { chat ->
-            ChatResponse(chat.roomId,chat.isEdited(),chat.createdAt, chat.content)
+            ChatResponse(chat.roomId, chat.isEdited(), chat.createdAt,/*LocalDateTime.now()*/ chat.content)
         }
         return chatResponses
     }

@@ -12,7 +12,7 @@ import React from "react";
 
 const LeftSideBar = () => {
   return (
-    <Drawer variant="permanent" sx={{ width: 40, top: 64 }}>
+    <Drawer variant="permanent" sx={{ width: 40 }}>
       <List sx={{ display: "flex", flexDirection: "column" }}>
         <ListItem alignItems="center">
           <ListItemButton>

@@ -10,6 +10,8 @@ import {
 } from "@mui/material";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { RightSideBarProps } from "../../types/layout";
+import React from "react";
+import MemberProfile from "../Profile/MemberProfile";
 
 const RightSideBar: React.FC<RightSideBarProps> = ({ close }) => {
   const DrawerHeader = styled("div")(({ theme }) => ({
@@ -19,6 +21,10 @@ const RightSideBar: React.FC<RightSideBarProps> = ({ close }) => {
     ...theme.mixins.toolbar,
     justifyContent: "flex-start",
   }));
+
+  const [openProfile, setOpenProfile] = React.useState(false);
+  const handleOpen = () => setOpenProfile(true);
+  const handleClose = () => setOpenProfile(false);
   return (
     <>
       <DrawerHeader>
@@ -29,7 +35,7 @@ const RightSideBar: React.FC<RightSideBarProps> = ({ close }) => {
       <Divider />
       <List>
         <ListItem>
-          <ListItemAvatar>
+          <ListItemAvatar onClick={handleOpen}>
             <Badge
               color="success"
               variant="dot"
@@ -44,55 +50,11 @@ const RightSideBar: React.FC<RightSideBarProps> = ({ close }) => {
           </ListItemAvatar>
           <ListItemText primary="민선님" />
         </ListItem>
-
-        <ListItem>
-          <ListItemAvatar>
-            <Badge
-              color="success"
-              variant="dot"
-              overlap="circular"
-              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-            >
-              <Avatar
-                alt="user nickname"
-                src="https://images.unsplash.com/photo-1542272201-b1ca555f8505?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              />
-            </Badge>
-          </ListItemAvatar>
-          <ListItemText primary="동근님" />
-        </ListItem>
-
-        <ListItem>
-          <ListItemAvatar>
-            <Badge
-              color="warning"
-              variant="dot"
-              overlap="circular"
-              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-            >
-              <Avatar alt="user nickname" />
-            </Badge>
-          </ListItemAvatar>
-          <ListItemText primary="다원님" />
-        </ListItem>
-
-        <ListItem>
-          <ListItemAvatar>
-            <Badge
-              color="error"
-              variant="dot"
-              overlap="circular"
-              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-            >
-              <Avatar
-                alt="user nickname"
-                src="https://images.unsplash.com/photo-1560790671-b76ca4de55ef?q=80&w=2092&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              />
-            </Badge>
-          </ListItemAvatar>
-          <ListItemText primary="민아님" />
-        </ListItem>
       </List>
+      <MemberProfile
+        openModal={openProfile}
+        closeModal={handleClose}
+      ></MemberProfile>
     </>
   );
 };

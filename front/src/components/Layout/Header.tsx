@@ -21,6 +21,7 @@ const Header = () => {
 
   const DRAWER_WIDTH = 240; // 오른쪽 사이드바 넓이
   const [open, setOpen] = useState(false); // 사이드바 열고 닫는 상태
+  const [selectedOption, setSelectedOption] = useState("");
 
   // 오른쪽 사이드바 오픈 핸들러
   const handleDrawerOpen = () => {
@@ -73,7 +74,7 @@ const Header = () => {
         anchor="right"
         open={open}
       >
-        <RightSideBar />
+        <RightSideBar close={handleDrawerClose} />
       </Drawer>
     </header>
   );

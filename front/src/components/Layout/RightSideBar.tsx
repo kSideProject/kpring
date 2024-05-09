@@ -6,13 +6,12 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
-  Typography,
   styled,
 } from "@mui/material";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import React from "react";
+import { RightSideBarProps } from "../../types/layout";
 
-const RightSideBar = () => {
+const RightSideBar: React.FC<RightSideBarProps> = ({ close }) => {
   const DrawerHeader = styled("div")(({ theme }) => ({
     display: "flex",
     alignItems: "center",
@@ -23,7 +22,7 @@ const RightSideBar = () => {
   return (
     <>
       <DrawerHeader>
-        <ArrowForwardIosIcon />
+        <ArrowForwardIosIcon onClick={close} />
         <div>친구목록</div>
         {/* <div>메세지</div> */}
       </DrawerHeader>

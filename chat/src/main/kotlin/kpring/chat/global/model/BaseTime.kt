@@ -7,7 +7,7 @@ import java.time.LocalDateTime
 abstract class BaseTime {
 
   @CreatedDate
-  val createdAt: LocalDateTime = LocalDateTime.now()
+  var createdAt: LocalDateTime = LocalDateTime.now()
 
   @LastModifiedDate
   var updatedAt: LocalDateTime? = createdAt

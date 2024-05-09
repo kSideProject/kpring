@@ -1,10 +1,8 @@
 package kpring.test.restdoc.dsl
 
 import com.epages.restdocs.apispec.WebTestClientRestDocumentationWrapper
-import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation
 import org.springframework.restdocs.snippet.Snippet
 import org.springframework.test.web.reactive.server.WebTestClient
-import org.springframework.test.web.servlet.ResultActionsDsl
 
 fun WebTestClient.BodyContentSpec.restDoc(
     identifier: String,
@@ -21,21 +19,6 @@ fun WebTestClient.BodyContentSpec.restDoc(
             snippets = builder.snippets.toTypedArray()
         )
     )
-}
-
-fun ResultActionsDsl.restDoc(
-    identifier: String,
-    description: String,
-    config: RestDocBuilder.() -> Unit,
-) {
-    val builder = RestDocBuilder()
-    builder.config()
-
-    this.andDo {
-        handle(
-            MockMvcRestDocumentation.document(identifier, *builder.snippets.toTypedArray())
-        )
-    }
 }
 
 class RestDocBuilder {

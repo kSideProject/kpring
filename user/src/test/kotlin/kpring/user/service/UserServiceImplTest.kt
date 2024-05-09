@@ -1,20 +1,15 @@
 package kpring.user.service
 
 import io.kotest.core.spec.style.FunSpec
-import kpring.user.dto.request.AddFriendRequest
-import kpring.user.dto.result.AddFriendResponse
-import kpring.user.entity.User
 import kpring.user.repository.UserRepository
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertThrows
 import org.mockito.Mockito.*
 import java.util.*
 
 class UserServiceImplTest() : FunSpec({
 
-    val userRepository: UserRepository = mock()
+  val userRepository: UserRepository = mock()
 //    var userService: UserServiceImpl = UserServiceImpl(userRepository)
-    val friendService = FriendService(userRepository)
+  val friendService = FriendService(userRepository)
 
 //    test("친구추가_성공") {
 //        val user = User(id = 1L, username = "user1", followers = mutableSetOf(), followees = mutableSetOf())

@@ -11,6 +11,7 @@ import kpring.core.auth.dto.request.CreateTokenRequest
 import kpring.core.auth.enums.TokenType
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.ZoneOffset
 import java.util.*
 import javax.crypto.SecretKey
 
@@ -34,7 +35,7 @@ fun CreateTokenRequest.toToken(
           "nickname" to nickname,
         ),
       )
-      .setIssuedAt(Date())
+      .setIssuedAt(Date.from(LocalDateTime.now().toInstant(ZoneOffset.of("+09:00"))))
       .setExpiration(expiredAt.time)
       .signWith(signingKey, SignatureAlgorithm.HS256)
       .compact()

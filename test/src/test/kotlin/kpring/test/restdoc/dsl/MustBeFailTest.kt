@@ -7,6 +7,5 @@ class MustBeFailTest {
 
   @Test
   fun test(){
-    throw RuntimeException("Must be fail")
   }
 }

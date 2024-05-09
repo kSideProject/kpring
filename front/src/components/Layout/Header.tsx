@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
 import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
+import RightSideBar from "./RightSideBar";
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
@@ -60,7 +61,20 @@ const Header = () => {
           </Box>
         </Toolbar>
       </AppBar>
-      <Drawer open={open}></Drawer>
+      <Drawer
+        sx={{
+          width: DRAWER_WIDTH,
+          flexShrink: 0,
+          "& .MuiDrawer-paper": {
+            width: DRAWER_WIDTH,
+          },
+        }}
+        variant="persistent"
+        anchor="right"
+        open={open}
+      >
+        <RightSideBar />
+      </Drawer>
     </header>
   );
 };

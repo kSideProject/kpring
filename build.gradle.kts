@@ -7,6 +7,7 @@ plugins {
   kotlin("jvm") version "1.9.23"
   kotlin("plugin.spring") version "1.9.23"
   id("org.jlleitschuh.gradle.ktlint") version "12.1.1"
+  kotlin("kapt") version "1.9.23"
 }
 
 repositories {
@@ -15,28 +16,28 @@ repositories {
 }
 
 allprojects {
-  group = "com.sideproject"
-  version = "0.0.1-SNAPSHOT"
+    group = "com.sideproject"
+    version = "0.0.1-SNAPSHOT"
 
-  repositories {
-    mavenCentral()
-  }
-
-  tasks.withType<KotlinCompile> {
-    kotlinOptions {
-      freeCompilerArgs += "-Xjsr305=strict"
-      jvmTarget = "21"
+    repositories {
+        mavenCentral()
     }
-  }
 
-  tasks.withType<Test> {
-    useJUnitPlatform()
-  }
+    tasks.withType<KotlinCompile> {
+        kotlinOptions {
+            freeCompilerArgs += "-Xjsr305=strict"
+            jvmTarget = "21"
+        }
+    }
+
+    tasks.withType<Test> {
+        useJUnitPlatform()
+    }
 }
 
 // disable tasks bootJar
 tasks.withType<BootJar> {
-  enabled = false
+    enabled = false
 }
 
 subprojects {

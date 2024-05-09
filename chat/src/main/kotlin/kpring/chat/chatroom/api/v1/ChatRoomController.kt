@@ -12,22 +12,20 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/v1")
 class ChatRoomController(
-  private val chatRoomService: ChatRoomService,
-  private val authClient: AuthClient,
+    private val chatRoomService: ChatRoomService, private val authClient: AuthClient
 ) {
-  @PostMapping("/chatroom")
-  fun createChatRoom(
-    @Validated @RequestBody request: CreateChatRoomRequest,
-    @RequestHeader("Authorization") token: String,
-  ): ResponseEntity<*> {
-    val tokenResponse = authClient.validateToken(token)
-    val body = tokenResponse.body ?: throw GlobalException(ErrorCode.INVALID_TOKEN_BODY)
-    val userId = body.userId ?: throw GlobalException(ErrorCode.USERID_NOT_EXIST)
-    val isValid = body.isValid
-    if (!isValid) {
-      throw GlobalException(ErrorCode.INVALID_TOKEN)
+    @PostMapping("/chatroom")
+    fun createChatRoom(
+        @Validated @RequestBody request: CreateChatRoomRequest, @RequestHeader("Authorization") token: String
+    ): ResponseEntity<*> {
+        val tokenResponse = authClient.validateToken(token)
+        val body = tokenResponse.body ?: throw GlobalException(ErrorCode.INVALID_TOKEN_BODY)
+        val userId = body.userId ?: throw GlobalException(ErrorCode.USERID_NOT_EXIST)
+        val isValid = body.isValid
+        if (!isValid) {
+            throw GlobalException(ErrorCode.INVALID_TOKEN)
+        }
+        val result = chatRoomService.createChatRoom(request, userId)
+        return ResponseEntity.ok().body(result)
     }
-    val result = chatRoomService.createChatRoom(request, userId)
-    return ResponseEntity.ok().body(result)
-  }
 }

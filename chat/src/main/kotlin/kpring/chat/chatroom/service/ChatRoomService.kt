@@ -7,14 +7,13 @@ import org.springframework.stereotype.Service
 
 @Service
 class ChatRoomService(
-  private val chatRoomRepository: ChatRoomRepository,
+    private val chatRoomRepository: ChatRoomRepository
 ) {
-  fun createChatRoom(
-    request: CreateChatRoomRequest,
-    userId: String,
-  ) {
-    val chatRoom = ChatRoom()
-    chatRoom.addUsers(request.users)
-    val savedChatRoom = chatRoomRepository.save(chatRoom)
-  }
+    fun createChatRoom(
+        request: CreateChatRoomRequest, userId: String
+    ) {
+        val chatRoom = ChatRoom()
+        chatRoom.addUsers(request.users)
+        val savedChatRoom = chatRoomRepository.save(chatRoom)
+    }
 }

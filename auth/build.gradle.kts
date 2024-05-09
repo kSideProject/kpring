@@ -51,6 +51,8 @@ dependencies {
     testImplementation("org.springframework.restdocs:spring-restdocs-webtestclient")
     testImplementation("io.kotest.extensions:kotest-extensions-spring:1.1.3")
     testImplementation("org.springframework.restdocs:spring-restdocs-asciidoctor")
+    // test container
+    testImplementation("org.springframework.boot:spring-boot-testcontainers")
 
     // default test
     testImplementation("org.springframework.boot:spring-boot-starter-test")

@@ -7,11 +7,13 @@ import org.testcontainers.containers.GenericContainer
 
 abstract class ContainerContextInitializer(
     image: String,
-    port: Int
+    port: Int,
+    vararg env: Pair<String, String>,
 ) : ApplicationContextInitializer<ConfigurableApplicationContext> {
 
     protected val container = GenericContainer(image)
         .withExposedPorts(port)
+        .withEnv(mapOf(*env))
 
     private fun start() {
         this.container.start()

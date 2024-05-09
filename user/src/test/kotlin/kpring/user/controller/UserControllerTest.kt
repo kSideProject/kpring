@@ -63,7 +63,12 @@ class UserControllerTest(
 
         it("회원가입 성공") {
           // given
-          val request = CreateUserRequest.builder().email("test@email.com").build()
+          val request =
+            CreateUserRequest.builder()
+              .email("test@email.com")
+              .password("tesT@1234")
+              .username("testuser")
+              .build()
           val response = CreateUserResponse.builder().build()
           every { userService.createUser(request) } returns response
 
@@ -90,6 +95,9 @@ class UserControllerTest(
                 }
                 body {
                   "email" type "String" mean "이메일"
+                  "password" type "String" mean "비밀번호"
+                  "username" type "String" mean "사용자 이름"
+                  "passwordCheck" type "String" mean "비밀번호 확인"
                 }
               }
             }
@@ -97,7 +105,12 @@ class UserControllerTest(
 
         it("회원가입 실패 : 이미 존재하는 이메일") {
           // given
-          val request = CreateUserRequest.builder().email("test@email.com").build()
+          val request =
+            CreateUserRequest.builder()
+              .email("test@email.com")
+              .password("tesT@1234")
+              .username("testuser")
+              .build()
           val exception = ExceptionWrapper(ErrorCode.ALREADY_EXISTS_EMAIL)
           val response = FailMessageResponse.builder().message(exception.errorCode.message).build()
           every { userService.createUser(request) } throws exception
@@ -130,6 +143,9 @@ class UserControllerTest(
                 }
                 body {
                   "email" type "String" mean "이메일"
+                  "password" type "String" mean "비밀번호"
+                  "username" type "String" mean "사용자 이름"
+                  "passwordCheck" type "String" mean "비밀번호 확인"
                 }
               }
 
@@ -143,8 +159,12 @@ class UserControllerTest(
 
         it("회원가입 실패 : 필수입력 값 미전송") {
           // given
-          val request = CreateUserRequest.builder().build()
-          val responseMessage = "필수 입력값이 누락되었습니다."
+          val request =
+            CreateUserRequest.builder()
+              .password("tesT@1234")
+              .username("testuser")
+              .build()
+          val responseMessage = "이메일이 누락되었습니다."
           val response = FailMessageResponse.builder().message(responseMessage).build()
 
           // when
@@ -175,6 +195,9 @@ class UserControllerTest(
                 }
                 body {
                   "email" type "String" mean "이메일"
+                  "password" type "String" mean "비밀번호"
+                  "username" type "String" mean "사용자 이름"
+                  "passwordCheck" type "String" mean "비밀번호 확인"
                 }
               }
 
@@ -188,7 +211,12 @@ class UserControllerTest(
 
         it("회원가입 실패 : 서버 내부 오류") {
           // given
-          val request = CreateUserRequest.builder().email("test@email.com").build()
+          val request =
+            CreateUserRequest.builder()
+              .email("test@email.com")
+              .password("tesT@1234")
+              .username("testuser")
+              .build()
           val exception = RuntimeException("서버 내부 오류")
           val response = FailMessageResponse.builder().message("서버 오류").build()
           every { userService.createUser(request) } throws exception
@@ -221,6 +249,9 @@ class UserControllerTest(
                 }
                 body {
                   "email" type "String" mean "이메일"
+                  "password" type "String" mean "비밀번호"
+                  "username" type "String" mean "사용자 이름"
+                  "passwordCheck" type "String" mean "비밀번호 확인"
                 }
               }
 

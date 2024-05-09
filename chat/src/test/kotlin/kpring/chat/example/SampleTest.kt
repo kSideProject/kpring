@@ -22,51 +22,53 @@ class SampleTest(
 
     it("query dsl 적용 테스트") {
       // given
+      val chat = QChat.chat
       repeat(5) { idx ->
         chatRepository.save(
-          Chat("testUserId", "testRoomId", "testNickname$idx", "testContent"),
+          Chat("testUserId", "testRoomId", "testContent$idx"),
         )
       }
 
       // when
       val result =
         chatRepository.findAll(
-          QChat.chat.userId.eq("testUserId"),
-          QChat.chat.userId.asc(),
+          chat.userId.eq("testUserId"),
+          chat.userId.asc(),
         )
 
       // then
       result shouldHaveSize 5
       result.forEach {
         it.userId shouldBe "testUserId"
-        println("${it.nickname} : ${it.content}")
+        println("${it.id} : ${it.content}")
       }
     }
 
     it("query dsl 적용 테스트 : 다중 조건") {
       // given
+      val chat = QChat.chat
       chatRepository.deleteAll()
       repeat(5) { idx ->
         chatRepository.save(
-          Chat("testUserId", "testRoomId", "testNickname$idx", "testContent"),
+          Chat("testUserId", "testRoomId", "testContent$idx"),
         )
       }
 
       // when
       val result =
         chatRepository.findAll(
-          QChat.chat.userId.eq("testUserId")
-            .and(QChat.chat.nickname.contains("testNickname"))
+          chat.userId.eq("testUserId")
+            .and(chat.content.contains("testContent"))
             // null을 적용하면 조건이 적용되지 않는다.
             .and(null),
-          QChat.chat.nickname.desc(),
+          chat.content.desc(),
         )
 
       // then
       result shouldHaveSize 5
       result.forEach {
         it.userId shouldBe "testUserId"
-        println("${it.nickname} : ${it.content}")
+        println("${it.id} : ${it.content}")
       }
     }
   })

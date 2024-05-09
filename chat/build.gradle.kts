@@ -5,22 +5,31 @@ plugins {
   id("io.spring.dependency-management") version "1.1.4"
   kotlin("jvm") version "1.9.23"
   kotlin("plugin.spring") version "1.9.23"
+  kotlin("kapt") version "1.9.23"
 }
 
-group = "kpring"
-version = "0.0.1-SNAPSHOT"
-
-java {
-  sourceCompatibility = JavaVersion.VERSION_21
-}
-
-repositories {
-  mavenCentral()
-}
+val queryDslVersion = "5.1.0"
 
 dependencies {
+
+  implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+  implementation("org.jetbrains.kotlin:kotlin-reflect")
   // core module
   api(project(":core"))
+
+  // mongodb
+  implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
+  implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
+  implementation("com.querydsl:querydsl-mongodb:$queryDslVersion") {
+    exclude("org.mongodb", "mongo-java-driver")
+  }
+  implementation("com.querydsl:querydsl-jpa:$queryDslVersion")
+  kapt("com.querydsl:querydsl-apt:$queryDslVersion:jakarta")
+  // web
+  implementation("org.springframework.boot:spring-boot-starter-web")
+
+  // validation
+  implementation("org.springframework.boot:spring-boot-starter-validation")
 
   // test
   testImplementation(project(":test"))
@@ -42,17 +51,6 @@ dependencies {
   implementation("org.springframework.restdocs:spring-restdocs-webtestclient")
   implementation("org.springframework.restdocs:spring-restdocs-asciidoctor")
 
-  // mongodb
-  implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
-
-  // web
-  implementation("org.springframework.boot:spring-boot-starter-web")
-
-  // validation
-  implementation("org.springframework.boot:spring-boot-starter-validation")
-
-  implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-  implementation("org.jetbrains.kotlin:kotlin-reflect")
   testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 

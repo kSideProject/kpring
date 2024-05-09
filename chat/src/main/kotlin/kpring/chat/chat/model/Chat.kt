@@ -6,15 +6,14 @@ import org.springframework.data.mongodb.core.mapping.Document
 
 @Document(collection = "chats")
 class Chat(
-    val userId: String,
-    val roomId: String,
-    val content: String,
+  val userId: String,
+  val roomId: String,
+  val content: String,
 ) : BaseTime() {
-    @Id
-    var id: String? = null
+  @Id
+  var id: String? = null
 
-    fun isEdited(): Boolean {
-        return !createdAt.equals(updatedAt)
-    }
-
+  fun isEdited(): Boolean {
+    return !createdAt.equals(updatedAt)
+  }
 }

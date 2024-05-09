@@ -7,17 +7,20 @@ import org.springframework.stereotype.Service
 
 @Service
 class UserValidationService(
-    private val userRepository: UserRepository
+  private val userRepository: UserRepository,
 ) {
-    fun validateDuplicateEmail(email: String) {
-        if (userRepository.existsByEmail(email)) {
-            throw ExceptionWrapper(ErrorCode.ALREADY_EXISTS_EMAIL)
-        }
+  fun validateDuplicateEmail(email: String) {
+    if (userRepository.existsByEmail(email)) {
+      throw ExceptionWrapper(ErrorCode.ALREADY_EXISTS_EMAIL)
     }
+  }
 
-    fun validatePasswordMatch(password: String, passwordCheck: String) {
-        if (password != passwordCheck) {
-            throw ExceptionWrapper(ErrorCode.NOT_MATCH_PASSWORD)
-        }
+  fun validatePasswordMatch(
+    password: String,
+    passwordCheck: String,
+  ) {
+    if (password != passwordCheck) {
+      throw ExceptionWrapper(ErrorCode.NOT_MATCH_PASSWORD)
     }
+  }
 }

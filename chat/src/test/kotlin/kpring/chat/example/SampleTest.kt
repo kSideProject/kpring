@@ -13,57 +13,60 @@ import org.springframework.boot.test.context.SpringBootTest
  */
 @SpringBootTest
 class SampleTest(
-    val chatRepository: ChatRepository
+  val chatRepository: ChatRepository,
 ) : DescribeSpec({
 
     beforeTest {
-        chatRepository.deleteAll()
+      chatRepository.deleteAll()
     }
 
-    it("query dsl 적용 테스트"){
-        // given
-        repeat(5){ idx ->
-            chatRepository.save(
-                Chat("testUserId", "testRoomId", "testNickname$idx", "testContent")
-            )
-        }
+    it("query dsl 적용 테스트") {
+      // given
+      repeat(5) { idx ->
+        chatRepository.save(
+          Chat("testUserId", "testRoomId", "testNickname$idx", "testContent"),
+        )
+      }
 
-        // when
-        val result = chatRepository.findAll(
-            QChat.chat.userId.eq("testUserId"),
-            QChat.chat.userId.asc()
+      // when
+      val result =
+        chatRepository.findAll(
+          QChat.chat.userId.eq("testUserId"),
+          QChat.chat.userId.asc(),
         )
 
-        // then
-        result shouldHaveSize 5
-        result.forEach {
-            it.userId shouldBe "testUserId"
-            println("${it.nickname} : ${it.content}")
-        }
+      // then
+      result shouldHaveSize 5
+      result.forEach {
+        it.userId shouldBe "testUserId"
+        println("${it.nickname} : ${it.content}")
+      }
     }
 
     it("query dsl 적용 테스트 : 다중 조건") {
-        // given
-        chatRepository.deleteAll()
-        repeat(5){ idx ->
-            chatRepository.save(
-                Chat("testUserId", "testRoomId", "testNickname$idx", "testContent")
-            )
-        }
+      // given
+      chatRepository.deleteAll()
+      repeat(5) { idx ->
+        chatRepository.save(
+          Chat("testUserId", "testRoomId", "testNickname$idx", "testContent"),
+        )
+      }
 
-        // when
-        val result = chatRepository.findAll(
-            QChat.chat.userId.eq("testUserId")
-                .and(QChat.chat.nickname.contains("testNickname"))
-                .and(null), // null을 적용하면 조건이 적용되지 않는다.
-            QChat.chat.nickname.desc()
+      // when
+      val result =
+        chatRepository.findAll(
+          QChat.chat.userId.eq("testUserId")
+            .and(QChat.chat.nickname.contains("testNickname"))
+            // null을 적용하면 조건이 적용되지 않는다.
+            .and(null),
+          QChat.chat.nickname.desc(),
         )
 
-        // then
-        result shouldHaveSize 5
-        result.forEach {
-            it.userId shouldBe "testUserId"
-            println("${it.nickname} : ${it.content}")
-        }
+      // then
+      result shouldHaveSize 5
+      result.forEach {
+        it.userId shouldBe "testUserId"
+        println("${it.nickname} : ${it.content}")
+      }
     }
-})
+  })

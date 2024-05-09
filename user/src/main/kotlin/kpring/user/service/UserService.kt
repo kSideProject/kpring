@@ -7,8 +7,14 @@ import kpring.user.dto.response.GetUserProfileResponse
 import kpring.user.dto.response.UpdateUserProfileResponse
 
 interface UserService {
-    fun getProfile(userId: Long): GetUserProfileResponse
-    fun updateProfile(userId: Long, request: UpdateUserProfileRequest): UpdateUserProfileResponse
-    fun exitUser(userId: Long): Boolean
-    fun createUser(request: CreateUserRequest): CreateUserResponse
+  fun getProfile(userId: Long): GetUserProfileResponse
+
+  fun updateProfile(
+    userId: Long,
+    request: UpdateUserProfileRequest,
+  ): UpdateUserProfileResponse
+
+  fun exitUser(userId: Long): Boolean
+
+  fun createUser(request: CreateUserRequest): CreateUserResponse
 }

@@ -10,17 +10,17 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory
 
 @Configuration
 class ClientConfig {
+  @Value("\${auth.url}")
+  private val authUrl: String? = null
 
-    @Value("\${auth.url}")
-    private val authUrl: String? = null
-
-    @Bean
-    fun authClient(): AuthClient {
-        val restClient = RestClient.builder()
-            .baseUrl(authUrl!!)
-            .build()
-        val adapter = RestClientAdapter.create(restClient)
-        val factory = HttpServiceProxyFactory.builderFor(adapter).build()
-        return factory.createClient(AuthClient::class.java)
-    }
+  @Bean
+  fun authClient(): AuthClient {
+    val restClient =
+      RestClient.builder()
+        .baseUrl(authUrl!!)
+        .build()
+    val adapter = RestClientAdapter.create(restClient)
+    val factory = HttpServiceProxyFactory.builderFor(adapter).build()
+    return factory.createClient(AuthClient::class.java)
+  }
 }

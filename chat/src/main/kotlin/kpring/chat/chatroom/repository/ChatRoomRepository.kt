@@ -6,5 +6,8 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface ChatRoomRepository : MongoRepository<ChatRoom, String> {
-    fun existsByIdAndMembersContaining(roomId: String, userId: String): Boolean
+  fun existsByIdAndMembersContaining(
+    roomId: String,
+    userId: String,
+  ): Boolean
 }

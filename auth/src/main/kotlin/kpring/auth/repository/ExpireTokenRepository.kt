@@ -9,23 +9,25 @@ import java.time.LocalDateTime
 
 @Component
 class ExpireTokenRepository(
-    val redisTemplate: ReactiveStringRedisTemplate,
+  val redisTemplate: ReactiveStringRedisTemplate,
 ) {
+  suspend fun isExpired(tokenId: String): Boolean {
+    return redisTemplate.getExpire(tokenId)
+      .map { !it.isZero }
+      .defaultIfEmpty(false)
+      .awaitSingle()
+  }
 
-    suspend fun isExpired(tokenId: String): Boolean {
-        return redisTemplate.getExpire(tokenId)
-            .map { !it.isZero }
-            .defaultIfEmpty(false)
-            .awaitSingle()
-    }
-
-    suspend fun expireToken(tokenId: String, expiredAt: LocalDateTime) {
-        val now = LocalDateTime.now()
-        if (expiredAt.isBefore(now)) return
-        val ttl = Duration.between(now, expiredAt)
-        redisTemplate.opsForValue().setIfAbsent(tokenId, "")
-            .flatMap {
-                if (it) redisTemplate.expire(tokenId, ttl) else Mono.just(false)
-            }.awaitSingle()
-    }
+  suspend fun expireToken(
+    tokenId: String,
+    expiredAt: LocalDateTime,
+  ) {
+    val now = LocalDateTime.now()
+    if (expiredAt.isBefore(now)) return
+    val ttl = Duration.between(now, expiredAt)
+    redisTemplate.opsForValue().setIfAbsent(tokenId, "")
+      .flatMap {
+        if (it) redisTemplate.expire(tokenId, ttl) else Mono.just(false)
+      }.awaitSingle()
+  }
 }

@@ -1,5 +1,5 @@
 package kpring.user.dto.result
 
 data class AddFriendResponse(
-    val friendId: Long,
+  val friendId: Long,
 )

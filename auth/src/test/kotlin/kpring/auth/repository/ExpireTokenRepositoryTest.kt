@@ -25,9 +25,9 @@ class ExpireTokenRepositoryTest(
                 "" shouldBe redis.opsForValue().get(tokenId).awaitSingle()
             }
 
-            Then("만료 여부 조회시 참이어야 한다.") {
-                tokenRepository.isExpired(tokenId) shouldBe true
-            }
+        Then("만료 여부 조회시 참이어야 한다.") {
+          tokenRepository.isExpired(tokenId) shouldBe true
         }
+      }
     }
-})
+  })

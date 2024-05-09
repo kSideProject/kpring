@@ -1,14 +1,14 @@
 import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
-    id("org.springframework.boot") version "3.2.4"
-    id("io.spring.dependency-management") version "1.1.4"
-    kotlin("jvm") version "1.9.23"
-    kotlin("plugin.spring") version "1.9.23"
+  id("org.springframework.boot") version "3.2.4"
+  id("io.spring.dependency-management") version "1.1.4"
+  kotlin("jvm") version "1.9.23"
+  kotlin("plugin.spring") version "1.9.23"
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
+  sourceCompatibility = JavaVersion.VERSION_21
 }
 
 dependencies {
@@ -28,15 +28,15 @@ dependencies {
     // test container
     implementation("org.springframework.boot:spring-boot-testcontainers")
 
-    // open api3
-    implementation("com.epages:restdocs-api-spec-mockmvc:0.19.2")
-    implementation("com.epages:restdocs-api-spec-webtestclient:0.19.2")
+  // open api3
+  implementation("com.epages:restdocs-api-spec-mockmvc:0.19.2")
+  implementation("com.epages:restdocs-api-spec-webtestclient:0.19.2")
 
-    implementation("org.springframework.boot:spring-boot-starter-test")
+  implementation("org.springframework.boot:spring-boot-starter-test")
 }
 
 tasks {
-    withType<BootJar> {
-        enabled = false
-    }
+  withType<BootJar> {
+    enabled = false
+  }
 }

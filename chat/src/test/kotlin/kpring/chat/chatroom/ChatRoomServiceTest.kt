@@ -13,20 +13,19 @@ import kpring.core.chat.chatroom.dto.request.CreateChatRoomRequest
 
 class ChatRoomServiceTest : FunSpec({
 
-    val chatRoomRepository = mockk<ChatRoomRepository>()
-    val chatRoomService = ChatRoomService(chatRoomRepository)
+  val chatRoomRepository = mockk<ChatRoomRepository>()
+  val chatRoomService = ChatRoomService(chatRoomRepository)
 
-    test("createChatRoom 는 새 ChatRoom을 저장해야 한다") {
-        // Given
-        val request = CreateChatRoomRequest(ChatRoomTest.TEST_MEMBERS)
-        val chatRoom = ChatRoom()
-        every { chatRoomRepository.save(any()) } returns chatRoom
+  test("createChatRoom 는 새 ChatRoom을 저장해야 한다") {
+    // Given
+    val request = CreateChatRoomRequest(ChatRoomTest.TEST_MEMBERS)
+    val chatRoom = ChatRoom()
+    every { chatRoomRepository.save(any()) } returns chatRoom
 
-        // When
-        chatRoomService.createChatRoom(request, CommonTest.TEST_USER_ID)
+    // When
+    chatRoomService.createChatRoom(request, CommonTest.TEST_USER_ID)
 
-        // Then
-        verify { chatRoomRepository.save(any()) }
-    }
-
+    // Then
+    verify { chatRoomRepository.save(any()) }
+  }
 })

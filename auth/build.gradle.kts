@@ -1,15 +1,15 @@
 plugins {
-    id("org.springframework.boot") version "3.2.4"
-    id("io.spring.dependency-management") version "1.1.4"
-    kotlin("jvm") version "1.9.23"
-    kotlin("plugin.spring") version "1.9.23"
+  id("org.springframework.boot") version "3.2.4"
+  id("io.spring.dependency-management") version "1.1.4"
+  kotlin("jvm") version "1.9.23"
+  kotlin("plugin.spring") version "1.9.23"
 
-    // asciidoctor plugin
-    id("org.asciidoctor.jvm.convert") version "3.3.2"
-    // open api3
-    id("com.epages.restdocs-api-spec") version "0.19.2"
-    // jib
-    id("com.google.cloud.tools.jib") version "3.4.0"
+  // asciidoctor plugin
+  id("org.asciidoctor.jvm.convert") version "3.3.2"
+  // open api3
+  id("com.epages.restdocs-api-spec") version "0.19.2"
+  // jib
+  id("com.google.cloud.tools.jib") version "3.4.0"
 }
 
 dependencies {
@@ -62,35 +62,35 @@ dependencies {
 extra["snippetsDir"] = file("build/generated-snippets")
 
 tasks.test {
-    outputs.dir(project.extra["snippetsDir"]!!)
+  outputs.dir(project.extra["snippetsDir"]!!)
 }
 
 tasks.asciidoctor {
-    inputs.dir(project.extra["snippetsDir"]!!)
-    dependsOn(tasks.test)
+  inputs.dir(project.extra["snippetsDir"]!!)
+  dependsOn(tasks.test)
 }
 
 openapi3 {
-    setServer("http://localhost:30001")
-    title = "Auth API"
-    description = "API document"
-    version = "0.1.0"
-    format = "yaml"
-    outputDirectory = "src/main/resources/static"
+  setServer("http://localhost:30001")
+  title = "Auth API"
+  description = "API document"
+  version = "0.1.0"
+  format = "yaml"
+  outputDirectory = "src/main/resources/static"
 }
 
 jib {
-    from {
-        image = "eclipse-temurin:21-jre"
-    }
-    to {
-        image = "localhost:5000/auth-application"
-        setAllowInsecureRegistries(true)
-        tags = setOf("latest")
-    }
-    container {
-        jvmFlags = listOf("-Xms512m", "-Xmx512m")
-    }
+  from {
+    image = "eclipse-temurin:21-jre"
+  }
+  to {
+    image = "localhost:5000/auth-application"
+    setAllowInsecureRegistries(true)
+    tags = setOf("latest")
+  }
+  container {
+    jvmFlags = listOf("-Xms512m", "-Xmx512m")
+  }
 }
 
 tasks.getByName("jib").dependsOn("openapi3")

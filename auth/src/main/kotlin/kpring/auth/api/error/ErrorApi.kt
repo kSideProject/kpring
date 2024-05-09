@@ -13,28 +13,26 @@ import org.springframework.web.server.ServerWebInputException
 
 @RestControllerAdvice
 class ErrorApi {
+  private val logger = LoggerFactory.getLogger(ErrorApi::class.java)
 
-    private val logger = LoggerFactory.getLogger(ErrorApi::class.java)
+  @ExceptionHandler(
+    WebExchangeBindException::class,
+    IllegalArgumentException::class,
+    MissingRequestValueException::class,
+    ServerWebInputException::class,
+  )
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  fun handleWhenRequestValidationFailed() {
+  }
 
-    @ExceptionHandler(
-        WebExchangeBindException::class,
-        IllegalArgumentException::class,
-        MissingRequestValueException::class,
-        ServerWebInputException::class
-    )
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    fun handleWhenRequestValidationFailed() {
-    }
+  @ExceptionHandler(ExpiredJwtException::class, TokenExpiredException::class)
+  @ResponseStatus(HttpStatus.FORBIDDEN)
+  fun handleWhenTokenIsExpired() {
+  }
 
-    @ExceptionHandler(ExpiredJwtException::class, TokenExpiredException::class)
-    @ResponseStatus(HttpStatus.FORBIDDEN)
-    fun handleWhenTokenIsExpired() {
-    }
-
-    @ExceptionHandler(Exception::class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    fun handleInternalServerError(ex: Exception) {
-        logger.error("", ex)
-    }
-
+  @ExceptionHandler(Exception::class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  fun handleInternalServerError(ex: Exception) {
+    logger.error("", ex)
+  }
 }

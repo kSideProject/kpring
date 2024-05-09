@@ -4,11 +4,11 @@ import org.springframework.restdocs.request.ParameterDescriptor
 import org.springframework.restdocs.request.RequestDocumentation.parameterWithName
 
 class RestDocQueryParamBuilder {
-    val queryDescriptors = mutableListOf<ParameterDescriptor>()
+  val queryDescriptors = mutableListOf<ParameterDescriptor>()
 
-    infix fun String.mean(description: String): ParameterDescriptor {
-        val descriptor = parameterWithName(this).description(description)
-        queryDescriptors.add(descriptor)
-        return descriptor
-    }
+  infix fun String.mean(description: String): ParameterDescriptor {
+    val descriptor = parameterWithName(this).description(description)
+    queryDescriptors.add(descriptor)
+    return descriptor
+  }
 }

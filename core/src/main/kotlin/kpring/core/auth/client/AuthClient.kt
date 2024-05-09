@@ -12,23 +12,23 @@ import org.springframework.web.service.annotation.DeleteExchange
 import org.springframework.web.service.annotation.PostExchange
 
 interface AuthClient {
-    @PostExchange("/api/v1/token")
-    fun createToken(
-        @RequestBody request: CreateTokenRequest,
-    ): ResponseEntity<CreateTokenResponse>
+  @PostExchange("/api/v1/token")
+  fun createToken(
+    @RequestBody request: CreateTokenRequest,
+  ): ResponseEntity<CreateTokenResponse>
 
-    @DeleteExchange("/api/v1/token/{tokenData}")
-    fun deleteToken(
-        @PathVariable("tokenData") tokenData: String,
-    ): ResponseEntity<Void>
+  @DeleteExchange("/api/v1/token/{tokenData}")
+  fun deleteToken(
+    @PathVariable("tokenData") tokenData: String,
+  ): ResponseEntity<Void>
 
-    @PostExchange("/api/v1/token/access_token")
-    fun recreateAccessToken(
-        @RequestHeader request: CreateTokenRequest,
-    ): ResponseEntity<ReCreateAccessTokenResponse>
+  @PostExchange("/api/v1/token/access_token")
+  fun recreateAccessToken(
+    @RequestHeader request: CreateTokenRequest,
+  ): ResponseEntity<ReCreateAccessTokenResponse>
 
-    @PostExchange("/api/v1/validation")
-    fun validateToken(
-        @RequestHeader("Authorization") token: String,
-    ): ResponseEntity<TokenValidationResponse>
+  @PostExchange("/api/v1/validation")
+  fun validateToken(
+    @RequestHeader("Authorization") token: String,
+  ): ResponseEntity<TokenValidationResponse>
 }

@@ -1,24 +1,21 @@
 package kpring.chat.chatroom.model
 
+import kpring.chat.global.model.BaseTime
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
-import java.time.LocalDateTime
 
 @Document(collection = "chatrooms")
-class ChatRoom{
-    @Id
-    var id: String? = null
+class ChatRoom : BaseTime() {
+  @Id
+  var id: String? = null
 
-    var members : MutableList<String> = mutableListOf()
+  var members: MutableList<String> = mutableListOf()
 
-    val createdAt: LocalDateTime = LocalDateTime.now()
+  fun getUsers(): List<String> {
+    return members
+  }
 
-    fun getUsers(): List<String>{
-        return members
-    }
-
-    fun addUsers(list : List<String>){
-        members.addAll(list)
-    }
-
+  fun addUsers(list: List<String>) {
+    members.addAll(list)
+  }
 }

@@ -67,14 +67,9 @@ class UserControllerTest(
             CreateUserRequest.builder()
               .email(TEST_EMAIL)
               .password(TEST_PASSWORD)
-              .passwordCheck(TEST_PASSWORD_CHECK)
               .username(TEST_USERNAME)
               .build()
-          val response =
-            CreateUserResponse.builder()
-              .id(1L)
-              .email(TEST_EMAIL)
-              .build()
+          val response = CreateUserResponse.builder().build()
           every { userService.createUser(request) } returns response
 
           // when
@@ -101,8 +96,8 @@ class UserControllerTest(
                 body {
                   "email" type "String" mean "이메일"
                   "password" type "String" mean "비밀번호"
+                  "username" type "String" mean "사용자 이름"
                   "passwordCheck" type "String" mean "비밀번호 확인"
-                  "username" type "String" mean "닉네임"
                 }
               }
             }
@@ -114,14 +109,10 @@ class UserControllerTest(
             CreateUserRequest.builder()
               .email(TEST_EMAIL)
               .password(TEST_PASSWORD)
-              .passwordCheck(TEST_PASSWORD_CHECK)
               .username(TEST_USERNAME)
               .build()
           val exception = ExceptionWrapper(ErrorCode.ALREADY_EXISTS_EMAIL)
-          val response =
-            FailMessageResponse.builder()
-              .message(exception.errorCode.message)
-              .build()
+          val response = FailMessageResponse.builder().message(exception.errorCode.message).build()
           every { userService.createUser(request) } throws exception
 
           // when
@@ -153,8 +144,8 @@ class UserControllerTest(
                 body {
                   "email" type "String" mean "이메일"
                   "password" type "String" mean "비밀번호"
+                  "username" type "String" mean "사용자 이름"
                   "passwordCheck" type "String" mean "비밀번호 확인"
-                  "username" type "String" mean "닉네임"
                 }
               }
 
@@ -170,11 +161,10 @@ class UserControllerTest(
           // given
           val request =
             CreateUserRequest.builder()
-              .email(TEST_EMAIL)
               .password(TEST_PASSWORD)
-              .passwordCheck(TEST_PASSWORD_CHECK)
+              .username(TEST_USERNAME)
               .build()
-          val responseMessage = "필수 입력값이 누락되었습니다."
+          val responseMessage = "이메일이 누락되었습니다."
           val response = FailMessageResponse.builder().message(responseMessage).build()
 
           // when
@@ -206,8 +196,8 @@ class UserControllerTest(
                 body {
                   "email" type "String" mean "이메일"
                   "password" type "String" mean "비밀번호"
+                  "username" type "String" mean "사용자 이름"
                   "passwordCheck" type "String" mean "비밀번호 확인"
-                  "username" type "String" mean "닉네임"
                 }
               }
 
@@ -225,7 +215,6 @@ class UserControllerTest(
             CreateUserRequest.builder()
               .email(TEST_EMAIL)
               .password(TEST_PASSWORD)
-              .passwordCheck(TEST_PASSWORD_CHECK)
               .username(TEST_USERNAME)
               .build()
           val exception = RuntimeException("서버 내부 오류")
@@ -261,8 +250,8 @@ class UserControllerTest(
                 body {
                   "email" type "String" mean "이메일"
                   "password" type "String" mean "비밀번호"
+                  "username" type "String" mean "사용자 이름"
                   "passwordCheck" type "String" mean "비밀번호 확인"
-                  "username" type "String" mean "닉네임"
                 }
               }
 
@@ -329,8 +318,7 @@ class UserControllerTest(
           // given
           val userId = 1L
           val request = UpdateUserProfileRequest.builder().email("test@test.com").build()
-          val response =
-            FailMessageResponse.builder().message(ErrorCode.NOT_ALLOWED.message).build()
+          val response = FailMessageResponse.builder().message(ErrorCode.NOT_ALLOWED.message).build()
           every { authClient.validateToken(any()) }.returns(
             ResponseEntity.ok(
               TokenValidationResponse(false, null, null),
@@ -470,8 +458,7 @@ class UserControllerTest(
           // given
           val userId = 1L
           val token = "Bearer test"
-          val response =
-            FailMessageResponse.builder().message(ErrorCode.NOT_ALLOWED.message).build()
+          val response = FailMessageResponse.builder().message(ErrorCode.NOT_ALLOWED.message).build()
           every { authClient.validateToken(token) } returns
             ResponseEntity
               .ok(TokenValidationResponse(false, null, null))
@@ -544,8 +531,7 @@ class UserControllerTest(
         it("탈퇴 성공") {
           // given
           val userId = 1L
-          val validationResponse =
-            TokenValidationResponse(true, TokenType.ACCESS, userId.toString())
+          val validationResponse = TokenValidationResponse(true, TokenType.ACCESS, userId.toString())
           every { authClient.validateToken(any()) } returns
             ResponseEntity.ok(
               validationResponse,
@@ -657,8 +643,7 @@ class UserControllerTest(
   ) {
   companion object {
     private const val TEST_EMAIL = "test@email.com"
-    private const val TEST_PASSWORD = "Password123!"
-    private const val TEST_PASSWORD_CHECK = "Password123!"
-    private const val TEST_USERNAME = "test"
+    private const val TEST_PASSWORD = "tesT@1234"
+    private const val TEST_USERNAME = "testuser"
   }
 }

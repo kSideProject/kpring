@@ -16,7 +16,9 @@ import kpring.core.auth.dto.request.CreateTokenRequest
 import kpring.core.auth.enums.TokenType
 import java.nio.charset.StandardCharsets
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.ZoneOffset
+import java.util.*
 
 class TokenServiceTest : BehaviorSpec({
   val tokenRepository: ExpireTokenRepository = mockk()
@@ -44,10 +46,7 @@ class TokenServiceTest : BehaviorSpec({
 
     When("토큰을 생성하면") {
       then("엑세스 토큰과 리프레시 토큰이 생성된다.").config(invocations = 100) {
-        val time = LocalDateTime.ofInstant(
-          LocalDateTime.now().toInstant(ZoneOffset.of("+09:00")),
-          ZoneOffset.of("+09:00")
-        )
+        val time = LocalDateTime.now(ZoneId.of("Asia/Seoul"))
         val response = tokenService.createToken(request)
         response.apply {
           accessToken shouldNotHaveLength 0

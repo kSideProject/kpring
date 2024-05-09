@@ -13,38 +13,37 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/v1")
 class ChatRoomController(
-    private val chatRoomService: ChatRoomService, private val authClient: AuthClient
+  private val chatRoomService: ChatRoomService,
+  private val authClient: AuthClient,
 ) {
-    @PostMapping("/chatroom")
-    fun createChatRoom(
-        @Validated @RequestBody request: CreateChatRoomRequest, @RequestHeader("Authorization") token: String
-    ): ResponseEntity<*> {
+  @PostMapping("/chatroom")
+  fun createChatRoom(
+    @Validated @RequestBody request: CreateChatRoomRequest,
+    @RequestHeader("Authorization") token: String,
+  ): ResponseEntity<*> {
+    val userId = getUserId(authClient.validateToken(token))
 
-        val userId = getUserId(authClient.validateToken(token))
+    val result = chatRoomService.createChatRoom(request, userId)
+    return ResponseEntity.ok().body(result)
+  }
 
-        val result = chatRoomService.createChatRoom(request, userId)
-        return ResponseEntity.ok().body(result)
+  @PatchMapping("/chatroom/exit/{chatRoomId}")
+  fun exitChatRoom(
+    @PathVariable("chatRoomId") chatRoomId: String,
+    @RequestHeader("Authorization") token: String,
+  ): ResponseEntity<*> {
+    val userId = getUserId(authClient.validateToken(token))
+
+    val result = chatRoomService.exitChatRoom(chatRoomId, userId)
+    return ResponseEntity.ok().body(result)
+  }
+
+  private fun getUserId(tokenResponse: ResponseEntity<TokenValidationResponse>): String {
+    val body = tokenResponse.body ?: throw GlobalException(ErrorCode.INVALID_TOKEN_BODY)
+    if (!body.isValid) {
+      throw GlobalException(ErrorCode.INVALID_TOKEN)
     }
-
-    @PatchMapping("/chatroom/exit/{chatRoomId}")
-    fun exitChatRoom(
-        @PathVariable("chatRoomId") chatRoomId: String,
-        @RequestHeader("Authorization") token: String
-    ): ResponseEntity<*> {
-
-        val userId = getUserId(authClient.validateToken(token))
-
-        val result = chatRoomService.exitChatRoom(chatRoomId, userId)
-        return ResponseEntity.ok().body(result)
-    }
-
-    private fun getUserId(tokenResponse: ResponseEntity<TokenValidationResponse>): String {
-        val body = tokenResponse.body ?: throw GlobalException(ErrorCode.INVALID_TOKEN_BODY)
-        val userId = body.userId ?: throw GlobalException(ErrorCode.USERID_NOT_EXIST)
-        if (!body.isValid) {
-            throw GlobalException(ErrorCode.INVALID_TOKEN)
-        }
-
-        return userId
-    }
+    val userId = body.userId?: throw GlobalException(ErrorCode.USERID_NOT_EXIST)
+    return userId
+  }
 }

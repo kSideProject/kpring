@@ -6,21 +6,20 @@ import org.springframework.data.mongodb.core.mapping.Document
 
 @Document(collection = "chatrooms")
 class ChatRoom : BaseTime() {
-    @Id
-    var id: String? = null
+  @Id
+  var id: String? = null
 
-    var members: MutableList<String> = mutableListOf()
+  var members: MutableList<String> = mutableListOf()
 
-    fun getUsers(): List<String> {
-        return members
-    }
+  fun getUsers(): List<String> {
+    return members
+  }
 
-    fun addUsers(list: List<String>) {
-        members.addAll(list)
-    }
+  fun addUsers(list: List<String>) {
+    members.addAll(list)
+  }
 
-    fun removeUser(userId: String) {
-        members.remove(userId)
-    }
-
+  fun removeUser(userId: String) {
+    members.remove(userId)
+  }
 }

@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface ChatRepository : MongoRepository<Chat, String>, QuerydslPredicateExecutor<Chat> {
-
-    fun findAllByRoomId(roomId: String, pageable: Pageable): List<Chat>
+  fun findAllByRoomId(
+    roomId: String,
+    pageable: Pageable,
+  ): List<Chat>
 }

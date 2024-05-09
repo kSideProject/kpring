@@ -9,35 +9,40 @@ import org.springframework.stereotype.Service
 
 @Service
 class ChatRoomService(
-    private val chatRoomRepository: ChatRoomRepository
+  private val chatRoomRepository: ChatRoomRepository,
 ) {
-    fun createChatRoom(
-        request: CreateChatRoomRequest, userId: String
-    ) {
-        val chatRoom = ChatRoom()
-        chatRoom.addUsers(request.users)
-        chatRoomRepository.save(chatRoom)
-    }
+  fun createChatRoom(
+    request: CreateChatRoomRequest,
+    userId: String,
+  ) {
+    val chatRoom = ChatRoom()
+    chatRoom.addUsers(request.users)
+    chatRoomRepository.save(chatRoom)
+  }
 
-    fun exitChatRoom(
-        chatRoomId: String, userId: String
-    ) {
-        checkIfAuthorized(chatRoomId, userId)
-        val chatRoom: ChatRoom = getChatRoom(chatRoomId)
-        chatRoom.removeUser(userId)
-        chatRoomRepository.save(chatRoom)
-    }
+  fun exitChatRoom(
+    chatRoomId: String,
+    userId: String,
+  ) {
+    checkIfAuthorized(chatRoomId, userId)
+    val chatRoom: ChatRoom = getChatRoom(chatRoomId)
+    chatRoom.removeUser(userId)
+    chatRoomRepository.save(chatRoom)
+  }
 
-    fun checkIfAuthorized(chatRoomId: String, userId: String) {
-        //check if there is a chatroom with the chatRoomId and the user is one of the members
-        if (!chatRoomRepository.existsByIdAndMembersContaining(chatRoomId, userId)) {
-            throw GlobalException(ErrorCode.UNAUTHORIZED_CHATROOM)
-        }
+  fun checkIfAuthorized(
+    chatRoomId: String,
+    userId: String,
+  ) {
+    // check if there is a chatroom with the chatRoomId and the user is one of the members
+    if (!chatRoomRepository.existsByIdAndMembersContaining(chatRoomId, userId)) {
+      throw GlobalException(ErrorCode.UNAUTHORIZED_CHATROOM)
     }
+  }
 
-    fun getChatRoom(chatRoomId: String): ChatRoom {
-        val chatRoom: ChatRoom =
-            chatRoomRepository.findById(chatRoomId).orElseThrow { GlobalException(ErrorCode.CHATROOM_NOT_FOUND) }
-        return chatRoom
-    }
+  fun getChatRoom(chatRoomId: String): ChatRoom {
+    val chatRoom: ChatRoom =
+      chatRoomRepository.findById(chatRoomId).orElseThrow { GlobalException(ErrorCode.CHATROOM_NOT_FOUND) }
+    return chatRoom
+  }
 }

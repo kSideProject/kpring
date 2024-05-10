@@ -12,8 +12,8 @@ interface AppBarProps extends MuiAppBarProps {
 
 const Header = () => {
   const DRAWER_WIDTH = 240; // 오른쪽 사이드바 넓이
-  const [open, setOpen] = useState(false); // 사이드바 열고 닫는 상태
-  const [openDrawer, setOpenDrawer] = useState<string | null>(null);
+  const [open, setOpen] = useState(false); // 사이드바 열고 닫힌 상태
+  const [openDrawer, setOpenDrawer] = useState<string | null>(null); // 메세지 또는 친구 사이드바 상태
 
   // 오른쪽 사이드바 오픈 핸들러
   const handleDrawerOpen = (sidebar: string) => {

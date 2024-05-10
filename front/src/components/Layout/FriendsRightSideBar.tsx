@@ -13,7 +13,7 @@ import { RightSideBarProps } from "../../types/layout";
 import React from "react";
 import MemberProfile from "../Profile/MemberProfile";
 
-const RightSideBar: React.FC<RightSideBarProps> = ({ close }) => {
+const FriendsRightSideBar: React.FC<RightSideBarProps> = ({ close }) => {
   const DrawerHeader = styled("div")(({ theme }) => ({
     display: "flex",
     alignItems: "center",
@@ -30,7 +30,6 @@ const RightSideBar: React.FC<RightSideBarProps> = ({ close }) => {
       <DrawerHeader>
         <ArrowForwardIosIcon onClick={close} />
         <div>친구목록</div>
-        {/* <div>메세지</div> */}
       </DrawerHeader>
       <Divider />
       <List>
@@ -59,4 +58,4 @@ const RightSideBar: React.FC<RightSideBarProps> = ({ close }) => {
   );
 };
 
-export default RightSideBar;
+export default FriendsRightSideBar;

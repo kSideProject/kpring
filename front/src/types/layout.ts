@@ -16,7 +16,7 @@ export const memberProfileModalStyle = {
   p: 4,
 };
 
-//
+// 멤버 프로필 모달
 export interface MemberProfileModalProps {
   openModal: boolean;
   closeModal: () => void;

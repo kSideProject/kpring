@@ -1,6 +1,13 @@
 // 오른쪽 사이드바
-export interface RightSideBarProps {
+export interface SideBarProps {
   close: () => void;
+}
+
+// 서버 인포 사이드바
+export interface ServerInforProps {
+  close: () => void;
+  open: boolean;
+  serverId: string;
 }
 
 // 멤버 프로필 모달 스타일

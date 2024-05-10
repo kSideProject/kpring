@@ -9,11 +9,11 @@ import {
   styled,
 } from "@mui/material";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import { RightSideBarProps } from "../../types/layout";
+import { SideBarProps } from "../../types/layout";
 import React from "react";
 import MemberProfile from "../Profile/MemberProfile";
 
-const FriendsRightSideBar: React.FC<RightSideBarProps> = ({ close }) => {
+const FriendsRightSideBar: React.FC<SideBarProps> = ({ close }) => {
   const DrawerHeader = styled("div")(({ theme }) => ({
     display: "flex",
     alignItems: "center",

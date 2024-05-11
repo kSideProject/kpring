@@ -30,6 +30,10 @@ dependencies {
   /** Kotlin */
   implementation("org.jetbrains.kotlin:kotlin-reflect")
 
+  /** jpa */
+  implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+  runtimeOnly("com.mysql:mysql-connector-j")
+
   /** test */
   testImplementation(project(":test"))
   testImplementation("org.springframework.boot:spring-boot-starter-test") // Test

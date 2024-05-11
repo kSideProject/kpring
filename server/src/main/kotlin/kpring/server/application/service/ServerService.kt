@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service
 @Service
 class ServerService : CreateServerUseCase {
 
-  override fun run(request: CreateServerRequest): CreateServerResponse {
+  override fun createServer(request: CreateServerRequest): CreateServerResponse {
     return CreateServerResponse("todo", "todo")
   }
 }

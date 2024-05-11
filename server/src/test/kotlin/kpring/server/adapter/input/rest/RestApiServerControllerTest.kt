@@ -57,7 +57,7 @@ class RestApiServerControllerTest(
       // given
       val request = CreateServerRequest(serverName = "test server")
       val data = CreateServerResponse(serverId = "1", serverName = request.serverName)
-      every { serverService.run(request) } returns data
+      every { serverService.createServer(request) } returns data
 
       // when
       val result = webTestClient.post()

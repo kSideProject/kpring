@@ -2,7 +2,6 @@ package kpring.auth.api.error
 
 import io.jsonwebtoken.ExpiredJwtException
 import kpring.auth.error.TokenExpiredException
-import kpring.core.global.dto.response.ApiResponse
 import kpring.core.global.dto.response.ErrorResponse
 import kpring.core.global.exception.ServiceException
 import org.slf4j.LoggerFactory
@@ -46,13 +45,13 @@ class ErrorApi {
     logger.warn(
       "service exception occurred : id={} message={}",
       errorCode.id(),
-      errorCode.message()
+      errorCode.message(),
     )
     return ResponseEntity.status(ex.errorCode.httpStatus())
       .body(
         ErrorResponse(
           message = ex.errorCode.message(),
-        )
+        ),
       )
   }
 }

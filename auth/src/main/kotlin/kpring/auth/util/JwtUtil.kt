@@ -7,7 +7,6 @@ import io.jsonwebtoken.SignatureAlgorithm
 import kpring.auth.dto.JwtToken
 import kpring.auth.dto.TokenInfo
 import kpring.auth.error.AuthErrorCode
-import kpring.auth.error.TokenExpiredException
 import kpring.core.auth.dto.request.CreateTokenRequest
 import kpring.core.auth.enums.TokenType
 import kpring.core.global.exception.ServiceException

@@ -87,7 +87,7 @@ class TokenService(
     val jwt = token.toObject(signingKey)
 
     val isExpired = !tokenRepository.isExpired(token)
-    if(!isExpired) throw ServiceException(AuthErrorCode.TOKEN_EXPIRED)
+    if (!isExpired) throw ServiceException(AuthErrorCode.TOKEN_EXPIRED)
 
     return TokenInfo(jwt.type, jwt.userId)
   }

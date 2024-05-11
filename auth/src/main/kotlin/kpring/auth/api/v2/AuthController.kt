@@ -23,4 +23,3 @@ class AuthController(
       .body(ApiResponse(data = response))
   }
 }
-

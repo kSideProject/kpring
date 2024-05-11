@@ -6,9 +6,11 @@ import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import kpring.auth.dto.JwtToken
 import kpring.auth.dto.TokenInfo
-import kpring.auth.exception.TokenExpiredException
+import kpring.auth.error.AuthErrorCode
+import kpring.auth.error.TokenExpiredException
 import kpring.core.auth.dto.request.CreateTokenRequest
 import kpring.core.auth.enums.TokenType
+import kpring.core.global.exception.ServiceException
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
@@ -44,8 +46,7 @@ fun CreateTokenRequest.toToken(
 }
 
 /**
- * @throws ExpiredJwtException 토큰이 만료된 경우
- * @throws RuntimeException 유효하지 않은 토큰인 경우
+ * @throws ServiceException 토큰 검증 실패시 예외 발생
  */
 fun String.toObject(key: SecretKey): JwtToken {
   try {
@@ -64,9 +65,9 @@ fun String.toObject(key: SecretKey): JwtToken {
       expiredAt = claims.expiredAt(),
     )
   } catch (ex: ExpiredJwtException) {
-    throw TokenExpiredException(ex)
+    throw ServiceException(AuthErrorCode.TOKEN_EXPIRED)
   } catch (ex: RuntimeException) {
-    throw IllegalArgumentException("잘못된 토큰의 타입입니다.", ex)
+    throw ServiceException(AuthErrorCode.TOKEN_NOT_VALID)
   }
 }
 

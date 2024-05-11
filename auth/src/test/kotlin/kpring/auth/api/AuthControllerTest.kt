@@ -301,7 +301,7 @@ class AuthControllerTest(
         val url = "/api/v1/validation"
         val testToken = "Bearer testtoken"
 
-        coEvery { tokenService.checkToken(any()) } returns TokenValidationResponse(true, TokenType.ACCESS, "testUserId")
+        coEvery { tokenService.checkTokenDeprecated(any()) } returns TokenValidationResponse(true, TokenType.ACCESS, "testUserId")
 
         When("POST") {
 
@@ -330,7 +330,7 @@ class AuthControllerTest(
 
           then("400 BAD REQUEST") {
             val token = ""
-            coEvery { tokenService.checkToken(token) } returns response
+            coEvery { tokenService.checkTokenDeprecated(token) } returns response
             webTestClient.post()
               .uri(url)
               .exchange()
@@ -344,7 +344,7 @@ class AuthControllerTest(
 
           then("500 INTERNAL SERVER ERROR") {
             val token = "validateToken500"
-            coEvery { tokenService.checkToken(token) } throws NullPointerException("server error")
+            coEvery { tokenService.checkTokenDeprecated(token) } throws NullPointerException("server error")
             webTestClient.post()
               .uri(url)
               .header("Authorization", token)

@@ -9,16 +9,16 @@ import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldNotHaveLength
 import io.mockk.coEvery
 import io.mockk.mockk
-import kpring.auth.exception.TokenExpiredException
+import kpring.auth.error.AuthErrorCode
+import kpring.auth.error.TokenExpiredException
 import kpring.auth.repository.ExpireTokenRepository
 import kpring.auth.util.toToken
 import kpring.core.auth.dto.request.CreateTokenRequest
 import kpring.core.auth.enums.TokenType
+import kpring.core.global.exception.ServiceException
 import java.nio.charset.StandardCharsets
 import java.time.LocalDateTime
 import java.time.ZoneId
-import java.time.ZoneOffset
-import java.util.*
 
 class TokenServiceTest : BehaviorSpec({
   val tokenRepository: ExpireTokenRepository = mockk()
@@ -93,23 +93,27 @@ class TokenServiceTest : BehaviorSpec({
         CreateTokenRequest("invalid", "invalid")
           .toToken(TokenType.REFRESH, otherKey, 100000)
       then("토큰 검증시 예외가 발생한다.") {
-        shouldThrow<IllegalArgumentException> {
+        val ex = shouldThrow<ServiceException> {
           tokenService.checkToken(invalidTokenInfo.token)
         }
+        ex.errorCode shouldBe AuthErrorCode.TOKEN_NOT_VALID
       }
 
       then("토큰 재생성시 예외가 발생한다.") {
-        shouldThrow<IllegalArgumentException> {
+        val ex = shouldThrow<ServiceException> {
           tokenService.reCreateAccessToken(invalidTokenInfo.token)
         }
+        ex.errorCode shouldBe AuthErrorCode.TOKEN_NOT_VALID
       }
     }
 
     When("만료된 토큰이라면") {
       coEvery { tokenRepository.isExpired(any()) } returns true
-      then("토큰 검증시 isValid 응답은 false다.") {
-        val response = tokenService.checkToken(tokenInfo.accessToken)
-        response.isValid shouldBe false
+      then("토큰 검증시 토큰 만료 서비스 예외가 발생한다.") {
+        val ex = shouldThrow<ServiceException> {
+          tokenService.checkToken(tokenInfo.accessToken)
+        }
+        ex.errorCode shouldBe AuthErrorCode.TOKEN_EXPIRED
       }
     }
 
@@ -120,15 +124,20 @@ class TokenServiceTest : BehaviorSpec({
       val expiredToken =
         CreateTokenRequest("test", "nick").toToken(TokenType.ACCESS, validKey, -1).token
       coEvery { tokenRepository.isExpired(any()) } returns true
-      then("토큰 검증시 isValid 응답은 false다.") {
-        val response = tokenService.checkToken(expiredToken)
-        response.isValid shouldBe false
+
+      then("토큰 검증시 토큰 만료 서비스 에러를 반환한다.") {
+        val ex = shouldThrow<ServiceException> {
+          tokenService.checkToken(expiredToken)
+        }
+        ex.errorCode.id() shouldBe "AUTH_0002"
+        ex.errorCode.message() shouldBe "토큰이 만료되었습니다."
       }
 
-      then("토큰 재성시 예외가 발생한다.") {
-        shouldThrow<TokenExpiredException> {
+      then("토큰 재성시 토큰 만료 서비스 예외가 발생한다.") {
+        val ex = shouldThrow<ServiceException> {
           tokenService.reCreateAccessToken(expiredToken)
         }
+        ex.errorCode shouldBe AuthErrorCode.TOKEN_EXPIRED
       }
     }
   }

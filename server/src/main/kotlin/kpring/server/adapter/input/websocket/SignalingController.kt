@@ -1,4 +1,4 @@
-package kpring.server.adapter.`in`.websocket
+package kpring.server.adapter.input.websocket
 
 import org.slf4j.LoggerFactory
 import org.springframework.messaging.handler.annotation.DestinationVariable

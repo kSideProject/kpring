@@ -1,9 +1,9 @@
-package kpring.server.adapter.`in`.rest
+package kpring.server.adapter.input.rest
 
 import kpring.core.auth.client.AuthClient
 import kpring.core.global.dto.response.ApiResponse
 import kpring.core.server.dto.request.CreateServerRequest
-import kpring.server.application.usecases.CreateServerUseCase
+import kpring.server.application.port.input.CreateServerUseCase
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody

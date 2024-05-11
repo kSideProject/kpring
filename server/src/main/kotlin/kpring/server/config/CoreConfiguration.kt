@@ -6,5 +6,5 @@ import org.springframework.context.annotation.Import
 
 @Import(AuthClientConfig::class)
 @Configuration
-class CoreConfig {
+class CoreConfiguration {
 }

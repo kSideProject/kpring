@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface ServerRepository :
-  MongoRepository<ServerEntity, Long>,
+  MongoRepository<ServerEntity, String>,
   QuerydslPredicateExecutor<ServerEntity> {
 
 }

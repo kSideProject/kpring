@@ -1,6 +1,6 @@
 package kpring.server.adapter.output.mongo
 
-import kpring.core.server.dto.ServerInfo
+import kpring.core.server.dto.request.CreateServerRequest
 import kpring.server.adapter.output.mongo.entity.ServerEntity
 import kpring.server.adapter.output.mongo.repository.ServerRepository
 import kpring.server.application.port.output.SaveServerPort
@@ -11,16 +11,14 @@ import org.springframework.stereotype.Repository
 class SaveServerPortMongoImpl(
   val serverRepository: ServerRepository
 ) : SaveServerPort {
-  override fun save(server: Server): ServerInfo {
+  override fun create(req: CreateServerRequest): Server {
     val entity = serverRepository.save(
-      ServerEntity(
-        name = server.name
-      )
+      ServerEntity(name = req.serverName)
     )
-    return ServerInfo(
-      id = entity.id!!.toString(),
-      name = entity.name!!,
-      users = emptyList(),
+    return Server(
+      id = entity.id,
+      name = entity.name,
+      users = mutableListOf(),
     )
   }
 }

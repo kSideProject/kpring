@@ -4,5 +4,5 @@ import kpring.core.server.dto.ServerInfo
 
 interface GetServerInfoUseCase {
 
-  fun getServerInfo(): ServerInfo
+  fun getServerInfo(serverId: String): ServerInfo
 }

@@ -7,10 +7,12 @@ import org.springframework.data.mongodb.core.mapping.Document
 @Entity
 @Document(collection = "server")
 class ServerEntity(
-  name: String? = null
+  name: String,
+  users: MutableList<ServerUserEntity> = mutableListOf()
 ) {
   @Id
-  val id: String? = null
+  lateinit var id: String
 
-  val name: String? = name
+  var name: String = name
+  var users: MutableList<ServerUserEntity> = users
 }

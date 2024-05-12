@@ -13,6 +13,9 @@ java {
 }
 
 dependencies {
+  /** dev tool */
+  developmentOnly("org.springframework.boot:spring-boot-devtools")
+
   /** Core Module */
   implementation(project(":core"))
 

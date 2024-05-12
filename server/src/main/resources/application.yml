@@ -10,10 +10,5 @@ spring:
       database: mongodb
       authentication-database: admin
 
-  docker:
-    compose:
-      enabled: true
-      file: compose.yml
-
 auth:
   url: ${AUTH_SERVICE_URL:http://localhost:8080}

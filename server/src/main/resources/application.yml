@@ -1,6 +1,19 @@
 spring:
   application:
     name: server
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      username: root
+      password: test1234@
+      database: mongodb
+      authentication-database: admin
+
+  docker:
+    compose:
+      enabled: true
+      file: compose.yml
 
 auth:
   url: ${AUTH_SERVICE_URL:http://localhost:8080}

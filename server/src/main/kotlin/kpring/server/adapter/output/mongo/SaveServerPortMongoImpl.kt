@@ -19,7 +19,8 @@ class SaveServerPortMongoImpl(
     )
     return ServerInfo(
       id = entity.id!!.toString(),
-      name = entity.name!!
+      name = entity.name!!,
+      users = emptyList(),
     )
   }
 }

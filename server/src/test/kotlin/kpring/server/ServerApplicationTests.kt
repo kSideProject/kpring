@@ -6,7 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ContextConfiguration
 
 @SpringBootTest
-@ContextConfiguration(initializers = [SpringTestContext.SpringDataJpaMySql::class])
+@ContextConfiguration(initializers = [SpringTestContext.SpringDataMongo::class])
 class ServerApplicationTests {
   @Test
   fun contextLoads() {

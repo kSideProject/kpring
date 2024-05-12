@@ -1,14 +1,14 @@
-package kpring.server.adapter.output.jpa
+package kpring.server.adapter.output.mongo
 
 import kpring.core.server.dto.ServerInfo
-import kpring.server.adapter.output.jpa.entity.ServerEntity
-import kpring.server.adapter.output.jpa.repository.ServerRepository
+import kpring.server.adapter.output.mongo.entity.ServerEntity
+import kpring.server.adapter.output.mongo.repository.ServerRepository
 import kpring.server.application.port.output.SaveServerPort
 import kpring.server.domain.Server
 import org.springframework.stereotype.Repository
 
 @Repository
-class SaveServerPortJpaImpl(
+class SaveServerPortMongoImpl(
   val serverRepository: ServerRepository
 ) : SaveServerPort {
   override fun save(server: Server): ServerInfo {

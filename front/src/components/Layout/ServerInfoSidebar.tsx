@@ -8,11 +8,13 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
+  Button,
   styled,
 } from "@mui/material";
 import { serverData } from "../../utils/fakeData";
 import MemberProfile from "../Profile/MemberProfile";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import { Link } from "react-router-dom";
 
 const ServerInfoSidebar: React.FC<ServerInforProps> = ({
   close,
@@ -35,6 +37,9 @@ const ServerInfoSidebar: React.FC<ServerInforProps> = ({
       <DrawerHeader>
         <ArrowForwardIosIcon onClick={close} />
         <div>서버 멤버</div>
+        <Button>
+          <Link to="/server">서버입장</Link>
+        </Button>
       </DrawerHeader>
       <Divider />
       <List>

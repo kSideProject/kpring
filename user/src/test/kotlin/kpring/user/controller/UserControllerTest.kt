@@ -34,7 +34,7 @@ import org.springframework.web.context.WebApplicationContext
 @WebMvcTest(controllers = [UserController::class])
 @ExtendWith(value = [MockKExtension::class])
 class UserControllerTest(
-  val objectMapper: ObjectMapper,
+  private val objectMapper: ObjectMapper,
   webContext: WebApplicationContext,
   @MockkBean val authClient: AuthClient,
   @MockkBean val userService: UserService,
@@ -65,9 +65,9 @@ class UserControllerTest(
           // given
           val request =
             CreateUserRequest.builder()
-              .email("test@email.com")
-              .password("tesT@1234")
-              .username("testuser")
+              .email(TEST_EMAIL)
+              .password(TEST_PASSWORD)
+              .username(TEST_USERNAME)
               .build()
           val response = CreateUserResponse.builder().build()
           every { userService.createUser(request) } returns response
@@ -107,9 +107,9 @@ class UserControllerTest(
           // given
           val request =
             CreateUserRequest.builder()
-              .email("test@email.com")
-              .password("tesT@1234")
-              .username("testuser")
+              .email(TEST_EMAIL)
+              .password(TEST_PASSWORD)
+              .username(TEST_USERNAME)
               .build()
           val exception = ExceptionWrapper(ErrorCode.ALREADY_EXISTS_EMAIL)
           val response = FailMessageResponse.builder().message(exception.errorCode.message).build()
@@ -161,8 +161,8 @@ class UserControllerTest(
           // given
           val request =
             CreateUserRequest.builder()
-              .password("tesT@1234")
-              .username("testuser")
+              .password(TEST_PASSWORD)
+              .username(TEST_USERNAME)
               .build()
           val responseMessage = "이메일이 누락되었습니다."
           val response = FailMessageResponse.builder().message(responseMessage).build()
@@ -213,9 +213,9 @@ class UserControllerTest(
           // given
           val request =
             CreateUserRequest.builder()
-              .email("test@email.com")
-              .password("tesT@1234")
-              .username("testuser")
+              .email(TEST_EMAIL)
+              .password(TEST_PASSWORD)
+              .username(TEST_USERNAME)
               .build()
           val exception = RuntimeException("서버 내부 오류")
           val response = FailMessageResponse.builder().message("서버 오류").build()
@@ -640,4 +640,10 @@ class UserControllerTest(
         }
       }
     },
-  )
+  ) {
+  companion object {
+    private const val TEST_EMAIL = "test@email.com"
+    private const val TEST_PASSWORD = "tesT@1234"
+    private const val TEST_USERNAME = "testuser"
+  }
+}

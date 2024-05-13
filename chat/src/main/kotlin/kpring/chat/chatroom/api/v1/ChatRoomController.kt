@@ -1,10 +1,7 @@
 package kpring.chat.chatroom.api.v1
 
 import kpring.chat.chatroom.service.ChatRoomService
-import kpring.chat.global.exception.ErrorCode
-import kpring.chat.global.exception.GlobalException
 import kpring.core.auth.client.AuthClient
-import kpring.core.auth.dto.response.TokenValidationResponse
 import kpring.core.chat.chatroom.dto.request.CreateChatRoomRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
@@ -21,7 +18,7 @@ class ChatRoomController(
     @Validated @RequestBody request: CreateChatRoomRequest,
     @RequestHeader("Authorization") token: String,
   ): ResponseEntity<*> {
-    val userId =  authClient.getTokenInfo(token).data!!.userId
+    val userId = authClient.getTokenInfo(token).data!!.userId
 
     val result = chatRoomService.createChatRoom(request, userId)
     return ResponseEntity.ok().body(result)
@@ -32,7 +29,7 @@ class ChatRoomController(
     @PathVariable("chatRoomId") chatRoomId: String,
     @RequestHeader("Authorization") token: String,
   ): ResponseEntity<*> {
-    val userId =  authClient.getTokenInfo(token).data!!.userId
+    val userId = authClient.getTokenInfo(token).data!!.userId
 
     val result = chatRoomService.exitChatRoom(chatRoomId, userId)
     return ResponseEntity.ok().body(result)

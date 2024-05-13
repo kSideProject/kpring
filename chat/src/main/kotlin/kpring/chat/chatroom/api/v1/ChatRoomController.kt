@@ -21,7 +21,7 @@ class ChatRoomController(
     @Validated @RequestBody request: CreateChatRoomRequest,
     @RequestHeader("Authorization") token: String,
   ): ResponseEntity<*> {
-    val userId = getUserId(authClient.validateToken(token))
+    val userId =  authClient.getTokenInfo(token).data!!.userId
 
     val result = chatRoomService.createChatRoom(request, userId)
     return ResponseEntity.ok().body(result)
@@ -32,18 +32,9 @@ class ChatRoomController(
     @PathVariable("chatRoomId") chatRoomId: String,
     @RequestHeader("Authorization") token: String,
   ): ResponseEntity<*> {
-    val userId = getUserId(authClient.validateToken(token))
+    val userId =  authClient.getTokenInfo(token).data!!.userId
 
     val result = chatRoomService.exitChatRoom(chatRoomId, userId)
     return ResponseEntity.ok().body(result)
-  }
-
-  private fun getUserId(tokenResponse: ResponseEntity<TokenValidationResponse>): String {
-    val body = tokenResponse.body ?: throw GlobalException(ErrorCode.INVALID_TOKEN_BODY)
-    if (!body.isValid) {
-      throw GlobalException(ErrorCode.INVALID_TOKEN)
-    }
-    val userId = body.userId?: throw GlobalException(ErrorCode.USERID_NOT_EXIST)
-    return userId
   }
 }

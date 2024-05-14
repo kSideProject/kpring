@@ -18,4 +18,8 @@ class ChatRoom : BaseTime() {
   fun addUsers(list: List<String>) {
     members.addAll(list)
   }
+
+  fun removeUser(userId: String) {
+    members.remove(userId)
+  }
 }

@@ -14,8 +14,9 @@ import kpring.auth.service.TokenService
 import kpring.core.auth.dto.request.CreateTokenRequest
 import kpring.core.auth.dto.response.CreateTokenResponse
 import kpring.core.auth.dto.response.ReCreateAccessTokenResponse
-import kpring.core.auth.dto.response.TokenValidationResponse
+import kpring.core.auth.dto.response.TokenInfo
 import kpring.core.auth.enums.TokenType
+import kpring.core.global.dto.response.ApiResponse
 import kpring.test.restdoc.dsl.restDoc
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs
@@ -28,7 +29,12 @@ import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation
 import org.springframework.test.web.reactive.server.WebTestClient
 import java.time.LocalDateTime
 
-@WebFluxTest(controllers = [AuthController::class])
+@WebFluxTest(
+  controllers = [
+    AuthController::class,
+    kpring.auth.api.v2.AuthController::class,
+  ],
+)
 @AutoConfigureRestDocs
 @ExtendWith(
   value = [
@@ -56,9 +62,9 @@ class AuthControllerTest(
       beforeSpec { restDocumentation.beforeTest(javaClass, "auth controller") }
       afterSpec { restDocumentation.afterTest() }
 
-        /*
-        test code
-         */
+    /*
+    test code
+     */
       Given("/api/v1/token") {
         val url = "/api/v1/token"
         When("POST") {
@@ -268,7 +274,12 @@ class AuthControllerTest(
 
           then("403 FORBIDDEN") {
 
-            coEvery { tokenService.reCreateAccessToken(any()) } throws ExpiredJwtException(mockk(), mockk(), "")
+            coEvery { tokenService.reCreateAccessToken(any()) } throws
+              ExpiredJwtException(
+                mockk(),
+                mockk(),
+                "",
+              )
 
             webTestClient.post().uri(url)
               .exchange()
@@ -297,22 +308,27 @@ class AuthControllerTest(
         }
       }
 
-      Given("/api/v1/validation") {
-        val url = "/api/v1/validation"
+      Given("/api/v2/validation") {
+        val url = "/api/v2/validation"
         val testToken = "Bearer testtoken"
 
-        coEvery { tokenService.checkToken(any()) } returns TokenValidationResponse(true, TokenType.ACCESS, "testUserId")
+        coEvery { tokenService.checkToken(any()) } returns TokenInfo(TokenType.ACCESS, "testUserId")
 
         When("POST") {
 
-          val response = TokenValidationResponse(isValid = true, type = TokenType.ACCESS, userId = "testUserId")
+          val data = TokenInfo(TokenType.ACCESS, "testUserId")
           then("200 OK") {
             webTestClient.post().uri(url)
               .header("Authorization", testToken)
               .exchange()
               .expectStatus().isOk
-              .expectBody().json(objectMapper.writeValueAsString(response))
-              .restDoc("post.v1.validation200", "토큰 검증") {
+              .expectBody()
+              .json(
+                objectMapper.writeValueAsString(
+                  ApiResponse(data = data),
+                ),
+              )
+              .restDoc("post.v2.validation200", "토큰 검증") {
                 request {
                   header { "Authorization" mean "검증할 토큰 정보" }
                 }
@@ -320,9 +336,8 @@ class AuthControllerTest(
                 response {
                   header { "Content-type" mean "entity type" }
                   body {
-                    "isValid" type "Boolean" mean "토큰이 유효한지 여부를 나타냅니다."
-                    "type" type "String" mean "ACCESS  또는 REFRESH 값을 가지며 검증한 토큰의 타입입니다. 만약 유효하지 않은 토큰이라면 존재하지 않습니다."
-                    "userId" type "String" mean "토큰에 저장된 유저의 id"
+                    "data.type" type "String" mean "ACCESS  또는 REFRESH 값을 가지며 검증한 토큰의 타입입니다. 만약 유효하지 않은 토큰이라면 존재하지 않습니다."
+                    "data.userId" type "String" mean "토큰에 저장된 유저의 id"
                   }
                 }
               }
@@ -330,14 +345,14 @@ class AuthControllerTest(
 
           then("400 BAD REQUEST") {
             val token = ""
-            coEvery { tokenService.checkToken(token) } returns response
+            coEvery { tokenService.checkToken(token) } returns data
             webTestClient.post()
               .uri(url)
               .exchange()
               .expectStatus().isBadRequest
               .expectBody()
               .restDoc(
-                identifier = "post.v1.validation400",
+                identifier = "post.v2.validation400",
                 description = "필요한 파라미터를 모두 입력하지 않은 사용자 실수인 경우",
               ) {}
           }
@@ -352,7 +367,7 @@ class AuthControllerTest(
               .expectStatus().isEqualTo(500)
               .expectBody()
               .restDoc(
-                identifier = "post.v1.validation500",
+                identifier = "post.v2.validation500",
                 description = "서버 내부 오류시",
               ) { }
           }

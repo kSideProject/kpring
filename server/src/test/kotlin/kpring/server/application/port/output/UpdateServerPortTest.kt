@@ -13,7 +13,7 @@ import org.springframework.test.context.ContextConfiguration
 @SpringBootTest
 class UpdateServerPortTest(
   val updateServerPort: UpdateServerPort,
-  val createServerPort: CreateServerPort,
+  val createServerPort: SaveServerPort,
   val getServerPort: GetServerPort,
 ) : DescribeSpec({
 

@@ -7,15 +7,15 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 
 @NoArg
-@Entity
 @Document(collection = "chats")
 class Chat(
   val userId: String,
   val roomId: String,
   val content: String,
 ) : BaseTime() {
+
   @Id
-  var id: String? = null
+  var id: String?= null;
 
   fun isEdited(): Boolean {
     return !createdAt.equals(updatedAt)

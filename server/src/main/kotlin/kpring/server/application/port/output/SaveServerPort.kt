@@ -1,8 +1,8 @@
 package kpring.server.application.port.output
 
-import kpring.core.server.dto.ServerInfo
+import kpring.core.server.dto.request.CreateServerRequest
 import kpring.server.domain.Server
 
 interface SaveServerPort {
-  fun save(server: Server): ServerInfo
+  fun create(req: CreateServerRequest): Server
 }

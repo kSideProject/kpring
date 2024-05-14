@@ -1,8 +1,8 @@
 package kpring.server.domain
 
-class Server(
+class ServerUser(
   val id: String,
   val name: String,
-  val users: MutableList<ServerUser>
+  val profileImage: String,
 ) {
 }

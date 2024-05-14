@@ -1,11 +1,14 @@
 spring:
   application:
     name: server
-  datasource:
-    username: root
-    password: 2435800
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/kpring
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      username: root
+      password: test1234@
+      database: mongodb
+      authentication-database: admin
 
 auth:
   url: ${AUTH_SERVICE_URL:http://localhost:8080}

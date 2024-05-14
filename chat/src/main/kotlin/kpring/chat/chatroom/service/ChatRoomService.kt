@@ -24,13 +24,13 @@ class ChatRoomService(
     chatRoomId: String,
     userId: String,
   ) {
-    checkIfAuthorized(chatRoomId, userId)
+    verifyAuthorizationForChatRoom(chatRoomId, userId)
     val chatRoom: ChatRoom = getChatRoom(chatRoomId)
     chatRoom.removeUser(userId)
     chatRoomRepository.save(chatRoom)
   }
 
-  fun checkIfAuthorized(
+  fun verifyAuthorizationForChatRoom(
     chatRoomId: String,
     userId: String,
   ) {

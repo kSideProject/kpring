@@ -3,16 +3,19 @@ plugins {
   id("io.spring.dependency-management") version "1.1.4"
   kotlin("jvm") version "1.9.23"
   kotlin("plugin.spring") version "1.9.23"
+  kotlin("kapt") version "1.9.23"
 }
 
-group = "kpring"
-version = "0.0.1-SNAPSHOT"
+val queryDslVersion = "5.1.0"
 
 java {
   sourceCompatibility = JavaVersion.VERSION_21
 }
 
 dependencies {
+  /** dev tool */
+  developmentOnly("org.springframework.boot:spring-boot-devtools")
+
   /** Core Module */
   implementation(project(":core"))
 
@@ -30,9 +33,14 @@ dependencies {
   /** Kotlin */
   implementation("org.jetbrains.kotlin:kotlin-reflect")
 
-  /** jpa */
-  implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-  runtimeOnly("com.mysql:mysql-connector-j")
+  /** spring data mongo & querydsl */
+  implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
+  implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
+  implementation("com.querydsl:querydsl-mongodb:$queryDslVersion") {
+    exclude("org.mongodb", "mongo-java-driver")
+  }
+  implementation("com.querydsl:querydsl-jpa:$queryDslVersion")
+  kapt("com.querydsl:querydsl-apt:$queryDslVersion:jakarta")
 
   /** test */
   testImplementation(project(":test"))

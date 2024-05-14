@@ -7,7 +7,7 @@ export interface SideBarProps {
 export interface ServerInforProps {
   close: () => void;
   open: boolean;
-  serverId: string;
+  serverID: string;
 }
 
 // 멤버 프로필 모달 스타일

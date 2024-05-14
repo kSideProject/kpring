@@ -6,14 +6,27 @@ plugins {
   kotlin("jvm") version "1.9.23"
   kotlin("plugin.spring") version "1.9.23"
   kotlin("kapt") version "1.9.23"
+  kotlin("plugin.noarg") version "1.9.24"
 }
 
+noArg {
+  annotation("kpring.chat.NoArg")
+  invokeInitializers = true
+}
+
+group = "kpring"
+version = "0.0.1-SNAPSHOT"
 val queryDslVersion = "5.1.0"
 
-dependencies {
+java {
+  sourceCompatibility = JavaVersion.VERSION_21
+}
 
-  implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-  implementation("org.jetbrains.kotlin:kotlin-reflect")
+repositories {
+  mavenCentral()
+}
+
+dependencies {
   // core module
   api(project(":core"))
 
@@ -25,11 +38,15 @@ dependencies {
   }
   implementation("com.querydsl:querydsl-jpa:$queryDslVersion")
   kapt("com.querydsl:querydsl-apt:$queryDslVersion:jakarta")
+
   // web
   implementation("org.springframework.boot:spring-boot-starter-web")
 
   // validation
   implementation("org.springframework.boot:spring-boot-starter-validation")
+
+  implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+  implementation("org.jetbrains.kotlin:kotlin-reflect")
 
   // test
   testImplementation(project(":test"))
@@ -51,7 +68,9 @@ dependencies {
   implementation("org.springframework.restdocs:spring-restdocs-webtestclient")
   implementation("org.springframework.restdocs:spring-restdocs-asciidoctor")
 
+  // default test
   testImplementation("org.springframework.boot:spring-boot-starter-test")
+  testImplementation(project(":test"))
 }
 
 tasks.withType<KotlinCompile> {

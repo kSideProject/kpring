@@ -18,7 +18,7 @@ class SaveServerPortMongoImpl(
     return Server(
       id = entity.id,
       name = entity.name,
-      users = mutableListOf(),
+      users = mutableSetOf(),
     )
   }
 }

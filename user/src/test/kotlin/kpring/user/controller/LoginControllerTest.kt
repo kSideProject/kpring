@@ -46,8 +46,9 @@ class LoginControllerTest(
     feature("API : login API") {
       scenario("200 OK 로그인 성공") {
         // given
-        val request = LoginRequest.builder().email("test@email.com").build()
-        val response = LoginResponse.builder().accessToken("accessToken").refreshToken("refreshToken").build()
+        val request = LoginRequest.builder().email("test@email.com").password("TestPW1234!").build()
+        val response =
+          LoginResponse.builder().accessToken("accessToken").refreshToken("refreshToken").build()
         every { loginService.login(request) } returns response
 
         // when
@@ -65,7 +66,10 @@ class LoginControllerTest(
         // docs
         document.restDoc("login200", "로그인 API") {
           request {
-            body { "email" type "String" mean "email" }
+            body {
+              "email" type "String" mean "email"
+              "password" type "String" mean "password"
+            }
           }
           response {
             body {
@@ -78,7 +82,7 @@ class LoginControllerTest(
 
       scenario("400 BAD_REQUEST 로그인 실패") {
         // given
-        val request = LoginRequest.builder().email("test@gmail.com").build()
+        val request = LoginRequest.builder().email("test@gmail.com").password("TestPW1234!").build()
         every { loginService.login(request) } throws IllegalArgumentException("Invalid email")
 
         // when
@@ -97,14 +101,18 @@ class LoginControllerTest(
         // docs
         document.restDoc("login400", "로그인 API") {
           request {
-            body { "email" type "String" mean "email" }
+
+            body {
+              "email" type "String" mean "email"
+              "password" type "String" mean "password"
+            }
           }
         }
       }
 
       scenario("500 INTERNAL_SERVER_ERROR 로그인 실패") {
         // given
-        val request = LoginRequest.builder().email("test@naver.com").build()
+        val request = LoginRequest.builder().email("test@naver.com").password("TestPW1234!").build()
         every { loginService.login(request) } throws RuntimeException("Internal server error")
 
         // when
@@ -123,7 +131,11 @@ class LoginControllerTest(
         // docs
         document.restDoc("login500", "로그인 API") {
           request {
-            body { "email" type "String" mean "email" }
+
+            body {
+              "email" type "String" mean "email"
+              "password" type "String" mean "password"
+            }
           }
         }
       }
@@ -132,7 +144,8 @@ class LoginControllerTest(
     feature("API : logout API") {
       scenario("200 OK 로그아웃 성공") {
         // given
-        val request = LogoutRequest.builder().accessToken("accessToken").refreshToken("refreshToken").build()
+        val request =
+          LogoutRequest.builder().accessToken("accessToken").refreshToken("refreshToken").build()
         every { loginService.logout(request) } returns Unit
 
         // when
@@ -160,7 +173,8 @@ class LoginControllerTest(
 
       scenario("400 BAD_REQUEST 로그아웃 실패") {
         // given
-        val request = LogoutRequest.builder().accessToken("accessToken").refreshToken("refreshToken").build()
+        val request =
+          LogoutRequest.builder().accessToken("accessToken").refreshToken("refreshToken").build()
         every { loginService.logout(request) } throws IllegalArgumentException("Invalid token")
 
         // when
@@ -188,7 +202,8 @@ class LoginControllerTest(
 
       scenario("500 INTERNAL_SERVER_ERROR 로그아웃 실패") {
         // given
-        val request = LogoutRequest.builder().accessToken("accessToken").refreshToken("refreshToken").build()
+        val request =
+          LogoutRequest.builder().accessToken("accessToken").refreshToken("refreshToken").build()
         every { loginService.logout(request) } throws RuntimeException("Internal server error")
 
         // when

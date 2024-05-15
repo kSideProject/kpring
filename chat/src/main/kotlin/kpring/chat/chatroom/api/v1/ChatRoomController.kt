@@ -30,8 +30,18 @@ class ChatRoomController(
     @RequestHeader("Authorization") token: String,
   ): ResponseEntity<*> {
     val userId = authClient.getTokenInfo(token).data!!.userId
-
     val result = chatRoomService.exitChatRoom(chatRoomId, userId)
+    return ResponseEntity.ok().body(result)
+  }
+
+  @PatchMapping("/chatroom/invite/{userId}/chatRoom/{chatRoomId}")
+  fun inviteToChatRoomByUserId(
+    @PathVariable("userId") userId: String,
+    @PathVariable("chatRoomId") chatRoomId: String,
+    @RequestHeader("Authorization") token: String,
+  ): ResponseEntity<*> {
+    val inviterId = authClient.getTokenInfo(token).data!!.userId
+    val result = chatRoomService.inviteToChatRoomByUserId(userId, inviterId, chatRoomId)
     return ResponseEntity.ok().body(result)
   }
 }

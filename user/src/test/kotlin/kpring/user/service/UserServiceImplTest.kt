@@ -46,7 +46,7 @@ class UserServiceImplTest : FunSpec({
         createUserRequest.password,
       )
 
-    every { userValidationService.validateDuplicateEmail(createUserRequest.email) } just Runs
+    every { userService.handleDuplicateEmail(createUserRequest.email) } just Runs
     every {
       userValidationService.validatePasswordMatch(
         createUserRequest.password,
@@ -65,7 +65,7 @@ class UserServiceImplTest : FunSpec({
     userId shouldBe response.id
     createUserRequest.email shouldBe response.email
 
-    verify { userValidationService.validateDuplicateEmail(createUserRequest.email) }
+    verify { userService.handleDuplicateEmail(createUserRequest.email) }
     verify {
       userValidationService.validatePasswordMatch(
         createUserRequest.password,
@@ -75,12 +75,12 @@ class UserServiceImplTest : FunSpec({
   }
 
   test("회원가입_실패_이메일중복케이스") {
-    every { userValidationService.validateDuplicateEmail(TEST_EMAIL) } throws
+    every { userService.handleDuplicateEmail(TEST_EMAIL) } throws
       ExceptionWrapper(ErrorCode.ALREADY_EXISTS_EMAIL)
 
     val exception =
       shouldThrow<ExceptionWrapper> {
-        userValidationService.validateDuplicateEmail(createUserRequest.email)
+        userService.handleDuplicateEmail(createUserRequest.email)
       }
     exception.errorCode.message shouldBe "Email already exists"
 

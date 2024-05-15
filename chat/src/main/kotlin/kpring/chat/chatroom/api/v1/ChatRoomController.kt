@@ -34,7 +34,7 @@ class ChatRoomController(
     return ResponseEntity.ok().body(result)
   }
 
-  @PatchMapping("/chatroom/invite/{userId}/chatRoom/{chatRoomId}")
+  @PatchMapping("/chatroom/{chatRoomId}/invite/{userId}")
   fun inviteToChatRoomByUserId(
     @PathVariable("userId") userId: String,
     @PathVariable("chatRoomId") chatRoomId: String,

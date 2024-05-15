@@ -30,6 +30,17 @@ class ChatRoomService(
     chatRoomRepository.save(chatRoom)
   }
 
+  fun inviteToChatRoomByUserId(
+    userId: String,
+    inviterId: String,
+    chatRoomId: String,
+  ) {
+    verifyAuthorizationForChatRoom(chatRoomId, inviterId)
+    val chatRoom: ChatRoom = getChatRoom(chatRoomId)
+    chatRoom.addUser(userId)
+    chatRoomRepository.save(chatRoom)
+  }
+
   fun verifyAuthorizationForChatRoom(
     chatRoomId: String,
     userId: String,

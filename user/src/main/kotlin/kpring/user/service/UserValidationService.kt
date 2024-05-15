@@ -1,7 +1,7 @@
 package kpring.user.service
 
-import kpring.user.exception.ErrorCode
-import kpring.user.exception.ExceptionWrapper
+import kpring.core.global.exception.ServiceException
+import kpring.user.exception.UserErrorCode
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
@@ -14,7 +14,7 @@ class UserValidationService(
     passwordCheck: String,
   ) {
     if (password != passwordCheck) {
-      throw ExceptionWrapper(ErrorCode.NOT_MATCH_PASSWORD)
+      throw ServiceException(UserErrorCode.NOT_MATCH_PASSWORD)
     }
   }
 
@@ -23,7 +23,7 @@ class UserValidationService(
     encodedPassword: String,
   ) {
     if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
-      throw ExceptionWrapper(ErrorCode.INCORRECT_PASSWORD)
+      throw ServiceException(UserErrorCode.INCORRECT_PASSWORD)
     }
   }
 }

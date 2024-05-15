@@ -46,7 +46,7 @@ class AuthController(
   suspend fun validateToken(
     @RequestHeader("Authorization") token: String,
   ): ResponseEntity<TokenValidationResponse> {
-    val response = tokenService.checkToken(token.removePrefix("Bearer "))
+    val response = tokenService.checkTokenDeprecated(token.removePrefix("Bearer "))
     return ResponseEntity.ok()
       .body(response)
   }

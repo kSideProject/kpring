@@ -6,8 +6,8 @@ import { MainServer } from "./serverScene/MainServer";
 //  https://newdocs.phaser.io/docs/3.70.0/Phaser.Types.Core.GameConfig
 const config: Phaser.Types.Core.GameConfig = {
   type: AUTO,
-  width: window.innerWidth,
-  height: window.innerHeight,
+  width: 1200,
+  height: 800,
   parent: "game-container",
   scene: [Preloader, MainServer],
   scale: {},

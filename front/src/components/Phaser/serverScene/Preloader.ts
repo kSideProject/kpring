@@ -6,13 +6,17 @@ export class Preloader extends Scene {
   }
 
   preload() {
-    this.load.image("tiles", "../assets/tiles/grass.png");
-    this.load.image("house", "../assets/tiles/Free_Chicken_House.png");
-    this.load.tilemapTiledJSON("grass", "../assets/tiles/TestMap.json");
-    this.load.tilemapTiledJSON(
-      "Free_Chicken_House",
-      "../assets/tiles/TestMap.json"
-    );
+    // 1. assets폴더에서 사용할 png파일을 모두 불러온다.
+    this.load.image("grassImg", "../assets/grass.png");
+    this.load.image("waterImg", "../assets/water.png");
+    this.load.image("bridgeImg", "../assets/bridge.png");
+    this.load.image("chickHouseImg", "../assets/chick_house.png");
+    this.load.image("treeImg", "../assets/trees.png");
+    this.load.image("dirtImg", "../assets/dirt.png");
+    this.load.image("basicPlantsImg", "../assets/basic_plants.png");
+
+    // 2. Tiled에서 작업하고 JSON파일 저장한 후 불러온다.
+    this.load.tilemapTiledJSON("firstMap", "../assets/firstMap.json");
   }
 
   create() {

@@ -14,6 +14,7 @@ class Chat(
   val roomId: String,
   val content: String,
 ) : BaseTime() {
+
   @Id
   var id: String? = null
 

@@ -8,16 +8,18 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
+  Button,
   styled,
 } from "@mui/material";
 import { serverData } from "../../utils/fakeData";
 import MemberProfile from "../Profile/MemberProfile";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import { useNavigate, useParams } from "react-router-dom";
 
 const ServerInfoSidebar: React.FC<ServerInforProps> = ({
   close,
   open,
-  serverId,
+  serverID,
 }) => {
   const DrawerHeader = styled("div")(({ theme }) => ({
     display: "flex",
@@ -30,16 +32,19 @@ const ServerInfoSidebar: React.FC<ServerInforProps> = ({
   const [openProfile, setOpenProfile] = React.useState(false);
   const handleOpen = () => setOpenProfile(true);
   const handleClose = () => setOpenProfile(false);
+  const navigate = useNavigate();
+
   return (
     <>
       <DrawerHeader>
         <ArrowForwardIosIcon onClick={close} />
         <div>서버 멤버</div>
+        <Button onClick={() => navigate(`server/${serverID}`)}>서버입장</Button>
       </DrawerHeader>
       <Divider />
       <List>
         {serverData
-          .filter((server) => server.serverId === serverId)
+          .filter((server) => server.serverId === serverID)
           .map((member) => {
             return (
               <ListItem>

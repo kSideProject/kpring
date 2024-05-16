@@ -10,6 +10,7 @@ import io.mockk.verify
 import kpring.core.auth.client.AuthClient
 import kpring.core.auth.dto.response.TokenValidationResponse
 import kpring.core.auth.enums.TokenType
+import kpring.core.global.exception.ServiceException
 import kpring.test.restdoc.dsl.restDoc
 import kpring.user.dto.request.CreateUserRequest
 import kpring.user.dto.request.UpdateUserProfileRequest
@@ -17,8 +18,7 @@ import kpring.user.dto.response.CreateUserResponse
 import kpring.user.dto.response.FailMessageResponse
 import kpring.user.dto.response.GetUserProfileResponse
 import kpring.user.dto.response.UpdateUserProfileResponse
-import kpring.user.exception.ErrorCode
-import kpring.user.exception.ExceptionWrapper
+import kpring.user.exception.UserErrorCode
 import kpring.user.service.UserService
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -111,8 +111,8 @@ class UserControllerTest(
               .password(TEST_PASSWORD)
               .username(TEST_USERNAME)
               .build()
-          val exception = ExceptionWrapper(ErrorCode.ALREADY_EXISTS_EMAIL)
-          val response = FailMessageResponse.builder().message(exception.errorCode.message).build()
+          val exception = ServiceException(UserErrorCode.ALREADY_EXISTS_EMAIL)
+          val response = FailMessageResponse.builder().message(exception.errorCode.message()).build()
           every { userService.createUser(request) } throws exception
 
           // when
@@ -318,7 +318,8 @@ class UserControllerTest(
           // given
           val userId = 1L
           val request = UpdateUserProfileRequest.builder().email("test@test.com").build()
-          val response = FailMessageResponse.builder().message(ErrorCode.NOT_ALLOWED.message).build()
+          val response =
+            FailMessageResponse.builder().message(UserErrorCode.NOT_ALLOWED.message()).build()
           every { authClient.validateToken(any()) }.returns(
             ResponseEntity.ok(
               TokenValidationResponse(false, null, null),
@@ -458,7 +459,8 @@ class UserControllerTest(
           // given
           val userId = 1L
           val token = "Bearer test"
-          val response = FailMessageResponse.builder().message(ErrorCode.NOT_ALLOWED.message).build()
+          val response =
+            FailMessageResponse.builder().message(UserErrorCode.NOT_ALLOWED.message()).build()
           every { authClient.validateToken(token) } returns
             ResponseEntity
               .ok(TokenValidationResponse(false, null, null))

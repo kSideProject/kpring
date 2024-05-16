@@ -2,13 +2,13 @@ package kpring.user.controller
 
 import kpring.core.auth.client.AuthClient
 import kpring.core.auth.enums.TokenType
+import kpring.core.global.exception.ServiceException
 import kpring.user.dto.request.CreateUserRequest
 import kpring.user.dto.request.UpdateUserProfileRequest
 import kpring.user.dto.response.CreateUserResponse
 import kpring.user.dto.response.GetUserProfileResponse
 import kpring.user.dto.response.UpdateUserProfileResponse
-import kpring.user.exception.ErrorCode
-import kpring.user.exception.ExceptionWrapper
+import kpring.user.exception.UserErrorCode
 import kpring.user.service.UserService
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
@@ -70,10 +70,10 @@ class UserController(
   ) {
     val validationResult = authClient.validateToken(token)
     if (!validationResult.body!!.isValid || userId != validationResult.body!!.userId) {
-      throw ExceptionWrapper(ErrorCode.NOT_ALLOWED)
+      throw ServiceException(UserErrorCode.NOT_ALLOWED)
     }
     if (validationResult.body!!.type != TokenType.ACCESS) {
-      throw ExceptionWrapper(ErrorCode.BAD_REQUEST)
+      throw ServiceException(UserErrorCode.BAD_REQUEST)
     }
   }
 }

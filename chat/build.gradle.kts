@@ -42,6 +42,12 @@ dependencies {
   // web
   implementation("org.springframework.boot:spring-boot-starter-web")
 
+  // non-blocking redis
+  implementation("org.springframework.boot:spring-boot-starter-data-redis")
+
+  // lettuce-core
+  implementation("io.lettuce.core:lettuce-core")
+
   // validation
   implementation("org.springframework.boot:spring-boot-starter-validation")
 

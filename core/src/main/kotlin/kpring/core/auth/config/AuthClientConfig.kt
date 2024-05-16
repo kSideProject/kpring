@@ -1,26 +1,64 @@
 package kpring.core.auth.config
 
 import kpring.core.auth.client.AuthClient
+import kpring.core.global.exception.CommonErrorCode
+import kpring.core.global.exception.ServiceException
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpStatusCode
+import org.springframework.http.client.JdkClientHttpRequestFactory
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.support.RestClientAdapter
 import org.springframework.web.service.invoker.HttpServiceProxyFactory
+import java.net.http.HttpClient
+import java.time.Duration
+
 
 @Configuration
-class AuthClientConfig{
+class AuthClientConfig {
   @Value("\${auth.url}")
-  private val authUrl: String? = null
+  private lateinit var authUrl: String
+
+  @Value("\${auth.read-timeout:1s}")
+  private lateinit var readTimeout: Duration
+
+  @Value("\${auth.connect-timeout:5s}")
+  private lateinit var connectTimeout: Duration
 
   @Bean
   fun authClient(): AuthClient {
+
+    val client = HttpClient.newBuilder()
+      .connectTimeout(connectTimeout)
+      .version(HttpClient.Version.HTTP_2)
+      .build()
+
+    val fac = JdkClientHttpRequestFactory(client)
+    fac.setReadTimeout(readTimeout)
+
     val restClient =
       RestClient.builder()
-        .baseUrl(authUrl!!)
+        .requestFactory(fac)
+        .baseUrl(authUrl)
+        .defaultStatusHandler(HttpStatusCode::is4xxClientError) { req, res ->
+          throw ServiceException(CommonErrorCode.TIME_OUT)
+        }
+        .defaultStatusHandler(HttpStatusCode::is5xxServerError) { req, res ->
+          throw ServiceException(CommonErrorCode.INTERNAL_SERVER_ERROR)
+        }
+        .defaultStatusHandler(HttpStatusCode::isError) { req, res ->
+          throw ServiceException(CommonErrorCode.CLIENT_ERROR)
+        }
         .build()
+
+    restClient.get().retrieve()
+
     val adapter = RestClientAdapter.create(restClient)
-    val factory = HttpServiceProxyFactory.builderFor(adapter).build()
+    val factory = HttpServiceProxyFactory
+      .builderFor(adapter)
+      .build()
+
     return factory.createClient(AuthClient::class.java)
   }
 }

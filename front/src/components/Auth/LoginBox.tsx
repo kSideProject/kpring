@@ -10,7 +10,7 @@ function LoginBox() {
         <Box
           component="form"
           sx={{
-            "& .MuiTextField-root": { mb: 3, width: "300px" },
+            "& .MuiTextField-root": { mb: 3, width: "90%" },
           }}
           noValidate
           autoComplete="off"
@@ -18,7 +18,9 @@ function LoginBox() {
           borderRadius="10px"
           padding="20px"
         >
-          <h2 className="text-center text-primary">디코타운에 어서오세요!</h2>
+          <h2 className="text-center text-2xl font-bold text-primary mb-[10px]">
+            디코타운에 어서오세요!
+          </h2>
           <TextField
             required
             id="user-email"

@@ -37,7 +37,7 @@ class ChatRoomService(
   ) {
     verifyAuthorizationForChatRoom(chatRoomId, inviterId)
     val chatRoom: ChatRoom = getChatRoom(chatRoomId)
-    verifyIfAlreadyJoined(chatRoomId,userId)
+    verifyIfAlreadyJoined(chatRoomId, userId)
     chatRoom.addUser(userId)
     chatRoomRepository.save(chatRoom)
   }
@@ -47,7 +47,7 @@ class ChatRoomService(
     userId: String,
   ) {
     if (chatRoomRepository.existsByIdAndMembersContaining(chatRoomId, userId)) {
-      throw GlobalException(ErrorCode.USER_ALREADY_EXIST_IN_CHATROOM);
+      throw GlobalException(ErrorCode.USER_ALREADY_EXIST_IN_CHATROOM)
     }
   }
 

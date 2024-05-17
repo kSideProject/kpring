@@ -9,7 +9,7 @@ class CreateUserRequestTest : StringSpec({
   val validator = Validation.buildDefaultValidatorFactory().validator
 
   "CreateUserRequestTest 생성 성공" {
-    val request = CreateUserRequest(TEST_EMAIL, TEST_PASSWORD, TEST_PASSWORD, TEST_USERNAME)
+    val request = CreateUserRequest(TEST_EMAIL, TEST_PASSWORD, TEST_USERNAME)
 
     val violation = validator.validate(request)
     violation.isEmpty() shouldBe true
@@ -20,7 +20,6 @@ class CreateUserRequestTest : StringSpec({
       CreateUserRequest(
         "wrongEmail",
         TEST_PASSWORD,
-        TEST_PASSWORD_CHECK,
         TEST_USERNAME,
       )
 
@@ -35,7 +34,6 @@ class CreateUserRequestTest : StringSpec({
       CreateUserRequest(
         TEST_EMAIL,
         "wrongPassword",
-        TEST_PASSWORD_CHECK,
         TEST_USERNAME,
       )
 
@@ -52,7 +50,6 @@ class CreateUserRequestTest : StringSpec({
       CreateUserRequest(
         TEST_EMAIL,
         TEST_PASSWORD,
-        TEST_PASSWORD_CHECK,
         "wrongNickname!",
       )
 
@@ -66,7 +63,6 @@ class CreateUserRequestTest : StringSpec({
   companion object {
     private const val TEST_EMAIL = "test@email.com"
     private const val TEST_PASSWORD = "Password123!"
-    private const val TEST_PASSWORD_CHECK = "Password123!"
     private const val TEST_USERNAME = "test"
   }
 }

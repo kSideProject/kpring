@@ -16,6 +16,8 @@ import java.time.Duration
 
 @Configuration
 class AuthClientConfig {
+  private val valField: String? = null
+
   @Value("\${auth.url}")
   private lateinit var authUrl: String
 
@@ -27,11 +29,12 @@ class AuthClientConfig {
 
   @Bean
   fun authClient(): AuthClient {
-
-    val client = HttpClient.newBuilder()
-      .connectTimeout(connectTimeout)
-      .version(HttpClient.Version.HTTP_2)
-      .build()
+    println(valField)
+    val client =
+      HttpClient.newBuilder()
+        .connectTimeout(connectTimeout)
+        .version(HttpClient.Version.HTTP_2)
+        .build()
 
     val fac = JdkClientHttpRequestFactory(client)
     fac.setReadTimeout(readTimeout)
@@ -45,9 +48,10 @@ class AuthClientConfig {
         .build()
 
     val adapter = RestClientAdapter.create(restClient)
-    val factory = HttpServiceProxyFactory
-      .builderFor(adapter)
-      .build()
+    val factory =
+      HttpServiceProxyFactory
+        .builderFor(adapter)
+        .build()
 
     return factory.createClient(AuthClient::class.java)
   }

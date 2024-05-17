@@ -23,44 +23,72 @@ rest api 사용시 에러 처리에 대한 로직을 다룹니다.
 ```
  */
 object HttpClientErrorHandle {
-
-  private val objectMapper = ObjectMapper()
+  private val om = ObjectMapper()
   private val log = LogFactory.getLog("REST API ERROR")
+
+  /**
+   * 4xx 상태 코드를 응답받을 때, 사용하는 핸들러입니다.
+   *
+   * 1. request, response 로그를 출력합니다.
+   * 2. 응답 받은 상태코드와 에러 메시지를 가공하지 않고 반환합니다.
+   */
   fun rest4xxHandle(): (request: HttpRequest, response: ClientHttpResponse) -> Unit = { req, res ->
+    val body = BufferedReader(InputStreamReader(res.body, StandardCharsets.UTF_8))
+      .lines()
+      .collect(Collectors.joining("\n"))
+
     // logging
     val id = UUID.randomUUID().toString()
     printRequest(id, req)
-    printResponse(id, res)
+    printResponse(id, res, body)
 
     // error handling
-    val type =
-      objectMapper.typeFactory.constructParametricType(ApiResponse::class.java, Any::class.java)
-    val response: ApiResponse<Any> = objectMapper.readValue(res.body, type)
+    val type = om.typeFactory.constructParametricType(ApiResponse::class.java, Any::class.java)
+    val response: ApiResponse<Any> = om.readValue(body, type)
     val status = HttpStatus.valueOf(res.statusCode.value())
     val message = response.message ?: throw ServiceException(CommonErrorCode.INTERNAL_SERVER_ERROR)
 
     throw ServiceException(DetailErrorCode(message, status))
   }
 
-  // 내부 서버 오류 발생시 에러를 노출시키지 않기 위해서 로깅만 사용한다.
+  /**
+   * 5xx 상태 코드를 응답받을 때, 사용하는 핸들러입니다.
+   * 내부 서버 오류 발생시 에러를 노출시키지 않기 위해서 로깅만 사용한다.
+   *
+   * 1. request, response 로그를 출력합니다.
+   * 2. 응답 받은 에러 메시지와 상태에 무관하게 내부 서버 오류로 처리합니다.
+   */
   fun rest5xxHandle(): (request: HttpRequest, response: ClientHttpResponse) -> Unit = { req, res ->
+    val body = BufferedReader(InputStreamReader(res.body, StandardCharsets.UTF_8))
+      .lines()
+      .collect(Collectors.joining("\n"))
+
+    // logging
     val id = UUID.randomUUID().toString()
     printRequest(id, req)
-    printResponse(id, res)
+    printResponse(id, res, body)
+
+    val type = om.typeFactory.constructParametricType(ApiResponse::class.java, Any::class.java)
+    val response: ApiResponse<Any> = om.readValue(body, type)
+    val status = HttpStatus.valueOf(res.statusCode.value())
+    val message = response.message ?: throw ServiceException(CommonErrorCode.INTERNAL_SERVER_ERROR)
+    log.error("[$id] request failed with 5xx error: cause=${message}, status=${status}")
+
     throw ServiceException(CommonErrorCode.INTERNAL_SERVER_ERROR)
   }
 
-  private fun printRequest(sessionNumber: String, req: HttpRequest) {
-//    val bodyString = String(body, StandardCharsets.UTF_8)
-    log.warn("[${sessionNumber}] URI: ${req.uri}, Method: ${req.method}, Headers:${req.headers}")
+  private fun printRequest(
+    sessionNumber: String,
+    req: HttpRequest,
+  ) {
+    log.warn("[$sessionNumber] URI: ${req.uri}, Method: ${req.method}, Headers:${req.headers}")
   }
 
-  private fun printResponse(sessionNumber: String, res: ClientHttpResponse) {
-    val body = BufferedReader(
-      InputStreamReader(res.body, StandardCharsets.UTF_8)
-    ).lines()
-      .collect(Collectors.joining("\n"))
-
-    log.warn("[${sessionNumber}] Status: ${res.statusCode}, Headers:${res.headers}, Body:${body}")
+  private fun printResponse(
+    sessionNumber: String,
+    res: ClientHttpResponse,
+    body: String,
+  ) {
+    log.warn("[$sessionNumber] Status: ${res.statusCode}, Headers:${res.headers}, Body:$body")
   }
 }

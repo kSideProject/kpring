@@ -9,6 +9,7 @@ import io.mockk.junit5.MockKExtension
 import io.mockk.justRun
 import kpring.core.auth.client.AuthClient
 import kpring.core.global.dto.response.ApiResponse
+import kpring.core.server.dto.ServerInfo
 import kpring.core.server.dto.request.AddUserAtServerRequest
 import kpring.core.server.dto.request.CreateServerRequest
 import kpring.core.server.dto.response.CreateServerResponse
@@ -90,6 +91,46 @@ class RestApiServerControllerTest(
           body {
             "data.serverId" type "String" mean "서버 id"
             "data.serverName" type "String" mean "생성된 서버 이름"
+          }
+        }
+      }
+    }
+  }
+
+  describe("GET /api/v1/server/{serverId}: 서버 조회 api test") {
+
+    val url = "/api/v1/server/{serverId}"
+    it("요청 성공시") {
+      // given
+      val serverId = "test_server_id"
+      val data = ServerInfo(id = serverId, name = "test_server", users = emptyList())
+      every { serverService.getServerInfo(serverId) } returns data
+
+      // when
+      val result = webTestClient.get()
+        .uri(url, serverId)
+        .exchange()
+
+      // then
+      val docs = result
+        .expectStatus().isOk
+        .expectBody()
+        .json(objectMapper.writeValueAsString(ApiResponse(data = data)))
+
+      // docs
+      docs.restDoc(
+        identifier = "get_server_info_200",
+        description = "서버 단건 조회 api",
+      ) {
+        request {
+          path { "serverId" mean "서버 id" }
+        }
+
+        response {
+          body {
+            "data.id" type "String" mean "서버 id"
+            "data.name" type "String" mean "생성된 서버 이름"
+            "data.users" type "Array" mean "서버에 가입된 유저 목록"
           }
         }
       }

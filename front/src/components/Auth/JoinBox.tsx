@@ -4,11 +4,11 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { useNavigate } from "react-router";
-function LoginBox() {
+function JoinBox() {
   const navigation = useNavigate();
   return (
     <section className="flex justify-center mt-[200px]">
-      <div className="mt-[30px] w-[400px] text-center">
+      <div className="mt-[10px] w-[400px] text-center">
         <Box
           component="form"
           sx={{
@@ -22,8 +22,17 @@ function LoginBox() {
           padding="20px"
         >
           <h2 className="text-center text-2xl font-bold text-primary mt-[5px] mb-[10px]">
-            디코타운에 어서오세요!
-          </h2>
+            환영합니다!
+          </h2>{" "}
+          <TextField
+            required
+            id="user-name"
+            label="닉네임"
+            type="text"
+            placeholder="닉네임을 입력해주세요."
+            variant="standard"
+            size="small"
+          />
           <TextField
             required
             id="user-email"
@@ -42,23 +51,32 @@ function LoginBox() {
             variant="standard"
             size="small"
           />
+          <TextField
+            required
+            id="user-password-confirm"
+            label="비밀번호 확인"
+            type="password"
+            placeholder="동일한 비밀번호를 입력해주세요."
+            autoComplete="current-password"
+            variant="standard"
+            size="small"
+          />
           <div className="mt-[20px] flex justify-center flex-wrap ">
-            <Button
-              variant="contained"
-              startIcon={<LoginIcon />}
-              sx={{ width: "90%" }}
-            >
-              로그인
-            </Button>
-
             <Button
               variant="contained"
               color="secondary"
               startIcon={<PersonAddAlt1Icon />}
-              sx={{ mt: "20px", width: "90%", mb: "20px" }}
-              onClick={() => navigation("/join")}
+              sx={{ width: "90%", mb: "20px" }}
             >
               회원가입
+            </Button>
+            <Button
+              variant="text"
+              startIcon={<LoginIcon />}
+              sx={{ width: "50%" }}
+              onClick={() => navigation("/login")}
+            >
+              로그인 하러가기
             </Button>
           </div>
         </Box>
@@ -67,4 +85,4 @@ function LoginBox() {
   );
 }
 
-export default LoginBox;
+export default JoinBox;

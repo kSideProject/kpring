@@ -26,7 +26,7 @@ class UserController(
     @RequestHeader("Authorization") token: String,
     @PathVariable userId: Long,
   ): ResponseEntity<ApiResponse<GetUserProfileResponse>> {
-    checkRequestUserHasPermission(token, userId.toString())
+    checkRequestUserHasPermission(token, userId.toString(), false)
     val response = userService.getProfile(userId)
     return ResponseEntity.ok(ApiResponse(data = response))
   }
@@ -45,7 +45,7 @@ class UserController(
     @PathVariable userId: Long,
     @RequestBody request: UpdateUserProfileRequest,
   ): ResponseEntity<ApiResponse<UpdateUserProfileResponse>> {
-    checkRequestUserHasPermission(token, userId.toString())
+    checkRequestUserHasPermission(token, userId.toString(), true)
     val response = userService.updateProfile(userId, request)
     return ResponseEntity.ok(ApiResponse(data = response))
   }
@@ -55,7 +55,7 @@ class UserController(
     @RequestHeader("Authorization") token: String,
     @PathVariable userId: Long,
   ): ResponseEntity<ApiResponse<Any>> {
-    checkRequestUserHasPermission(token, userId.toString())
+    checkRequestUserHasPermission(token, userId.toString(), true)
     val isExit = userService.exitUser(userId)
 
     return if (isExit) {
@@ -68,9 +68,10 @@ class UserController(
   private fun checkRequestUserHasPermission(
     token: String,
     userId: String,
+    isSelfOnly: Boolean,
   ) {
     val validationResult = authClient.getTokenInfo(token)
-    if (userId != validationResult.data!!.userId) {
+    if (isSelfOnly && userId != validationResult.data!!.userId) {
       throw ServiceException(UserErrorCode.NOT_ALLOWED)
     }
     if (validationResult.data!!.type != TokenType.ACCESS) {

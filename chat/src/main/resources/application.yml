@@ -11,6 +11,11 @@ spring:
       authentication-database: admin
       authSource: admin
 
+    redis:
+      host: localhost
+      port: 6379
+      password: testpassword1234
+
 server:
   port: 8081
 
@@ -18,3 +23,5 @@ auth:
   url: "http://localhost:8080/"
 page:
   size: 100
+invitation:
+  expiration: 3600

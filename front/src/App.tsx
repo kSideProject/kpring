@@ -1,23 +1,22 @@
-import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 import Layout from "./components/Layout/Layout";
-import Home from "./pages/Home";
 import { PhaserGame } from "./components/Phaser/PhaserGame";
-
+import Home from "./pages/Home";
+import Login from "./pages/Login";
 function App() {
   return (
     <div className="App">
       <BrowserRouter>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<Home />}></Route>
-            <Route path="/server/:serverId" element={<PhaserGame />}></Route>
-          </Routes>
-        </Layout>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Home />} />
+            <Route path="server/:serverId" element={<PhaserGame />} />
+          </Route>
+        </Routes>
       </BrowserRouter>
     </div>
   );
 }
-
 export default App;

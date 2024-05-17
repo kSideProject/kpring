@@ -412,7 +412,9 @@ class UserControllerTest(
           val token = "Bearer test"
           val data =
             GetUserProfileResponse.builder()
-              .email("test@test.com")
+              .userId(userId)
+              .email(TEST_EMAIL)
+              .username(TEST_USERNAME)
               .build()
           val response = ApiResponse(data = data)
           every { authClient.getTokenInfo(token) }.returns(
@@ -449,7 +451,9 @@ class UserControllerTest(
               }
               response {
                 body {
+                  "data.userId" type Long mean "사용자 아이디"
                   "data.email" type "String" mean "이메일"
+                  "data.username" type "String" mean "닉네임"
                 }
               }
             }

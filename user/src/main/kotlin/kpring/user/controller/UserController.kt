@@ -2,6 +2,7 @@ package kpring.user.controller
 
 import kpring.core.auth.client.AuthClient
 import kpring.core.auth.enums.TokenType
+import kpring.core.global.dto.response.ApiResponse
 import kpring.core.global.exception.ServiceException
 import kpring.user.dto.request.CreateUserRequest
 import kpring.user.dto.request.UpdateUserProfileRequest
@@ -24,18 +25,18 @@ class UserController(
   fun getUserProfile(
     @RequestHeader("Authorization") token: String,
     @PathVariable userId: Long,
-  ): ResponseEntity<GetUserProfileResponse> {
+  ): ResponseEntity<ApiResponse<GetUserProfileResponse>> {
     checkRequestUserHasPermission(token, userId.toString())
     val response = userService.getProfile(userId)
-    return ResponseEntity.ok(response)
+    return ResponseEntity.ok(ApiResponse(data = response))
   }
 
   @PostMapping("/user")
   fun createUser(
     @Validated @RequestBody request: CreateUserRequest,
-  ): ResponseEntity<CreateUserResponse> {
+  ): ResponseEntity<ApiResponse<CreateUserResponse>> {
     val response = userService.createUser(request)
-    return ResponseEntity.ok(response)
+    return ResponseEntity.ok(ApiResponse(data = response))
   }
 
   @PatchMapping("/user/{userId}")
@@ -43,17 +44,17 @@ class UserController(
     @RequestHeader("Authorization") token: String,
     @PathVariable userId: Long,
     @RequestBody request: UpdateUserProfileRequest,
-  ): ResponseEntity<UpdateUserProfileResponse> {
+  ): ResponseEntity<ApiResponse<UpdateUserProfileResponse>> {
     checkRequestUserHasPermission(token, userId.toString())
     val response = userService.updateProfile(userId, request)
-    return ResponseEntity.ok(response)
+    return ResponseEntity.ok(ApiResponse(data = response))
   }
 
   @DeleteMapping("/user/{userId}")
   fun exitUser(
     @RequestHeader("Authorization") token: String,
     @PathVariable userId: Long,
-  ): ResponseEntity<Any> {
+  ): ResponseEntity<ApiResponse<Any>> {
     checkRequestUserHasPermission(token, userId.toString())
     val isExit = userService.exitUser(userId)
 
@@ -68,11 +69,11 @@ class UserController(
     token: String,
     userId: String,
   ) {
-    val validationResult = authClient.validateToken(token)
-    if (!validationResult.body!!.isValid || userId != validationResult.body!!.userId) {
+    val validationResult = authClient.getTokenInfo(token)
+    if (userId != validationResult.data!!.userId) {
       throw ServiceException(UserErrorCode.NOT_ALLOWED)
     }
-    if (validationResult.body!!.type != TokenType.ACCESS) {
+    if (validationResult.data!!.type != TokenType.ACCESS) {
       throw ServiceException(UserErrorCode.BAD_REQUEST)
     }
   }

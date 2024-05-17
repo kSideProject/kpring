@@ -25,7 +25,8 @@ class RestApiServerController(
     @RequestHeader("Authorization") token: String,
     @RequestBody request: CreateServerRequest,
   ): ResponseEntity<ApiResponse<*>> {
-    val data = createServerUseCase.createServer(request)
+    val userInfo = authClient.getTokenInfo(token).data!!
+    val data = createServerUseCase.createServer(request, userInfo.userId)
     return ResponseEntity.ok()
       .body(ApiResponse(data = data))
   }

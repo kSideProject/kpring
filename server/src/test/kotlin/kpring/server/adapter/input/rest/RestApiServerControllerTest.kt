@@ -8,6 +8,8 @@ import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import io.mockk.justRun
 import kpring.core.auth.client.AuthClient
+import kpring.core.auth.dto.response.TokenInfo
+import kpring.core.auth.enums.TokenType
 import kpring.core.global.dto.response.ApiResponse
 import kpring.core.server.dto.request.AddUserAtServerRequest
 import kpring.core.server.dto.request.CreateServerRequest
@@ -59,7 +61,13 @@ class RestApiServerControllerTest(
       // given
       val request = CreateServerRequest(serverName = "test server")
       val data = CreateServerResponse(serverId = "1", serverName = request.serverName)
-      every { serverService.createServer(request) } returns data
+      every { authClient.getTokenInfo(any()) } returns ApiResponse(
+        data = TokenInfo(
+          type = TokenType.ACCESS,
+          userId = "test_user_id"
+        )
+      )
+      every { serverService.createServer(eq(request), any()) } returns data
 
       // when
       val result = webTestClient.post()
@@ -138,6 +146,12 @@ class RestApiServerControllerTest(
     val url = "/api/v1/server/{serverId}/invitation/{userId}"
     it("요청 성공시") {
       // given
+      every { authClient.getTokenInfo(any()) } returns ApiResponse(
+        data = TokenInfo(
+          type = TokenType.ACCESS,
+          userId = "test_user_id"
+        )
+      )
       justRun { serverService.inviteUser(eq("test_server_id"), any(), any()) }
 
       // when

@@ -5,7 +5,6 @@ import kpring.core.global.exception.ServiceException
 import kpring.server.adapter.output.mongo.repository.ServerRepository
 import kpring.server.application.port.output.GetServerPort
 import kpring.server.domain.Server
-import kpring.server.domain.ServerUser
 import org.springframework.stereotype.Component
 
 @Component
@@ -20,7 +19,8 @@ class GetServerPortMongoImpl(
       id = serverEntity.id,
       name = serverEntity.name,
       users = serverEntity.users.map { it.toDomain() }.toMutableSet(),
-      invitedUserIds = serverEntity.invitedUserIds.toMutableSet()
+      invitedUserIds = serverEntity.invitedUserIds.toMutableSet(),
+      authorities = serverEntity.authorities.toMap(),
     )
   }
 }

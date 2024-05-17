@@ -19,7 +19,8 @@ class UpdateServerPortTest(
 
   it("유저를 초대가 작동한다.") {
     // given
-    val server = createServerPort.create(CreateServerRequest("serverName"))
+    val userId = "userId"
+    val server = createServerPort.create(CreateServerRequest("serverName"), userId)
 
     // when
     repeat(5) {
@@ -33,7 +34,8 @@ class UpdateServerPortTest(
 
   it("가입 유저를 추가할 수 있다.") {
     // given
-    val server = createServerPort.create(CreateServerRequest("serverName"))
+    val userId = "userId"
+    val server = createServerPort.create(CreateServerRequest("serverName"), userId)
     val user = ServerUser("test", "test", "test")
     updateServerPort.inviteUser(server.id, user.id)
 

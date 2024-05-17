@@ -10,12 +10,11 @@ import kpring.core.server.dto.response.CreateServerResponse
 import kpring.server.application.port.input.AddUserAtServerUseCase
 import kpring.server.application.port.input.CreateServerUseCase
 import kpring.server.application.port.input.GetServerInfoUseCase
-import kpring.server.application.port.output.SaveServerPort
 import kpring.server.application.port.output.GetServerPort
+import kpring.server.application.port.output.SaveServerPort
 import kpring.server.application.port.output.UpdateServerPort
 import kpring.server.domain.ServerAuthority
 import kpring.server.domain.ServerUser
-import kpring.server.error.ServerErrorCode
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -26,9 +25,9 @@ class ServerService(
   val updateServerPort: UpdateServerPort,
 ) : CreateServerUseCase, GetServerInfoUseCase, AddUserAtServerUseCase {
 
-  override fun createServer(req: CreateServerRequest): CreateServerResponse {
+  override fun createServer(req: CreateServerRequest, userId: String): CreateServerResponse {
 
-    val server = createServerPort.create(req)
+    val server = createServerPort.create(req, userId)
     return CreateServerResponse(
       serverId = server.id,
       serverName = server.name
@@ -42,7 +41,7 @@ class ServerService(
       name = server.name,
       users = server.users.map {
         ServerUserInfo(it.id, it.name, it.profileImage)
-      }
+      },
     )
   }
 

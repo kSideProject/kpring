@@ -8,7 +8,7 @@ class Server(
   val name: String,
   val users: MutableSet<ServerUser> = mutableSetOf(),
   val invitedUserIds: MutableSet<String> = mutableSetOf(),
-  private val authorities: Map<String, ServerRole> = mapOf(),
+  val authorities: Map<String, ServerRole> = mapOf(),
 ) {
 
   private fun isInvited(userId: String): Boolean {

@@ -4,5 +4,5 @@ import kpring.core.server.dto.request.CreateServerRequest
 import kpring.core.server.dto.response.CreateServerResponse
 
 interface CreateServerUseCase {
-  fun createServer(req: CreateServerRequest): CreateServerResponse
+  fun createServer(req: CreateServerRequest, userId: String): CreateServerResponse
 }

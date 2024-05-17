@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Import
 @Import(AuthClientConfig::class)
 @Configuration
 class CoreConfiguration {
-
   @Bean
   fun serviceExceptionRestController(): ServiceExceptionRestController {
     return ServiceExceptionRestController()

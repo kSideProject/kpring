@@ -12,7 +12,6 @@ import kpring.server.application.port.input.GetServerInfoUseCase
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
-
 @RestController
 @RequestMapping("/api/v1/server")
 class RestApiServerController(
@@ -21,7 +20,6 @@ class RestApiServerController(
   val addUserAtServerUseCase: AddUserAtServerUseCase,
   val authClient: AuthClient,
 ) {
-
   @PostMapping("")
   fun createServer(
     @RequestHeader("Authorization") token: String,
@@ -44,7 +42,7 @@ class RestApiServerController(
 
   @GetMapping("/{serverId}")
   fun getServerInfo(
-    @PathVariable serverId: String
+    @PathVariable serverId: String,
   ): ResponseEntity<ApiResponse<ServerInfo>> {
     val data = getServerUseCase.getServerInfo(serverId)
     return ResponseEntity.ok()

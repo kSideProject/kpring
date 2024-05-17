@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service
 @Service
 class ChatRoomService(
   private val chatRoomRepository: ChatRoomRepository,
-  private val invitationRepository: InvitationLinkRepository
+  private val invitationRepository: InvitationLinkRepository,
 ) {
   fun createChatRoom(
     request: CreateChatRoomRequest,
@@ -34,15 +34,15 @@ class ChatRoomService(
 
   fun getChatRoomInvitationLink(
     chatRoomId: String,
-    userId: String
-  ): String{
+    userId: String,
+  ): String {
     verifyAuthorizationForChatRoom(chatRoomId, userId)
     val chatRoom: ChatRoom = getChatRoom(chatRoomId)
     val link: String = makeLink(chatRoomId)
     return link
   }
 
-  fun makeLink(chatRoomId: String) : String{
+  fun makeLink(chatRoomId: String): String {
     return invitationRepository.saveChatRoomIdAndGetLink(chatRoomId)
   }
 

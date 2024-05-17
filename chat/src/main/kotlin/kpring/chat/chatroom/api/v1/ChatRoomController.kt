@@ -33,6 +33,7 @@ class ChatRoomController(
     val result = chatRoomService.exitChatRoom(chatRoomId, userId)
     return ResponseEntity.ok().body(result)
   }
+
   @GetMapping("/chatroom/link/{chatRoomId}")
   fun getChatRoomInvitationLink(
     @PathVariable("chatRoomId") chatRoomId: String,

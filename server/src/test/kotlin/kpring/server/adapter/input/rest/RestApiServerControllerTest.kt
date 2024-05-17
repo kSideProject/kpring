@@ -9,6 +9,8 @@ import io.mockk.junit5.MockKExtension
 import io.mockk.justRun
 import kpring.core.auth.client.AuthClient
 import kpring.core.global.dto.response.ApiResponse
+import kpring.core.global.exception.CommonErrorCode
+import kpring.core.global.exception.ServiceException
 import kpring.core.server.dto.ServerInfo
 import kpring.core.server.dto.request.AddUserAtServerRequest
 import kpring.core.server.dto.request.CreateServerRequest
@@ -30,7 +32,7 @@ import org.springframework.web.context.WebApplicationContext
   ],
 )
 class RestApiServerControllerTest(
-  private val objectMapper: ObjectMapper,
+  private val om: ObjectMapper,
   webContext: WebApplicationContext,
   @MockkBean val serverService: ServerService,
   @MockkBean val authClient: AuthClient,
@@ -73,7 +75,7 @@ class RestApiServerControllerTest(
       val docs = result
         .expectStatus().isOk
         .expectBody()
-        .json(objectMapper.writeValueAsString(ApiResponse(data = data)))
+        .json(om.writeValueAsString(ApiResponse(data = data)))
 
       // docs
       docs.restDoc(
@@ -115,7 +117,43 @@ class RestApiServerControllerTest(
       val docs = result
         .expectStatus().isOk
         .expectBody()
-        .json(objectMapper.writeValueAsString(ApiResponse(data = data)))
+        .json(om.writeValueAsString(ApiResponse(data = data)))
+
+      // docs
+      docs.restDoc(
+        identifier = "get_server_info_200",
+        description = "서버 단건 조회 api",
+      ) {
+        request {
+          path { "serverId" mean "서버 id" }
+        }
+
+        response {
+          body {
+            "data.id" type "String" mean "서버 id"
+            "data.name" type "String" mean "생성된 서버 이름"
+            "data.users" type "Array" mean "서버에 가입된 유저 목록"
+          }
+        }
+      }
+    }
+
+    it("요청 실패 : 존재하지 않은 서버") {
+      // given
+      val serverId = "not_exist_server_id"
+      val errorCode = CommonErrorCode.NOT_FOUND
+      every { serverService.getServerInfo(serverId) } throws ServiceException(errorCode)
+
+      // when
+      val result = webTestClient.get()
+        .uri(url, serverId)
+        .exchange()
+
+      // then
+      val docs = result
+        .expectStatus().isNotFound
+        .expectBody()
+        .json(om.writeValueAsString(ApiResponse<Any>(message = errorCode.message())))
 
       // docs
       docs.restDoc(

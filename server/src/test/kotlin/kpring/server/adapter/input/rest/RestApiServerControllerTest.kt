@@ -11,19 +11,25 @@ import kpring.core.auth.client.AuthClient
 import kpring.core.auth.dto.response.TokenInfo
 import kpring.core.auth.enums.TokenType
 import kpring.core.global.dto.response.ApiResponse
+import kpring.core.global.exception.CommonErrorCode
+import kpring.core.global.exception.ServiceException
+import kpring.core.server.dto.ServerInfo
 import kpring.core.server.dto.request.AddUserAtServerRequest
 import kpring.core.server.dto.request.CreateServerRequest
 import kpring.core.server.dto.response.CreateServerResponse
 import kpring.server.application.service.ServerService
+import kpring.server.config.CoreConfiguration
 import kpring.test.restdoc.dsl.restDoc
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.context.annotation.Import
 import org.springframework.restdocs.ManualRestDocumentation
 import org.springframework.restdocs.operation.preprocess.Preprocessors
 import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation
 import org.springframework.test.web.servlet.client.MockMvcWebTestClient
 import org.springframework.web.context.WebApplicationContext
 
+@Import(CoreConfiguration::class)
 @WebMvcTest(controllers = [RestApiServerController::class])
 @ExtendWith(
   value = [
@@ -31,7 +37,7 @@ import org.springframework.web.context.WebApplicationContext
   ],
 )
 class RestApiServerControllerTest(
-  private val objectMapper: ObjectMapper,
+  private val om: ObjectMapper,
   webContext: WebApplicationContext,
   @MockkBean val serverService: ServerService,
   @MockkBean val authClient: AuthClient,
@@ -80,7 +86,7 @@ class RestApiServerControllerTest(
       val docs = result
         .expectStatus().isOk
         .expectBody()
-        .json(objectMapper.writeValueAsString(ApiResponse(data = data)))
+        .json(om.writeValueAsString(ApiResponse(data = data)))
 
       // docs
       docs.restDoc(
@@ -98,6 +104,80 @@ class RestApiServerControllerTest(
           body {
             "data.serverId" type "String" mean "서버 id"
             "data.serverName" type "String" mean "생성된 서버 이름"
+          }
+        }
+      }
+    }
+  }
+
+  describe("GET /api/v1/server/{serverId}: 서버 조회 api test") {
+
+    val url = "/api/v1/server/{serverId}"
+    it("요청 성공시") {
+      // given
+      val serverId = "test_server_id"
+      val data = ServerInfo(id = serverId, name = "test_server", users = emptyList())
+      every { serverService.getServerInfo(serverId) } returns data
+
+      // when
+      val result = webTestClient.get()
+        .uri(url, serverId)
+        .exchange()
+
+      // then
+      val docs = result
+        .expectStatus().isOk
+        .expectBody()
+        .json(om.writeValueAsString(ApiResponse(data = data)))
+
+      // docs
+      docs.restDoc(
+        identifier = "get_server_info_200",
+        description = "서버 단건 조회 api",
+      ) {
+        request {
+          path { "serverId" mean "서버 id" }
+        }
+
+        response {
+          body {
+            "data.id" type "String" mean "서버 id"
+            "data.name" type "String" mean "생성된 서버 이름"
+            "data.users" type "Array" mean "서버에 가입된 유저 목록"
+          }
+        }
+      }
+    }
+
+    it("요청 실패 : 존재하지 않은 서버") {
+      // given
+      val serverId = "not_exist_server_id"
+      val errorCode = CommonErrorCode.NOT_FOUND
+      every { serverService.getServerInfo(serverId) } throws ServiceException(errorCode)
+
+      // when
+      val result = webTestClient.get()
+        .uri(url, serverId)
+        .exchange()
+
+      // then
+      val docs = result
+        .expectStatus().isNotFound
+        .expectBody()
+        .json(om.writeValueAsString(ApiResponse<Any>(message = errorCode.message())))
+
+      // docs
+      docs.restDoc(
+        identifier = "get_server_info_with_invalid_id",
+        description = "서버 단건 조회 api",
+      ) {
+        request {
+          path { "serverId" mean "서버 id" }
+        }
+
+        response {
+          body {
+            "message" type "String" mean "실패 관련 메시지"
           }
         }
       }

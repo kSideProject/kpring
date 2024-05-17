@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 
 @RestControllerAdvice
 class ServiceExceptionRestController {
-
   private val logger = LoggerFactory.getLogger(this::class.java)
 
   @ExceptionHandler(ServiceException::class)

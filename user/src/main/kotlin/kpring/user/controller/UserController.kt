@@ -71,10 +71,23 @@ class UserController(
     isSelfOnly: Boolean,
   ) {
     val validationResult = authClient.getTokenInfo(token)
-    if (isSelfOnly && userId != validationResult.data!!.userId) {
+    if (isSelfOnly) {
+      checkIfUserIsSelf(userId, validationResult.data!!.userId)
+    }
+    checkIfAccessToken(validationResult.data!!.type)
+  }
+
+  private fun checkIfUserIsSelf(
+    userId: String,
+    validatedUserId: String,
+  ) {
+    if (userId != validatedUserId) {
       throw ServiceException(UserErrorCode.NOT_ALLOWED)
     }
-    if (validationResult.data!!.type != TokenType.ACCESS) {
+  }
+
+  private fun checkIfAccessToken(validatedTokenType: TokenType) {
+    if (validatedTokenType != TokenType.ACCESS) {
       throw ServiceException(UserErrorCode.BAD_REQUEST)
     }
   }

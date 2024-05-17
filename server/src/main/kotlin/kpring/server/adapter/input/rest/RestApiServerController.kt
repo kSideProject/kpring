@@ -45,7 +45,8 @@ class RestApiServerController(
     @PathVariable userId: String,
     @RequestHeader("Authorization") token: String,
   ): ResponseEntity<Any> {
-    addUserAtServerUseCase.inviteUser(serverId, userId)
+    val invitor = authClient.getTokenInfo(token).data!!
+    addUserAtServerUseCase.inviteUser(serverId, invitor.userId, userId)
     return ResponseEntity.ok().build()
   }
 

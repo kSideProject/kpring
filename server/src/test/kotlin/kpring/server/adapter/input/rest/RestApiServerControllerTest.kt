@@ -138,7 +138,7 @@ class RestApiServerControllerTest(
     val url = "/api/v1/server/{serverId}/invitation/{userId}"
     it("요청 성공시") {
       // given
-      justRun { serverService.inviteUser(eq("test_server_id"), any()) }
+      justRun { serverService.inviteUser(eq("test_server_id"), any(), any()) }
 
       // when
       val result = webTestClient.put()

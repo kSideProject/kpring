@@ -1,5 +1,7 @@
 package kpring.server.application.service
 
+import kpring.core.global.exception.CommonErrorCode
+import kpring.core.global.exception.ServiceException
 import kpring.core.server.dto.ServerInfo
 import kpring.core.server.dto.ServerUserInfo
 import kpring.core.server.dto.request.AddUserAtServerRequest
@@ -11,7 +13,9 @@ import kpring.server.application.port.input.GetServerInfoUseCase
 import kpring.server.application.port.output.SaveServerPort
 import kpring.server.application.port.output.GetServerPort
 import kpring.server.application.port.output.UpdateServerPort
+import kpring.server.domain.ServerAuthority
 import kpring.server.domain.ServerUser
+import kpring.server.error.ServerErrorCode
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -43,8 +47,11 @@ class ServerService(
   }
 
   @Transactional
-  override fun inviteUser(serverId: String, userId: String) {
+  override fun inviteUser(serverId: String, invitorId: String, userId: String) {
     val server = getServer.get(serverId)
+    if (server.dontHasRole(invitorId, ServerAuthority.INVITE)) {
+      throw ServiceException(CommonErrorCode.FORBIDDEN)
+    }
     server.registerInvitation(userId)
     updateServerPort.inviteUser(server.id, userId)
   }

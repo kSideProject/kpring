@@ -14,11 +14,12 @@ function LoginBox() {
           }}
           noValidate
           autoComplete="off"
-          bgcolor="#FDE2F3"
-          borderRadius="10px"
+          bgcolor="#fde2f34d
+          "
+          border="1px solid #e4d4e7"
           padding="20px"
         >
-          <h2 className="text-center text-2xl font-bold text-primary mb-[10px]">
+          <h2 className="text-center text-2xl font-bold text-primary mt-[5px] mb-[10px]">
             디코타운에 어서오세요!
           </h2>
           <TextField

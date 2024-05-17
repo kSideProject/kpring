@@ -4,6 +4,9 @@ import lombok.Builder;
 
 @Builder
 public record GetUserProfileResponse(
-        String email
+  Long userId,
+  String email,
+  String username
 ) {
+
 }

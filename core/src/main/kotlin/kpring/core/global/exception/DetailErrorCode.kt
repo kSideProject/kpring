@@ -4,8 +4,8 @@ import org.springframework.http.HttpStatus
 
 class DetailErrorCode(
   val message: String,
-  val id: String = "custom error",
   val httpStatus: HttpStatus,
+  val id: String = "custom error",
 ) : ErrorCode {
   override fun message(): String = message
 

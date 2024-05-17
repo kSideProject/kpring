@@ -16,15 +16,18 @@ import kpring.core.server.dto.request.AddUserAtServerRequest
 import kpring.core.server.dto.request.CreateServerRequest
 import kpring.core.server.dto.response.CreateServerResponse
 import kpring.server.application.service.ServerService
+import kpring.server.config.CoreConfiguration
 import kpring.test.restdoc.dsl.restDoc
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.context.annotation.Import
 import org.springframework.restdocs.ManualRestDocumentation
 import org.springframework.restdocs.operation.preprocess.Preprocessors
 import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation
 import org.springframework.test.web.servlet.client.MockMvcWebTestClient
 import org.springframework.web.context.WebApplicationContext
 
+@Import(CoreConfiguration::class)
 @WebMvcTest(controllers = [RestApiServerController::class])
 @ExtendWith(
   value = [
@@ -157,7 +160,7 @@ class RestApiServerControllerTest(
 
       // docs
       docs.restDoc(
-        identifier = "get_server_info_200",
+        identifier = "get_server_info_with_invalid_id",
         description = "서버 단건 조회 api",
       ) {
         request {
@@ -166,9 +169,7 @@ class RestApiServerControllerTest(
 
         response {
           body {
-            "data.id" type "String" mean "서버 id"
-            "data.name" type "String" mean "생성된 서버 이름"
-            "data.users" type "Array" mean "서버에 가입된 유저 목록"
+            "message" type "String" mean "실패 관련 메시지"
           }
         }
       }

@@ -3,7 +3,9 @@ import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
+import { useNavigate } from "react-router";
 function LoginBox() {
+  const navigation = useNavigate();
   return (
     <section className="flex justify-center mt-[200px]">
       <div className="mt-[30px] w-[400px] text-center">
@@ -54,6 +56,7 @@ function LoginBox() {
               color="secondary"
               startIcon={<PersonAddAlt1Icon />}
               sx={{ mt: "20px", width: "90%", mb: "20px" }}
+              onClick={() => navigation("/join")}
             >
               회원가입
             </Button>

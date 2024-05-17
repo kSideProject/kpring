@@ -3,7 +3,9 @@ import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
+import { useNavigate } from "react-router";
 function JoinBox() {
+  const navigation = useNavigate();
   return (
     <section className="flex justify-center mt-[200px]">
       <div className="mt-[10px] w-[400px] text-center">
@@ -72,6 +74,7 @@ function JoinBox() {
               variant="text"
               startIcon={<LoginIcon />}
               sx={{ width: "50%" }}
+              onClick={() => navigation("/login")}
             >
               로그인 하러가기
             </Button>

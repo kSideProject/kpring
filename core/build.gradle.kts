@@ -14,10 +14,11 @@ dependencies {
   // validation
   implementation("org.springframework.boot:spring-boot-starter-validation")
   // tomcat
-  compileOnly("org.springframework.boot:spring-boot-starter-web")
+  implementation("org.springframework.boot:spring-boot-starter-web")
   // netty
   compileOnly("org.springframework.boot:spring-boot-starter-webflux")
 
+  testImplementation(project(":test"))
   testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 

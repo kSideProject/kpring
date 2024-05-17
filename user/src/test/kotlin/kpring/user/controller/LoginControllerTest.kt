@@ -5,6 +5,7 @@ import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.FeatureSpec
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
+import kpring.core.global.dto.response.ApiResponse
 import kpring.test.restdoc.dsl.restDoc
 import kpring.user.dto.request.LoginRequest
 import kpring.user.dto.request.LogoutRequest
@@ -47,9 +48,10 @@ class LoginControllerTest(
       scenario("200 OK 로그인 성공") {
         // given
         val request = LoginRequest.builder().email("test@email.com").password("TestPW1234!").build()
-        val response =
+        val data =
           LoginResponse.builder().accessToken("accessToken").refreshToken("refreshToken").build()
-        every { loginService.login(request) } returns response
+        val response = ApiResponse(data = data)
+        every { loginService.login(request) } returns data
 
         // when
         val result =
@@ -73,8 +75,8 @@ class LoginControllerTest(
           }
           response {
             body {
-              "accessToken" type "String" mean "accessToken"
-              "refreshToken" type "String" mean "refreshToken"
+              "data.accessToken" type "String" mean "accessToken"
+              "data.refreshToken" type "String" mean "refreshToken"
             }
           }
         }

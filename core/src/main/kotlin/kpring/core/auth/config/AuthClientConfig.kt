@@ -44,8 +44,6 @@ class AuthClientConfig {
         .defaultStatusHandler(HttpStatusCode::is5xxServerError, rest5xxHandle())
         .build()
 
-    restClient.get().retrieve()
-
     val adapter = RestClientAdapter.create(restClient)
     val factory = HttpServiceProxyFactory
       .builderFor(adapter)

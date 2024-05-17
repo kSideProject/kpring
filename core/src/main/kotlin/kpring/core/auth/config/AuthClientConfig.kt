@@ -1,11 +1,8 @@
 package kpring.core.auth.config
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import kpring.core.auth.client.AuthClient
 import kpring.core.global.exception.HttpClientErrorHandle.rest4xxHandle
 import kpring.core.global.exception.HttpClientErrorHandle.rest5xxHandle
-import org.apache.juli.logging.LogFactory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -27,11 +24,6 @@ class AuthClientConfig {
 
   @Value("\${auth.connect-timeout:5s}")
   private lateinit var connectTimeout: Duration
-
-  @Autowired
-  private lateinit var objectMapper: ObjectMapper
-
-  private val log = LogFactory.getLog("Auth logger")
 
   @Bean
   fun authClient(): AuthClient {

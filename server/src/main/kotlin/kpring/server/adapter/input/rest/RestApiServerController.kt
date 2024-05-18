@@ -2,6 +2,7 @@ package kpring.server.adapter.input.rest
 
 import kpring.core.auth.client.AuthClient
 import kpring.core.global.dto.response.ApiResponse
+import kpring.core.server.dto.ServerInfo
 import kpring.core.server.dto.request.AddUserAtServerRequest
 import kpring.core.server.dto.request.CreateServerRequest
 import kpring.server.application.port.input.AddUserAtServerUseCase
@@ -33,7 +34,7 @@ class RestApiServerController(
   @GetMapping("/{serverId}")
   fun getServerInfo(
     @PathVariable serverId: String
-  ): ResponseEntity<ApiResponse<*>> {
+  ): ResponseEntity<ApiResponse<ServerInfo>> {
     val data = getServerUseCase.getServerInfo(serverId)
     return ResponseEntity.ok()
       .body(ApiResponse(data = data))

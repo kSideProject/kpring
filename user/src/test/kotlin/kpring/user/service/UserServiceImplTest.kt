@@ -30,7 +30,6 @@ class UserServiceImplTest : FunSpec({
       CreateUserRequest(
         TEST_EMAIL,
         TEST_PASSWORD,
-        TEST_PASSWORD,
         TEST_USERNAME,
       )
     clearMocks(userRepository, passwordEncoder, userValidationService, answers = true)
@@ -47,12 +46,6 @@ class UserServiceImplTest : FunSpec({
       )
 
     every { userService.handleDuplicateEmail(createUserRequest.email) } just Runs
-    every {
-      userValidationService.validatePasswordMatch(
-        createUserRequest.password,
-        createUserRequest.passwordCheck,
-      )
-    } just Runs
 
     every { userRepository.existsByEmail(createUserRequest.email) } returns false
     every { passwordEncoder.encode(createUserRequest.password) } returns ENCODED_PASSWORD
@@ -66,12 +59,6 @@ class UserServiceImplTest : FunSpec({
     createUserRequest.email shouldBe response.email
 
     verify { userService.handleDuplicateEmail(createUserRequest.email) }
-    verify {
-      userValidationService.validatePasswordMatch(
-        createUserRequest.password,
-        createUserRequest.passwordCheck,
-      )
-    }
   }
 
   test("회원가입_실패_이메일중복케이스") {
@@ -92,25 +79,8 @@ class UserServiceImplTest : FunSpec({
       CreateUserRequest(
         TEST_EMAIL,
         TEST_PASSWORD,
-        MISMATCHED_PASSWORD,
         TEST_USERNAME,
       )
-
-    every {
-      userValidationService.validatePasswordMatch(
-        createUserRequest.password,
-        createUserRequest.passwordCheck,
-      )
-    } throws ServiceException(UserErrorCode.NOT_MATCH_PASSWORD)
-
-    val exception =
-      shouldThrow<ServiceException> {
-        userValidationService.validatePasswordMatch(
-          createUserRequest.password,
-          createUserRequest.passwordCheck,
-        )
-      }
-    exception.errorCode.message() shouldBe "Password does not match"
 
     verify { userRepository.save(any()) wasNot Called }
   }

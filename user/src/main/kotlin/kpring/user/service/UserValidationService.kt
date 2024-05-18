@@ -9,15 +9,6 @@ import org.springframework.stereotype.Service
 class UserValidationService(
   private val passwordEncoder: PasswordEncoder,
 ) {
-  fun validatePasswordMatch(
-    password: String,
-    passwordCheck: String,
-  ) {
-    if (password != passwordCheck) {
-      throw ServiceException(UserErrorCode.NOT_MATCH_PASSWORD)
-    }
-  }
-
   fun validateUserPassword(
     rawPassword: String,
     encodedPassword: String,

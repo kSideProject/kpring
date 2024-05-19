@@ -22,6 +22,7 @@ spec:
           ports:
             - containerPort: {{ .Values.service.port }}
           env:
+            # auth properties
             - name: AUTH_SERVICE_URL
               value: {{ .Values.api.authServiceUrl }}
             - name: APPLICATION_PROFILE
@@ -29,4 +30,15 @@ spec:
                 configMapKeyRef:
                   name: profile-config
                   key: profile
+            # mongo properties
+            - name: MONGO_HOST
+              value: {{ .Values.mongo.name }}
+            - name: MONGO_PORT
+              value: {{ .Values.mongo.port }}
+            - name: MONGO_USERNAME
+              value: {{ .Values.mongo.username }}
+            - name: MONGO_PASSWORD
+              value: {{ .Values.mongo.password }}
+            - name: MONGO_DATABASE
+              value: {{ .Values.mongo.database }}
 {{- end }}

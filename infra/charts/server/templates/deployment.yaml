@@ -1,4 +1,4 @@
-{{- if .Values.global.enable.user}}
+{{- if .Values.global.enable.server }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:

@@ -11,34 +11,38 @@ import org.springframework.data.mongodb.core.query.Update
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 
-
 @Component
 @Transactional
 class UpdateServerPortMongoImpl(
   val serverRepository: ServerRepository,
-  val template: MongoTemplate
+  val template: MongoTemplate,
 ) : UpdateServerPort {
-  override fun addUser(serverId: String, user: ServerUser) {
-
+  override fun addUser(
+    serverId: String,
+    user: ServerUser,
+  ) {
     template.updateFirst(
       query(
         where("_id").`is`(serverId)
-          .and("invitedUserIds").`in`(user.id)
+          .and("invitedUserIds").`in`(user.id),
       ),
       Update().pull("invitedUserIds", user.id)
         .push("users", user),
-      ServerEntity::class.java
+      ServerEntity::class.java,
     )
   }
 
-  override fun inviteUser(serverId: String, userId: String) {
+  override fun inviteUser(
+    serverId: String,
+    userId: String,
+  ) {
     template.updateFirst(
       query(
         where("_id").`is`(serverId)
-          .and("invitedUserIds").nin(userId)
+          .and("invitedUserIds").nin(userId),
       ),
       Update().push("invitedUserIds").value(userId),
-      ServerEntity::class.java
+      ServerEntity::class.java,
     )
   }
 }

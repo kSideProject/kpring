@@ -53,4 +53,22 @@ class ServerTest : DescribeSpec({
     // then
     result shouldBe ServerErrorCode.ALREADY_REGISTERED_USER
   }
+
+  it("hasRole 테스트") {
+    // given
+    val ownerId = "owner"
+    val server =
+      Server(
+        id = "serverId",
+        name = "serverName",
+        invitedUserIds = mutableSetOf("invitedUserId"),
+        authorities = mapOf(ownerId to ServerRole.OWNER),
+      )
+    val user = ServerUser("invitedUserId", "userName", "profileImageUrl")
+
+    // when
+    val hasRole = server.hasRole(ownerId, ServerAuthority.INVITE)
+    // then
+    hasRole shouldBe true
+  }
 })

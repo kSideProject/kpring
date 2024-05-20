@@ -68,7 +68,16 @@ class RestApiServerControllerTest(
         // given
         val request = CreateServerRequest(serverName = "test server")
         val data = CreateServerResponse(serverId = "1", serverName = request.serverName)
-        every { serverService.createServer(request) } returns data
+
+        every { authClient.getTokenInfo(any()) } returns
+          ApiResponse(
+            data =
+              TokenInfo(
+                type = TokenType.ACCESS,
+                userId = "test_user_id",
+              ),
+          )
+        every { serverService.createServer(eq(request), any()) } returns data
 
         // when
         val result =
@@ -229,7 +238,15 @@ class RestApiServerControllerTest(
       val url = "/api/v1/server/{serverId}/invitation/{userId}"
       it("요청 성공시") {
         // given
-        justRun { serverService.inviteUser(eq("test_server_id"), any()) }
+        every { authClient.getTokenInfo(any()) } returns
+          ApiResponse(
+            data =
+              TokenInfo(
+                type = TokenType.ACCESS,
+                userId = "test_user_id",
+              ),
+          )
+        justRun { serverService.inviteUser(eq("test_server_id"), any(), any()) }
 
         // when
         val result =

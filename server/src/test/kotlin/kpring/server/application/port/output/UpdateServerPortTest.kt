@@ -17,32 +17,34 @@ class UpdateServerPortTest(
   val getServerPort: GetServerPort,
 ) : DescribeSpec({
 
-    it("유저를 초대가 작동한다.") {
-      // given
-      val server = createServerPort.create(CreateServerRequest("serverName"))
+  it("유저를 초대가 작동한다.") {
+    // given
+    val userId = "userId"
+    val server = createServerPort.create(CreateServerRequest("serverName"), userId)
 
-      // when
-      repeat(5) {
-        updateServerPort.inviteUser(server.id, "test$it")
-      }
-
-      // then
-      val result = getServerPort.get(server.id)
-      result.invitedUserIds shouldHaveSize 5
+    // when
+    repeat(5) {
+      updateServerPort.inviteUser(server.id, "test${it}")
     }
 
-    it("가입 유저를 추가할 수 있다.") {
-      // given
-      val server = createServerPort.create(CreateServerRequest("serverName"))
-      val user = ServerUser("test", "test", "test")
-      updateServerPort.inviteUser(server.id, user.id)
+    // then
+    val result = getServerPort.get(server.id)
+    result.invitedUserIds shouldHaveSize 5
+  }
 
-      // when
-      updateServerPort.addUser(server.id, user)
+  it("가입 유저를 추가할 수 있다.") {
+    // given
+    val userId = "userId"
+    val server = createServerPort.create(CreateServerRequest("serverName"), userId)
+    val user = ServerUser("test", "test", "test")
+    updateServerPort.inviteUser(server.id, user.id)
 
-      // then
-      val result = getServerPort.get(server.id)
-      result.users shouldContain user
-      result.invitedUserIds shouldHaveSize 0
-    }
-  })
+    // when
+    updateServerPort.addUser(server.id, user)
+
+    // then
+    val result = getServerPort.get(server.id)
+    result.users shouldContain user
+    result.invitedUserIds shouldHaveSize 0
+  }
+})

@@ -4,8 +4,64 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { useNavigate } from "react-router";
+import { JoinValidation } from "../../hooks/JoinValidation";
+
 function JoinBox() {
+  const {
+    nickname,
+    setNickname,
+    email,
+    setEmail,
+    password,
+    setPassword,
+    passwordConfirm,
+    setPasswordConfirm,
+    nicknameError,
+    setNicknameError,
+    emailError,
+    setEmailError,
+    passwordError,
+    setPasswordError,
+    passwordConfirmError,
+    setPasswordConfirmError,
+    validateNickname,
+    validateEmail,
+    validatePassword,
+    validatePasswordConfirm,
+  } = JoinValidation();
+
+  const clickSubmitHandler = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const nicknameError = validateNickname(nickname);
+    const emailError = validateEmail(email);
+    const passwordError = validatePassword(password);
+    const passwordConfirmError = validatePasswordConfirm(
+      password,
+      passwordConfirm
+    );
+
+    setNicknameError(nicknameError);
+    setEmailError(emailError);
+    setPasswordError(passwordError);
+    setPasswordConfirmError(passwordConfirmError);
+
+    if (
+      !nicknameError &&
+      !emailError &&
+      !passwordError &&
+      !passwordConfirmError
+    ) {
+      alert("회원가입 성공!");
+      setNickname("");
+      setEmail("");
+      setPassword("");
+      setPasswordConfirm("");
+    }
+  };
+
   const navigation = useNavigate();
+
   return (
     <section className="flex justify-center mt-[200px]">
       <div className="mt-[10px] w-[400px] text-center">
@@ -20,6 +76,7 @@ function JoinBox() {
           "
           border="1px solid #e4d4e7"
           padding="20px"
+          onSubmit={clickSubmitHandler}
         >
           <h2 className="text-center text-2xl font-bold text-primary mt-[5px] mb-[10px]">
             환영합니다!
@@ -33,6 +90,10 @@ function JoinBox() {
             variant="standard"
             autoComplete="username"
             size="small"
+            value={nickname}
+            onChange={(e) => setNickname(e.target.value)}
+            error={!!nicknameError}
+            helperText={nicknameError}
           />
           <TextField
             required
@@ -42,16 +103,24 @@ function JoinBox() {
             variant="standard"
             autoComplete="email"
             size="small"
+            onChange={(e) => setEmail(e.target.value)}
+            error={!!emailError}
+            helperText={emailError}
+            value={email}
           />
           <TextField
             required
             id="user-password"
             label="비밀번호"
             type="password"
-            placeholder="비밀번호를 입력해주세요."
+            placeholder="숫자, 특수문자 포함 8자 이상 입력해주세요."
             autoComplete="current-password"
             variant="standard"
             size="small"
+            onChange={(e) => setPassword(e.target.value)}
+            error={!!passwordError}
+            helperText={passwordError}
+            value={password}
           />
           <TextField
             required
@@ -62,9 +131,14 @@ function JoinBox() {
             autoComplete="current-password"
             variant="standard"
             size="small"
+            onChange={(e) => setPasswordConfirm(e.target.value)}
+            error={!!passwordConfirmError}
+            helperText={passwordConfirmError}
+            value={passwordConfirm}
           />
           <div className="mt-[20px] flex justify-center flex-wrap ">
             <Button
+              type="submit"
               variant="contained"
               color="secondary"
               startIcon={<PersonAddAlt1Icon />}

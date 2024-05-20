@@ -1,6 +1,7 @@
 package kpring.server.application.service
 
 import kpring.core.server.dto.ServerInfo
+import kpring.core.server.dto.ServerSimpleInfo
 import kpring.core.server.dto.ServerUserInfo
 import kpring.core.server.dto.request.AddUserAtServerRequest
 import kpring.core.server.dto.request.CreateServerRequest
@@ -39,6 +40,12 @@ class ServerService(
           ServerUserInfo(it.id, it.name, it.profileImage)
         },
     )
+  }
+
+  override fun getServerList(userId: String): List<ServerSimpleInfo> {
+    return getServer.getServerWith(userId).map {
+      ServerSimpleInfo(it.id, it.name)
+    }
   }
 
   @Transactional

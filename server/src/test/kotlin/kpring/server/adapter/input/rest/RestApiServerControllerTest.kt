@@ -8,10 +8,13 @@ import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import io.mockk.justRun
 import kpring.core.auth.client.AuthClient
+import kpring.core.auth.dto.response.TokenInfo
+import kpring.core.auth.enums.TokenType
 import kpring.core.global.dto.response.ApiResponse
 import kpring.core.global.exception.CommonErrorCode
 import kpring.core.global.exception.ServiceException
 import kpring.core.server.dto.ServerInfo
+import kpring.core.server.dto.ServerSimpleInfo
 import kpring.core.server.dto.request.AddUserAtServerRequest
 import kpring.core.server.dto.request.CreateServerRequest
 import kpring.core.server.dto.response.CreateServerResponse
@@ -251,6 +254,57 @@ class RestApiServerControllerTest(
             path {
               "serverId" mean "서버 id"
               "userId" mean "초대할 유저 id"
+            }
+          }
+        }
+      }
+    }
+
+    describe("GET /api/v1/server: 서버 목록 조회 api test") {
+
+      val url = "/api/v1/server"
+      it("요청 성공시") {
+        // given
+        val userId = "test user id"
+        val data =
+          listOf(
+            ServerSimpleInfo(id = "server1", name = "test_server"),
+            ServerSimpleInfo(id = "server2", name = "test_server"),
+          )
+
+        every { authClient.getTokenInfo(any()) } returns
+          ApiResponse(
+            data = TokenInfo(TokenType.ACCESS, userId),
+          )
+        every { serverService.getServerList(userId) } returns data
+
+        // when
+        val result =
+          webTestClient.get()
+            .uri(url)
+            .header("Authorization", "Bearer test_token")
+            .exchange()
+
+        // then
+        val docs =
+          result
+            .expectStatus().isOk
+            .expectBody()
+            .json(om.writeValueAsString(ApiResponse(data = data)))
+
+        // docs
+        docs.restDoc(
+          identifier = "get_server_list_info_200",
+          description = "서버 목록 조회 api",
+        ) {
+          request {
+            header { "Authorization" mean "jwt access token" }
+          }
+
+          response {
+            body {
+              "data[].id" type "String" mean "서버 id"
+              "data[].name" type "String" mean "서버 이름"
             }
           }
         }

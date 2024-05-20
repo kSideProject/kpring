@@ -39,7 +39,6 @@ class UserServiceImpl(
     val password = passwordEncoder.encode(request.password)
 
     handleDuplicateEmail(request.email)
-    userValidationService.validatePasswordMatch(request.password, request.passwordCheck)
 
     val user =
       userRepository.save(

@@ -8,22 +8,10 @@ import { JoinValidation } from "../../hooks/JoinValidation";
 
 function JoinBox() {
   const {
-    nickname,
-    setNickname,
-    email,
-    setEmail,
-    password,
-    setPassword,
-    passwordConfirm,
-    setPasswordConfirm,
-    nicknameError,
-    setNicknameError,
-    emailError,
-    setEmailError,
-    passwordError,
-    setPasswordError,
-    passwordConfirmError,
-    setPasswordConfirmError,
+    values,
+    setValues,
+    errors,
+    setErrors,
     validateNickname,
     validateEmail,
     validatePassword,
@@ -33,18 +21,20 @@ function JoinBox() {
   const clickSubmitHandler = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const nicknameError = validateNickname(nickname);
-    const emailError = validateEmail(email);
-    const passwordError = validatePassword(password);
+    const nicknameError = validateNickname(values.nickname);
+    const emailError = validateEmail(values.email);
+    const passwordError = validatePassword(values.password);
     const passwordConfirmError = validatePasswordConfirm(
-      password,
-      passwordConfirm
+      values.password,
+      values.passwordConfirm
     );
 
-    setNicknameError(nicknameError);
-    setEmailError(emailError);
-    setPasswordError(passwordError);
-    setPasswordConfirmError(passwordConfirmError);
+    setErrors({
+      nicknameError,
+      emailError,
+      passwordError,
+      passwordConfirmError,
+    });
 
     if (
       !nicknameError &&
@@ -53,10 +43,12 @@ function JoinBox() {
       !passwordConfirmError
     ) {
       alert("회원가입 성공!");
-      setNickname("");
-      setEmail("");
-      setPassword("");
-      setPasswordConfirm("");
+      setValues({
+        nickname: "",
+        email: "",
+        password: "",
+        passwordConfirm: "",
+      });
     }
   };
 
@@ -90,10 +82,10 @@ function JoinBox() {
             variant="standard"
             autoComplete="username"
             size="small"
-            value={nickname}
-            onChange={(e) => setNickname(e.target.value)}
-            error={!!nicknameError}
-            helperText={nicknameError}
+            value={values.nickname}
+            onChange={(e) => setValues({ ...values, nickname: e.target.value })}
+            error={!!errors.nicknameError}
+            helperText={errors.nicknameError}
           />
           <TextField
             required
@@ -103,10 +95,10 @@ function JoinBox() {
             variant="standard"
             autoComplete="email"
             size="small"
-            onChange={(e) => setEmail(e.target.value)}
-            error={!!emailError}
-            helperText={emailError}
-            value={email}
+            value={values.email}
+            onChange={(e) => setValues({ ...values, email: e.target.value })}
+            error={!!errors.emailError}
+            helperText={errors.emailError}
           />
           <TextField
             required
@@ -117,10 +109,10 @@ function JoinBox() {
             autoComplete="current-password"
             variant="standard"
             size="small"
-            onChange={(e) => setPassword(e.target.value)}
-            error={!!passwordError}
-            helperText={passwordError}
-            value={password}
+            value={values.password}
+            onChange={(e) => setValues({ ...values, password: e.target.value })}
+            error={!!errors.passwordError}
+            helperText={errors.passwordError}
           />
           <TextField
             required
@@ -131,10 +123,12 @@ function JoinBox() {
             autoComplete="current-password"
             variant="standard"
             size="small"
-            onChange={(e) => setPasswordConfirm(e.target.value)}
-            error={!!passwordConfirmError}
-            helperText={passwordConfirmError}
-            value={passwordConfirm}
+            value={values.passwordConfirm}
+            onChange={(e) =>
+              setValues({ ...values, passwordConfirm: e.target.value })
+            }
+            error={!!errors.passwordConfirmError}
+            helperText={errors.passwordConfirmError}
           />
           <div className="mt-[20px] flex justify-center flex-wrap ">
             <Button

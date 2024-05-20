@@ -1,14 +1,19 @@
 import { useState } from "react";
+import type { JoinBoxValidateErrors, JoinBoxValues } from "../types/join";
 export const JoinValidation = () => {
-  const [nickname, setNickname] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [values, setValues] = useState<JoinBoxValues>({
+    nickname: "",
+    email: "",
+    password: "",
+    passwordConfirm: "",
+  });
 
-  const [nicknameError, setNicknameError] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-  const [passwordConfirmError, setPasswordConfirmError] = useState("");
+  const [errors, setErrors] = useState<JoinBoxValidateErrors>({
+    nicknameError: "",
+    emailError: "",
+    passwordError: "",
+    passwordConfirmError: "",
+  });
 
   const validateNickname = (nickname: string) => {
     if (!nickname) return "닉네임을 입력해주세요.";
@@ -42,22 +47,10 @@ export const JoinValidation = () => {
   };
 
   return {
-    nickname,
-    setNickname,
-    email,
-    setEmail,
-    password,
-    setPassword,
-    passwordConfirm,
-    setPasswordConfirm,
-    nicknameError,
-    setNicknameError,
-    emailError,
-    setEmailError,
-    passwordError,
-    setPasswordError,
-    passwordConfirmError,
-    setPasswordConfirmError,
+    values,
+    setValues,
+    errors,
+    setErrors,
     validateNickname,
     validateEmail,
     validatePassword,

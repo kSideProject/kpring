@@ -86,69 +86,51 @@ export class MainServer extends Scene {
       layers.furnitureLayer = map.createLayer("furniture", furnitureTilset);
     }
 
-    const dragZone = this.add
-      .zone(0, 0, map.widthInPixels, map.heightInPixels)
-      .setOrigin(0)
-      .setInteractive();
+    // 초기 랜더링 맵 크기 지정
+    const mapWidth = map.widthInPixels;
+    const mapHeight = map.heightInPixels;
 
-    this.input.setDraggable(dragZone);
+    this.cameras.main.setBounds(0, 0, mapWidth, mapHeight);
+    this.physics.world.setBounds(0, 0, mapWidth, mapHeight);
+
+    if (this.input.mouse) {
+      this.input.mouse.enabled = true;
+    }
+
+    const followSprite = this.add.sprite(0, 0, "transparent");
+    this.cameras.main.startFollow(followSprite);
 
     this.input.on(
-      "drag",
-      (
-        pointer: Phaser.Input.Pointer,
-        gameObject: Phaser.GameObjects.GameObject,
-        dragX: number,
-        dragY: number
-      ) => {
-        if (
-          gameObject.input &&
-          gameObject.input.dragStartX !== undefined &&
-          gameObject.input.dragStartY !== undefined
-        ) {
-          const deltaX = dragX - gameObject.input.dragStartX;
-          const deltaY = dragX - gameObject.input.dragStartY;
-
-          Object.values(layers).forEach((layer) => {
-            if (layer) {
-              layer.x += deltaX;
-              layer.y += deltaY;
-            }
-          });
-
-          gameObject.input.dragStartX = dragX;
-          gameObject.input.dragStartY = dragY;
-        }
-      }
+      "pointerdown",
+      (pointer: Phaser.Input.Pointer) => {
+        this.cameras.main.stopFollow(); // 카메라 따라가기 중지
+        this.input.on("pointermove", this.onDrag, this);
+      },
+      this
     );
 
-    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
-
     this.input.on(
-      "wheel",
-      (
-        pointer: Phaser.Input.Pointer,
-        gameObjects: Phaser.GameObjects.GameObject[],
-        deltaX: number,
-        deltaY: number,
-        deltaZ: number
-      ) => {
-        this.cameras.main.zoom = Phaser.Math.Clamp(
-          this.cameras.main.zoom + deltaY * -0.001,
-          0.5,
-          2
+      "pointerup",
+      (pointer: Phaser.Input.Pointer) => {
+        this.input.off("pointermove", this.onDrag, this); // 드래그 이벤트 해제
+        // 스프라이트를 새로운 위치로 이동시켜 카메라가 따라가도록 설정
+        followSprite.setPosition(
+          this.input.x + this.cameras.main.scrollX,
+          this.input.y + this.cameras.main.scrollY
         );
-      }
+        this.cameras.main.startFollow(followSprite); // 카메라 따라가기 재시작
+      },
+      this
     );
-
-    window.addEventListener("resize", () => {
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-      this.serverInstance.scale.resize(width, height);
-      this.serverInstance.canvas.style.width = width + "px";
-      this.serverInstance.canvas.style.height = height + "px";
-    });
 
     return layers;
+  }
+
+  onDrag(this: Phaser.Scene, pointer: Phaser.Input.Pointer) {
+    // 마우스 이동에 따라 카메라를 이동시킴
+    if (pointer.prevPosition) {
+      this.cameras.main.scrollX -= (pointer.x - pointer.prevPosition.x) * 1.5;
+      this.cameras.main.scrollY -= (pointer.y - pointer.prevPosition.y) * 1.5;
+    }
   }
 }

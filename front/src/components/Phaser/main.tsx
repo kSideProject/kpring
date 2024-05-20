@@ -4,11 +4,14 @@ import { MainServer } from "./serverScene/MainServer";
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO, // Phaserrk 웹GL 또는 캔버스를 자동으로 선택해서 렌더링
-  width: window.innerWidth, // 현재 브라우저의 가로 넓이
-  height: window.innerHeight, // 현재 브라우저의 세로 넓이
+
   scene: [Preloader, MainServer], // 사용할 씬들을 배열로 지정
-  scale: {
-    mode: Phaser.Scale.RESIZE, // 창 크기가 변경될 때마다 게임 크기를 동적으로 조정
+
+  physics: {
+    default: "arcade",
+    arcade: {
+      debug: false,
+    },
   },
 };
 

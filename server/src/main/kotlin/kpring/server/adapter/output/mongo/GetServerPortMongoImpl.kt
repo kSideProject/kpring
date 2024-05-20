@@ -29,7 +29,7 @@ class GetServerPortMongoImpl(
     val server = QServerEntity.serverEntity
     val servers =
       serverRepository.findAll(
-        server.users.any().id.eq(userId)
+        server.users.any().id.eq(userId),
       )
 
     return servers.map { entity ->

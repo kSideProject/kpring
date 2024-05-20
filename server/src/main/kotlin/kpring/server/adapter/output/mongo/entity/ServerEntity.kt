@@ -16,7 +16,7 @@ class ServerEntity(
   lateinit var id: String
 
   companion object {
-    fun of(server: Server): ServerEntity  {
+    fun of(server: Server): ServerEntity {
       return ServerEntity(
         name = server.name,
         users = server.users.map(ServerUserEntity::of).toMutableList(),

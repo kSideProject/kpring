@@ -70,4 +70,14 @@ class RestApiServerController(
     addUserAtServerUseCase.addInvitedUser(serverId, request)
     return ResponseEntity.ok().build()
   }
+
+  @DeleteMapping("/{serverId}")
+  fun deleteServer(
+    @PathVariable serverId: String,
+    @RequestHeader("Authorization") token: String,
+  ): ResponseEntity<Any> {
+    val userInfo = authClient.getTokenInfo(token).data!!
+//    deleteServerUseCase.deleteServer(serverId, userInfo.userId)
+    return ResponseEntity.ok().build()
+  }
 }

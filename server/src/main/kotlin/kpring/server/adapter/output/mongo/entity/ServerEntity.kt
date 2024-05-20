@@ -1,12 +1,10 @@
 package kpring.server.adapter.output.mongo.entity
 
-import com.querydsl.core.annotations.QueryEntity
 import kpring.server.domain.Server
 import kpring.server.domain.ServerRole
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 
-@QueryEntity
 @Document(collection = "server")
 class ServerEntity(
   var name: String,

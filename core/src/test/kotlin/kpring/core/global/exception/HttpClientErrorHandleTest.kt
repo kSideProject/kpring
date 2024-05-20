@@ -18,14 +18,17 @@ class HttpClientErrorHandleTest : DescribeSpec({
     // given
     val request = MockClientHttpRequest()
     val responseData = ApiResponse<Any>(message = "test error")
-    val response = MockClientHttpResponse(
-      om.writeValueAsBytes(responseData), HttpStatusCode.valueOf(400)
-    )
+    val response =
+      MockClientHttpResponse(
+        om.writeValueAsBytes(responseData),
+        HttpStatusCode.valueOf(400),
+      )
     val handler = HttpClientErrorHandle.rest4xxHandle()
     // when
-    val ex = shouldThrow<ServiceException> {
-      handler(request, response)
-    }
+    val ex =
+      shouldThrow<ServiceException> {
+        handler(request, response)
+      }
 
     // then
     ex.errorCode.message() shouldBe "test error"
@@ -36,14 +39,17 @@ class HttpClientErrorHandleTest : DescribeSpec({
     // given
     val request = MockClientHttpRequest()
     val responseData = ApiResponse<Any>(message = "origin server error message")
-    val response = MockClientHttpResponse(
-      om.writeValueAsBytes(responseData), HttpStatusCode.valueOf(503)
-    )
+    val response =
+      MockClientHttpResponse(
+        om.writeValueAsBytes(responseData),
+        HttpStatusCode.valueOf(503),
+      )
     val handler = HttpClientErrorHandle.rest5xxHandle()
     // when
-    val ex = shouldThrow<ServiceException> {
-      handler(request, response)
-    }
+    val ex =
+      shouldThrow<ServiceException> {
+        handler(request, response)
+      }
 
     // then
     ex.errorCode shouldBe CommonErrorCode.INTERNAL_SERVER_ERROR

@@ -18,7 +18,7 @@ jobs:
 
       # Cache Gradle dependencies
       - name: Cache Gradle dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.gradle/caches
@@ -29,6 +29,10 @@ jobs:
       # Gradle wrapper 파일 실행 권한주기
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
+
+      # Enable Gradle build cache
+      - name: Enable Gradle build cache
+        run: echo "org.gradle.caching=true" >> gradle.properties
 
       # Gradle test를 실행한다
       - name: Test with Gradle

@@ -5,6 +5,7 @@ import kpring.core.server.dto.request.AddUserAtServerRequest
 interface AddUserAtServerUseCase {
   fun inviteUser(
     serverId: String,
+    invitorId: String,
     userId: String,
   )
 

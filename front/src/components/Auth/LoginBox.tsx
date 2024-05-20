@@ -3,7 +3,9 @@ import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
+import { useNavigate } from "react-router";
 function LoginBox() {
+  const navigation = useNavigate();
   return (
     <section className="flex justify-center mt-[200px]">
       <div className="mt-[30px] w-[400px] text-center">
@@ -14,11 +16,12 @@ function LoginBox() {
           }}
           noValidate
           autoComplete="off"
-          bgcolor="#FDE2F3"
-          borderRadius="10px"
+          bgcolor="#fde2f34d
+          "
+          border="1px solid #e4d4e7"
           padding="20px"
         >
-          <h2 className="text-center text-2xl font-bold text-primary mb-[10px]">
+          <h2 className="text-center text-2xl font-bold text-primary mt-[5px] mb-[10px]">
             디코타운에 어서오세요!
           </h2>
           <TextField
@@ -28,6 +31,7 @@ function LoginBox() {
             placeholder="이메일을 입력해주세요."
             variant="standard"
             size="small"
+            autoComplete="email"
           />
           <TextField
             required
@@ -35,7 +39,7 @@ function LoginBox() {
             label="비밀번호"
             type="password"
             placeholder="비밀번호를 입력해주세요."
-            autoComplete="current-password"
+            autoComplete="password"
             variant="standard"
             size="small"
           />
@@ -53,6 +57,7 @@ function LoginBox() {
               color="secondary"
               startIcon={<PersonAddAlt1Icon />}
               sx={{ mt: "20px", width: "90%", mb: "20px" }}
+              onClick={() => navigation("/join")}
             >
               회원가입
             </Button>

@@ -38,7 +38,6 @@ dependencies {
   implementation("org.jetbrains.kotlin:kotlin-reflect")
 
   /** spring data mongo & querydsl */
-  implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
   implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
   implementation("com.querydsl:querydsl-mongodb:$queryDslVersion") {
     exclude("org.mongodb", "mongo-java-driver")
@@ -63,6 +62,11 @@ dependencies {
   // test container
   testImplementation("org.springframework.boot:spring-boot-testcontainers")
 }
+
+kapt {
+  annotationProcessor("org.springframework.data.mongodb.repository.support.MongoAnnotationProcessor")
+}
+
 openapi3 {
   setServer("http://localhost:30001")
   title = "Server API"

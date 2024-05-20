@@ -3,6 +3,7 @@ import "./App.css";
 import Layout from "./components/Layout/Layout";
 import { PhaserGame } from "./components/Phaser/PhaserGame";
 import Home from "./pages/Home";
+import Join from "./pages/Join";
 import Login from "./pages/Login";
 function App() {
   return (
@@ -10,6 +11,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/join" element={<Join />} />
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
             <Route path="server/:serverId" element={<PhaserGame />} />

@@ -1,25 +1,15 @@
 import { Scene } from "phaser";
-
-interface Layers {
-  mapLayer?: Phaser.Tilemaps.TilemapLayer | null;
-  groundLayer?: Phaser.Tilemaps.TilemapLayer | null;
-  chickHouseLayer?: Phaser.Tilemaps.TilemapLayer | null;
-  bridgeLayer?: Phaser.Tilemaps.TilemapLayer | null;
-  dirtLayer?: Phaser.Tilemaps.TilemapLayer | null;
-  basicPlantsLayer?: Phaser.Tilemaps.TilemapLayer | null;
-  hillsLayer?: Phaser.Tilemaps.TilemapLayer | null;
-  woodenHouseLayer?: Phaser.Tilemaps.TilemapLayer | null;
-  basicGrassLayer?: Phaser.Tilemaps.TilemapLayer | null;
-  cowLayer?: Phaser.Tilemaps.TilemapLayer | null;
-  fenceLayer?: Phaser.Tilemaps.TilemapLayer | null;
-  eggsLayer?: Phaser.Tilemaps.TilemapLayer | null;
-  chickenLayer?: Phaser.Tilemaps.TilemapLayer | null;
-  furnitureLayer?: Phaser.Tilemaps.TilemapLayer | null;
-}
+import { Layers } from "../../../types/server";
 
 export class MainServer extends Scene {
+  private serverInstance!: Phaser.Game;
+
   constructor() {
     super("MainServer");
+  }
+
+  init(data: { serverInstance: Phaser.Game }) {
+    this.serverInstance = data.serverInstance;
   }
 
   create() {
@@ -95,6 +85,69 @@ export class MainServer extends Scene {
       layers.chickenLayer = map.createLayer("chicken", chickenTileset);
       layers.furnitureLayer = map.createLayer("furniture", furnitureTilset);
     }
+
+    const dragZone = this.add
+      .zone(0, 0, map.widthInPixels, map.heightInPixels)
+      .setOrigin(0)
+      .setInteractive();
+
+    this.input.setDraggable(dragZone);
+
+    this.input.on(
+      "drag",
+      (
+        pointer: Phaser.Input.Pointer,
+        gameObject: Phaser.GameObjects.GameObject,
+        dragX: number,
+        dragY: number
+      ) => {
+        if (
+          gameObject.input &&
+          gameObject.input.dragStartX !== undefined &&
+          gameObject.input.dragStartY !== undefined
+        ) {
+          const deltaX = dragX - gameObject.input.dragStartX;
+          const deltaY = dragX - gameObject.input.dragStartY;
+
+          Object.values(layers).forEach((layer) => {
+            if (layer) {
+              layer.x += deltaX;
+              layer.y += deltaY;
+            }
+          });
+
+          gameObject.input.dragStartX = dragX;
+          gameObject.input.dragStartY = dragY;
+        }
+      }
+    );
+
+    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+
+    this.input.on(
+      "wheel",
+      (
+        pointer: Phaser.Input.Pointer,
+        gameObjects: Phaser.GameObjects.GameObject[],
+        deltaX: number,
+        deltaY: number,
+        deltaZ: number
+      ) => {
+        this.cameras.main.zoom = Phaser.Math.Clamp(
+          this.cameras.main.zoom + deltaY * -0.001,
+          0.5,
+          2
+        );
+      }
+    );
+
+    window.addEventListener("resize", () => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      this.serverInstance.scale.resize(width, height);
+      this.serverInstance.canvas.style.width = width + "px";
+      this.serverInstance.canvas.style.height = height + "px";
+    });
 
     return layers;
   }

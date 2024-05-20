@@ -113,7 +113,7 @@ function JoinBox() {
             id="user-password"
             label="비밀번호"
             type="password"
-            placeholder="숫자, 특수문자 포함 8자 이상 입력해주세요."
+            placeholder="대문자와 소문자, 숫자, 특수문자 포함 8~15자"
             autoComplete="current-password"
             variant="standard"
             size="small"

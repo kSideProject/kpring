@@ -25,9 +25,10 @@ export const JoinValidation = () => {
 
   const validatePassword = (password: string) => {
     if (!password) return "비밀번호를 입력해주세요.";
-    const passwordRegex = /^(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$/;
+    const passwordRegex =
+      /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])[a-zA-Z0-9!@#$]{8,15}$/;
     if (!passwordRegex.test(password))
-      return "비밀번호는 소문자, 숫자, 특수문자를 포함한 8자 이상이어야 합니다.";
+      return "비밀번호는 최소 8자에서 15자 사이, 대문자와 소문자, 숫자가 포함되어야 하며, 특수문자 ! @ # $도 사용할 수 있습니다.";
     return "";
   };
 

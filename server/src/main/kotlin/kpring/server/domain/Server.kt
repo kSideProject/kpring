@@ -9,7 +9,6 @@ class Server(
   val users: MutableSet<ServerUser> = mutableSetOf(),
   val invitedUserIds: MutableSet<String> = mutableSetOf(),
 ) {
-
   private fun isInvited(userId: String): Boolean {
     return invitedUserIds.contains(userId)
   }

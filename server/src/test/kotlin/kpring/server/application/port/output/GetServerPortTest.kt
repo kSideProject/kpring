@@ -14,16 +14,17 @@ import org.springframework.test.context.ContextConfiguration
 class GetServerPortTest(
   val getServerPort: GetServerPort,
 ) : DescribeSpec({
-  it("존재하지 서버 id를 조회하는 경우 에러가 발생한다.") {
-    // given
-    val notExistServerId = "notExistServerId"
+    it("존재하지 서버 id를 조회하는 경우 에러가 발생한다.") {
+      // given
+      val notExistServerId = "notExistServerId"
 
-    // when
-    val ex = shouldThrow<ServiceException> {
-      getServerPort.get(notExistServerId)
+      // when
+      val ex =
+        shouldThrow<ServiceException> {
+          getServerPort.get(notExistServerId)
+        }
+
+      // then
+      ex.errorCode shouldBe CommonErrorCode.NOT_FOUND
     }
-
-    // then
-    ex.errorCode shouldBe CommonErrorCode.NOT_FOUND
-  }
-})
+  })

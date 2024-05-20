@@ -31,6 +31,7 @@ function JoinBox() {
             type="text"
             placeholder="닉네임을 입력해주세요."
             variant="standard"
+            autoComplete="username"
             size="small"
           />
           <TextField
@@ -39,6 +40,7 @@ function JoinBox() {
             label="이메일"
             placeholder="이메일을 입력해주세요."
             variant="standard"
+            autoComplete="email"
             size="small"
           />
           <TextField

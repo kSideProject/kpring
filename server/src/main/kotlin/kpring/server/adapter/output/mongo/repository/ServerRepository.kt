@@ -8,6 +8,4 @@ import org.springframework.stereotype.Repository
 @Repository
 interface ServerRepository :
   MongoRepository<ServerEntity, String>,
-  QuerydslPredicateExecutor<ServerEntity> {
-
-}
+  QuerydslPredicateExecutor<ServerEntity>

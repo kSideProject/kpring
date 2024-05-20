@@ -8,10 +8,13 @@ import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import io.mockk.justRun
 import kpring.core.auth.client.AuthClient
+import kpring.core.auth.dto.response.TokenInfo
+import kpring.core.auth.enums.TokenType
 import kpring.core.global.dto.response.ApiResponse
 import kpring.core.global.exception.CommonErrorCode
 import kpring.core.global.exception.ServiceException
 import kpring.core.server.dto.ServerInfo
+import kpring.core.server.dto.ServerSimpleInfo
 import kpring.core.server.dto.request.AddUserAtServerRequest
 import kpring.core.server.dto.request.CreateServerRequest
 import kpring.core.server.dto.response.CreateServerResponse
@@ -68,17 +71,19 @@ class RestApiServerControllerTest(
       every { serverService.createServer(request) } returns data
 
       // when
-      val result = webTestClient.post()
-        .uri(url)
-        .header("Authorization", "Bearer mock_token")
-        .bodyValue(request)
-        .exchange()
+      val result =
+        webTestClient.post()
+          .uri(url)
+          .header("Authorization", "Bearer mock_token")
+          .bodyValue(request)
+          .exchange()
 
       // then
-      val docs = result
-        .expectStatus().isOk
-        .expectBody()
-        .json(om.writeValueAsString(ApiResponse(data = data)))
+      val docs =
+        result
+          .expectStatus().isOk
+          .expectBody()
+          .json(om.writeValueAsString(ApiResponse(data = data)))
 
       // docs
       docs.restDoc(
@@ -112,15 +117,17 @@ class RestApiServerControllerTest(
       every { serverService.getServerInfo(serverId) } returns data
 
       // when
-      val result = webTestClient.get()
-        .uri(url, serverId)
-        .exchange()
+      val result =
+        webTestClient.get()
+          .uri(url, serverId)
+          .exchange()
 
       // then
-      val docs = result
-        .expectStatus().isOk
-        .expectBody()
-        .json(om.writeValueAsString(ApiResponse(data = data)))
+      val docs =
+        result
+          .expectStatus().isOk
+          .expectBody()
+          .json(om.writeValueAsString(ApiResponse(data = data)))
 
       // docs
       docs.restDoc(
@@ -148,15 +155,17 @@ class RestApiServerControllerTest(
       every { serverService.getServerInfo(serverId) } throws ServiceException(errorCode)
 
       // when
-      val result = webTestClient.get()
-        .uri(url, serverId)
-        .exchange()
+      val result =
+        webTestClient.get()
+          .uri(url, serverId)
+          .exchange()
 
       // then
-      val docs = result
-        .expectStatus().isNotFound
-        .expectBody()
-        .json(om.writeValueAsString(ApiResponse<Any>(message = errorCode.message())))
+      val docs =
+        result
+          .expectStatus().isNotFound
+          .expectBody()
+          .json(om.writeValueAsString(ApiResponse<Any>(message = errorCode.message())))
 
       // docs
       docs.restDoc(
@@ -185,16 +194,18 @@ class RestApiServerControllerTest(
       justRun { serverService.addInvitedUser("test_server_id", request) }
 
       // when
-      val result = webTestClient.put()
-        .uri(url, "test_server_id")
-        .header("Authorization", "Bearer mock_token")
-        .bodyValue(request)
-        .exchange()
+      val result =
+        webTestClient.put()
+          .uri(url, "test_server_id")
+          .header("Authorization", "Bearer mock_token")
+          .bodyValue(request)
+          .exchange()
 
       // then
-      val docs = result
-        .expectStatus().isOk
-        .expectBody()
+      val docs =
+        result
+          .expectStatus().isOk
+          .expectBody()
 
       // docs
       docs.restDoc(
@@ -221,15 +232,17 @@ class RestApiServerControllerTest(
       justRun { serverService.inviteUser(eq("test_server_id"), any()) }
 
       // when
-      val result = webTestClient.put()
-        .uri(url, "test_server_id", "userId")
-        .header("Authorization", "Bearer mock_token")
-        .exchange()
+      val result =
+        webTestClient.put()
+          .uri(url, "test_server_id", "userId")
+          .header("Authorization", "Bearer mock_token")
+          .exchange()
 
       // then
-      val docs = result
-        .expectStatus().isOk
-        .expectBody()
+      val docs =
+        result
+          .expectStatus().isOk
+          .expectBody()
 
       // docs
       docs.restDoc(
@@ -241,6 +254,55 @@ class RestApiServerControllerTest(
           path {
             "serverId" mean "서버 id"
             "userId" mean "초대할 유저 id"
+          }
+        }
+      }
+    }
+  }
+
+  describe("GET /api/v1/server: 서버 목록 조회 api test") {
+
+    val url = "/api/v1/server"
+    it("요청 성공시") {
+      // given
+      val userId = "test user id"
+      val data = listOf(
+        ServerSimpleInfo(id = "server1", name = "test_server"),
+        ServerSimpleInfo(id = "server2", name = "test_server"),
+      )
+
+      every { authClient.getTokenInfo(any()) } returns ApiResponse(
+        data = TokenInfo(TokenType.ACCESS, userId)
+      )
+      every { serverService.getServerList(userId) } returns data
+
+      // when
+      val result =
+        webTestClient.get()
+          .uri(url)
+          .header("Authorization", "Bearer test_token")
+          .exchange()
+
+      // then
+      val docs =
+        result
+          .expectStatus().isOk
+          .expectBody()
+          .json(om.writeValueAsString(ApiResponse(data = data)))
+
+      // docs
+      docs.restDoc(
+        identifier = "get_server_list_info_200",
+        description = "서버 목록 조회 api",
+      ) {
+        request {
+          header { "Authorization" mean "jwt access token" }
+        }
+
+        response {
+          body {
+            "data[].id" type "String" mean "서버 id"
+            "data[].name" type "String" mean "서버 이름"
           }
         }
       }

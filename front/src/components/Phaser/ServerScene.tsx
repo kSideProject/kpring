@@ -10,6 +10,14 @@ export const ServeScene = forwardRef<ServerTypes, ServerProps>(
     // Phaser.Game 인스턴스를 저장하기 위한 ref 생성
     const serverRef = useRef<Phaser.Game | null>(null!);
 
+    const resizeMap = () => {
+      if (serverRef.current) {
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        serverRef.current.scale.resize(width, height);
+      }
+    };
+
     // DOM이 변경된 후, 브라우저 화면 재렌더링
     useLayoutEffect(() => {
       // serverRef.current가 null인 경우, 서버 초기화
@@ -21,6 +29,10 @@ export const ServeScene = forwardRef<ServerTypes, ServerProps>(
         } else if (ref) {
           ref.current = { server: serverRef.current, scene: null };
         }
+
+        resizeMap();
+
+        window.addEventListener("resize", resizeMap);
       }
 
       // 컴포넌트가 언마운트될 때 서버 정리
@@ -31,6 +43,7 @@ export const ServeScene = forwardRef<ServerTypes, ServerProps>(
             serverRef.current = null;
           }
         }
+        window.removeEventListener("resize", resizeMap);
       };
     }, [ref]);
 

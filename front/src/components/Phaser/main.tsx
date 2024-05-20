@@ -4,9 +4,7 @@ import { MainServer } from "./serverScene/MainServer";
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO, // Phaserrk 웹GL 또는 캔버스를 자동으로 선택해서 렌더링
-
   scene: [Preloader, MainServer], // 사용할 씬들을 배열로 지정
-
   physics: {
     default: "arcade",
     arcade: {

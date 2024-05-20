@@ -68,6 +68,7 @@ class RestApiServerControllerTest(
         // given
         val request = CreateServerRequest(serverName = "test server")
         val data = CreateServerResponse(serverId = "1", serverName = request.serverName)
+
         every { authClient.getTokenInfo(any()) } returns
           ApiResponse(
             data =

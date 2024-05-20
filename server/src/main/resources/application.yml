@@ -1,13 +1,15 @@
 spring:
+  profiles:
+    active: ${APPLICATION_PROFILE:local}
   application:
     name: server
   data:
     mongodb:
-      host: localhost
-      port: 27017
-      username: root
-      password: test1234@
-      database: mongodb
+      host: ${MONGO_HOST:localhost}
+      port: ${MONGO_PORT:27017}
+      username: ${MONGO_USER:root}
+      password: ${MONGO_PASSWORD:test1234@}
+      database: ${MONGO_DATABASE:mongodb}
       authentication-database: admin
 
 auth:

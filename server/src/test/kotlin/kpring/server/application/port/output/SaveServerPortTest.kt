@@ -14,15 +14,15 @@ class SaveServerPortTest(
   val saveServerPort: SaveServerPort,
 ) : DescribeSpec({
 
-  it("서버를 저장하면 생성한 유저는 서버의 소유자가 된다.") {
-    // given
-    val userId = "userId"
-    val req = CreateServerRequest(serverName = "serverName")
+    it("서버를 저장하면 생성한 유저는 서버의 소유자가 된다.") {
+      // given
+      val userId = "userId"
+      val req = CreateServerRequest(serverName = "serverName")
 
-    // when
-    val server = saveServerPort.create(req, userId)
+      // when
+      val server = saveServerPort.create(req, userId)
 
-    // then
-    server.authorities[userId] shouldBe ServerRole.OWNER
-  }
-})
+      // then
+      server.authorities[userId] shouldBe ServerRole.OWNER
+    }
+  })

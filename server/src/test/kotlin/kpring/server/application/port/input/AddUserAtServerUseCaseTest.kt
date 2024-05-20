@@ -18,23 +18,25 @@ class AddUserAtServerUseCaseTest(
   val service: ServerService = ServerService(mockk(), getServerPort, updateServerPort),
 ) : DescribeSpec({
 
-  it("유저 초대시 초대하는 유저가 권한이 없다면 예외를 던진다") {
-    // given
-    val serverId = "serverId"
-    val invitorId = "invitorId"
-    val userId = "userId"
+    it("유저 초대시 초대하는 유저가 권한이 없다면 예외를 던진다") {
+      // given
+      val serverId = "serverId"
+      val invitorId = "invitorId"
+      val userId = "userId"
 
-    every { getServerPort.get(serverId) } returns Server(
-      id = serverId,
-      name = "serverName",
-    )
+      every { getServerPort.get(serverId) } returns
+        Server(
+          id = serverId,
+          name = "serverName",
+        )
 
-    // when
-    val ex = shouldThrow<ServiceException> {
-      service.inviteUser(serverId, invitorId, userId)
+      // when
+      val ex =
+        shouldThrow<ServiceException> {
+          service.inviteUser(serverId, invitorId, userId)
+        }
+
+      // then
+      ex.errorCode shouldBe CommonErrorCode.FORBIDDEN
     }
-
-    // then
-    ex.errorCode shouldBe CommonErrorCode.FORBIDDEN
-  }
-})
+  })

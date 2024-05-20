@@ -4,5 +4,8 @@ import kpring.core.server.dto.request.CreateServerRequest
 import kpring.server.domain.Server
 
 interface SaveServerPort {
-  fun create(req: CreateServerRequest, userId: String): Server
+  fun create(
+    req: CreateServerRequest,
+    userId: String,
+  ): Server
 }

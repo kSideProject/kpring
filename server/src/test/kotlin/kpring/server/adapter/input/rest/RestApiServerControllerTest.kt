@@ -342,7 +342,7 @@ class RestApiServerControllerTest(
                 userId = "test_user_id",
               ),
           )
-//        justRun { serverService.deleteServer(serverId) }
+        justRun { serverService.deleteServer(eq(serverId), any()) }
 
         // when
         val result =

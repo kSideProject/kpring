@@ -8,6 +8,7 @@ import kpring.core.server.dto.request.AddUserAtServerRequest
 import kpring.core.server.dto.request.CreateServerRequest
 import kpring.server.application.port.input.AddUserAtServerUseCase
 import kpring.server.application.port.input.CreateServerUseCase
+import kpring.server.application.port.input.DeleteServerUseCase
 import kpring.server.application.port.input.GetServerInfoUseCase
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -18,6 +19,7 @@ class RestApiServerController(
   val createServerUseCase: CreateServerUseCase,
   val getServerUseCase: GetServerInfoUseCase,
   val addUserAtServerUseCase: AddUserAtServerUseCase,
+  val deleteServerUseCase: DeleteServerUseCase,
   val authClient: AuthClient,
 ) {
   @PostMapping("")
@@ -77,7 +79,7 @@ class RestApiServerController(
     @RequestHeader("Authorization") token: String,
   ): ResponseEntity<Any> {
     val userInfo = authClient.getTokenInfo(token).data!!
-//    deleteServerUseCase.deleteServer(serverId, userInfo.userId)
+    deleteServerUseCase.deleteServer(serverId, userInfo.userId)
     return ResponseEntity.ok().build()
   }
 }

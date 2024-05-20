@@ -10,7 +10,9 @@ import kpring.core.server.dto.request.CreateServerRequest
 import kpring.core.server.dto.response.CreateServerResponse
 import kpring.server.application.port.input.AddUserAtServerUseCase
 import kpring.server.application.port.input.CreateServerUseCase
+import kpring.server.application.port.input.DeleteServerUseCase
 import kpring.server.application.port.input.GetServerInfoUseCase
+import kpring.server.application.port.output.DeleteServerPort
 import kpring.server.application.port.output.GetServerPort
 import kpring.server.application.port.output.SaveServerPort
 import kpring.server.application.port.output.UpdateServerPort
@@ -24,7 +26,8 @@ class ServerService(
   val createServerPort: SaveServerPort,
   val getServer: GetServerPort,
   val updateServerPort: UpdateServerPort,
-) : CreateServerUseCase, GetServerInfoUseCase, AddUserAtServerUseCase {
+  val deleteServerPort: DeleteServerPort,
+) : CreateServerUseCase, GetServerInfoUseCase, AddUserAtServerUseCase, DeleteServerUseCase {
   override fun createServer(
     req: CreateServerRequest,
     userId: String,
@@ -77,5 +80,16 @@ class ServerService(
     val user = ServerUser(req.userId, req.userName, req.profileImage)
     server.addUser(user)
     updateServerPort.addUser(server.id, user)
+  }
+
+  override fun deleteServer(
+    serverId: String,
+    userId: String,
+  ) {
+    val server = getServer.get(serverId)
+    if (server.dontHasRole(userId, ServerAuthority.DELETE)) {
+      throw ServiceException(CommonErrorCode.FORBIDDEN)
+    }
+    deleteServerPort.delete(serverId)
   }
 }

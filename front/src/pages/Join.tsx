@@ -1,11 +1,11 @@
 import { ThemeProvider } from "@mui/material/styles";
-import LoginBox from "../components/Auth/LoginBox";
+import JoinBox from "../components/Auth/JoinBox";
 import theme from "../theme/themeConfig";
 const Login = () => {
   return (
     <div>
       <ThemeProvider theme={theme}>
-        <LoginBox />
+        <JoinBox />
       </ThemeProvider>
     </div>
   );

@@ -3,6 +3,7 @@ package kpring.server.application.service
 import kpring.core.global.exception.CommonErrorCode
 import kpring.core.global.exception.ServiceException
 import kpring.core.server.dto.ServerInfo
+import kpring.core.server.dto.ServerSimpleInfo
 import kpring.core.server.dto.ServerUserInfo
 import kpring.core.server.dto.request.AddUserAtServerRequest
 import kpring.core.server.dto.request.CreateServerRequest
@@ -24,13 +25,14 @@ class ServerService(
   val getServer: GetServerPort,
   val updateServerPort: UpdateServerPort,
 ) : CreateServerUseCase, GetServerInfoUseCase, AddUserAtServerUseCase {
-
-  override fun createServer(req: CreateServerRequest, userId: String): CreateServerResponse {
-
+  override fun createServer(
+    req: CreateServerRequest,
+    userId: String,
+  ): CreateServerResponse {
     val server = createServerPort.create(req, userId)
     return CreateServerResponse(
       serverId = server.id,
-      serverName = server.name
+      serverName = server.name,
     )
   }
 
@@ -39,14 +41,25 @@ class ServerService(
     return ServerInfo(
       id = server.id,
       name = server.name,
-      users = server.users.map {
-        ServerUserInfo(it.id, it.name, it.profileImage)
-      },
+      users =
+        server.users.map {
+          ServerUserInfo(it.id, it.name, it.profileImage)
+        },
     )
   }
 
+  override fun getServerList(userId: String): List<ServerSimpleInfo> {
+    return getServer.getServerWith(userId).map {
+      ServerSimpleInfo(it.id, it.name)
+    }
+  }
+
   @Transactional
-  override fun inviteUser(serverId: String, invitorId: String, userId: String) {
+  override fun inviteUser(
+    serverId: String,
+    invitorId: String,
+    userId: String,
+  ) {
     val server = getServer.get(serverId)
     if (server.dontHasRole(invitorId, ServerAuthority.INVITE)) {
       throw ServiceException(CommonErrorCode.FORBIDDEN)
@@ -56,7 +69,10 @@ class ServerService(
   }
 
   @Transactional
-  override fun addInvitedUser(serverId: String, req: AddUserAtServerRequest) {
+  override fun addInvitedUser(
+    serverId: String,
+    req: AddUserAtServerRequest,
+  ) {
     val server = getServer.get(serverId)
     val user = ServerUser(req.userId, req.userName, req.profileImage)
     server.addUser(user)

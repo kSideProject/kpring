@@ -10,15 +10,19 @@ import org.springframework.stereotype.Repository
 
 @Repository
 class SaveServerPortMongoImpl(
-  val serverRepository: ServerRepository
+  val serverRepository: ServerRepository,
 ) : SaveServerPort {
-  override fun create(req: CreateServerRequest, userId: String): Server {
-    val entity = serverRepository.save(
-      ServerEntity(
-        name = req.serverName,
-        authorities = mutableMapOf(userId to ServerRole.OWNER),
+  override fun create(
+    req: CreateServerRequest,
+    userId: String,
+  ): Server {
+    val entity =
+      serverRepository.save(
+        ServerEntity(
+          name = req.serverName,
+          authorities = mutableMapOf(userId to ServerRole.OWNER),
+        ),
       )
-    )
     return Server(
       id = entity.id,
       name = entity.name,

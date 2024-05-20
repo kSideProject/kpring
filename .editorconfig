@@ -4,7 +4,7 @@ root = true
 
 [*.{ts,tsx}]
 
-[*.kt]
+[*.{kt,kts}]
 
 # Change these settings to your own preference
 indent_style = space

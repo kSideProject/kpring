@@ -8,6 +8,7 @@ import {
   ListItemAvatar,
   ListItemText,
   styled,
+  TextField,
 } from "@mui/material";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -34,20 +35,38 @@ const FriendsRightSideBar: React.FC<SideBarProps> = ({ close }) => {
   const dropDownItems = ['디엠', '그룹', '전체 메세지']
   return (
     <>
-      <DrawerHeader>
-      <ArrowForwardIosIcon onClick={close} className="cursor-pointer"/>
-        <Box className="w-full flex justify-around">
-          <div className="pl-3">친구 목록</div>
-          <Box className="relative">
-            { openDropDown?
-              <KeyboardArrowUpIcon className="cursor-pointer" onClick={toggleDropDown}/>:
-              <KeyboardArrowDownIcon className="cursor-pointer" onClick={toggleDropDown}/>
-            }
-            { openDropDown && 
-              <DropDown dropDownItems={dropDownItems}/>
-            }
+      <DrawerHeader className="flex flex-col">
+        <Box className="w-full flex py-3 px-1">
+          <ArrowForwardIosIcon onClick={close} className="cursor-pointer"/>
+          <Box className="w-full flex justify-between">
+            <div className="pl-1">친구 목록</div>
+            <Box className="relative">
+              { openDropDown?
+                <KeyboardArrowUpIcon 
+                  sx={{color: "purple"}}
+                  className="cursor-pointer" 
+                  onClick={toggleDropDown}
+                />:
+                <KeyboardArrowDownIcon className="cursor-pointer" onClick={toggleDropDown}/>
+              }
+              { openDropDown && 
+                <DropDown dropDownItems={dropDownItems}/>
+              }
+            </Box>
           </Box>
         </Box>
+        <TextField 
+          placeholder="친구 검색" 
+          variant="filled"
+          InputProps={{
+            sx: {
+              '& .MuiFilledInput-input': {
+                padding: '15px 12px 8px 12px', // 내부 input 요소의 패딩
+              },
+            }
+          }} 
+          sx={{paddingBottom: "1rem"}}
+          />
       </DrawerHeader>
       <Divider />
       <List>

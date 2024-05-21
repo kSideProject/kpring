@@ -26,7 +26,7 @@ class UserController(
     @RequestHeader("Authorization") token: String,
     @PathVariable userId: Long,
   ): ResponseEntity<ApiResponse<GetUserProfileResponse>> {
-    checkRequestUserHasPermission(token, userId.toString(), false)
+    checkIfAccessTokenAndGetUserId(token)
     val response = userService.getProfile(userId)
     return ResponseEntity.ok(ApiResponse(data = response))
   }
@@ -45,7 +45,9 @@ class UserController(
     @PathVariable userId: Long,
     @RequestBody request: UpdateUserProfileRequest,
   ): ResponseEntity<ApiResponse<UpdateUserProfileResponse>> {
-    checkRequestUserHasPermission(token, userId.toString(), true)
+    val validatedUserId = checkIfAccessTokenAndGetUserId(token)
+    checkIfUserIsSelf(userId.toString(), validatedUserId)
+
     val response = userService.updateProfile(userId, request)
     return ResponseEntity.ok(ApiResponse(data = response))
   }
@@ -55,7 +57,9 @@ class UserController(
     @RequestHeader("Authorization") token: String,
     @PathVariable userId: Long,
   ): ResponseEntity<ApiResponse<Any>> {
-    checkRequestUserHasPermission(token, userId.toString(), true)
+    val validatedUserId = checkIfAccessTokenAndGetUserId(token)
+    checkIfUserIsSelf(userId.toString(), validatedUserId)
+
     val isExit = userService.exitUser(userId)
 
     return if (isExit) {
@@ -65,16 +69,13 @@ class UserController(
     }
   }
 
-  private fun checkRequestUserHasPermission(
-    token: String,
-    userId: String,
-    isSelfOnly: Boolean,
-  ) {
+  private fun checkIfAccessTokenAndGetUserId(token: String): String {
     val validationResult = authClient.getTokenInfo(token)
-    if (isSelfOnly) {
-      checkIfUserIsSelf(userId, validationResult.data!!.userId)
+    if (validationResult.data!!.type != TokenType.ACCESS) {
+      throw ServiceException(UserErrorCode.BAD_REQUEST)
     }
-    checkIfAccessToken(validationResult.data!!.type)
+
+    return validationResult.data!!.userId
   }
 
   private fun checkIfUserIsSelf(
@@ -83,12 +84,6 @@ class UserController(
   ) {
     if (userId != validatedUserId) {
       throw ServiceException(UserErrorCode.NOT_ALLOWED)
-    }
-  }
-
-  private fun checkIfAccessToken(validatedTokenType: TokenType) {
-    if (validatedTokenType != TokenType.ACCESS) {
-      throw ServiceException(UserErrorCode.BAD_REQUEST)
     }
   }
 }

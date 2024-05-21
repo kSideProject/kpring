@@ -1,6 +1,7 @@
 import {
   Avatar,
   Badge,
+  Box,
   Divider,
   List,
   ListItem,
@@ -9,9 +10,12 @@ import {
   styled,
 } from "@mui/material";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { SideBarProps } from "../../types/layout";
-import React from "react";
+import React, { useState } from "react";
 import MemberProfile from "../Profile/MemberProfile";
+import DropDown from "../Layout/DropDown";
 
 const FriendsRightSideBar: React.FC<SideBarProps> = ({ close }) => {
   const DrawerHeader = styled("div")(({ theme }) => ({
@@ -23,18 +27,32 @@ const FriendsRightSideBar: React.FC<SideBarProps> = ({ close }) => {
   }));
 
   const [openProfile, setOpenProfile] = React.useState(false);
-  const handleOpen = () => setOpenProfile(true);
-  const handleClose = () => setOpenProfile(false);
+  const [openDropDown, setOpenDropDown] = useState(false);
+  const toggleDropDown = () => setOpenDropDown(!openDropDown);
+  const handleProfileOpen = () => setOpenProfile(true);
+  const handleProfileClose = () => setOpenProfile(false);
+  const dropDownItems = ['디엠', '그룹', '전체 메세지']
   return (
     <>
       <DrawerHeader>
-        <ArrowForwardIosIcon onClick={close} />
-        <div>친구목록</div>
+      <ArrowForwardIosIcon onClick={close} className="cursor-pointer"/>
+        <Box className="w-full flex justify-around">
+          <div className="pl-3">친구 목록</div>
+          <Box className="relative">
+            { openDropDown?
+              <KeyboardArrowUpIcon className="cursor-pointer" onClick={toggleDropDown}/>:
+              <KeyboardArrowDownIcon className="cursor-pointer" onClick={toggleDropDown}/>
+            }
+            { openDropDown && 
+              <DropDown dropDownItems={dropDownItems}/>
+            }
+          </Box>
+        </Box>
       </DrawerHeader>
       <Divider />
       <List>
         <ListItem>
-          <ListItemAvatar onClick={handleOpen}>
+          <ListItemAvatar onClick={handleProfileOpen}>
             <Badge
               color="success"
               variant="dot"
@@ -52,7 +70,7 @@ const FriendsRightSideBar: React.FC<SideBarProps> = ({ close }) => {
       </List>
       <MemberProfile
         openModal={openProfile}
-        closeModal={handleClose}
+        closeModal={handleProfileClose}
       ></MemberProfile>
     </>
   );

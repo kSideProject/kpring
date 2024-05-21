@@ -68,8 +68,7 @@ const Header = () => {
         }}
         variant="persistent"
         anchor="right"
-        open={openDrawer === "friends"}
-      >
+        open={openDrawer === "friends"}>
         <FriendsRightSideBar close={handleDrawerClose} />
       </Drawer>
 
@@ -83,8 +82,7 @@ const Header = () => {
         }}
         variant="persistent"
         anchor="right"
-        open={openDrawer === "message"}
-      >
+        open={openDrawer === "message"}>
         <MessageRightSideBar close={handleDrawerClose} />
       </Drawer>
     </header>

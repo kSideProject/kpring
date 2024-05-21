@@ -4,3 +4,4 @@ global:
   enable:
     auth: true
     user: true
+    server: true

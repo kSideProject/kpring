@@ -15,8 +15,8 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter")
   implementation("org.jetbrains.kotlin:kotlin-reflect")
   // kotest
-  implementation("io.kotest:kotest-assertions-core")
-  implementation("io.kotest:kotest-runner-junit5-jvm:5.8.0")
+  api("io.kotest:kotest-assertions-core")
+  api("io.kotest:kotest-runner-junit5-jvm:5.8.0")
   // mockk
   implementation("io.mockk:mockk:1.13.10")
   implementation("com.ninja-squad:springmockk:4.0.2")
@@ -32,7 +32,7 @@ dependencies {
   implementation("com.epages:restdocs-api-spec-mockmvc:0.19.2")
   implementation("com.epages:restdocs-api-spec-webtestclient:0.19.2")
 
-  implementation("org.springframework.boot:spring-boot-starter-test")
+  api("org.springframework.boot:spring-boot-starter-test")
 }
 
 tasks {

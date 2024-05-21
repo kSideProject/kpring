@@ -98,7 +98,6 @@ class UserControllerTest(
                   "email" type "String" mean "이메일"
                   "password" type "String" mean "비밀번호"
                   "username" type "String" mean "사용자 이름"
-                  "passwordCheck" type "String" mean "비밀번호 확인"
                 }
               }
             }
@@ -146,7 +145,6 @@ class UserControllerTest(
                   "email" type "String" mean "이메일"
                   "password" type "String" mean "비밀번호"
                   "username" type "String" mean "사용자 이름"
-                  "passwordCheck" type "String" mean "비밀번호 확인"
                 }
               }
 
@@ -198,7 +196,6 @@ class UserControllerTest(
                   "email" type "String" mean "이메일"
                   "password" type "String" mean "비밀번호"
                   "username" type "String" mean "사용자 이름"
-                  "passwordCheck" type "String" mean "비밀번호 확인"
                 }
               }
 
@@ -252,7 +249,6 @@ class UserControllerTest(
                   "email" type "String" mean "이메일"
                   "password" type "String" mean "비밀번호"
                   "username" type "String" mean "사용자 이름"
-                  "passwordCheck" type "String" mean "비밀번호 확인"
                 }
               }
 

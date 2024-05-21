@@ -1,4 +1,4 @@
-{{- if .Values.global.enable.auth }}
+{{- if .Values.global.enable.user }}
 apiVersion: v1
 kind: Service
 metadata:

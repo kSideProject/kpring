@@ -10,8 +10,9 @@ api:
 
 mysql:
   name: user-mysql
-  image: mysql:latest
+  image: mysql:8.0
   port: 3306
+  rootPassword: root@password1234
   username: local-user
   password: local@password1234
   url: jdbc:mysql://user-mysql:3306/localdb

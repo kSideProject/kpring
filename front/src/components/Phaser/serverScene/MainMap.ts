@@ -1,22 +1,22 @@
 import { Scene } from "phaser";
 import { Layers } from "../../../types/server";
 
-export class MainServer extends Scene {
-  private serverInstance!: Phaser.Game;
+export class MainMap extends Scene {
+  private mapInstance!: Phaser.Game;
 
   constructor() {
-    super("MainServer");
+    super("MainMap");
   }
 
-  init(data: { serverInstance: Phaser.Game }) {
-    this.serverInstance = data.serverInstance;
+  init(data: { mapInstance: Phaser.Game }) {
+    this.mapInstance = data.mapInstance;
   }
 
   create() {
     // 3. preload에서 tilemapTiledJSON에서 지정한 string key와 매치시켜 map으로 지정
     const map = this.make.tilemap({ key: "firstMap" });
 
-    // 4.
+    // 4. Tiled에서 그린 잔디, 집, 나무 등과 같은 타일 요소들을 화면에 뿌려준다.
     // 첫번째 param: Tiled에서 지정한 tilessets의 이름
     // 두번째 param: preload에서 지정한 이미지 파일 key
     const hillsLayerTileset = map.addTilesetImage("hills", "hillImg");
@@ -97,7 +97,7 @@ export class MainServer extends Scene {
       this.input.mouse.enabled = true;
     }
 
-    const followSprite = this.add.sprite(0, 0, "transparent");
+    const followSprite = this.add.sprite(0, 0, "none");
     this.cameras.main.startFollow(followSprite);
 
     this.input.on(
@@ -126,8 +126,8 @@ export class MainServer extends Scene {
     return layers;
   }
 
+  // 마우스 이동에 따라 카메라를 이동시킴
   onDrag(this: Phaser.Scene, pointer: Phaser.Input.Pointer) {
-    // 마우스 이동에 따라 카메라를 이동시킴
     if (pointer.prevPosition) {
       this.cameras.main.scrollX -= (pointer.x - pointer.prevPosition.x) * 1.5;
       this.cameras.main.scrollY -= (pointer.y - pointer.prevPosition.y) * 1.5;

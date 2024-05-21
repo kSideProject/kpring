@@ -28,6 +28,6 @@ export class Preloader extends Scene {
   }
 
   create() {
-    this.scene.start("MainServer");
+    this.scene.start("MainMap");
   }
 }

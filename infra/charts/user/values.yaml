@@ -7,3 +7,12 @@ service:
 
 api:
   authServiceUrl: auth-application/api/v1
+
+mysql:
+  name: user-mysql
+  image: mysql:latest
+  port: 3306
+  username: local-user
+  password: local@password1234
+  url: jdbc:mysql://user-mysql:3306/localdb
+  dbname: localdb

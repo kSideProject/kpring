@@ -29,4 +29,10 @@ spec:
                 configMapKeyRef:
                   name: profile-config
                   key: profile
-  {{- end }}
+            - name: MYSQL_USERNAME
+              value: {{ .Values.mysql.username }}
+            - name: MYSQL_PASSWORD
+              value: {{ .Values.mysql.password }}
+            - name: MYSQL_URL
+              value: {{ .Values.mysql.url }}
+{{- end }}

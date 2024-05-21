@@ -1,0 +1,17 @@
+# server service
+service:
+  name: server-application
+  image: localhost:5000/server-application:latest
+  port: 8080
+  nodePort: 30003
+
+api:
+  authServiceUrl: auth-application/api/v1
+
+mongo:
+  name: server-mongo
+  image: mongo:latest
+  port: 27017
+  username: local-user
+  password: local@password1234
+  database: mongodb

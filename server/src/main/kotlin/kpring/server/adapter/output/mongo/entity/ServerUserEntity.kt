@@ -7,7 +7,6 @@ class ServerUserEntity(
   val name: String,
   val profileImage: String,
 ) {
-
   fun toDomain(): ServerUser {
     return ServerUser(id, name, profileImage)
   }

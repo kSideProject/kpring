@@ -2,6 +2,10 @@ root = true
 
 [*]
 
+[*.{ts,tsx}]
+
+[*.{kt,kts}]
+
 # Change these settings to your own preference
 indent_style = space
 indent_size = 2

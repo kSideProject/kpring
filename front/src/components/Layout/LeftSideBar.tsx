@@ -15,7 +15,7 @@ import { serverData } from "../../utils/fakeData";
 import ServerInfoSidebar from "./ServerInfoSidebar";
 
 const LeftSideBar = () => {
-  const DRAWER_WIDTH = 100; // 왼쪽 서버 사이드바 넓이
+  const DRAWER_WIDTH = 88; // 왼쪽 서버 사이드바 넓이
   const [open, setOpen] = useState(false); // 서버 인포 사이드바 열
   const [serverId, setServerId] = useState("");
 
@@ -40,7 +40,6 @@ const LeftSideBar = () => {
           "& .MuiDrawer-paper": {
             width: DRAWER_WIDTH,
             marginTop: "64px",
-            zIndex: -1,
           },
         }}>
         <List sx={{ display: "flex", flexDirection: "column" }}>

@@ -1,10 +1,10 @@
-export interface ServerTypes {
+export interface ServerMapTypes {
   server: Phaser.Game | null;
   scene: Phaser.Scene | null;
 }
 
 // 현재 활성화된 씬을 부모 컴포넌트로 전달하는 콜백 함수
-export interface ServerProps {
+export interface ServerMapProps {
   currentActiveScene?: (scene_instance: Phaser.Scene) => void;
 }
 

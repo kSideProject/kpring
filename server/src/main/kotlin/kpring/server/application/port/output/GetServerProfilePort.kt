@@ -7,4 +7,6 @@ interface GetServerProfilePort {
     serverId: String,
     userId: String,
   ): ServerProfile
+
+  fun getProfiles(userId: String): List<ServerProfile>
 }

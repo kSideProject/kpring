@@ -51,9 +51,14 @@ class ServerService(
   }
 
   override fun getServerList(userId: String): List<ServerSimpleInfo> {
-    return getServer.getServerWith(userId).map {
-      ServerSimpleInfo(it.id, it.name)
-    }
+    return getServerProfilePort.getProfiles(userId)
+      .map { profile ->
+        ServerSimpleInfo(
+          id = profile.server.id,
+          name = profile.server.name,
+          bookmarked = profile.bookmarked,
+        )
+      }
   }
 
   @Transactional

@@ -2,6 +2,7 @@ package kpring.server.adapter.output.mongo
 
 import kpring.core.global.exception.CommonErrorCode
 import kpring.core.global.exception.ServiceException
+import kpring.server.adapter.output.mongo.entity.QServerEntity
 import kpring.server.adapter.output.mongo.entity.QServerProfileEntity
 import kpring.server.adapter.output.mongo.repository.ServerProfileRepository
 import kpring.server.adapter.output.mongo.repository.ServerRepository
@@ -39,5 +40,34 @@ class GetServerProfileMongoImpl(
         bookmarked = serverProfileEntity.bookmarked,
       )
     return serverProfile
+  }
+
+  override fun getProfiles(userId: String): List<ServerProfile> {
+    // get server profile
+    val qProfile = QServerProfileEntity.serverProfileEntity
+    val serverProfileEntities =
+      serverProfileRepository.findAll(
+        qProfile.userId.eq(userId),
+      )
+
+    // get server
+    val qServer = QServerEntity.serverEntity
+    val serverMap =
+      mapOf(
+        *serverRepository.findAll(qServer.id.`in`(serverProfileEntities.map { it.serverId }))
+          .map { it.id to it }.toTypedArray(),
+      )
+
+    // mapping
+    return serverProfileEntities.map {
+      val serverEntity = serverMap[it.serverId]!!
+      val server = serverEntity.toDomain()
+      ServerProfile(
+        server = server,
+        userId = it.userId,
+        role = it.role,
+        bookmarked = it.bookmarked,
+      )
+    }
   }
 }

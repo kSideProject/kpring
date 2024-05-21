@@ -1,6 +1,7 @@
 package kpring.chat.global.exception
 
 import kpring.core.global.dto.response.ApiResponse
+import org.springframework.dao.OptimisticLockingFailureException
 import org.springframework.http.HttpStatus
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.MethodArgumentNotValidException
@@ -19,5 +20,10 @@ class GlobalExceptionHandler {
   fun handleMethodArgumentNotValidException(bindingResult: BindingResult): ApiResponse<List<String>> {
     val errors = bindingResult.fieldErrors.map { "${it.field} ${it.defaultMessage}" }
     return ApiResponse(HttpStatus.BAD_REQUEST.value(), "입력값이 잘못되었습니다", errors)
+  }
+
+  @ExceptionHandler(OptimisticLockingFailureException::class)
+  fun handleOptimisticLockingFailureException(exception: OptimisticLockingFailureException): ApiResponse<*> {
+    return ApiResponse<Void>(ErrorCode.LOCKING_FAILURE.httpStatus, ErrorCode.LOCKING_FAILURE.message)
   }
 }

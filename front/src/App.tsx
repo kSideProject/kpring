@@ -1,16 +1,24 @@
-import React from "react";
-
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 import Layout from "./components/Layout/Layout";
-
+import { ServeScene } from "./components/Phaser/ServerScene";
+import Home from "./pages/Home";
+import Join from "./pages/Join";
+import Login from "./pages/Login";
 function App() {
   return (
     <div className="App">
-      <Layout>
-        <main>dididiidisjdsjfkldsjl</main>
-      </Layout>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/join" element={<Join />} />
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Home />} />
+            <Route path="server/:serverId" element={<ServeScene />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 }
-
 export default App;

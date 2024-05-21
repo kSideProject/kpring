@@ -67,7 +67,7 @@ const LeftSideBar = () => {
         <ServerInfoSidebar
           open={open}
           close={handleDrawerClose}
-          serverId={serverId}
+          serverID={serverId}
         />
       </Drawer>
     </Box>

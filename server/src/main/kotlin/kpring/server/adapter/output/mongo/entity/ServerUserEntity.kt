@@ -7,8 +7,13 @@ class ServerUserEntity(
   val name: String,
   val profileImage: String,
 ) {
-
   fun toDomain(): ServerUser {
     return ServerUser(id, name, profileImage)
+  }
+
+  companion object {
+    fun of(domainUser: ServerUser): ServerUserEntity {
+      return ServerUserEntity(domainUser.id, domainUser.name, domainUser.profileImage)
+    }
   }
 }

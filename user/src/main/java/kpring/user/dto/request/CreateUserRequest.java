@@ -17,8 +17,6 @@ public record CreateUserRequest(
             + "특수문자 (!, @, #, $)도 사용할 수 있습니다.")
     String password,
 
-    String passwordCheck,
-
     @NotBlank(message = "유저 이름이 누락되었습니다.")
     @Pattern(regexp = "^[a-zA-Z0-9가-힣]{1,32}$",
         message = "닉네임은 영문 대소문자, 숫자, 한글로 구성되어야 하며, 1자 이상 32자 이하여야 합니다.")

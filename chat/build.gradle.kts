@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
   id("org.springframework.boot") version "3.2.4"
   id("io.spring.dependency-management") version "1.1.4"
@@ -22,16 +20,11 @@ java {
   sourceCompatibility = JavaVersion.VERSION_21
 }
 
-repositories {
-  mavenCentral()
-}
-
 dependencies {
   // core module
   api(project(":core"))
 
   // mongodb
-  implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
   implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
   implementation("com.querydsl:querydsl-mongodb:$queryDslVersion") {
     exclude("org.mongodb", "mongo-java-driver")
@@ -73,13 +66,6 @@ dependencies {
   testImplementation(project(":test"))
 }
 
-tasks.withType<KotlinCompile> {
-  kotlinOptions {
-    freeCompilerArgs += "-Xjsr305=strict"
-    jvmTarget = "21"
-  }
-}
-
-tasks.withType<Test> {
-  useJUnitPlatform()
+kapt {
+  annotationProcessor("org.springframework.data.mongodb.repository.support.MongoAnnotationProcessor")
 }

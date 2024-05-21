@@ -8,8 +8,11 @@ import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import io.mockk.verify
 import kpring.core.auth.client.AuthClient
+import kpring.core.auth.dto.response.TokenInfo
 import kpring.core.auth.dto.response.TokenValidationResponse
 import kpring.core.auth.enums.TokenType
+import kpring.core.global.dto.response.ApiResponse
+import kpring.core.global.exception.ServiceException
 import kpring.test.restdoc.dsl.restDoc
 import kpring.user.dto.request.CreateUserRequest
 import kpring.user.dto.request.UpdateUserProfileRequest
@@ -17,14 +20,12 @@ import kpring.user.dto.response.CreateUserResponse
 import kpring.user.dto.response.FailMessageResponse
 import kpring.user.dto.response.GetUserProfileResponse
 import kpring.user.dto.response.UpdateUserProfileResponse
-import kpring.user.exception.ErrorCode
-import kpring.user.exception.ExceptionWrapper
+import kpring.user.exception.UserErrorCode
 import kpring.user.service.UserService
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
-import org.springframework.http.ResponseEntity
 import org.springframework.restdocs.ManualRestDocumentation
 import org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint
 import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.documentationConfiguration
@@ -97,7 +98,6 @@ class UserControllerTest(
                   "email" type "String" mean "이메일"
                   "password" type "String" mean "비밀번호"
                   "username" type "String" mean "사용자 이름"
-                  "passwordCheck" type "String" mean "비밀번호 확인"
                 }
               }
             }
@@ -111,8 +111,8 @@ class UserControllerTest(
               .password(TEST_PASSWORD)
               .username(TEST_USERNAME)
               .build()
-          val exception = ExceptionWrapper(ErrorCode.ALREADY_EXISTS_EMAIL)
-          val response = FailMessageResponse.builder().message(exception.errorCode.message).build()
+          val exception = ServiceException(UserErrorCode.ALREADY_EXISTS_EMAIL)
+          val response = FailMessageResponse.builder().message(exception.errorCode.message()).build()
           every { userService.createUser(request) } throws exception
 
           // when
@@ -145,7 +145,6 @@ class UserControllerTest(
                   "email" type "String" mean "이메일"
                   "password" type "String" mean "비밀번호"
                   "username" type "String" mean "사용자 이름"
-                  "passwordCheck" type "String" mean "비밀번호 확인"
                 }
               }
 
@@ -197,7 +196,6 @@ class UserControllerTest(
                   "email" type "String" mean "이메일"
                   "password" type "String" mean "비밀번호"
                   "username" type "String" mean "사용자 이름"
-                  "passwordCheck" type "String" mean "비밀번호 확인"
                 }
               }
 
@@ -251,7 +249,6 @@ class UserControllerTest(
                   "email" type "String" mean "이메일"
                   "password" type "String" mean "비밀번호"
                   "username" type "String" mean "사용자 이름"
-                  "passwordCheck" type "String" mean "비밀번호 확인"
                 }
               }
 
@@ -269,12 +266,11 @@ class UserControllerTest(
           // given
           val userId = 1L
           val request = UpdateUserProfileRequest.builder().email("test@test.com").build()
-          val response = UpdateUserProfileResponse.builder().email("test@test.com").build()
-          every { userService.updateProfile(userId, request) } returns response
-          every { authClient.validateToken(any()) }.returns(
-            ResponseEntity.ok(
-              TokenValidationResponse(true, TokenType.ACCESS, userId.toString()),
-            ),
+          val data = UpdateUserProfileResponse.builder().email("test@test.com").build()
+          val response = ApiResponse(data = data)
+          every { userService.updateProfile(userId, request) } returns data
+          every { authClient.getTokenInfo(any()) }.returns(
+            ApiResponse(data = TokenInfo(TokenType.ACCESS, userId.toString())),
           )
 
           // when
@@ -308,7 +304,7 @@ class UserControllerTest(
               }
               response {
                 body {
-                  "email" type "String" mean "이메일"
+                  "data.email" type "String" mean "이메일"
                 }
               }
             }
@@ -318,12 +314,9 @@ class UserControllerTest(
           // given
           val userId = 1L
           val request = UpdateUserProfileRequest.builder().email("test@test.com").build()
-          val response = FailMessageResponse.builder().message(ErrorCode.NOT_ALLOWED.message).build()
-          every { authClient.validateToken(any()) }.returns(
-            ResponseEntity.ok(
-              TokenValidationResponse(false, null, null),
-            ),
-          )
+          val response =
+            FailMessageResponse.builder().message(UserErrorCode.NOT_ALLOWED.message()).build()
+          every { authClient.getTokenInfo(any()) } throws ServiceException(UserErrorCode.NOT_ALLOWED)
 
           // when
           val result =
@@ -368,7 +361,7 @@ class UserControllerTest(
           val token = "Bearer token"
           val request = UpdateUserProfileRequest.builder().email("test@test.com").build()
           val response = FailMessageResponse.serverError
-          every { authClient.validateToken(token) } throws RuntimeException("서버 내부 오류")
+          every { authClient.getTokenInfo(token) } throws RuntimeException("서버 내부 오류")
 
           // when
           val result =
@@ -413,11 +406,15 @@ class UserControllerTest(
           // given
           val userId = 1L
           val token = "Bearer test"
-          val response = GetUserProfileResponse.builder().email("test@test.com").build()
-          every { authClient.validateToken(token) } returns
-            ResponseEntity
-              .ok(TokenValidationResponse(true, TokenType.ACCESS, userId.toString()))
-          every { userService.getProfile(userId) } returns response
+          val data =
+            GetUserProfileResponse.builder()
+              .email("test@test.com")
+              .build()
+          val response = ApiResponse(data = data)
+          every { authClient.getTokenInfo(token) }.returns(
+            ApiResponse(data = TokenInfo(TokenType.ACCESS, userId.toString())),
+          )
+          every { userService.getProfile(userId) } returns data
 
           // when
           val result =
@@ -448,7 +445,7 @@ class UserControllerTest(
               }
               response {
                 body {
-                  "email" type "String" mean "이메일"
+                  "data.email" type "String" mean "이메일"
                 }
               }
             }
@@ -458,10 +455,9 @@ class UserControllerTest(
           // given
           val userId = 1L
           val token = "Bearer test"
-          val response = FailMessageResponse.builder().message(ErrorCode.NOT_ALLOWED.message).build()
-          every { authClient.validateToken(token) } returns
-            ResponseEntity
-              .ok(TokenValidationResponse(false, null, null))
+          val response =
+            FailMessageResponse.builder().message(UserErrorCode.NOT_ALLOWED.message()).build()
+          every { authClient.getTokenInfo(token) } throws ServiceException(UserErrorCode.NOT_ALLOWED)
 
           // when
           val result =
@@ -496,7 +492,7 @@ class UserControllerTest(
           // given
           val userId = 1L
           val token = "Bearer test"
-          every { authClient.validateToken(any()) } throws RuntimeException("서버 내부 오류")
+          every { authClient.getTokenInfo(any()) } throws RuntimeException("서버 내부 오류")
           val response = FailMessageResponse.serverError
 
           // when
@@ -532,10 +528,8 @@ class UserControllerTest(
           // given
           val userId = 1L
           val validationResponse = TokenValidationResponse(true, TokenType.ACCESS, userId.toString())
-          every { authClient.validateToken(any()) } returns
-            ResponseEntity.ok(
-              validationResponse,
-            )
+          every { authClient.getTokenInfo(any()) } returns
+            ApiResponse(data = TokenInfo(TokenType.ACCESS, userId.toString()))
           every { userService.exitUser(userId) } returns true
 
           // when
@@ -546,7 +540,7 @@ class UserControllerTest(
               .exchange()
 
           // then
-          verify(exactly = 1) { authClient.validateToken(any()) }
+          verify(exactly = 1) { authClient.getTokenInfo(any()) }
           val docsRoot =
             result
               .expectStatus().isOk
@@ -571,10 +565,7 @@ class UserControllerTest(
           // given
           val userId = 1L
           val validationResponse = TokenValidationResponse(false, null, null)
-          every { authClient.validateToken(any()) } returns
-            ResponseEntity.ok(
-              validationResponse,
-            )
+          every { authClient.getTokenInfo(any()) } throws ServiceException(UserErrorCode.NOT_ALLOWED)
 
           // when
           val result =
@@ -584,7 +575,7 @@ class UserControllerTest(
               .exchange()
 
           // then
-          verify(exactly = 1) { authClient.validateToken(any()) }
+          verify(exactly = 1) { authClient.getTokenInfo(any()) }
           val docsRoot =
             result
               .expectStatus().isForbidden
@@ -607,7 +598,7 @@ class UserControllerTest(
           // given
           val userId = 1L
           val token = "Bearer token"
-          every { authClient.validateToken(token) } throws RuntimeException("서버 내부 오류")
+          every { authClient.getTokenInfo(token) } throws RuntimeException("서버 내부 오류")
 
           // when
           val result =
@@ -617,7 +608,7 @@ class UserControllerTest(
               .exchange()
 
           // then
-          verify(exactly = 1) { authClient.validateToken(any()) }
+          verify(exactly = 1) { authClient.getTokenInfo(any()) }
           val docsRoot =
             result
               .expectStatus().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)

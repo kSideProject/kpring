@@ -7,8 +7,9 @@ enum class CommonErrorCode(
   val message: String,
   val httpStatus: HttpStatus,
 ) : ErrorCode {
-  NOT_FOUND("CORE_0001", "요청한 자원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
-  INTERNAL_SERVER_ERROR("CORE_0002", "서버 내부 오류", HttpStatus.INTERNAL_SERVER_ERROR),
+  FORBIDDEN("CORE_0403", "권한이 없습니다.", HttpStatus.FORBIDDEN),
+  NOT_FOUND("CORE_0404", "요청한 자원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+  INTERNAL_SERVER_ERROR("CORE_0500", "서버 내부 오류", HttpStatus.INTERNAL_SERVER_ERROR),
   ;
 
   override fun message(): String = this.message

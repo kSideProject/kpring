@@ -1,13 +1,19 @@
+import { ThemeProvider } from "@mui/material/styles";
+import { Outlet } from "react-router-dom";
+import theme from "../../theme/themeConfig";
 import Header from "./Header";
 import LeftSideBar from "./LeftSideBar";
-
-const Layout = (props: { children: React.ReactNode }) => {
+const Layout: React.FC = () => {
   return (
     <div>
       <Header />
       <LeftSideBar />
 
-      <main>{props.children}</main>
+      <main>
+        <ThemeProvider theme={theme}>
+          <Outlet />
+        </ThemeProvider>
+      </main>
     </div>
   );
 };

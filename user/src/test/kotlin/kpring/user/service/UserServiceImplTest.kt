@@ -4,10 +4,10 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.*
+import kpring.core.global.exception.ServiceException
 import kpring.user.dto.request.CreateUserRequest
 import kpring.user.entity.User
-import kpring.user.exception.ErrorCode
-import kpring.user.exception.ExceptionWrapper
+import kpring.user.exception.UserErrorCode
 import kpring.user.repository.UserRepository
 import org.springframework.security.crypto.password.PasswordEncoder
 
@@ -30,7 +30,6 @@ class UserServiceImplTest : FunSpec({
       CreateUserRequest(
         TEST_EMAIL,
         TEST_PASSWORD,
-        TEST_PASSWORD,
         TEST_USERNAME,
       )
     clearMocks(userRepository, passwordEncoder, userValidationService, answers = true)
@@ -47,12 +46,6 @@ class UserServiceImplTest : FunSpec({
       )
 
     every { userService.handleDuplicateEmail(createUserRequest.email) } just Runs
-    every {
-      userValidationService.validatePasswordMatch(
-        createUserRequest.password,
-        createUserRequest.passwordCheck,
-      )
-    } just Runs
 
     every { userRepository.existsByEmail(createUserRequest.email) } returns false
     every { passwordEncoder.encode(createUserRequest.password) } returns ENCODED_PASSWORD
@@ -66,23 +59,17 @@ class UserServiceImplTest : FunSpec({
     createUserRequest.email shouldBe response.email
 
     verify { userService.handleDuplicateEmail(createUserRequest.email) }
-    verify {
-      userValidationService.validatePasswordMatch(
-        createUserRequest.password,
-        createUserRequest.passwordCheck,
-      )
-    }
   }
 
   test("회원가입_실패_이메일중복케이스") {
     every { userService.handleDuplicateEmail(TEST_EMAIL) } throws
-      ExceptionWrapper(ErrorCode.ALREADY_EXISTS_EMAIL)
+      ServiceException(UserErrorCode.ALREADY_EXISTS_EMAIL)
 
     val exception =
-      shouldThrow<ExceptionWrapper> {
+      shouldThrow<ServiceException> {
         userService.handleDuplicateEmail(createUserRequest.email)
       }
-    exception.errorCode.message shouldBe "Email already exists"
+    exception.errorCode.message() shouldBe "Email already exists"
 
     verify { userRepository.save(any()) wasNot Called }
   }
@@ -92,25 +79,8 @@ class UserServiceImplTest : FunSpec({
       CreateUserRequest(
         TEST_EMAIL,
         TEST_PASSWORD,
-        MISMATCHED_PASSWORD,
         TEST_USERNAME,
       )
-
-    every {
-      userValidationService.validatePasswordMatch(
-        createUserRequest.password,
-        createUserRequest.passwordCheck,
-      )
-    } throws ExceptionWrapper(ErrorCode.NOT_MATCH_PASSWORD)
-
-    val exception =
-      shouldThrow<ExceptionWrapper> {
-        userValidationService.validatePasswordMatch(
-          createUserRequest.password,
-          createUserRequest.passwordCheck,
-        )
-      }
-    exception.errorCode.message shouldBe "Password does not match"
 
     verify { userRepository.save(any()) wasNot Called }
   }

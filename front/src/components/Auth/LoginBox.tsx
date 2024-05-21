@@ -31,6 +31,7 @@ function LoginBox() {
             placeholder="이메일을 입력해주세요."
             variant="standard"
             size="small"
+            autoComplete="email"
           />
           <TextField
             required
@@ -38,7 +39,7 @@ function LoginBox() {
             label="비밀번호"
             type="password"
             placeholder="비밀번호를 입력해주세요."
-            autoComplete="current-password"
+            autoComplete="password"
             variant="standard"
             size="small"
           />

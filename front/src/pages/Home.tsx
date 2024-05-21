@@ -1,7 +1,6 @@
 import ServerCard from "../components/Home/ServerCard";
 import Carousel from "react-material-ui-carousel";
 import { serverData } from "../utils/fakeData";
-import { Button } from "@mui/material";
 
 const Home = () => {
   return (

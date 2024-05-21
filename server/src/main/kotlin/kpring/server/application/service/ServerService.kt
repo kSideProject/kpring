@@ -12,6 +12,7 @@ import kpring.server.application.port.input.AddUserAtServerUseCase
 import kpring.server.application.port.input.CreateServerUseCase
 import kpring.server.application.port.input.GetServerInfoUseCase
 import kpring.server.application.port.output.GetServerPort
+import kpring.server.application.port.output.GetServerProfilePort
 import kpring.server.application.port.output.SaveServerPort
 import kpring.server.application.port.output.UpdateServerPort
 import kpring.server.domain.ServerAuthority
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional
 class ServerService(
   val createServerPort: SaveServerPort,
   val getServer: GetServerPort,
+  val getServerProfilePort: GetServerProfilePort,
   val updateServerPort: UpdateServerPort,
 ) : CreateServerUseCase, GetServerInfoUseCase, AddUserAtServerUseCase {
   override fun createServer(
@@ -60,10 +62,13 @@ class ServerService(
     invitorId: String,
     userId: String,
   ) {
-    val server = getServer.get(serverId)
-    if (server.dontHasRole(invitorId, ServerAuthority.INVITE)) {
+    // validate invitor authority
+    val serverProfile = getServerProfilePort.get(serverId, invitorId)
+    if (serverProfile.dontHasRole(invitorId, ServerAuthority.INVITE)) {
       throw ServiceException(CommonErrorCode.FORBIDDEN)
     }
+    // register invitation
+    val server = serverProfile.server
     server.registerInvitation(userId)
     updateServerPort.inviteUser(server.id, userId)
   }

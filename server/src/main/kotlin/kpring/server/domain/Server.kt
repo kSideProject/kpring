@@ -8,29 +8,9 @@ class Server(
   val name: String,
   val users: MutableSet<ServerUser> = mutableSetOf(),
   val invitedUserIds: MutableSet<String> = mutableSetOf(),
-  val authorities: Map<String, ServerRole> = mapOf(),
 ) {
   private fun isInvited(userId: String): Boolean {
     return invitedUserIds.contains(userId)
-  }
-
-  /**
-   * @param userId 권한을 확인할 유저의 id
-   * @param authority 확인할 권한
-   * @return 권한이 있으면 true, 없으면 false
-   */
-  fun hasRole(
-    userId: String,
-    authority: ServerAuthority,
-  ): Boolean {
-    return authorities[userId]?.contains(authority) ?: false
-  }
-
-  fun dontHasRole(
-    userId: String,
-    authority: ServerAuthority,
-  ): Boolean {
-    return !hasRole(userId, authority)
   }
 
   /**
@@ -48,6 +28,7 @@ class Server(
 
   /**
    * @param userId 초대할 유저의 id
+   * @throws ServiceException 이미 가입한 등록된 유저일 경우
    */
   fun registerInvitation(userId: String) {
     val user = users.find { it.id == userId }

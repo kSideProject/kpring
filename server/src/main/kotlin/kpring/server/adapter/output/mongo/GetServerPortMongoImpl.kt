@@ -22,7 +22,6 @@ class GetServerPortMongoImpl(
       name = serverEntity.name,
       users = serverEntity.users.map { it.toDomain() }.toMutableSet(),
       invitedUserIds = serverEntity.invitedUserIds.toMutableSet(),
-      authorities = serverEntity.authorities.toMap(),
     )
   }
 

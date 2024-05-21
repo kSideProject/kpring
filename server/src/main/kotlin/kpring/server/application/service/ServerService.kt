@@ -64,7 +64,7 @@ class ServerService(
   ) {
     // validate invitor authority
     val serverProfile = getServerProfilePort.get(serverId, invitorId)
-    if (serverProfile.dontHasRole(invitorId, ServerAuthority.INVITE)) {
+    if (serverProfile.dontHasRole(ServerAuthority.INVITE)) {
       throw ServiceException(CommonErrorCode.FORBIDDEN)
     }
     // register invitation

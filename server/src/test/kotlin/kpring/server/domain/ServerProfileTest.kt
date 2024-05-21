@@ -25,7 +25,7 @@ class ServerProfileTest : DescribeSpec({
       )
 
     // when
-    val hasRole = serverProfile.hasRole(ownerId, ServerAuthority.INVITE)
+    val hasRole = serverProfile.hasRole(ServerAuthority.INVITE)
     // then
     hasRole shouldBe true
   }

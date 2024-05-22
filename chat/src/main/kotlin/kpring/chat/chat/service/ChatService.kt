@@ -1,11 +1,14 @@
 package kpring.chat.chat.service
 
 import kpring.chat.chat.model.Chat
-import kpring.chat.chat.repository.ChatRepository
+import kpring.chat.chat.model.ServerChat
+import kpring.chat.chat.repository.RoomChatRepository
+import kpring.chat.chat.repository.ServerChatRepository
 import kpring.chat.chatroom.repository.ChatRoomRepository
 import kpring.chat.global.exception.ErrorCode
 import kpring.chat.global.exception.GlobalException
-import kpring.core.chat.chat.dto.request.CreateChatRequest
+import kpring.core.chat.chat.dto.request.CreateRoomChatRequest
+import kpring.core.chat.chat.dto.request.CreateServerChatRequest
 import kpring.core.chat.chat.dto.response.ChatResponse
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.PageRequest
@@ -14,19 +17,20 @@ import org.springframework.stereotype.Service
 
 @Service
 class ChatService(
-  private val chatRepository: ChatRepository,
+  private val roomChatRepository: RoomChatRepository,
+  private val serverChatRepository: ServerChatRepository,
   private val chatRoomRepository: ChatRoomRepository,
   @Value("\${page.size}") val pageSize: Int = 100,
 ) {
   /*
      business logic
    */
-  fun createChat(
-    request: CreateChatRequest,
+  fun createRoomChat(
+    request: CreateRoomChatRequest,
     userId: String,
   ) {
     val chat =
-      chatRepository.save(
+      roomChatRepository.save(
         Chat(
           userId = userId,
           roomId = request.room,
@@ -44,7 +48,7 @@ class ChatService(
 
     // find chats by chatRoomId and convert them into DTOs
     val pageable: Pageable = PageRequest.of(page, pageSize)
-    val chats: List<Chat> = chatRepository.findAllByRoomId(chatRoomId, pageable)
+    val chats: List<Chat> = roomChatRepository.findAllByRoomId(chatRoomId, pageable)
 
     return convertChatsToResponses(chats)
   }

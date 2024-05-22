@@ -35,7 +35,8 @@ class ChatRoomServiceTest : FunSpec({
     // Given
     val chatRoom =
       ChatRoom().apply {
-        id = ChatRoomTest.TEST_ROOM_ID
+        id =
+          ChatRoomTest.TEST_ROOM_ID
         addUsers(ChatRoomTest.TEST_MEMBERS)
       }
     every { chatRoomRepository.findById(chatRoom.id!!) } returns Optional.of(chatRoom)

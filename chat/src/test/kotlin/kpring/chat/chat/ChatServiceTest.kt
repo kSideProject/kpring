@@ -8,7 +8,8 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kpring.chat.chat.model.Chat
-import kpring.chat.chat.repository.ChatRepository
+import kpring.chat.chat.repository.RoomChatRepository
+import kpring.chat.chat.repository.ServerChatRepository
 import kpring.chat.chat.service.ChatService
 import kpring.chat.chatroom.repository.ChatRoomRepository
 import kpring.chat.global.ChatRoomTest
@@ -16,7 +17,7 @@ import kpring.chat.global.ChatTest
 import kpring.chat.global.CommonTest
 import kpring.chat.global.exception.ErrorCode
 import kpring.chat.global.exception.GlobalException
-import kpring.core.chat.chat.dto.request.CreateChatRequest
+import kpring.core.chat.chat.dto.request.CreateRoomChatRequest
 import kpring.core.chat.chat.dto.response.ChatResponse
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.PageRequest
@@ -24,22 +25,23 @@ import org.springframework.data.domain.PageRequest
 class ChatServiceTest(
   @Value("\${page.size}") val pageSize: Int = 100,
 ) : FunSpec({
-    val chatRepository = mockk<ChatRepository>()
+    val roomChatRepository = mockk<RoomChatRepository>()
+    val serverChatRepository = mockk<ServerChatRepository>()
     val chatRoomRepository = mockk<ChatRoomRepository>()
-    val chatService = ChatService(chatRepository, chatRoomRepository)
+    val chatService = ChatService(roomChatRepository, serverChatRepository, chatRoomRepository)
 
     test("createChat 은 새 Chat을 저장해야 한다") {
       // Given
-      val request = CreateChatRequest(ChatRoomTest.TEST_ROOM_ID, ChatTest.CONTENT)
+      val request = CreateRoomChatRequest(ChatRoomTest.TEST_ROOM_ID, ChatTest.CONTENT)
       val userId = CommonTest.TEST_USER_ID
       val chat = Chat(userId, request.room, request.content)
-      every { chatRepository.save(any()) } returns chat
+      every { roomChatRepository.save(any()) } returns chat
 
       // When
-      chatService.createChat(request, userId)
+      chatService.createRoomChat(request, userId)
 
       // Then
-      verify { chatRepository.save(any()) }
+      verify { roomChatRepository.save(any()) }
     }
 
     test("getChatsByChatRoom 은 권한이 없는 사용자에게 에러 발생") {
@@ -65,7 +67,8 @@ class ChatServiceTest(
       val userId = CommonTest.TEST_USER_ID
       val chat1 = Chat(userId, chatRoomId, "Message 1")
       val chat2 = Chat(userId, chatRoomId, "Message 2")
-      every { chatRepository.findAllByRoomId(chatRoomId, pageable = PageRequest.of(1, pageSize)) } returns
+
+      every { roomChatRepository.findAllByRoomId(chatRoomId, pageable = PageRequest.of(1, pageSize)) } returns
         listOf(
           chat1, chat2,
         )

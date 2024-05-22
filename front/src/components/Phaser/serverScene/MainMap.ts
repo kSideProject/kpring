@@ -1,32 +1,22 @@
 import { Scene } from "phaser";
+import { Layers } from "../../../types/server";
 
-interface Layers {
-  mapLayer?: Phaser.Tilemaps.TilemapLayer | null;
-  groundLayer?: Phaser.Tilemaps.TilemapLayer | null;
-  chickHouseLayer?: Phaser.Tilemaps.TilemapLayer | null;
-  bridgeLayer?: Phaser.Tilemaps.TilemapLayer | null;
-  dirtLayer?: Phaser.Tilemaps.TilemapLayer | null;
-  basicPlantsLayer?: Phaser.Tilemaps.TilemapLayer | null;
-  hillsLayer?: Phaser.Tilemaps.TilemapLayer | null;
-  woodenHouseLayer?: Phaser.Tilemaps.TilemapLayer | null;
-  basicGrassLayer?: Phaser.Tilemaps.TilemapLayer | null;
-  cowLayer?: Phaser.Tilemaps.TilemapLayer | null;
-  fenceLayer?: Phaser.Tilemaps.TilemapLayer | null;
-  eggsLayer?: Phaser.Tilemaps.TilemapLayer | null;
-  chickenLayer?: Phaser.Tilemaps.TilemapLayer | null;
-  furnitureLayer?: Phaser.Tilemaps.TilemapLayer | null;
-}
+export class MainMap extends Scene {
+  private mapInstance!: Phaser.Game;
 
-export class MainServer extends Scene {
   constructor() {
-    super("MainServer");
+    super("MainMap");
+  }
+
+  init(data: { mapInstance: Phaser.Game }) {
+    this.mapInstance = data.mapInstance;
   }
 
   create() {
     // 3. preload에서 tilemapTiledJSON에서 지정한 string key와 매치시켜 map으로 지정
     const map = this.make.tilemap({ key: "firstMap" });
 
-    // 4.
+    // 4. Tiled에서 그린 잔디, 집, 나무 등과 같은 타일 요소들을 화면에 뿌려준다.
     // 첫번째 param: Tiled에서 지정한 tilessets의 이름
     // 두번째 param: preload에서 지정한 이미지 파일 key
     const hillsLayerTileset = map.addTilesetImage("hills", "hillImg");
@@ -96,6 +86,51 @@ export class MainServer extends Scene {
       layers.furnitureLayer = map.createLayer("furniture", furnitureTilset);
     }
 
+    // 초기 랜더링 맵 크기 지정
+    const mapWidth = map.widthInPixels;
+    const mapHeight = map.heightInPixels;
+
+    this.cameras.main.setBounds(0, 0, mapWidth, mapHeight);
+    this.physics.world.setBounds(0, 0, mapWidth, mapHeight);
+
+    if (this.input.mouse) {
+      this.input.mouse.enabled = true;
+    }
+
+    const followSprite = this.add.sprite(0, 0, "none");
+    this.cameras.main.startFollow(followSprite);
+
+    this.input.on(
+      "pointerdown",
+      (pointer: Phaser.Input.Pointer) => {
+        this.cameras.main.stopFollow(); // 카메라 따라가기 중지
+        this.input.on("pointermove", this.onDrag, this);
+      },
+      this
+    );
+
+    this.input.on(
+      "pointerup",
+      (pointer: Phaser.Input.Pointer) => {
+        this.input.off("pointermove", this.onDrag, this); // 드래그 이벤트 해제
+        // 스프라이트를 새로운 위치로 이동시켜 카메라가 따라가도록 설정
+        followSprite.setPosition(
+          this.input.x + this.cameras.main.scrollX,
+          this.input.y + this.cameras.main.scrollY
+        );
+        this.cameras.main.startFollow(followSprite); // 카메라 따라가기 재시작
+      },
+      this
+    );
+
     return layers;
+  }
+
+  // 마우스 이동에 따라 카메라를 이동시킴
+  onDrag(this: Phaser.Scene, pointer: Phaser.Input.Pointer) {
+    if (pointer.prevPosition) {
+      this.cameras.main.scrollX -= (pointer.x - pointer.prevPosition.x) * 1.5;
+      this.cameras.main.scrollY -= (pointer.y - pointer.prevPosition.y) * 1.5;
+    }
   }
 }

@@ -2,7 +2,8 @@ package kpring.chat.chat.api.v1
 
 import kpring.chat.chat.service.ChatService
 import kpring.core.auth.client.AuthClient
-import kpring.core.chat.chat.dto.request.CreateChatRequest
+import kpring.core.chat.chat.dto.request.CreateRoomChatRequest
+import kpring.core.chat.chat.dto.request.CreateServerChatRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
@@ -13,13 +14,13 @@ class ChatController(
   private val chatService: ChatService,
   val authClient: AuthClient,
 ) {
-  @PostMapping("/chat")
-  fun createChat(
-    @Validated @RequestBody request: CreateChatRequest,
+  @PostMapping("/chat/chatroom")
+  fun createRoomChat(
+    @Validated @RequestBody request: CreateRoomChatRequest,
     @RequestHeader("Authorization") token: String,
   ): ResponseEntity<*> {
     val userId = authClient.getTokenInfo(token).data!!.userId
-    val result = chatService.createChat(request, userId)
+    val result = chatService.createRoomChat(request, userId)
     return ResponseEntity.ok().body(result)
   }
 

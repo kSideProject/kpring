@@ -24,6 +24,16 @@ class ChatController(
     return ResponseEntity.ok().body(result)
   }
 
+  @PostMapping("/chat/server")
+  fun createServerChat(
+    @Validated @RequestBody request: CreateServerChatRequest,
+    @RequestHeader("Authorization") token: String,
+  ): ResponseEntity<*> {
+    val userId = authClient.getTokenInfo(token).data!!.userId
+    val result = chatService.createServerChat(request, userId)
+    return ResponseEntity.ok().body(result)
+  }
+
   @GetMapping("/chat/{chatRoomId}/{page}")
   fun getChatsByChatRoom(
     @PathVariable("chatRoomId") chatRoomId: String,

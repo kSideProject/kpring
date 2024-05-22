@@ -53,6 +53,20 @@ class ChatService(
     return convertChatsToResponses(chats)
   }
 
+  fun createServerChat(
+    request: CreateServerChatRequest,
+    userId: String,
+  ) {
+    val chat =
+      serverChatRepository.save(
+        ServerChat(
+          userId = userId,
+          serverId = request.server,
+          content = request.content,
+        ),
+      )
+  }
+
   fun checkIfAuthorized(
     chatRoomId: String,
     userId: String,

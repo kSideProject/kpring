@@ -6,7 +6,7 @@ import kpring.server.error.ServerErrorCode
 class Server(
   val id: String,
   val name: String,
-  val users: MutableSet<ServerUser> = mutableSetOf(),
+  val users: MutableSet<String> = mutableSetOf(),
   val invitedUserIds: MutableSet<String> = mutableSetOf(),
 ) {
   private fun isInvited(userId: String): Boolean {
@@ -17,13 +17,18 @@ class Server(
    * @param user 초대 받은 유저
    * @throws ServiceException 유저가 초대되지 않았을 경우
    */
-  fun addUser(user: ServerUser) {
-    if (this.isInvited(user.id)) {
-      invitedUserIds.remove(user.id)
-      users.add(user)
+  fun addUser(
+    userId: String,
+    name: String,
+    imagePath: String,
+  ): ServerProfile {
+    if (this.isInvited(userId)) {
+      invitedUserIds.remove(userId)
+      users.add(userId)
     } else {
       throw ServiceException(ServerErrorCode.USER_NOT_INVITED)
     }
+    return ServerProfile(userId, name, imagePath, this)
   }
 
   /**
@@ -31,9 +36,7 @@ class Server(
    * @throws ServiceException 이미 가입한 등록된 유저일 경우
    */
   fun registerInvitation(userId: String) {
-    val user = users.find { it.id == userId }
-
-    if (user == null) {
+    if (!users.contains(userId)) {
       invitedUserIds.add(userId)
     } else {
       throw ServiceException(ServerErrorCode.ALREADY_REGISTERED_USER)

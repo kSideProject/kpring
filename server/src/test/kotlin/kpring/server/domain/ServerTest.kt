@@ -22,14 +22,13 @@ class ServerTest : DescribeSpec({
         mutableSetOf(),
         invitedUserIds = mutableSetOf("invitedUserId"),
       )
-    val user = ServerUser("invitedUserId", "userName", "profileImageUrl")
 
     // when
-    server.addUser(user)
+    val profile = server.addUser("invitedUserId", "userName", "profileImageUrl")
 
     // then
-    server.invitedUserIds shouldNotContain user.id
-    server.users shouldContain user
+    server.invitedUserIds shouldNotContain profile.userId
+    server.users shouldContain profile.userId
   }
 
   it("이미 등록된 유저를 초대시 예외가 발생한다.") {
@@ -41,13 +40,12 @@ class ServerTest : DescribeSpec({
         mutableSetOf(),
         invitedUserIds = mutableSetOf("invitedUserId"),
       )
-    val user = ServerUser("invitedUserId", "userName", "profileImageUrl")
-    server.addUser(user)
+    val profile = server.addUser("invitedUserId", "userName", "profileImageUrl")
 
     // when
     val result =
       shouldThrow<ServiceException> {
-        server.registerInvitation(user.id)
+        server.registerInvitation(profile.userId)
       }.errorCode
 
     // then

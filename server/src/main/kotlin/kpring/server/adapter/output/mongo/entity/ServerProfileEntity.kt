@@ -8,6 +8,8 @@ import org.springframework.data.mongodb.core.mapping.Document
 class ServerProfileEntity(
   @Id
   val userId: String,
+  val name: String,
+  val imagePath: String,
   val serverId: String,
   val role: ServerRole,
   val bookmarked: Boolean,

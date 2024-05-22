@@ -16,7 +16,6 @@ import kpring.server.application.port.output.GetServerProfilePort
 import kpring.server.application.port.output.SaveServerPort
 import kpring.server.application.port.output.UpdateServerPort
 import kpring.server.domain.ServerAuthority
-import kpring.server.domain.ServerUser
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -40,12 +39,17 @@ class ServerService(
 
   override fun getServerInfo(serverId: String): ServerInfo {
     val server = getServer.get(serverId)
+    val serverProfiles = getServerProfilePort.getAll(server.id)
     return ServerInfo(
       id = server.id,
       name = server.name,
       users =
-        server.users.map {
-          ServerUserInfo(it.id, it.name, it.profileImage)
+        serverProfiles.map { profile ->
+          ServerUserInfo(
+            id = profile.userId,
+            name = profile.name,
+            profileImage = profile.imagePath,
+          )
         },
     )
   }
@@ -84,8 +88,7 @@ class ServerService(
     req: AddUserAtServerRequest,
   ) {
     val server = getServer.get(serverId)
-    val user = ServerUser(req.userId, req.userName, req.profileImage)
-    server.addUser(user)
-    updateServerPort.addUser(server.id, user)
+    val profile = server.addUser(req.userId, req.userName, req.profileImage)
+    updateServerPort.addUser(profile)
   }
 }

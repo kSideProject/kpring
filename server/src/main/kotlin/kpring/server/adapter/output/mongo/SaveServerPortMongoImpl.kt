@@ -8,13 +8,18 @@ import kpring.server.adapter.output.mongo.repository.ServerRepository
 import kpring.server.application.port.output.SaveServerPort
 import kpring.server.domain.Server
 import kpring.server.domain.ServerRole
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Repository
+import java.util.*
 
 @Repository
 class SaveServerPortMongoImpl(
   val serverRepository: ServerRepository,
   val serverProfileRepository: ServerProfileRepository,
 ) : SaveServerPort {
+  @Value("\${resource.default.profileImagePath}")
+  private lateinit var defaultImagePath: String
+
   override fun create(
     req: CreateServerRequest,
     userId: String,
@@ -27,6 +32,10 @@ class SaveServerPortMongoImpl(
     serverProfileRepository.save(
       ServerProfileEntity(
         userId = userId,
+        // todo change
+        name = "USER_${UUID.randomUUID()}",
+        // todo change
+        imagePath = defaultImagePath,
         serverId = serverEntity.id,
         role = ServerRole.OWNER,
         bookmarked = false,

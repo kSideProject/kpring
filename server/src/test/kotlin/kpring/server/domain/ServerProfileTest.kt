@@ -8,17 +8,19 @@ class ServerProfileTest : DescribeSpec({
   it("hasRole 테스트") {
     // given
     val ownerId = "owner"
-    val user = ServerUser("invitedUserId", "userName", "profileImageUrl")
+    val userId = "invitedUserId"
     val server =
       Server(
         id = "serverId",
         name = "serverName",
         invitedUserIds = mutableSetOf("invitedUserId"),
-        users = mutableSetOf(user),
+        users = mutableSetOf(userId),
       )
     val serverProfile =
       ServerProfile(
         server = server,
+        name = "name",
+        imagePath = "/imagePath",
         userId = ownerId,
         role = ServerRole.OWNER,
         bookmarked = false,

@@ -30,6 +30,8 @@ class AddUserAtServerUseCaseTest(
       val serverProfile =
         ServerProfile(
           userId = invitorId,
+          name = "invitor",
+          imagePath = "imagePath",
           role = ServerRole.MEMBER,
           server = server,
         )

@@ -36,6 +36,8 @@ class GetServerProfileMongoImpl(
       ServerProfile(
         server = server,
         userId = serverProfileEntity.userId,
+        name = serverProfileEntity.name,
+        imagePath = serverProfileEntity.imagePath,
         role = serverProfileEntity.role,
         bookmarked = serverProfileEntity.bookmarked,
       )
@@ -65,6 +67,29 @@ class GetServerProfileMongoImpl(
       ServerProfile(
         server = server,
         userId = it.userId,
+        name = it.name,
+        imagePath = it.imagePath,
+        role = it.role,
+        bookmarked = it.bookmarked,
+      )
+    }
+  }
+
+  override fun getAll(serverId: String): List<ServerProfile> {
+    val server =
+      serverRepository.findById(serverId)
+        .orElseThrow { throw ServiceException(CommonErrorCode.NOT_FOUND) }
+        .toDomain()
+
+    val qProfile = QServerProfileEntity.serverProfileEntity
+    val serverProfileEntities = serverProfileRepository.findAll(qProfile.serverId.eq(serverId))
+
+    return serverProfileEntities.map {
+      ServerProfile(
+        server = server,
+        userId = it.userId,
+        name = it.name,
+        imagePath = it.imagePath,
         role = it.role,
         bookmarked = it.bookmarked,
       )

@@ -9,9 +9,14 @@ import kpring.user.dto.response.UpdateUserProfileResponse
 import kpring.user.entity.User
 import kpring.user.exception.UserErrorCode
 import kpring.user.repository.UserRepository
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.multipart.MultipartFile
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
 
 @Service
 @Transactional
@@ -20,6 +25,9 @@ class UserServiceImpl(
   private val passwordEncoder: PasswordEncoder,
   private val userValidationService: UserValidationService,
 ) : UserService {
+  @Value("\${file.path.profile-dir}")
+  private lateinit var profileImgDirPath: String
+
   override fun getProfile(userId: Long): GetUserProfileResponse {
     val user = getUser(userId)
     return GetUserProfileResponse(user.id, user.email, user.username)
@@ -28,9 +36,11 @@ class UserServiceImpl(
   override fun updateProfile(
     userId: Long,
     request: UpdateUserProfileRequest,
+    multipartFile: MultipartFile,
   ): UpdateUserProfileResponse {
+    var newPassword: String? = null
+    val profileImgDir = Paths.get(System.getProperty("user.dir")).resolve(profileImgDirPath)
     val user = getUser(userId)
-    lateinit var newPassword: String
 
     request.email?.let { handleDuplicateEmail(it) }
     request.newPassword?.let {
@@ -38,6 +48,9 @@ class UserServiceImpl(
       newPassword = passwordEncoder.encode(it)
     }
 
+    if (!multipartFile.isEmpty) {
+      saveUploadedFile(multipartFile, profileImgDir)
+    }
     user.updateInfo(request, newPassword)
 
     return UpdateUserProfileResponse(user.email, user.username)
@@ -73,5 +86,26 @@ class UserServiceImpl(
   private fun getUser(userId: Long): User {
     return userRepository.findById(userId)
       .orElseThrow { throw ServiceException(UserErrorCode.USER_NOT_FOUND) }
+  }
+
+  private fun saveUploadedFile(
+    multipartFile: MultipartFile,
+    dirPath: Path,
+  ) {
+    if (Files.notExists(dirPath)) {
+      Files.createDirectories(dirPath)
+    }
+    val extension = multipartFile.originalFilename!!.substringAfterLast('.')
+    isFileExtensionSupported(extension)
+
+    val filePath = dirPath.resolve(multipartFile.originalFilename!!)
+    multipartFile.transferTo(filePath.toFile())
+  }
+
+  private fun isFileExtensionSupported(extension: String) {
+    val supportedExtensions = listOf("png", "jpg", "jpeg")
+    if (extension !in supportedExtensions) {
+      throw ServiceException(UserErrorCode.EXTENSION_NOT_SUPPORTED)
+    }
   }
 }

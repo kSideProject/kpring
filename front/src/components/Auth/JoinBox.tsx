@@ -64,21 +64,24 @@ function JoinBox() {
       passwordConfirmError,
     });
 
-    // 유효성 검사를 해서 모든 에러가 없을때만 실행이 되고 alert를 통해 사용자에게 성공 메세지를 보여줌
-    if (
-      !errors.nicknameError &&
-      !errors.emailError &&
-      !errors.passwordError &&
-      !errors.passwordConfirmError
-    ) {
-      alert("회원가입 성공!");
-      setValues({
-        nickname: "",
-        email: "",
-        password: "",
-        passwordConfirm: "",
-      });
-    }
+    // setState가 비동기적으로 업데이트되어서 업데이트 완료 후 검사하도록 처리
+    setTimeout(() => {
+      // 유효성 검사를 해서 모든 에러가 없을때만 실행이 되고 alert를 통해 사용자에게 성공 메세지를 보여줌
+      if (
+        !nicknameError &&
+        !emailError &&
+        !passwordError &&
+        !passwordConfirmError
+      ) {
+        alert("회원가입 성공!");
+        setValues({
+          nickname: "",
+          email: "",
+          password: "",
+          passwordConfirm: "",
+        });
+      }
+    }, 0);
   };
   const navigation = useNavigate();
 

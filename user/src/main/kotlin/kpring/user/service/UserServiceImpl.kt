@@ -21,10 +21,7 @@ class UserServiceImpl(
   private val userValidationService: UserValidationService,
 ) : UserService {
   override fun getProfile(userId: Long): GetUserProfileResponse {
-    val user =
-      userRepository.findById(userId)
-        .orElseThrow { throw ServiceException(UserErrorCode.USER_NOT_FOUND) }
-
+    val user = getUser(userId)
     return GetUserProfileResponse(user.id, user.email, user.username)
   }
 
@@ -32,9 +29,7 @@ class UserServiceImpl(
     userId: Long,
     request: UpdateUserProfileRequest,
   ): UpdateUserProfileResponse {
-    val user =
-      userRepository.findById(userId)
-        .orElseThrow { throw ServiceException(UserErrorCode.USER_NOT_FOUND) }
+    val user = getUser(userId)
     lateinit var newPassword: String
 
     request.email?.let { handleDuplicateEmail(it) }
@@ -69,9 +64,14 @@ class UserServiceImpl(
     return CreateUserResponse(user.id, user.email)
   }
 
-  fun handleDuplicateEmail(email: String) {
+  private fun handleDuplicateEmail(email: String) {
     if (userRepository.existsByEmail(email)) {
       throw ServiceException(UserErrorCode.ALREADY_EXISTS_EMAIL)
     }
+  }
+
+  private fun getUser(userId: Long): User {
+    return userRepository.findById(userId)
+      .orElseThrow { throw ServiceException(UserErrorCode.USER_NOT_FOUND) }
   }
 }

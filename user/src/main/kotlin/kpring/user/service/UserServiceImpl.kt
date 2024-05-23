@@ -17,6 +17,8 @@ import org.springframework.web.multipart.MultipartFile
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.text.SimpleDateFormat
+import java.util.*
 
 @Service
 @Transactional
@@ -49,7 +51,7 @@ class UserServiceImpl(
     }
 
     if (!multipartFile.isEmpty) {
-      saveUploadedFile(multipartFile, profileImgDir)
+      saveUploadedFile(multipartFile, userId, profileImgDir)
     }
     user.updateInfo(request, newPassword)
 
@@ -90,6 +92,7 @@ class UserServiceImpl(
 
   private fun saveUploadedFile(
     multipartFile: MultipartFile,
+    userId: Long,
     dirPath: Path,
   ) {
     if (Files.notExists(dirPath)) {
@@ -98,7 +101,8 @@ class UserServiceImpl(
     val extension = multipartFile.originalFilename!!.substringAfterLast('.')
     isFileExtensionSupported(extension)
 
-    val filePath = dirPath.resolve(multipartFile.originalFilename!!)
+    val uniqueFileName = generateUniqueFileName(userId, extension)
+    val filePath = dirPath.resolve(uniqueFileName)
     multipartFile.transferTo(filePath.toFile())
   }
 
@@ -107,5 +111,13 @@ class UserServiceImpl(
     if (extension !in supportedExtensions) {
       throw ServiceException(UserErrorCode.EXTENSION_NOT_SUPPORTED)
     }
+  }
+
+  private fun generateUniqueFileName(
+    userId: Long,
+    extension: String,
+  ): String {
+    val timeStamp = SimpleDateFormat("yyMMddHHmmss").format(Date())
+    return "$timeStamp$userId.$extension"
   }
 }

@@ -4,6 +4,7 @@ import lombok.Builder;
 
 @Builder
 public record UpdateUserProfileResponse(
-        String email
+    String email,
+    String username
 ) {
 }

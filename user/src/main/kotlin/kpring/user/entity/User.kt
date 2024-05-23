@@ -1,6 +1,7 @@
 package kpring.user.entity
 
 import jakarta.persistence.*
+import kpring.user.dto.request.UpdateUserProfileRequest
 
 @Entity
 @Table(name = "tb_user")
@@ -33,5 +34,14 @@ class User(
   fun removeFollower(follower: User) {
     followers.remove(follower)
     follower.followees.remove(this)
+  }
+
+  fun updateInfo(
+    request: UpdateUserProfileRequest,
+    newPassword: String?,
+  ) {
+    request.email?.let { this.email = it }
+    request.username?.let { this.username = it }
+    newPassword?.let { this.password = it }
   }
 }

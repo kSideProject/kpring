@@ -32,7 +32,20 @@ class UserServiceImpl(
     userId: Long,
     request: UpdateUserProfileRequest,
   ): UpdateUserProfileResponse {
-    TODO("Not yet implemented")
+    val user =
+      userRepository.findById(userId)
+        .orElseThrow { throw ServiceException(UserErrorCode.USER_NOT_FOUND) }
+    lateinit var newPassword: String
+
+    request.email?.let { handleDuplicateEmail(it) }
+    request.newPassword?.let {
+      userValidationService.validateUserPassword(request.password, user.password)
+      newPassword = passwordEncoder.encode(it)
+    }
+
+    user.updateInfo(request, newPassword)
+
+    return UpdateUserProfileResponse(user.email, user.username)
   }
 
   override fun exitUser(userId: Long): Boolean {

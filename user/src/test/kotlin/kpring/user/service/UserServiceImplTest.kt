@@ -74,17 +74,6 @@ class UserServiceImplTest : FunSpec({
     verify { userRepository.save(any()) wasNot Called }
   }
 
-  test("회원가입_실패_비밀번호불일치케이스") {
-    createUserRequest =
-      CreateUserRequest(
-        TEST_EMAIL,
-        TEST_PASSWORD,
-        TEST_USERNAME,
-      )
-
-    verify { userRepository.save(any()) wasNot Called }
-  }
-
 //    test("친구추가_성공") {
 //        val user = User(id = 1L, username = "user1", followers = mutableSetOf(), followees = mutableSetOf())
 //        val friend = User(id = 2L, username = "user2", followers = mutableSetOf(), followees = mutableSetOf())
@@ -129,6 +118,5 @@ class UserServiceImplTest : FunSpec({
     private const val TEST_PASSWORD = "Password123!"
     private const val ENCODED_PASSWORD = "EncodedPassword123!"
     private const val TEST_USERNAME = "test"
-    private const val MISMATCHED_PASSWORD = "MismatchedPassword123!"
   }
 }

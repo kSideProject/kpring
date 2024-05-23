@@ -1,22 +1,25 @@
 import { Card, CardContent, CardMedia, Typography } from "@mui/material";
-import React from "react";
-import { serverData } from "../../utils/fakeData";
+import FavoriteIcon from "./FavoriteIcon";
 
-const ServerCard = () => {
+const ServerCard = ({
+  servers,
+}: {
+  servers: {
+    serverId: string;
+    serverName: string;
+    image: string;
+    members: string[];
+  };
+}) => {
   return (
-    <div className="flex flex-wrap gap-3 ">
-      {serverData.map((server) => {
-        return (
-          <Card sx={{ width: 345, cursor: "pointer" }}>
-            <CardMedia sx={{ height: 140 }} image={server.image}></CardMedia>
-            <CardContent>
-              <Typography>{server.serverName}</Typography>
-              <Typography>{server.members.length}명</Typography>
-            </CardContent>
-          </Card>
-        );
-      })}
-    </div>
+    <Card sx={{ width: 345, cursor: "pointer" }} key={servers.serverId}>
+      <CardMedia sx={{ height: 140 }} image={servers.image}></CardMedia>
+      <CardContent>
+        <Typography>{servers.serverName}</Typography>
+        <Typography>{servers.members.length} 명</Typography>
+        <FavoriteIcon id={servers.serverId} />
+      </CardContent>
+    </Card>
   );
 };
 

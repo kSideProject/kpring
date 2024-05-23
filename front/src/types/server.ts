@@ -1,3 +1,4 @@
+// 맵 컴포넌트 타입
 export interface ServerMapTypes {
   server: Phaser.Game | null;
   scene: Phaser.Scene | null;
@@ -24,4 +25,9 @@ export interface Layers {
   eggsLayer?: Phaser.Tilemaps.TilemapLayer | null;
   chickenLayer?: Phaser.Tilemaps.TilemapLayer | null;
   furnitureLayer?: Phaser.Tilemaps.TilemapLayer | null;
+}
+
+// 즐겨찾기 타입 지정
+export interface FavoritesState {
+  [key: string]: boolean;
 }

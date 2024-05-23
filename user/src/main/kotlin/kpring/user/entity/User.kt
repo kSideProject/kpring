@@ -15,6 +15,7 @@ class User(
   var email: String,
   @Column(nullable = false)
   var password: String,
+  var file: String?,
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(
     name = "user_followers",
@@ -39,9 +40,14 @@ class User(
   fun updateInfo(
     request: UpdateUserProfileRequest,
     newPassword: String?,
+    file: String?,
   ) {
     request.email?.let { this.email = it }
     request.username?.let { this.username = it }
     newPassword?.let { this.password = it }
+
+    if (this.file != null || file != null) {
+      this.file = file
+    }
   }
 }

@@ -41,6 +41,7 @@ class UserServiceImpl(
     multipartFile: MultipartFile,
   ): UpdateUserProfileResponse {
     var newPassword: String? = null
+    var uniqueFileName: String? = null
     val profileImgDir = Paths.get(System.getProperty("user.dir")).resolve(profileImgDirPath)
     val user = getUser(userId)
 
@@ -51,9 +52,11 @@ class UserServiceImpl(
     }
 
     if (!multipartFile.isEmpty) {
-      saveUploadedFile(multipartFile, userId, profileImgDir)
+      uniqueFileName = saveUploadedFile(multipartFile, userId, profileImgDir)
     }
-    user.updateInfo(request, newPassword)
+    val previousFile = user.file
+    user.updateInfo(request, newPassword, uniqueFileName)
+    previousFile?.let { profileImgDir.resolve(it) }?.let { Files.deleteIfExists(it) }
 
     return UpdateUserProfileResponse(user.email, user.username)
   }
@@ -73,6 +76,7 @@ class UserServiceImpl(
           email = request.email,
           password = password,
           username = request.username,
+          file = null,
         ),
       )
 
@@ -94,7 +98,7 @@ class UserServiceImpl(
     multipartFile: MultipartFile,
     userId: Long,
     dirPath: Path,
-  ) {
+  ): String {
     if (Files.notExists(dirPath)) {
       Files.createDirectories(dirPath)
     }
@@ -104,6 +108,8 @@ class UserServiceImpl(
     val uniqueFileName = generateUniqueFileName(userId, extension)
     val filePath = dirPath.resolve(uniqueFileName)
     multipartFile.transferTo(filePath.toFile())
+
+    return uniqueFileName
   }
 
   private fun isFileExtensionSupported(extension: String) {

@@ -1,8 +1,17 @@
-import ServerCard from "../components/Home/ServerCard";
 import Carousel from "react-material-ui-carousel";
 import { serverData } from "../utils/fakeData";
+import { useEffect, useState } from "react";
+import ServerList from "../components/Home/ServerList";
 
 const Home = () => {
+  const [servers, setServers] = useState<
+    { serverId: string; serverName: string; image: string; members: string[] }[]
+  >([]);
+
+  useEffect(() => {
+    setServers(serverData);
+  }, []);
+
   return (
     <div className="my-24 mx-36 text-cente">
       <div className="flex flex-col gap-3 mb-12">
@@ -23,7 +32,7 @@ const Home = () => {
 
       <div className="flex flex-col gap-3">
         <h2 className="text-2xl">즐겨찾기한 서버들</h2>
-        <ServerCard />
+        <ServerList servers={servers}></ServerList>
       </div>
     </div>
   );

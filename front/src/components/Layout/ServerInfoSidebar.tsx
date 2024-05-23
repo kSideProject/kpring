@@ -15,6 +15,7 @@ import { serverData } from "../../utils/fakeData";
 import MemberProfile from "../Profile/MemberProfile";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { useNavigate } from "react-router-dom";
+import FavoriteIcon from "../Home/FavoriteIcon";
 
 const ServerInfoSidebar: React.FC<ServerInforProps> = ({
   close,
@@ -40,6 +41,7 @@ const ServerInfoSidebar: React.FC<ServerInforProps> = ({
         <ArrowForwardIosIcon onClick={close} />
         <div>서버 멤버</div>
         <Button onClick={() => navigate(`server/${serverID}`)}>서버입장</Button>
+        <FavoriteIcon id={serverID} />
       </DrawerHeader>
       <Divider />
       <List>

@@ -18,9 +18,37 @@ function JoinBox() {
     validatePasswordConfirm,
   } = JoinValidation();
 
+  //사용자가 입력필드의 값을 변경할때 마다 호출되서 그 필드 값과 관련되어 있는 유효성 검사 상태를 업데이트 하는 역할을 함
+  const onChangeHandler = (field: string, value: string) => {
+    // 두개의 인자를 받음 field : 입력 필드의 이름을 나타내는 문자열(예시: nickname, email 등), value : 사용자가 입력한 새로운 값
+    setValues((prevValues) => ({ ...prevValues, [field]: value }));
+    // 함수 내부에서 setValues를 호출해서 상태를 업데이트 함
+    //=> 함수형 업데이트를 사용해서 이전 값을 가져와서 입력된 필드의 이름(field)에 해당하는 값을 새로운 값(value)으로 설정함
+    // 결론 : 해당 필드의 값만 변경 되고, 다른 필드의 값은 그대로 유지됨
+    let error = "";
+    //아래부터는 입력 필드의 종류에 따라 적절하게 유효성 검사를 실행함, switch 문을 통해 field 값에 따라 처리함
+    //유효성 검사 함수는 해당 값에 대해 유효성 검사를 하고 해당 상황에 따라 에러 메시지를 나타냄
+    switch (field) {
+      case "nickname":
+        error = validateNickname(value);
+        break;
+      case "email":
+        error = validateEmail(value);
+        break;
+      case "password":
+        error = validatePassword(value);
+        break;
+      case "passwordConfirm":
+        error = validatePasswordConfirm(values.password, value);
+        break;
+    }
+    setErrors((prevErrors) => ({ ...prevErrors, [`${field}Error`]: error }));
+    //에러메세지가 있을 경우 이 메세지를 상태에 반영하기 위해 setErrors를 호출함
+    //에러 상태도 이전 상태를 기반으로 업데이트 함. 위의 주석 처럼 해당 필드의 메세지만 변경 되고, 다른 필드의 에러메세지는 변경하지 않음
+  };
+
   const clickSubmitHandler = (e: React.FormEvent) => {
     e.preventDefault();
-
     const nicknameError = validateNickname(values.nickname);
     const emailError = validateEmail(values.email);
     const passwordError = validatePassword(values.password);
@@ -36,11 +64,12 @@ function JoinBox() {
       passwordConfirmError,
     });
 
+    // 유효성 검사를 해서 모든 에러가 없을때만 실행이 되고 alert를 통해 사용자에게 성공 메세지를 보여줌
     if (
-      !nicknameError &&
-      !emailError &&
-      !passwordError &&
-      !passwordConfirmError
+      !errors.nicknameError &&
+      !errors.emailError &&
+      !errors.passwordError &&
+      !errors.passwordConfirmError
     ) {
       alert("회원가입 성공!");
       setValues({
@@ -51,7 +80,6 @@ function JoinBox() {
       });
     }
   };
-
   const navigation = useNavigate();
 
   return (
@@ -72,7 +100,7 @@ function JoinBox() {
         >
           <h2 className="text-center text-2xl font-bold text-primary mt-[5px] mb-[10px]">
             환영합니다!
-          </h2>{" "}
+          </h2>
           <TextField
             required
             id="user-name"
@@ -83,7 +111,7 @@ function JoinBox() {
             autoComplete="username"
             size="small"
             value={values.nickname}
-            onChange={(e) => setValues({ ...values, nickname: e.target.value })}
+            onChange={(e) => onChangeHandler("nickname", e.target.value)}
             error={!!errors.nicknameError}
             helperText={errors.nicknameError}
           />
@@ -96,7 +124,7 @@ function JoinBox() {
             autoComplete="email"
             size="small"
             value={values.email}
-            onChange={(e) => setValues({ ...values, email: e.target.value })}
+            onChange={(e) => onChangeHandler("email", e.target.value)}
             error={!!errors.emailError}
             helperText={errors.emailError}
           />
@@ -110,7 +138,7 @@ function JoinBox() {
             variant="standard"
             size="small"
             value={values.password}
-            onChange={(e) => setValues({ ...values, password: e.target.value })}
+            onChange={(e) => onChangeHandler("password", e.target.value)}
             error={!!errors.passwordError}
             helperText={errors.passwordError}
           />
@@ -124,9 +152,7 @@ function JoinBox() {
             variant="standard"
             size="small"
             value={values.passwordConfirm}
-            onChange={(e) =>
-              setValues({ ...values, passwordConfirm: e.target.value })
-            }
+            onChange={(e) => onChangeHandler("passwordConfirm", e.target.value)}
             error={!!errors.passwordConfirmError}
             helperText={errors.passwordConfirmError}
           />

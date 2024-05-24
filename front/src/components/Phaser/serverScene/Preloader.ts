@@ -24,8 +24,8 @@ export class Preloader extends Scene {
     this.load.image("furnitureImg", "../assets/furniture.png");
     this.load.atlas(
       "basic_character",
-      "../assets/basic_character.png",
-      "../assets/basic_character.json"
+      "../assets/texture.png",
+      "../assets/texture.json"
     );
 
     // 2. Tiled에서 작업하고 JSON파일 저장한 후 불러온다.

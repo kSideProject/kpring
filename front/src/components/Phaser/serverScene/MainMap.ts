@@ -3,6 +3,8 @@ import { Layers } from "../../../types/server";
 
 export class MainMap extends Scene {
   private mapInstance!: Phaser.Game;
+  private character!: Phaser.Physics.Arcade.Sprite;
+  private keyboards!: Phaser.Types.Input.Keyboard.CursorKeys;
 
   constructor() {
     super("MainMap");
@@ -86,8 +88,93 @@ export class MainMap extends Scene {
       layers.furnitureLayer = map.createLayer("furniture", furnitureTilset);
     }
 
-    // 캐릭터 설정
-    const character = this.add.sprite(200, 200, "basic_character", "02.png");
+    // 텍스처 로드가 완료되었는지 확인
+    this.load.on("complete", () => {
+      if (this.textures.exists("basic_character")) {
+        const frames = this.textures.get("basic_character").getFrameNames();
+        console.log(`로드된 프레임: ${frames}`);
+
+        // 텍스처 로드가 완료되면 캐릭터 생성
+        this.character = this.physics.add.sprite(
+          300,
+          300,
+          "basic_character", // preload파일에서 atlas의 key값과 동일한 key값
+          "00.png" // 움직이지 않는 상태의 기본 캐릭터
+        );
+
+        // Run-Down
+        this.anims.create({
+          key: "basic_character_move_down",
+          frames: [
+            {
+              key: "basic_character",
+              frame: "00.png",
+            },
+            {
+              key: "basic_character",
+              frame: "01.png",
+            },
+            {
+              key: "basic_character",
+              frame: "02.png",
+            },
+            {
+              key: "basic_character",
+              frame: "03.png",
+            },
+          ],
+          frameRate: 10,
+          repeat: -1,
+        });
+
+        this.character.anims.play("basic_character_move_down");
+      } else {
+        console.log("noooooo");
+      }
+    });
+
+    this.load.start();
+
+    // Run-Up
+    // this.anims.create({
+    //   key: "basic_character_run_up",
+    //   frames: this.anims.generateFrameNames("basic_character", {
+    //     start: 1,
+    //     end: 4,
+    //     prefix: "run_up_",
+    //     suffix: ".png",
+    //   }),
+    //   frameRate: 10,
+    //   repeat: -1,
+    // });
+
+    // Run-Left
+    // this.anims.create({
+    //   key: "basic_character_run_left",
+    //   frames: this.anims.generateFrameNames("basic_character", {
+    //     start: 1,
+    //     end: 4,
+    //     prefix: "run_left_",
+    //     suffix: ".png",
+    //   }),
+    //   frameRate: 10,
+    //   repeat: -1,
+    // });
+
+    // Run-Right
+    // this.anims.create({
+    //   key: "basic_character_run_right",
+    //   frames: this.anims.generateFrameNames("basic_character", {
+    //     start: 1,
+    //     end: 4,
+    //     prefix: "run_right_",
+    //     suffix: ".png",
+    //   }),
+    //   frameRate: 10,
+    //   repeat: -1,
+    // });
+
+    //this.keyboards = this.input.keyboard?.createCursorKeys()!;
 
     // 초기 랜더링 맵 크기 지정
     const mapWidth = map.widthInPixels;

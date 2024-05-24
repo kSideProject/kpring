@@ -86,6 +86,9 @@ export class MainMap extends Scene {
       layers.furnitureLayer = map.createLayer("furniture", furnitureTilset);
     }
 
+    // 캐릭터 설정
+    const character = this.add.sprite(200, 200, "basic_character", "02.png");
+
     // 초기 랜더링 맵 크기 지정
     const mapWidth = map.widthInPixels;
     const mapHeight = map.heightInPixels;

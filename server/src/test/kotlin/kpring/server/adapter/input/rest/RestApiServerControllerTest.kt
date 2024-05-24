@@ -285,8 +285,8 @@ class RestApiServerControllerTest(
         val userId = "test user id"
         val data =
           listOf(
-            ServerSimpleInfo(id = "server1", name = "test_server"),
-            ServerSimpleInfo(id = "server2", name = "test_server"),
+            ServerSimpleInfo(id = "server1", name = "test_server", bookmarked = false),
+            ServerSimpleInfo(id = "server2", name = "test_server", bookmarked = true),
           )
 
         every { authClient.getTokenInfo(any()) } returns
@@ -322,6 +322,7 @@ class RestApiServerControllerTest(
             body {
               "data[].id" type "String" mean "서버 id"
               "data[].name" type "String" mean "서버 이름"
+              "data[].bookmarked" type "Boolean" mean "북마크 여부"
             }
           }
         }

@@ -83,7 +83,7 @@ class UserServiceImpl(
     return CreateUserResponse(user.id, user.email)
   }
 
-  private fun handleDuplicateEmail(email: String) {
+  fun handleDuplicateEmail(email: String) {
     if (userRepository.existsByEmail(email)) {
       throw ServiceException(UserErrorCode.ALREADY_EXISTS_EMAIL)
     }
@@ -103,7 +103,7 @@ class UserServiceImpl(
       Files.createDirectories(dirPath)
     }
     val extension = multipartFile.originalFilename!!.substringAfterLast('.')
-    isFileExtensionSupported(extension)
+    isFileExtensionSupported(multipartFile)
 
     val uniqueFileName = generateUniqueFileName(userId, extension)
     val filePath = dirPath.resolve(uniqueFileName)
@@ -112,9 +112,9 @@ class UserServiceImpl(
     return uniqueFileName
   }
 
-  private fun isFileExtensionSupported(extension: String) {
-    val supportedExtensions = listOf("png", "jpg", "jpeg")
-    if (extension !in supportedExtensions) {
+  private fun isFileExtensionSupported(multipartFile: MultipartFile) {
+    val supportedExtensions = listOf("image/png", "image/jpeg")
+    if (multipartFile.contentType !in supportedExtensions) {
       throw ServiceException(UserErrorCode.EXTENSION_NOT_SUPPORTED)
     }
   }

@@ -36,6 +36,26 @@ export const ServerMap = forwardRef<ServerMapTypes, ServerMapProps>(
 
         resizeMap();
         window.addEventListener("resize", resizeMap, false);
+
+        // 확대 & 축소 이벤트
+        document.getElementById("zoom-in")?.addEventListener("click", () => {
+          if (mapRef.current) {
+            const mainCamera = mapRef.current.scene.scenes[1].cameras.main;
+            console.log(mainCamera);
+            if (mainCamera) {
+              mainCamera.setZoom(mainCamera.zoom + 0.03);
+            }
+          }
+        });
+
+        document.getElementById("zoom-out")?.addEventListener("click", () => {
+          if (mapRef.current) {
+            const mainCamera = mapRef.current.scene.scenes[1].cameras.main;
+            if (mainCamera) {
+              mainCamera.setZoom(mainCamera.zoom - 0.03);
+            }
+          }
+        });
       }
 
       // 컴포넌트가 언마운트될 실행되는 함수
@@ -70,17 +90,16 @@ export const ServerMap = forwardRef<ServerMapTypes, ServerMapProps>(
 
     return (
       <div id="map-container" className="relative">
-        <ul className="absolute flex left-36 top-20">
-          <li>+</li>
-          <li>-</li>
-          <li>드래그</li>
-        </ul>
+        <div className="absolute flex left-36 top-20">
+          <div id="zoom-in" className="cursor-pointer">
+            확대
+          </div>
+          <div id="zoom-out" className="cursor-pointer">
+            축소
+          </div>
+          <div>드래그</div>
+        </div>
       </div>
     );
   }
 );
-
-// 맵 위에 맵 컨트롤러 만들기: 확대, 축소, 드래그, 전체 채팅 (나중에 캠, 마이크, 리액션)
-// 사용자의 캐릭터에 포커스(확대)
-// 캐릭터 움직이는 방향으로 카메라 이동
-// 각 사용자별 랜덤 캐릭터 생성 (나중에 캐릭터 커스텀)

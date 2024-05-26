@@ -155,7 +155,7 @@ export class MainMap extends Scene {
         });
 
         this.keyboards = this.input.keyboard?.createCursorKeys()!;
-        this.cameras.main.startFollow(this.character);
+        this.cameras.main.startFollow(this.character); // 캐릭터가 움직이는 방향으로 카메라도 함께 이동
       } else {
         console.log("noooooo");
       }
@@ -163,11 +163,11 @@ export class MainMap extends Scene {
     this.load.start();
 
     // 초기 랜더링 맵 크기 지정
-    // const mapWidth = map.widthInPixels;
-    // const mapHeight = map.heightInPixels;
+    const mapWidth = map.widthInPixels;
+    const mapHeight = map.heightInPixels;
 
-    // this.cameras.main.setBounds(0, 0, mapWidth, mapHeight);
-    // this.physics.world.setBounds(0, 0, mapWidth, mapHeight);
+    this.cameras.main.setBounds(0, 0, mapWidth, mapHeight);
+    this.physics.world.setBounds(0, 0, mapWidth, mapHeight);
 
     return layers;
   }

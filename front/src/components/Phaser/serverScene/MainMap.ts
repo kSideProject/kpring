@@ -88,7 +88,7 @@ export class MainMap extends Scene {
       layers.furnitureLayer = map.createLayer("furniture", furnitureTilset);
     }
 
-    // 텍스처 로드가 완료되었는지 확인
+    // 텍스처(캐릭터 이미지) 로드가 완료되었는지 확인
     this.load.on("complete", () => {
       if (this.textures.exists("basic_character")) {
         const frames = this.textures.get("basic_character").getFrameNames();
@@ -99,82 +99,68 @@ export class MainMap extends Scene {
           300,
           300,
           "basic_character", // preload파일에서 atlas의 key값과 동일한 key값
-          "00.png" // 움직이지 않는 상태의 기본 캐릭터
+          "move-down-3.png" // 움직이지 않는 상태의 기본 캐릭터
         );
 
-        // Run-Down
+        // Move-Down
         this.anims.create({
           key: "basic_character_move_down",
-          frames: [
-            {
-              key: "basic_character",
-              frame: "00.png",
-            },
-            {
-              key: "basic_character",
-              frame: "01.png",
-            },
-            {
-              key: "basic_character",
-              frame: "02.png",
-            },
-            {
-              key: "basic_character",
-              frame: "03.png",
-            },
-          ],
-          frameRate: 10,
+          frames: this.anims.generateFrameNames("basic_character", {
+            start: 1,
+            end: 4,
+            prefix: "move-down-",
+            suffix: ".png",
+          }),
+          frameRate: 15,
           repeat: -1,
         });
 
-        this.character.anims.play("basic_character_move_down");
+        // Move-Up
+        this.anims.create({
+          key: "basic_character_move_up",
+          frames: this.anims.generateFrameNames("basic_character", {
+            start: 1,
+            end: 4,
+            prefix: "move-up-",
+            suffix: ".png",
+          }),
+          frameRate: 15,
+          repeat: -1,
+        });
+
+        // Move-Left
+        this.anims.create({
+          key: "basic_character_move_left",
+          frames: this.anims.generateFrameNames("basic_character", {
+            start: 1,
+            end: 4,
+            prefix: "move-left-",
+            suffix: ".png",
+          }),
+          frameRate: 15,
+          repeat: -1,
+        });
+
+        // Move-Right
+        this.anims.create({
+          key: "basic_character_move_right",
+          frames: this.anims.generateFrameNames("basic_character", {
+            start: 1,
+            end: 4,
+            prefix: "move-right-",
+            suffix: ".png",
+          }),
+          frameRate: 15,
+          repeat: -1,
+        });
+
+        this.keyboards = this.input.keyboard?.createCursorKeys()!;
       } else {
         console.log("noooooo");
       }
     });
 
     this.load.start();
-
-    // Run-Up
-    // this.anims.create({
-    //   key: "basic_character_run_up",
-    //   frames: this.anims.generateFrameNames("basic_character", {
-    //     start: 1,
-    //     end: 4,
-    //     prefix: "run_up_",
-    //     suffix: ".png",
-    //   }),
-    //   frameRate: 10,
-    //   repeat: -1,
-    // });
-
-    // Run-Left
-    // this.anims.create({
-    //   key: "basic_character_run_left",
-    //   frames: this.anims.generateFrameNames("basic_character", {
-    //     start: 1,
-    //     end: 4,
-    //     prefix: "run_left_",
-    //     suffix: ".png",
-    //   }),
-    //   frameRate: 10,
-    //   repeat: -1,
-    // });
-
-    // Run-Right
-    // this.anims.create({
-    //   key: "basic_character_run_right",
-    //   frames: this.anims.generateFrameNames("basic_character", {
-    //     start: 1,
-    //     end: 4,
-    //     prefix: "run_right_",
-    //     suffix: ".png",
-    //   }),
-    //   frameRate: 10,
-    //   repeat: -1,
-    // });
-
-    //this.keyboards = this.input.keyboard?.createCursorKeys()!;
 
     // 초기 랜더링 맵 크기 지정
     const mapWidth = map.widthInPixels;
@@ -221,6 +207,34 @@ export class MainMap extends Scene {
     if (pointer.prevPosition) {
       this.cameras.main.scrollX -= (pointer.x - pointer.prevPosition.x) * 1.5;
       this.cameras.main.scrollY -= (pointer.y - pointer.prevPosition.y) * 1.5;
+    }
+  }
+
+  update() {
+    if (!this.character) {
+      console.log(this.character);
+      return;
+    }
+
+    this.character.setVelocity(0);
+
+    if (this.keyboards.down.isDown) {
+      this.character.setVelocityY(100);
+      this.character.anims.play("basic_character_move_down", true);
+    }
+    if (this.keyboards.up.isDown) {
+      this.character.setVelocityY(-100);
+      this.character.anims.play("basic_character_move_up", true);
+    }
+    if (this.keyboards.left.isDown) {
+      this.character.setVelocityX(-100);
+      this.character.anims.play("basic_character_move_left", true);
+    }
+    if (this.keyboards.right.isDown) {
+      this.character.setVelocityX(100);
+      this.character.anims.play("basic_character_move_right", true);
+    } else {
+      this.character.anims.stop();
     }
   }
 }

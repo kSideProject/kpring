@@ -3,7 +3,7 @@ package kpring.server.adapter.output.mongo
 import kpring.server.adapter.output.mongo.entity.ServerEntity
 import kpring.server.adapter.output.mongo.repository.ServerRepository
 import kpring.server.application.port.output.UpdateServerPort
-import kpring.server.domain.ServerUser
+import kpring.server.domain.ServerProfile
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Criteria.where
 import org.springframework.data.mongodb.core.query.Query.query
@@ -17,17 +17,15 @@ class UpdateServerPortMongoImpl(
   val serverRepository: ServerRepository,
   val template: MongoTemplate,
 ) : UpdateServerPort {
-  override fun addUser(
-    serverId: String,
-    user: ServerUser,
-  ) {
+  override fun addUser(profile: ServerProfile) {
     template.updateFirst(
       query(
-        where("_id").`is`(serverId)
-          .and("invitedUserIds").`in`(user.id),
+        where("_id").`is`(profile.server.id)
+          .and("invitedUserIds").`in`(profile.userId),
       ),
-      Update().pull("invitedUserIds", user.id)
-        .push("users", user),
+      Update()
+        .pull("invitedUserIds", profile.userId)
+        .push("users", profile.userId),
       ServerEntity::class.java,
     )
   }

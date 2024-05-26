@@ -21,7 +21,11 @@ class UserServiceImpl(
   private val userValidationService: UserValidationService,
 ) : UserService {
   override fun getProfile(userId: Long): GetUserProfileResponse {
-    TODO("Not yet implemented")
+    val user =
+      userRepository.findById(userId)
+        .orElseThrow { throw ServiceException(UserErrorCode.USER_NOT_FOUND) }
+
+    return GetUserProfileResponse(user.id, user.email, user.username)
   }
 
   override fun updateProfile(

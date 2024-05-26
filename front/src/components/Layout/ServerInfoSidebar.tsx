@@ -14,7 +14,7 @@ import {
 import { serverData } from "../../utils/fakeData";
 import MemberProfile from "../Profile/MemberProfile";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const ServerInfoSidebar: React.FC<ServerInforProps> = ({
   close,
@@ -53,8 +53,7 @@ const ServerInfoSidebar: React.FC<ServerInforProps> = ({
                     color="success"
                     variant="dot"
                     overlap="circular"
-                    anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                  >
+                    anchorOrigin={{ vertical: "bottom", horizontal: "right" }}>
                     <Avatar
                       alt="user nickname"
                       src="https://images.unsplash.com/photo-1517849845537-4d257902454a?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
@@ -68,8 +67,7 @@ const ServerInfoSidebar: React.FC<ServerInforProps> = ({
       </List>
       <MemberProfile
         openModal={openProfile}
-        closeModal={handleClose}
-      ></MemberProfile>
+        closeModal={handleClose}></MemberProfile>
     </>
   );
 };

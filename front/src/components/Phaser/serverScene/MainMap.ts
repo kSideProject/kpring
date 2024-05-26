@@ -155,64 +155,26 @@ export class MainMap extends Scene {
         });
 
         this.keyboards = this.input.keyboard?.createCursorKeys()!;
+        this.cameras.main.startFollow(this.character);
       } else {
         console.log("noooooo");
       }
     });
-
     this.load.start();
 
     // 초기 랜더링 맵 크기 지정
-    const mapWidth = map.widthInPixels;
-    const mapHeight = map.heightInPixels;
+    // const mapWidth = map.widthInPixels;
+    // const mapHeight = map.heightInPixels;
 
-    this.cameras.main.setBounds(0, 0, mapWidth, mapHeight);
-    this.physics.world.setBounds(0, 0, mapWidth, mapHeight);
-
-    if (this.input.mouse) {
-      this.input.mouse.enabled = true;
-    }
-
-    const followSprite = this.add.sprite(0, 0, "none");
-    this.cameras.main.startFollow(followSprite);
-
-    this.input.on(
-      "pointerdown",
-      (pointer: Phaser.Input.Pointer) => {
-        this.cameras.main.stopFollow(); // 카메라 따라가기 중지
-        this.input.on("pointermove", this.onDrag, this);
-      },
-      this
-    );
-
-    this.input.on(
-      "pointerup",
-      (pointer: Phaser.Input.Pointer) => {
-        this.input.off("pointermove", this.onDrag, this); // 드래그 이벤트 해제
-        // 스프라이트를 새로운 위치로 이동시켜 카메라가 따라가도록 설정
-        followSprite.setPosition(
-          this.input.x + this.cameras.main.scrollX,
-          this.input.y + this.cameras.main.scrollY
-        );
-        this.cameras.main.startFollow(followSprite); // 카메라 따라가기 재시작
-      },
-      this
-    );
+    // this.cameras.main.setBounds(0, 0, mapWidth, mapHeight);
+    // this.physics.world.setBounds(0, 0, mapWidth, mapHeight);
 
     return layers;
   }
 
-  // 마우스 이동에 따라 카메라를 이동시킴
-  onDrag(this: Phaser.Scene, pointer: Phaser.Input.Pointer) {
-    if (pointer.prevPosition) {
-      this.cameras.main.scrollX -= (pointer.x - pointer.prevPosition.x) * 1.5;
-      this.cameras.main.scrollY -= (pointer.y - pointer.prevPosition.y) * 1.5;
-    }
-  }
-
   update() {
     if (!this.character) {
-      console.log(this.character);
+      // 만약 캐리터가 로드되지 않았다면 아무것도 반환하지 않는다
       return;
     }
 

@@ -68,6 +68,19 @@ export const ServerMap = forwardRef<ServerMapTypes, ServerMapProps>(
       };
     }, [currentActiveScene, ref]);
 
-    return <div id="map-container"></div>;
+    return (
+      <div id="map-container" className="relative">
+        <ul className="absolute flex left-36 top-20">
+          <li>+</li>
+          <li>-</li>
+          <li>드래그</li>
+        </ul>
+      </div>
+    );
   }
 );
+
+// 맵 위에 맵 컨트롤러 만들기: 확대, 축소, 드래그, 전체 채팅 (나중에 캠, 마이크, 리액션)
+// 사용자의 캐릭터에 포커스(확대)
+// 캐릭터 움직이는 방향으로 카메라 이동
+// 각 사용자별 랜덤 캐릭터 생성 (나중에 캐릭터 커스텀)

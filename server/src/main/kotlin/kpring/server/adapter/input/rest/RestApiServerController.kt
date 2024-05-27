@@ -72,4 +72,13 @@ class RestApiServerController(
     addUserAtServerUseCase.addInvitedUser(serverId, request)
     return ResponseEntity.ok().build()
   }
+
+  @GetMapping("/{serverId}/user/{userId}")
+  fun verifyIfJoined(
+    @PathVariable serverId: String,
+    @PathVariable userId: String
+  ): Boolean {
+    val data = getServerUseCase.verifyIfJoined(userId,serverId)
+    return data
+  }
 }

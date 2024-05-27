@@ -7,6 +7,10 @@ import kpring.core.server.dto.request.GetServerCondition
 interface GetServerInfoUseCase {
   fun getServerInfo(serverId: String): ServerInfo
 
+  fun verifyIfJoined(
+    userId: String, serverId: String,
+  ): Boolean
+
   fun getServerList(
     condition: GetServerCondition,
     userId: String,

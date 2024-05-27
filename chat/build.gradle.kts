@@ -21,8 +21,8 @@ java {
 }
 
 dependencies {
-  // core module
-  api(project(":core"))
+  /** Core Module */
+  implementation(project(":core"))
 
   // mongodb
   implementation("org.springframework.boot:spring-boot-starter-data-mongodb")

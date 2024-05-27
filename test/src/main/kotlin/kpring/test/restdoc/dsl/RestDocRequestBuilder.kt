@@ -40,6 +40,14 @@ class RestDocRequestBuilder {
     }
   }
 
+  fun part(config: RestDocMultipartBuilder.() -> Unit) {
+    val builder = RestDocMultipartBuilder()
+    builder.config()
+    if (builder.partDescriptors.isNotEmpty()) {
+      snippets.add(RequestDocumentation.requestParts(*builder.partDescriptors.toTypedArray()))
+    }
+  }
+
   fun snippet(snippet: Snippet) {
     snippets.add(snippet)
   }

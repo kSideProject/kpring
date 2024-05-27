@@ -12,6 +12,7 @@ import org.springframework.test.context.ContextConfiguration
 @ContextConfiguration(initializers = [SpringTestContext.SpringDataMongo::class])
 class SaveServerPortTest(
   val saveServerPort: SaveServerPort,
+  val getServerProfilePort: GetServerProfilePort,
 ) : DescribeSpec({
 
     it("서버를 저장하면 생성한 유저는 서버의 소유자가 된다.") {
@@ -21,8 +22,9 @@ class SaveServerPortTest(
 
       // when
       val server = saveServerPort.create(req, userId)
+      val profile = getServerProfilePort.get(server.id, userId)
 
       // then
-      server.authorities[userId] shouldBe ServerRole.OWNER
+      profile.role shouldBe ServerRole.OWNER
     }
   })

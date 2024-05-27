@@ -44,14 +44,13 @@ class ServerService(
     return ServerInfo(
       id = server.id,
       name = server.name,
-      users =
-        serverProfiles.map { profile ->
-          ServerUserInfo(
-            id = profile.userId,
-            name = profile.name,
-            profileImage = profile.imagePath,
-          )
-        },
+      users = serverProfiles.map { profile ->
+        ServerUserInfo(
+          id = profile.userId,
+          name = profile.name,
+          profileImage = profile.imagePath,
+        )
+      },
     )
   }
 
@@ -59,14 +58,20 @@ class ServerService(
     condition: GetServerCondition,
     userId: String,
   ): List<ServerSimpleInfo> {
-    return getServerProfilePort.getProfiles(condition, userId)
-      .map { profile ->
+    return getServerProfilePort.getProfiles(condition, userId).map { profile ->
         ServerSimpleInfo(
           id = profile.server.id,
           name = profile.server.name,
           bookmarked = profile.bookmarked,
         )
       }
+  }
+
+  override fun verifyIfJoined(
+    userId: String, serverId: String,
+  ): Boolean {
+    val server = getServer.get(serverId)
+    return server.verifyIfJoined(userId)
   }
 
   @Transactional

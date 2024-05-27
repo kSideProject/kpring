@@ -5,7 +5,7 @@ import Header from "./Header";
 import LeftSideBar from "./LeftSideBar";
 const Layout: React.FC = () => {
   return (
-    <div>
+    <div className="relative">
       <Header />
       <LeftSideBar />
 

@@ -14,3 +14,7 @@ spring:
 
 auth:
   url: ${AUTH_SERVICE_URL:http://localhost:8080}
+
+resource:
+  default:
+    profileImagePath: "todo" # todo

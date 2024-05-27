@@ -15,7 +15,7 @@ import { serverData } from "../../utils/fakeData";
 import ServerInfoSidebar from "./ServerInfoSidebar";
 
 const LeftSideBar = () => {
-  const DRAWER_WIDTH = 40; // 왼쪽 서버 사이드바 넓이
+  const DRAWER_WIDTH = 88; // 왼쪽 서버 사이드바 넓이
   const [open, setOpen] = useState(false); // 서버 인포 사이드바 열
   const [serverId, setServerId] = useState("");
 
@@ -31,8 +31,17 @@ const LeftSideBar = () => {
   };
 
   return (
-    <Box>
-      <Drawer variant="permanent" sx={{ width: DRAWER_WIDTH }}>
+    <Box sx={{ position: "absolute" }}>
+      <Drawer
+        variant="permanent"
+        sx={{
+          width: DRAWER_WIDTH,
+          marginTop: "64px",
+          "& .MuiDrawer-paper": {
+            width: DRAWER_WIDTH,
+            marginTop: "64px",
+          },
+        }}>
         <List sx={{ display: "flex", flexDirection: "column" }}>
           <ListItem alignItems="center">
             <ListItemButton>
@@ -43,15 +52,14 @@ const LeftSideBar = () => {
 
           {serverData.map((server) => {
             return (
-              <ListItem alignItems="center">
+              <ListItem alignItems="center" key={server.serverId}>
                 <Tooltip title={server.serverName}>
                   <ListItemAvatar
                     sx={{
                       display: "flex",
                       justifyContent: "center",
                       alignItems: "center",
-                    }}
-                  >
+                    }}>
                     <Avatar
                       src={server.image}
                       onClick={() => handleDrawerOpen(server.serverId)}

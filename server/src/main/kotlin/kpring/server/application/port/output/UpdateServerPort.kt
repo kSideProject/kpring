@@ -1,12 +1,9 @@
 package kpring.server.application.port.output
 
-import kpring.server.domain.ServerUser
+import kpring.server.domain.ServerProfile
 
 interface UpdateServerPort {
-  fun addUser(
-    serverId: String,
-    user: ServerUser,
-  )
+  fun addUser(profile: ServerProfile)
 
   fun inviteUser(
     serverId: String,

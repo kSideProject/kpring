@@ -17,10 +17,12 @@ import kpring.core.server.dto.ServerInfo
 import kpring.core.server.dto.ServerSimpleInfo
 import kpring.core.server.dto.request.AddUserAtServerRequest
 import kpring.core.server.dto.request.CreateServerRequest
+import kpring.core.server.dto.request.GetServerCondition
 import kpring.core.server.dto.response.CreateServerResponse
 import kpring.server.application.service.ServerService
 import kpring.server.config.CoreConfiguration
 import kpring.test.restdoc.dsl.restDoc
+import kpring.test.web.URLBuilder
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.context.annotation.Import
@@ -288,17 +290,22 @@ class RestApiServerControllerTest(
             ServerSimpleInfo(id = "server1", name = "test_server", bookmarked = false),
             ServerSimpleInfo(id = "server2", name = "test_server", bookmarked = true),
           )
+        val condition = GetServerCondition(serverIds = listOf("server1", "server2"))
 
         every { authClient.getTokenInfo(any()) } returns
           ApiResponse(
             data = TokenInfo(TokenType.ACCESS, userId),
           )
-        every { serverService.getServerList(userId) } returns data
+        every { serverService.getServerList(any(), eq(userId)) } returns data
 
         // when
         val result =
           webTestClient.get()
-            .uri(url)
+            .uri(
+              URLBuilder(url)
+                .query("serverIds", condition.serverIds!!)
+                .build(),
+            )
             .header("Authorization", "Bearer test_token")
             .exchange()
 
@@ -315,6 +322,7 @@ class RestApiServerControllerTest(
           description = "서버 목록 조회 api",
         ) {
           request {
+            query { "serverIds" mean "조회시 해당 서버 목록만을 조회합니다. 값이 없다면 조건은 적용되지 않습니다." }
             header { "Authorization" mean "jwt access token" }
           }
 

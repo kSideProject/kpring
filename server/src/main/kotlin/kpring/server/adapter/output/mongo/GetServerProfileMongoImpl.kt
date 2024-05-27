@@ -2,6 +2,7 @@ package kpring.server.adapter.output.mongo
 
 import kpring.core.global.exception.CommonErrorCode
 import kpring.core.global.exception.ServiceException
+import kpring.core.server.dto.request.GetServerCondition
 import kpring.server.adapter.output.mongo.entity.QServerEntity
 import kpring.server.adapter.output.mongo.entity.QServerProfileEntity
 import kpring.server.adapter.output.mongo.repository.ServerProfileRepository
@@ -44,7 +45,10 @@ class GetServerProfileMongoImpl(
     return serverProfile
   }
 
-  override fun getProfiles(userId: String): List<ServerProfile> {
+  override fun getProfiles(
+    condition: GetServerCondition,
+    userId: String,
+  ): List<ServerProfile> {
     // get server profile
     val qProfile = QServerProfileEntity.serverProfileEntity
     val serverProfileEntities =

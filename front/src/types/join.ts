@@ -11,3 +11,7 @@ export type JoinBoxValidateErrors = {
   passwordError: string;
   passwordConfirmError: string;
 };
+
+export interface Validators {
+  [key: string]: (input: string) => string;
+}

@@ -1,7 +1,9 @@
 package kpring.server.adapter.output.mongo
 
+import com.querydsl.core.types.dsl.BooleanExpression
 import kpring.core.global.exception.CommonErrorCode
 import kpring.core.global.exception.ServiceException
+import kpring.core.server.dto.request.GetServerCondition
 import kpring.server.adapter.output.mongo.entity.QServerEntity
 import kpring.server.adapter.output.mongo.entity.QServerProfileEntity
 import kpring.server.adapter.output.mongo.repository.ServerProfileRepository
@@ -44,7 +46,10 @@ class GetServerProfileMongoImpl(
     return serverProfile
   }
 
-  override fun getProfiles(userId: String): List<ServerProfile> {
+  override fun getProfiles(
+    condition: GetServerCondition,
+    userId: String,
+  ): List<ServerProfile> {
     // get server profile
     val qProfile = QServerProfileEntity.serverProfileEntity
     val serverProfileEntities =
@@ -53,12 +58,18 @@ class GetServerProfileMongoImpl(
       )
 
     // get server
+    val targetServerIds =
+      serverProfileEntities
+        .map { it.serverId }
+
     val qServer = QServerEntity.serverEntity
-    val serverMap =
-      mapOf(
-        *serverRepository.findAll(qServer.id.`in`(serverProfileEntities.map { it.serverId }))
-          .map { it.id to it }.toTypedArray(),
-      )
+
+    val servers =
+      serverRepository.findAll(
+        qServer.conditionServerIds(targetServerIds, condition.serverIds),
+      ).map { it.id to it }
+
+    val serverMap = mapOf(*servers.toTypedArray())
 
     // mapping
     return serverProfileEntities.map {
@@ -94,5 +105,20 @@ class GetServerProfileMongoImpl(
         bookmarked = it.bookmarked,
       )
     }
+  }
+
+  /**
+   * serverIds 목록 중에서 condition에 포함되는 serverId만 검색한다.
+   * 만약 condition이 없는 경우에는 serverIds 목록 전체를 검색한다.
+   */
+  private fun QServerEntity.conditionServerIds(
+    serverIds: List<String>,
+    condition: Collection<String>?,
+  ): BooleanExpression {
+    if (!condition.isNullOrEmpty())
+      {
+        return this.id.`in`(serverIds.filter { condition.contains(it) })
+      }
+    return this.id.`in`(serverIds)
   }
 }

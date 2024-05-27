@@ -44,13 +44,13 @@ class ChatService(
     userId: String,
     page: Int,
   ): List<ChatResponse> {
-    checkIfAuthorized(chatRoomId, userId)
+    verifyIfAuthorizedForChatRoom(chatRoomId, userId)
 
     // find chats by chatRoomId and convert them into DTOs
     val pageable: Pageable = PageRequest.of(page, pageSize)
     val chats: List<Chat> = roomChatRepository.findAllByRoomId(chatRoomId, pageable)
 
-    return convertChatsToResponses(chats)
+    return convertRoomChatsToResponses(chats)
   }
 
   fun createServerChat(
@@ -67,21 +67,39 @@ class ChatService(
       )
   }
 
-  fun checkIfAuthorized(
+  fun getChatsByServer(
+    serverId: String,
+    userId: String,
+    page: Int,
+  ): List<ChatResponse> {
+    val pageable: Pageable = PageRequest.of(page, pageSize)
+    val chats: List<ServerChat> = serverChatRepository.findAllByServerId(serverId, pageable)
+
+    return convertServerChatsToResponses(chats)
+  }
+
+  fun verifyIfAuthorizedForChatRoom(
     chatRoomId: String,
     userId: String,
   ) {
-    // check if there is a chatroom with the chatRoomId and the user is one of the members
     if (!chatRoomRepository.existsByIdAndMembersContaining(chatRoomId, userId)) {
       throw GlobalException(ErrorCode.UNAUTHORIZED_CHATROOM)
     }
   }
 
-  fun convertChatsToResponses(chats: List<Chat>): List<ChatResponse> {
-    val chatResponses =
+  fun convertRoomChatsToResponses(chats: List<Chat>): List<ChatResponse> {
+    val chatResponse =
       chats.map { chat ->
-        ChatResponse(chat.roomId, chat.isEdited(), chat.createdAt, chat.content)
+        ChatResponse(chat.id!!, chat.isEdited(), chat.createdAt, chat.content)
       }
-    return chatResponses
+    return chatResponse
+  }
+
+  fun convertServerChatsToResponses(chats: List<ServerChat>): List<ChatResponse> {
+    val chatResponse =
+      chats.map { chat ->
+        ChatResponse(chat.id!!, chat.isEdited(), chat.createdAt, chat.content)
+      }
+    return chatResponse
   }
 }

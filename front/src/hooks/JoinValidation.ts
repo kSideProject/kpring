@@ -1,5 +1,9 @@
 import { useState } from "react";
-import type { JoinBoxValidateErrors, JoinBoxValues } from "../types/join";
+import type {
+  JoinBoxValidateErrors,
+  JoinBoxValues,
+  Validators,
+} from "../types/join";
 export const JoinValidation = () => {
   const [values, setValues] = useState<JoinBoxValues>({
     nickname: "",
@@ -46,6 +50,14 @@ export const JoinValidation = () => {
     return "";
   };
 
+  const validators: Validators = {
+    nickname: validateNickname,
+    email: validateEmail,
+    password: validatePassword,
+    passwordConfirm: (passwordConfirm: string) =>
+      validatePasswordConfirm(values.password, passwordConfirm),
+  };
+
   return {
     values,
     setValues,
@@ -55,5 +67,6 @@ export const JoinValidation = () => {
     validateEmail,
     validatePassword,
     validatePasswordConfirm,
+    validators,
   };
 };

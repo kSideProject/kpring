@@ -10,6 +10,7 @@ enum class ServerErrorCode(
 ) : ErrorCode {
   USER_NOT_INVITED("SERVER_001", "유저가 초대되지 않았습니다.", HttpStatus.FORBIDDEN),
   ALREADY_REGISTERED_USER("SERVER_002", "이미 등록된 유저입니다.", HttpStatus.BAD_REQUEST),
+  USER_NOT_AUTHORIZED("SERVER_003", "권한이 없는 유저입니다.", HttpStatus.UNAUTHORIZED),
   ;
 
   override fun id(): String = id

@@ -16,11 +16,21 @@ function JoinBox() {
     validateEmail,
     validatePassword,
     validatePasswordConfirm,
+    validators,
   } = JoinValidation();
+
+  const onChangeHandler = (
+    field: string,
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const value = event.target.value;
+    const error = validators[field](value);
+    setValues((prevValues) => ({ ...prevValues, [field]: value }));
+    setErrors((prevErrors) => ({ ...prevErrors, [`${field}Error`]: error }));
+  };
 
   const clickSubmitHandler = (e: React.FormEvent) => {
     e.preventDefault();
-
     const nicknameError = validateNickname(values.nickname);
     const emailError = validateEmail(values.email);
     const passwordError = validatePassword(values.password);
@@ -36,20 +46,24 @@ function JoinBox() {
       passwordConfirmError,
     });
 
-    if (
-      !nicknameError &&
-      !emailError &&
-      !passwordError &&
-      !passwordConfirmError
-    ) {
-      alert("회원가입 성공!");
-      setValues({
-        nickname: "",
-        email: "",
-        password: "",
-        passwordConfirm: "",
-      });
-    }
+    // setState가 비동기적으로 업데이트되어서 업데이트 완료 후 검사하도록 처리
+    setTimeout(() => {
+      // 유효성 검사를 해서 모든 에러가 없을때만 실행이 되고 alert를 통해 사용자에게 성공 메세지를 보여줌
+      if (
+        !nicknameError &&
+        !emailError &&
+        !passwordError &&
+        !passwordConfirmError
+      ) {
+        alert("회원가입 성공!");
+        setValues({
+          nickname: "",
+          email: "",
+          password: "",
+          passwordConfirm: "",
+        });
+      }
+    }, 0);
   };
 
   const navigation = useNavigate();
@@ -64,15 +78,14 @@ function JoinBox() {
           }}
           noValidate
           autoComplete="off"
-          bgcolor="#fde2f34d
-          "
+          bgcolor="#fde2f34d"
           border="1px solid #e4d4e7"
           padding="20px"
           onSubmit={clickSubmitHandler}
         >
           <h2 className="text-center text-2xl font-bold text-primary mt-[5px] mb-[10px]">
             환영합니다!
-          </h2>{" "}
+          </h2>
           <TextField
             required
             id="user-name"
@@ -83,7 +96,7 @@ function JoinBox() {
             autoComplete="username"
             size="small"
             value={values.nickname}
-            onChange={(e) => setValues({ ...values, nickname: e.target.value })}
+            onChange={(e) => onChangeHandler("nickname", e)}
             error={!!errors.nicknameError}
             helperText={errors.nicknameError}
           />
@@ -96,7 +109,7 @@ function JoinBox() {
             autoComplete="email"
             size="small"
             value={values.email}
-            onChange={(e) => setValues({ ...values, email: e.target.value })}
+            onChange={(e) => onChangeHandler("email", e)}
             error={!!errors.emailError}
             helperText={errors.emailError}
           />
@@ -110,7 +123,7 @@ function JoinBox() {
             variant="standard"
             size="small"
             value={values.password}
-            onChange={(e) => setValues({ ...values, password: e.target.value })}
+            onChange={(e) => onChangeHandler("password", e)}
             error={!!errors.passwordError}
             helperText={errors.passwordError}
           />
@@ -124,9 +137,7 @@ function JoinBox() {
             variant="standard"
             size="small"
             value={values.passwordConfirm}
-            onChange={(e) =>
-              setValues({ ...values, passwordConfirm: e.target.value })
-            }
+            onChange={(e) => onChangeHandler("passwordConfirm", e)}
             error={!!errors.passwordConfirmError}
             helperText={errors.passwordConfirmError}
           />

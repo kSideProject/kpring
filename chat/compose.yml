@@ -3,8 +3,17 @@ services:
     image: mongo:latest
     container_name: mongo
     ports:
-      - "27017:27017"
+      - "27018:27017"
     environment:
         MONGO_INITDB_ROOT_USERNAME: root
-        MONGO_INITDB_ROOT_PASSWORD: 58155815
+        MONGO_INITDB_ROOT_PASSWORD: testpassword1234
         MONGO_INITDB_DATABASE: mongodb
+
+  redis:
+    image: redis:alpine
+    container_name: redis_link
+    ports:
+      - "6380:6379"
+    environment:
+      - REDIS_PASSWORD = "testpassword1234"
+    command: ["redis-server","--requirepass","${REDIS_PASSWORD}"]

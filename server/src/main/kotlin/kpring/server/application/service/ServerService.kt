@@ -7,6 +7,7 @@ import kpring.core.server.dto.ServerSimpleInfo
 import kpring.core.server.dto.ServerUserInfo
 import kpring.core.server.dto.request.AddUserAtServerRequest
 import kpring.core.server.dto.request.CreateServerRequest
+import kpring.core.server.dto.request.GetServerCondition
 import kpring.core.server.dto.response.CreateServerResponse
 import kpring.server.application.port.input.AddUserAtServerUseCase
 import kpring.server.application.port.input.CreateServerUseCase
@@ -54,8 +55,11 @@ class ServerService(
     )
   }
 
-  override fun getServerList(userId: String): List<ServerSimpleInfo> {
-    return getServerProfilePort.getProfiles(userId)
+  override fun getServerList(
+    condition: GetServerCondition,
+    userId: String,
+  ): List<ServerSimpleInfo> {
+    return getServerProfilePort.getProfiles(condition, userId)
       .map { profile ->
         ServerSimpleInfo(
           id = profile.server.id,

@@ -43,6 +43,7 @@ class UserServiceImplTest : FunSpec({
         createUserRequest.username,
         createUserRequest.email,
         createUserRequest.password,
+        null,
       )
 
     every { userService.handleDuplicateEmail(createUserRequest.email) } just Runs

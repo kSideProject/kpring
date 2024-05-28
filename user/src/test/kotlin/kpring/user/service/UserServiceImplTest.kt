@@ -16,11 +16,13 @@ class UserServiceImplTest : FunSpec({
   val userRepository: UserRepository = mockk()
   val passwordEncoder: PasswordEncoder = mockk()
   val userValidationService: UserValidationService = mockk()
+  val uploadProfileImageService: UploadProfileImageService = mockk()
   val userService =
     UserServiceImpl(
       userRepository,
       passwordEncoder,
       userValidationService,
+      uploadProfileImageService,
     )
   val friendService = FriendService(userRepository)
   lateinit var createUserRequest: CreateUserRequest

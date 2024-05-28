@@ -15,10 +15,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
 import java.nio.file.Files
-import java.nio.file.Path
 import java.nio.file.Paths
-import java.text.SimpleDateFormat
-import java.util.*
 
 @Service
 @Transactional
@@ -26,6 +23,7 @@ class UserServiceImpl(
   private val userRepository: UserRepository,
   private val passwordEncoder: PasswordEncoder,
   private val userValidationService: UserValidationService,
+  private val uploadProfileImageService: UploadProfileImageService,
 ) : UserService {
   @Value("\${file.path.profile-dir}")
   private lateinit var profileImgDirPath: String
@@ -52,7 +50,8 @@ class UserServiceImpl(
     }
 
     if (!multipartFile.isEmpty) {
-      uniqueFileName = saveUploadedFile(multipartFile, userId, profileImgDir)
+      uniqueFileName =
+        uploadProfileImageService.saveUploadedFile(multipartFile, userId, profileImgDir)
     }
     val previousFile = user.file
     user.updateInfo(request, newPassword, uniqueFileName)
@@ -92,38 +91,5 @@ class UserServiceImpl(
   private fun getUser(userId: Long): User {
     return userRepository.findById(userId)
       .orElseThrow { throw ServiceException(UserErrorCode.USER_NOT_FOUND) }
-  }
-
-  private fun saveUploadedFile(
-    multipartFile: MultipartFile,
-    userId: Long,
-    dirPath: Path,
-  ): String {
-    if (Files.notExists(dirPath)) {
-      Files.createDirectories(dirPath)
-    }
-    val extension = multipartFile.originalFilename!!.substringAfterLast('.')
-    isFileExtensionSupported(multipartFile)
-
-    val uniqueFileName = generateUniqueFileName(userId, extension)
-    val filePath = dirPath.resolve(uniqueFileName)
-    multipartFile.transferTo(filePath.toFile())
-
-    return uniqueFileName
-  }
-
-  private fun isFileExtensionSupported(multipartFile: MultipartFile) {
-    val supportedExtensions = listOf("image/png", "image/jpeg")
-    if (multipartFile.contentType !in supportedExtensions) {
-      throw ServiceException(UserErrorCode.EXTENSION_NOT_SUPPORTED)
-    }
-  }
-
-  private fun generateUniqueFileName(
-    userId: Long,
-    extension: String,
-  ): String {
-    val timeStamp = SimpleDateFormat("yyMMddHHmmss").format(Date())
-    return "$timeStamp$userId.$extension"
   }
 }

@@ -8,9 +8,7 @@ import io.kotest.matchers.shouldBe
 import kpring.core.global.exception.CommonErrorCode
 import kpring.core.global.exception.ServiceException
 import kpring.server.adapter.output.mongo.entity.ServerEntity
-import kpring.server.adapter.output.mongo.entity.ServerUserEntity
 import kpring.server.adapter.output.mongo.repository.ServerRepository
-import kpring.server.domain.ServerUser
 import kpring.test.testcontainer.SpringTestContext
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ContextConfiguration
@@ -37,13 +35,10 @@ class GetServerPortTest(
 
     it("저장된 서버의 정보를 조회할 수 있다.") {
       // given
-      val serverUserEntities =
-        mutableListOf(
-          ServerUserEntity("id", "name", "/path"),
-        )
+      val userIds = mutableListOf("id")
       val serverEntity =
         serverRepository.save(
-          ServerEntity(name = "test", users = serverUserEntities),
+          ServerEntity(name = "test", users = userIds),
         )
 
       // when
@@ -52,7 +47,7 @@ class GetServerPortTest(
       // then
       server.name shouldBe "test"
       server.users shouldHaveSize 1
-      server.users shouldContain ServerUser("id", "name", "/path")
+      server.users shouldContain "id"
     }
 
     it("존재하지 않은 서버를 조회하면 예외가 발생한다.") {
@@ -69,11 +64,10 @@ class GetServerPortTest(
     it("유저가 속한 서버 목록을 조회할 수 있다.") {
       // given
       val userId = "test-user"
-      val serverUserEntities =
-        mutableListOf(ServerUserEntity(userId, "name", "/path"))
+      val userIds = mutableListOf(userId)
 
       repeat(2) {
-        serverRepository.save(ServerEntity(name = "test$it", users = serverUserEntities))
+        serverRepository.save(ServerEntity(name = "test$it", users = userIds))
       }
 
       // when
@@ -83,7 +77,7 @@ class GetServerPortTest(
       servers shouldHaveSize 2
       servers.forEach {
         it.users shouldHaveSize 1
-        it.users shouldContain ServerUser(userId, "name", "/path")
+        it.users shouldContain userId
       }
     }
   })

@@ -1,5 +1,4 @@
 import { Card, CardContent, CardMedia, Typography } from "@mui/material";
-import { serverData } from "../../utils/fakeData";
 import FavoriteStar from "./FavoriteStar";
 
 const ServerCard = ({

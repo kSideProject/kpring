@@ -41,9 +41,8 @@ export const ServerMap = forwardRef<ServerMapTypes, ServerMapProps>(
         document.getElementById("zoom-in")?.addEventListener("click", () => {
           if (mapRef.current) {
             const mainCamera = mapRef.current.scene.scenes[1].cameras.main;
-            console.log(mainCamera);
             if (mainCamera) {
-              mainCamera.setZoom(mainCamera.zoom + 0.03);
+              mainCamera.setZoom(mainCamera.zoom + 0.05);
             }
           }
         });
@@ -52,7 +51,7 @@ export const ServerMap = forwardRef<ServerMapTypes, ServerMapProps>(
           if (mapRef.current) {
             const mainCamera = mapRef.current.scene.scenes[1].cameras.main;
             if (mainCamera) {
-              mainCamera.setZoom(mainCamera.zoom - 0.03);
+              mainCamera.setZoom(mainCamera.zoom - 0.05);
             }
           }
         });
@@ -97,7 +96,9 @@ export const ServerMap = forwardRef<ServerMapTypes, ServerMapProps>(
           <div id="zoom-out" className="cursor-pointer">
             축소
           </div>
-          <div>드래그</div>
+          <div id="drag" className="cursor-pointer">
+            드래그
+          </div>
         </div>
       </div>
     );

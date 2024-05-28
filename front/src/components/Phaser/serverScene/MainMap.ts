@@ -5,6 +5,9 @@ export class MainMap extends Scene {
   private mapInstance!: Phaser.Game;
   private character!: Phaser.Physics.Arcade.Sprite;
   private keyboards!: Phaser.Types.Input.Keyboard.CursorKeys;
+  private isDragging: boolean = false;
+  private dragStartX: number = 0;
+  private dragStartY: number = 0;
 
   constructor() {
     super("MainMap");
@@ -88,12 +91,45 @@ export class MainMap extends Scene {
       layers.furnitureLayer = map.createLayer("furniture", furnitureTilset);
     }
 
+    // Collides Debug
+    layers.hillsLayer?.setCollisionByProperty({ collides: true });
+    layers.groundLayer?.setCollisionByProperty({ collides: true });
+    layers.fenceLayer?.setCollisionByProperty({ collides: true });
+    layers.furnitureLayer?.setCollisionByProperty({ collides: true });
+    layers.woodenHouseLayer?.setCollisionByProperty({ collides: true });
+
+    const debugGraphics = this.add.graphics().setAlpha(0.7);
+    layers.hillsLayer?.renderDebug(debugGraphics, {
+      tileColor: null,
+      collidingTileColor: new Phaser.Display.Color(243, 234, 48, 255),
+      faceColor: new Phaser.Display.Color(40, 39, 37, 255),
+    });
+
+    layers.groundLayer?.renderDebug(debugGraphics, {
+      tileColor: null,
+      collidingTileColor: new Phaser.Display.Color(243, 234, 48, 255),
+      faceColor: new Phaser.Display.Color(40, 39, 37, 255),
+    });
+
+    layers.fenceLayer?.renderDebug(debugGraphics, {
+      tileColor: null,
+      collidingTileColor: new Phaser.Display.Color(243, 234, 48, 255),
+      faceColor: new Phaser.Display.Color(40, 39, 37, 255),
+    });
+    layers.furnitureLayer?.renderDebug(debugGraphics, {
+      tileColor: null,
+      collidingTileColor: new Phaser.Display.Color(243, 234, 48, 255),
+      faceColor: new Phaser.Display.Color(40, 39, 37, 255),
+    });
+    layers.woodenHouseLayer?.renderDebug(debugGraphics, {
+      tileColor: null,
+      collidingTileColor: new Phaser.Display.Color(243, 234, 48, 255),
+      faceColor: new Phaser.Display.Color(40, 39, 37, 255),
+    });
+
     // 텍스처(캐릭터 이미지) 로드가 완료되었는지 확인
     this.load.on("complete", () => {
       if (this.textures.exists("basic_character")) {
-        const frames = this.textures.get("basic_character").getFrameNames();
-        console.log(`로드된 프레임: ${frames}`);
-
         // 텍스처 로드가 완료되면 캐릭터 생성
         this.character = this.physics.add.sprite(
           300,
@@ -154,12 +190,18 @@ export class MainMap extends Scene {
           repeat: -1,
         });
 
+        this.physics.add.collider(
+          this.character,
+          layers.hillsLayer as Phaser.Tilemaps.TilemapLayer
+        );
+
         this.keyboards = this.input.keyboard?.createCursorKeys()!;
         this.cameras.main.startFollow(this.character); // 캐릭터가 움직이는 방향으로 카메라도 함께 이동
       } else {
-        console.log("noooooo");
+        console.log("캐릭터 로드 실패!");
       }
     });
+
     this.load.start();
 
     // 초기 랜더링 맵 크기 지정
@@ -169,7 +211,47 @@ export class MainMap extends Scene {
     this.cameras.main.setBounds(0, 0, mapWidth, mapHeight);
     this.physics.world.setBounds(0, 0, mapWidth, mapHeight);
 
+    const dragElement = document.getElementById("drag");
+
+    if (dragElement) {
+      dragElement.addEventListener("mousedown", this.onDragStart.bind(this));
+      dragElement.addEventListener("mousemove", this.onDragMove.bind(this));
+      dragElement.addEventListener("mouseup", this.onDragEnd.bind(this));
+      dragElement.addEventListener("mouseleave", this.onDragEnd.bind(this));
+    }
+
     return layers;
+  }
+
+  onDragStart(this: MainMap, event: MouseEvent) {
+    this.isDragging = true;
+    this.dragStartX = event.clientX;
+    this.dragStartY = event.clientY;
+
+    const dragElement = event.target as HTMLElement;
+    dragElement.classList.add("dragging");
+  }
+
+  onDragMove(this: MainMap, event: MouseEvent) {
+    if (this.isDragging) {
+      const deltaX = this.dragStartX - event.clientX;
+      const deltaY = this.dragStartY - event.clientY;
+
+      if (this.cameras.main) {
+        console.log(deltaX, deltaY);
+        this.cameras.main.scrollX += deltaX;
+        this.cameras.main.scrollY += deltaY;
+      }
+
+      this.dragStartX = event.clientX;
+      this.dragStartY = event.clientY;
+    }
+  }
+
+  onDragEnd(this: MainMap, event: MouseEvent) {
+    this.isDragging = false;
+    const dragElement = event.target as HTMLElement;
+    dragElement.classList.remove("dragging");
   }
 
   update() {

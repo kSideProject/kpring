@@ -18,6 +18,7 @@ import kpring.core.auth.dto.response.TokenInfo
 import kpring.core.auth.enums.TokenType
 import kpring.core.global.dto.response.ApiResponse
 import kpring.test.restdoc.dsl.restDoc
+import kpring.test.restdoc.json.JsonDataType.*
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
@@ -103,8 +104,8 @@ class AuthControllerTest(
                   }
 
                   body {
-                    "id" type "String" mean "유저 식별 아이디"
-                    "nickname" type "String" mean "닉네임"
+                    "id" type Strings mean "유저 식별 아이디"
+                    "nickname" type Strings mean "닉네임"
                   }
                 }
 
@@ -115,10 +116,10 @@ class AuthControllerTest(
                   }
 
                   body {
-                    "accessToken" type "String" mean "jwt access token"
-                    "accessExpireAt" type "String" mean "jwt access token 만료시간입니다. 형식은 yyyy-MM-dd hh:mm:ss을 제공합니다."
-                    "refreshToken" type "String" mean "jwt refresh token"
-                    "refreshExpireAt" type "String" mean "jwt refresh token 만료시간 형식은 yyyy-MM-dd hh:mm:ss을 제공합니다."
+                    "accessToken" type Strings mean "jwt access token"
+                    "accessExpireAt" type Strings mean "jwt access token 만료시간입니다. 형식은 yyyy-MM-dd hh:mm:ss을 제공합니다."
+                    "refreshToken" type Strings mean "jwt refresh token"
+                    "refreshExpireAt" type Strings mean "jwt refresh token 만료시간 형식은 yyyy-MM-dd hh:mm:ss을 제공합니다."
                   }
                 }
               }
@@ -251,8 +252,8 @@ class AuthControllerTest(
                   }
 
                   body {
-                    "accessToken" type "String" mean "jwt access token"
-                    "accessExpireAt" type "String" mean "jwt access token 만료시간 형식은 yyyy-MM-dd hh:mm:ss을 제공합니다."
+                    "accessToken" type Strings mean "jwt access token"
+                    "accessExpireAt" type Strings mean "jwt access token 만료시간 형식은 yyyy-MM-dd hh:mm:ss을 제공합니다."
                   }
                 }
               }
@@ -336,8 +337,8 @@ class AuthControllerTest(
                 response {
                   header { "Content-type" mean "entity type" }
                   body {
-                    "data.type" type "String" mean "ACCESS  또는 REFRESH 값을 가지며 검증한 토큰의 타입입니다. 만약 유효하지 않은 토큰이라면 존재하지 않습니다."
-                    "data.userId" type "String" mean "토큰에 저장된 유저의 id"
+                    "data.type" type Strings mean "ACCESS  또는 REFRESH 값을 가지며 검증한 토큰의 타입입니다. 만약 유효하지 않은 토큰이라면 존재하지 않습니다."
+                    "data.userId" type Strings mean "토큰에 저장된 유저의 id"
                   }
                 }
               }

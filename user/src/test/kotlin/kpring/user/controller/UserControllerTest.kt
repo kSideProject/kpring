@@ -447,7 +447,7 @@ class UserControllerTest(
               }
               response {
                 body {
-                  "data.userId" type Long mean "사용자 아이디"
+                  "data.userId" type "String" mean "사용자 아이디"
                   "data.email" type "String" mean "이메일"
                   "data.username" type "String" mean "닉네임"
                 }

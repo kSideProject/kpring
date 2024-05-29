@@ -3,6 +3,8 @@ import { Layers } from "../../../types/server";
 
 export class MainMap extends Scene {
   private mapInstance!: Phaser.Game;
+  private character!: Phaser.Physics.Arcade.Sprite;
+  private keyboards!: Phaser.Types.Input.Keyboard.CursorKeys;
 
   constructor() {
     super("MainMap");
@@ -86,6 +88,80 @@ export class MainMap extends Scene {
       layers.furnitureLayer = map.createLayer("furniture", furnitureTilset);
     }
 
+    // 텍스처(캐릭터 이미지) 로드가 완료되었는지 확인
+    this.load.on("complete", () => {
+      if (this.textures.exists("basic_character")) {
+        const frames = this.textures.get("basic_character").getFrameNames();
+        console.log(`로드된 프레임: ${frames}`);
+
+        // 텍스처 로드가 완료되면 캐릭터 생성
+        this.character = this.physics.add.sprite(
+          300,
+          300,
+          "basic_character", // preload파일에서 atlas의 key값과 동일한 key값
+          "move-down-3.png" // 움직이지 않는 상태의 기본 캐릭터
+        );
+
+        // Move-Down
+        this.anims.create({
+          key: "basic_character_move_down",
+          frames: this.anims.generateFrameNames("basic_character", {
+            start: 1,
+            end: 4,
+            prefix: "move-down-",
+            suffix: ".png",
+          }),
+          frameRate: 15,
+          repeat: -1,
+        });
+
+        // Move-Up
+        this.anims.create({
+          key: "basic_character_move_up",
+          frames: this.anims.generateFrameNames("basic_character", {
+            start: 1,
+            end: 4,
+            prefix: "move-up-",
+            suffix: ".png",
+          }),
+          frameRate: 15,
+          repeat: -1,
+        });
+
+        // Move-Left
+        this.anims.create({
+          key: "basic_character_move_left",
+          frames: this.anims.generateFrameNames("basic_character", {
+            start: 1,
+            end: 4,
+            prefix: "move-left-",
+            suffix: ".png",
+          }),
+          frameRate: 15,
+          repeat: -1,
+        });
+
+        // Move-Right
+        this.anims.create({
+          key: "basic_character_move_right",
+          frames: this.anims.generateFrameNames("basic_character", {
+            start: 1,
+            end: 4,
+            prefix: "move-right-",
+            suffix: ".png",
+          }),
+          frameRate: 15,
+          repeat: -1,
+        });
+
+        this.keyboards = this.input.keyboard?.createCursorKeys()!;
+      } else {
+        console.log("noooooo");
+      }
+    });
+
+    this.load.start();
+
     // 초기 랜더링 맵 크기 지정
     const mapWidth = map.widthInPixels;
     const mapHeight = map.heightInPixels;
@@ -131,6 +207,34 @@ export class MainMap extends Scene {
     if (pointer.prevPosition) {
       this.cameras.main.scrollX -= (pointer.x - pointer.prevPosition.x) * 1.5;
       this.cameras.main.scrollY -= (pointer.y - pointer.prevPosition.y) * 1.5;
+    }
+  }
+
+  update() {
+    if (!this.character) {
+      console.log(this.character);
+      return;
+    }
+
+    this.character.setVelocity(0);
+
+    if (this.keyboards.down.isDown) {
+      this.character.setVelocityY(100);
+      this.character.anims.play("basic_character_move_down", true);
+    }
+    if (this.keyboards.up.isDown) {
+      this.character.setVelocityY(-100);
+      this.character.anims.play("basic_character_move_up", true);
+    }
+    if (this.keyboards.left.isDown) {
+      this.character.setVelocityX(-100);
+      this.character.anims.play("basic_character_move_left", true);
+    }
+    if (this.keyboards.right.isDown) {
+      this.character.setVelocityX(100);
+      this.character.anims.play("basic_character_move_right", true);
+    } else {
+      this.character.anims.stop();
     }
   }
 }

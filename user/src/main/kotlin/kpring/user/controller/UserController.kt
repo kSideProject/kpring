@@ -44,7 +44,7 @@ class UserController(
   fun updateUserProfile(
     @RequestHeader("Authorization") token: String,
     @PathVariable userId: Long,
-    @RequestPart(value = "json") request: UpdateUserProfileRequest,
+    @Validated @RequestPart(value = "json") request: UpdateUserProfileRequest,
     @RequestPart(value = "file") multipartFile: MultipartFile,
   ): ResponseEntity<ApiResponse<UpdateUserProfileResponse>> {
     val validatedUserId = checkIfAccessTokenAndGetUserId(token)

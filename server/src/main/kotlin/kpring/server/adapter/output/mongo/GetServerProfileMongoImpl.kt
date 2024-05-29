@@ -115,10 +115,9 @@ class GetServerProfileMongoImpl(
     serverIds: List<String>,
     condition: Collection<String>?,
   ): BooleanExpression {
-    if (!condition.isNullOrEmpty())
-      {
-        return this.id.`in`(serverIds.filter { condition.contains(it) })
-      }
+    if (!condition.isNullOrEmpty()) {
+      return this.id.`in`(serverIds.filter { condition.contains(it) })
+    }
     return this.id.`in`(serverIds)
   }
 }

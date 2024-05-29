@@ -5,6 +5,9 @@ export class MainMap extends Scene {
   private mapInstance!: Phaser.Game;
   private character!: Phaser.Physics.Arcade.Sprite;
   private keyboards!: Phaser.Types.Input.Keyboard.CursorKeys;
+  private isDragging: boolean = false;
+  private dragStartX: number = 0;
+  private dragStartY: number = 0;
 
   constructor() {
     super("MainMap");
@@ -88,12 +91,45 @@ export class MainMap extends Scene {
       layers.furnitureLayer = map.createLayer("furniture", furnitureTilset);
     }
 
+    // Collides Debug
+    layers.hillsLayer?.setCollisionByProperty({ collides: true });
+    layers.groundLayer?.setCollisionByProperty({ collides: true });
+    layers.fenceLayer?.setCollisionByProperty({ collides: true });
+    layers.furnitureLayer?.setCollisionByProperty({ collides: true });
+    layers.woodenHouseLayer?.setCollisionByProperty({ collides: true });
+
+    const debugGraphics = this.add.graphics().setAlpha(0.7);
+    layers.hillsLayer?.renderDebug(debugGraphics, {
+      tileColor: null,
+      collidingTileColor: new Phaser.Display.Color(243, 234, 48, 255),
+      faceColor: new Phaser.Display.Color(40, 39, 37, 255),
+    });
+
+    layers.groundLayer?.renderDebug(debugGraphics, {
+      tileColor: null,
+      collidingTileColor: new Phaser.Display.Color(243, 234, 48, 255),
+      faceColor: new Phaser.Display.Color(40, 39, 37, 255),
+    });
+
+    layers.fenceLayer?.renderDebug(debugGraphics, {
+      tileColor: null,
+      collidingTileColor: new Phaser.Display.Color(243, 234, 48, 255),
+      faceColor: new Phaser.Display.Color(40, 39, 37, 255),
+    });
+    layers.furnitureLayer?.renderDebug(debugGraphics, {
+      tileColor: null,
+      collidingTileColor: new Phaser.Display.Color(243, 234, 48, 255),
+      faceColor: new Phaser.Display.Color(40, 39, 37, 255),
+    });
+    layers.woodenHouseLayer?.renderDebug(debugGraphics, {
+      tileColor: null,
+      collidingTileColor: new Phaser.Display.Color(243, 234, 48, 255),
+      faceColor: new Phaser.Display.Color(40, 39, 37, 255),
+    });
+
     // 텍스처(캐릭터 이미지) 로드가 완료되었는지 확인
     this.load.on("complete", () => {
       if (this.textures.exists("basic_character")) {
-        const frames = this.textures.get("basic_character").getFrameNames();
-        console.log(`로드된 프레임: ${frames}`);
-
         // 텍스처 로드가 완료되면 캐릭터 생성
         this.character = this.physics.add.sprite(
           300,
@@ -154,9 +190,15 @@ export class MainMap extends Scene {
           repeat: -1,
         });
 
+        this.physics.add.collider(
+          this.character,
+          layers.hillsLayer as Phaser.Tilemaps.TilemapLayer
+        );
+
         this.keyboards = this.input.keyboard?.createCursorKeys()!;
+        this.cameras.main.startFollow(this.character); // 캐릭터가 움직이는 방향으로 카메라도 함께 이동
       } else {
-        console.log("noooooo");
+        console.log("캐릭터 로드 실패!");
       }
     });
 
@@ -169,50 +211,52 @@ export class MainMap extends Scene {
     this.cameras.main.setBounds(0, 0, mapWidth, mapHeight);
     this.physics.world.setBounds(0, 0, mapWidth, mapHeight);
 
-    if (this.input.mouse) {
-      this.input.mouse.enabled = true;
+    const dragElement = document.getElementById("drag");
+
+    if (dragElement) {
+      dragElement.addEventListener("mousedown", this.onDragStart.bind(this));
+      dragElement.addEventListener("mousemove", this.onDragMove.bind(this));
+      dragElement.addEventListener("mouseup", this.onDragEnd.bind(this));
+      dragElement.addEventListener("mouseleave", this.onDragEnd.bind(this));
     }
-
-    const followSprite = this.add.sprite(0, 0, "none");
-    this.cameras.main.startFollow(followSprite);
-
-    this.input.on(
-      "pointerdown",
-      (pointer: Phaser.Input.Pointer) => {
-        this.cameras.main.stopFollow(); // 카메라 따라가기 중지
-        this.input.on("pointermove", this.onDrag, this);
-      },
-      this
-    );
-
-    this.input.on(
-      "pointerup",
-      (pointer: Phaser.Input.Pointer) => {
-        this.input.off("pointermove", this.onDrag, this); // 드래그 이벤트 해제
-        // 스프라이트를 새로운 위치로 이동시켜 카메라가 따라가도록 설정
-        followSprite.setPosition(
-          this.input.x + this.cameras.main.scrollX,
-          this.input.y + this.cameras.main.scrollY
-        );
-        this.cameras.main.startFollow(followSprite); // 카메라 따라가기 재시작
-      },
-      this
-    );
 
     return layers;
   }
 
-  // 마우스 이동에 따라 카메라를 이동시킴
-  onDrag(this: Phaser.Scene, pointer: Phaser.Input.Pointer) {
-    if (pointer.prevPosition) {
-      this.cameras.main.scrollX -= (pointer.x - pointer.prevPosition.x) * 1.5;
-      this.cameras.main.scrollY -= (pointer.y - pointer.prevPosition.y) * 1.5;
+  onDragStart(this: MainMap, event: MouseEvent) {
+    this.isDragging = true;
+    this.dragStartX = event.clientX;
+    this.dragStartY = event.clientY;
+
+    const dragElement = event.target as HTMLElement;
+    dragElement.classList.add("dragging");
+  }
+
+  onDragMove(this: MainMap, event: MouseEvent) {
+    if (this.isDragging) {
+      const deltaX = this.dragStartX - event.clientX;
+      const deltaY = this.dragStartY - event.clientY;
+
+      if (this.cameras.main) {
+        console.log(deltaX, deltaY);
+        this.cameras.main.scrollX += deltaX;
+        this.cameras.main.scrollY += deltaY;
+      }
+
+      this.dragStartX = event.clientX;
+      this.dragStartY = event.clientY;
     }
+  }
+
+  onDragEnd(this: MainMap, event: MouseEvent) {
+    this.isDragging = false;
+    const dragElement = event.target as HTMLElement;
+    dragElement.classList.remove("dragging");
   }
 
   update() {
     if (!this.character) {
-      console.log(this.character);
+      // 만약 캐리터가 로드되지 않았다면 아무것도 반환하지 않는다
       return;
     }
 

@@ -1,4 +1,3 @@
-import React from "react";
 import StarBorderRoundedIcon from "@mui/icons-material/StarBorderRounded";
 import StarRoundedIcon from "@mui/icons-material/StarRounded";
 import { useIsFavorite } from "../../hooks/FavoriteServer";
@@ -9,13 +8,9 @@ const FavoriteStar = ({ id }: { id: string }) => {
   const setFavorite = useFavoriteStore((state) => state.setFavorites);
 
   return (
-    <>
-      {!isFavorite ? (
-        <StarBorderRoundedIcon onClick={() => setFavorite(id, !isFavorite)} />
-      ) : (
-        <StarRoundedIcon onClick={() => setFavorite(id, !isFavorite)} />
-      )}
-    </>
+    <div onClick={() => setFavorite(id, !isFavorite)}>
+      {!isFavorite ? <StarBorderRoundedIcon /> : <StarRoundedIcon />}
+    </div>
   );
 };
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { ServerInforProps } from "../../types/layout";
 import {
   Avatar,

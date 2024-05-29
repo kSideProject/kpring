@@ -1,4 +1,3 @@
-import React from "react";
 import ServerCard from "./ServerCard";
 import { useFilterFavorites } from "../../hooks/FavoriteServer";
 

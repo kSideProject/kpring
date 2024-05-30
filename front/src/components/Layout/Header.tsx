@@ -47,7 +47,7 @@ const Header = () => {
 
   return (
     <header>
-      <AppBar position="fixed" open={open}>
+      {/* <AppBar position="fixed" open={open}>
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
           <Typography variant="h6"> Dicotown</Typography>
           <Box sx={{ display: "flex", gap: 2 }}>
@@ -84,7 +84,7 @@ const Header = () => {
         anchor="right"
         open={openDrawer === "message"}>
         <MessageRightSideBar close={handleDrawerClose} />
-      </Drawer>
+      </Drawer> */}
     </header>
   );
 };

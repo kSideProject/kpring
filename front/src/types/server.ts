@@ -24,4 +24,5 @@ export interface Layers {
   eggsLayer?: Phaser.Tilemaps.TilemapLayer | null;
   chickenLayer?: Phaser.Tilemaps.TilemapLayer | null;
   furnitureLayer?: Phaser.Tilemaps.TilemapLayer | null;
+  wallsTileset?: Phaser.Tilemaps.TilemapLayer | null;
 }

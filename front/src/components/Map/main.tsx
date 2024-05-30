@@ -1,6 +1,6 @@
 import { Game } from "phaser";
-import { Preloader } from "./serverScene/Preloader";
-import { MainMap } from "./serverScene/MainMap";
+import { Preloader } from "./ServerMap/Preloader";
+import { MainMap } from "./ServerMap/MainMap";
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO, // Phaser가 웹GL 또는 캔버스를 자동으로 선택해서 렌더링

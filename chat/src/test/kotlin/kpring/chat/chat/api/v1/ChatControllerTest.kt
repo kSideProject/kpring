@@ -85,7 +85,12 @@ class ChatControllerTest(
             .bodyValue(request)
             .exchange()
 
-        val docs = result.expectStatus().isCreated().expectBody().json(om.writeValueAsString(ApiResponse(data = data, status = 201)))
+        val docs =
+          result
+            .expectStatus()
+            .isCreated()
+            .expectBody()
+            .json(om.writeValueAsString(ApiResponse(data = data, status = 201)))
 
         // Then
         docs.restDoc(

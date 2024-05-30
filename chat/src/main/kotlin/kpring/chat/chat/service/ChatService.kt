@@ -10,7 +10,6 @@ import kpring.chat.global.exception.GlobalException
 import kpring.core.chat.chat.dto.request.ChatType
 import kpring.core.chat.chat.dto.request.CreateChatRequest
 import kpring.core.chat.chat.dto.response.ChatResponse
-import kpring.core.global.dto.response.ApiResponse
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
@@ -37,7 +36,7 @@ class ChatService(
   fun createRoomChat(
     request: CreateChatRequest,
     userId: String,
-  ): Boolean  {
+  ): Boolean {
     val chat =
       roomChatRepository.save(
         Chat(

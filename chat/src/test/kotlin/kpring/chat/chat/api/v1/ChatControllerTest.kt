@@ -64,7 +64,7 @@ class ChatControllerTest(
         val type = ChatType.Room
         val request = CreateChatRequest(content = content, type = type, id = id)
 
-        val data = ApiResponse(data = null, status = 201)
+        val data = true
 
         every { authClient.getTokenInfo(any()) } returns
           ApiResponse(
@@ -85,7 +85,7 @@ class ChatControllerTest(
             .bodyValue(request)
             .exchange()
 
-        val docs = result.expectStatus().isCreated().expectBody().json(om.writeValueAsString(data))
+        val docs = result.expectStatus().isCreated().expectBody().json(om.writeValueAsString(ApiResponse(data = data, status = 201)))
 
         // Then
         docs.restDoc(
@@ -94,6 +94,7 @@ class ChatControllerTest(
         ) {
           response {
             body {
+              "data" type JsonDataType.Booleans mean "create chat method in service layer went well"
               "status" type JsonDataType.Integers mean "successfully created a chat"
             }
           }

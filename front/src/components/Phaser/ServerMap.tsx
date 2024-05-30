@@ -36,6 +36,25 @@ export const ServerMap = forwardRef<ServerMapTypes, ServerMapProps>(
 
         resizeMap();
         window.addEventListener("resize", resizeMap, false);
+
+        // 확대 & 축소 이벤트
+        document.getElementById("zoom-in")?.addEventListener("click", () => {
+          if (mapRef.current) {
+            const mainCamera = mapRef.current.scene.scenes[1].cameras.main;
+            if (mainCamera) {
+              mainCamera.setZoom(mainCamera.zoom + 0.05);
+            }
+          }
+        });
+
+        document.getElementById("zoom-out")?.addEventListener("click", () => {
+          if (mapRef.current) {
+            const mainCamera = mapRef.current.scene.scenes[1].cameras.main;
+            if (mainCamera) {
+              mainCamera.setZoom(mainCamera.zoom - 0.05);
+            }
+          }
+        });
       }
 
       // 컴포넌트가 언마운트될 실행되는 함수
@@ -68,6 +87,20 @@ export const ServerMap = forwardRef<ServerMapTypes, ServerMapProps>(
       };
     }, [currentActiveScene, ref]);
 
-    return <div id="map-container"></div>;
+    return (
+      <div id="map-container" className="relative">
+        <div className="absolute flex left-36 top-20">
+          <div id="zoom-in" className="cursor-pointer">
+            확대
+          </div>
+          <div id="zoom-out" className="cursor-pointer">
+            축소
+          </div>
+          <div id="drag" className="cursor-pointer">
+            드래그
+          </div>
+        </div>
+      </div>
+    );
   }
 );

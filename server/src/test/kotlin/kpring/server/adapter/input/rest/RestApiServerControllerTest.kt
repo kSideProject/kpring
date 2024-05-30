@@ -17,10 +17,13 @@ import kpring.core.server.dto.ServerInfo
 import kpring.core.server.dto.ServerSimpleInfo
 import kpring.core.server.dto.request.AddUserAtServerRequest
 import kpring.core.server.dto.request.CreateServerRequest
+import kpring.core.server.dto.request.GetServerCondition
 import kpring.core.server.dto.response.CreateServerResponse
 import kpring.server.application.service.ServerService
 import kpring.server.config.CoreConfiguration
 import kpring.test.restdoc.dsl.restDoc
+import kpring.test.restdoc.json.JsonDataType.*
+import kpring.test.web.URLBuilder
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.context.annotation.Import
@@ -102,14 +105,14 @@ class RestApiServerControllerTest(
           request {
             header { "Authorization" mean "jwt access token" }
             body {
-              "serverName" type "String" mean "생성할 서버의 이름"
+              "serverName" type Strings mean "생성할 서버의 이름"
             }
           }
 
           response {
             body {
-              "data.serverId" type "String" mean "서버 id"
-              "data.serverName" type "String" mean "생성된 서버 이름"
+              "data.serverId" type Strings mean "서버 id"
+              "data.serverName" type Strings mean "생성된 서버 이름"
             }
           }
         }
@@ -149,9 +152,9 @@ class RestApiServerControllerTest(
 
           response {
             body {
-              "data.id" type "String" mean "서버 id"
-              "data.name" type "String" mean "생성된 서버 이름"
-              "data.users" type "Array" mean "서버에 가입된 유저 목록"
+              "data.id" type Strings mean "서버 id"
+              "data.name" type Strings mean "생성된 서버 이름"
+              "data.users" type Arrays mean "서버에 가입된 유저 목록"
             }
           }
         }
@@ -187,7 +190,7 @@ class RestApiServerControllerTest(
 
           response {
             body {
-              "message" type "String" mean "실패 관련 메시지"
+              "message" type Strings mean "실패 관련 메시지"
             }
           }
         }
@@ -225,9 +228,9 @@ class RestApiServerControllerTest(
             header { "Authorization" mean "jwt access token" }
             path { "serverId" mean "서버 id" }
             body {
-              "userId" type "String" mean "가입할 유저 id"
-              "userName" type "String" mean "가입할 유저 이름"
-              "profileImage" type "String" mean "가입할 유저 프로필 이미지"
+              "userId" type Strings mean "가입할 유저 id"
+              "userName" type Strings mean "가입할 유저 이름"
+              "profileImage" type Strings mean "가입할 유저 프로필 이미지"
             }
           }
         }
@@ -285,20 +288,25 @@ class RestApiServerControllerTest(
         val userId = "test user id"
         val data =
           listOf(
-            ServerSimpleInfo(id = "server1", name = "test_server"),
-            ServerSimpleInfo(id = "server2", name = "test_server"),
+            ServerSimpleInfo(id = "server1", name = "test_server", bookmarked = false),
+            ServerSimpleInfo(id = "server2", name = "test_server", bookmarked = true),
           )
+        val condition = GetServerCondition(serverIds = listOf("server1", "server2"))
 
         every { authClient.getTokenInfo(any()) } returns
           ApiResponse(
             data = TokenInfo(TokenType.ACCESS, userId),
           )
-        every { serverService.getServerList(userId) } returns data
+        every { serverService.getServerList(any(), eq(userId)) } returns data
 
         // when
         val result =
           webTestClient.get()
-            .uri(url)
+            .uri(
+              URLBuilder(url)
+                .query("serverIds", condition.serverIds!!)
+                .build(),
+            )
             .header("Authorization", "Bearer test_token")
             .exchange()
 
@@ -315,13 +323,15 @@ class RestApiServerControllerTest(
           description = "서버 목록 조회 api",
         ) {
           request {
+            query { "serverIds" mean "조회시 해당 서버 목록만을 조회합니다. 값이 없다면 조건은 적용되지 않습니다." }
             header { "Authorization" mean "jwt access token" }
           }
 
           response {
             body {
-              "data[].id" type "String" mean "서버 id"
-              "data[].name" type "String" mean "서버 이름"
+              "data[].id" type Strings mean "서버 id"
+              "data[].name" type Strings mean "서버 이름"
+              "data[].bookmarked" type Booleans mean "북마크 여부"
             }
           }
         }

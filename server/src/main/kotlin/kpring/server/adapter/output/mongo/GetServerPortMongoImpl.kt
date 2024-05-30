@@ -20,9 +20,8 @@ class GetServerPortMongoImpl(
     return Server(
       id = serverEntity.id,
       name = serverEntity.name,
-      users = serverEntity.users.map { it.toDomain() }.toMutableSet(),
+      users = serverEntity.users.toMutableSet(),
       invitedUserIds = serverEntity.invitedUserIds.toMutableSet(),
-      authorities = serverEntity.authorities.toMap(),
     )
   }
 
@@ -30,14 +29,14 @@ class GetServerPortMongoImpl(
     val server = QServerEntity.serverEntity
     val servers =
       serverRepository.findAll(
-        server.users.any().id.eq(userId),
+        server.users.any().eq(userId),
       )
 
     return servers.map { entity ->
       Server(
         id = entity.id,
         name = entity.name,
-        users = entity.users.map { it.toDomain() }.toMutableSet(),
+        users = entity.users.toMutableSet(),
         invitedUserIds = entity.invitedUserIds.toMutableSet(),
       )
     }

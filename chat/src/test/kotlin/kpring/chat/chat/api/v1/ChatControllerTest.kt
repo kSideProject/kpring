@@ -76,7 +76,7 @@ class ChatControllerTest(
               ),
           )
 
-        every { chatService.createChat(request, CommonTest.TEST_USER_ID) } returns data
+        every { chatService.createRoomChat(request, CommonTest.TEST_USER_ID) } returns data
 
         // When
         val result =
@@ -90,7 +90,7 @@ class ChatControllerTest(
             .expectStatus()
             .isCreated()
             .expectBody()
-            .json(om.writeValueAsString(ApiResponse(data = data, status = 201)))
+            .json(om.writeValueAsString(ApiResponse(data = null, status = 201)))
 
         // Then
         docs.restDoc(
@@ -99,7 +99,6 @@ class ChatControllerTest(
         ) {
           response {
             body {
-              "data" type JsonDataType.Booleans mean "create chat method in service layer went well"
               "status" type JsonDataType.Integers mean "successfully created a chat"
             }
           }

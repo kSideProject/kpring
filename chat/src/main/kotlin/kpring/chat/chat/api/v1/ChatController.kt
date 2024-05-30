@@ -22,7 +22,7 @@ class ChatController(
   ): ResponseEntity<*> {
     val userId = authClient.getTokenInfo(token).data!!.userId
     val result = chatService.createChat(request, userId)
-    return ResponseEntity(ApiResponse(data = null, status = 201), HttpStatus.CREATED)
+    return ResponseEntity(ApiResponse(data = result, status = 201), HttpStatus.CREATED)
   }
 
   @GetMapping("/chat/{chatRoomId}/{page}")

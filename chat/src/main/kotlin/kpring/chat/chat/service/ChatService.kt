@@ -7,7 +7,6 @@ import kpring.chat.chat.repository.ServerChatRepository
 import kpring.chat.chatroom.repository.ChatRoomRepository
 import kpring.chat.global.exception.ErrorCode
 import kpring.chat.global.exception.GlobalException
-import kpring.core.chat.chat.dto.request.ChatType
 import kpring.core.chat.chat.dto.request.CreateChatRequest
 import kpring.core.chat.chat.dto.response.ChatResponse
 import org.springframework.beans.factory.annotation.Value
@@ -22,17 +21,6 @@ class ChatService(
   private val chatRoomRepository: ChatRoomRepository,
   @Value("\${page.size}") val pageSize: Int = 100,
 ) {
-  fun createChat(
-    request: CreateChatRequest,
-    userId: String,
-  ): Boolean {
-    if (request.type == ChatType.Room) {
-      return createRoomChat(request, userId)
-    } else {
-      return createServerChat(request, userId)
-    }
-  }
-
   fun createRoomChat(
     request: CreateChatRequest,
     userId: String,

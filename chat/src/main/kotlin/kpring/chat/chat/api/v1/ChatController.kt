@@ -2,6 +2,7 @@ package kpring.chat.chat.api.v1
 
 import kpring.chat.chat.service.ChatService
 import kpring.core.auth.client.AuthClient
+import kpring.core.chat.chat.dto.request.ChatType
 import kpring.core.chat.chat.dto.request.CreateChatRequest
 import kpring.core.global.dto.response.ApiResponse
 import org.springframework.http.HttpStatus
@@ -21,8 +22,14 @@ class ChatController(
     @RequestHeader("Authorization") token: String,
   ): ResponseEntity<*> {
     val userId = authClient.getTokenInfo(token).data!!.userId
-    val result = chatService.createChat(request, userId)
-    return ResponseEntity(ApiResponse(data = result, status = 201), HttpStatus.CREATED)
+
+    if (request.type == ChatType.Room) {
+      chatService.createRoomChat(request, userId)
+    } else {
+      chatService.createServerChat(request, userId)
+    }
+
+    return ResponseEntity(ApiResponse(data = null, status = 201), HttpStatus.CREATED)
   }
 
   @GetMapping("/chat/{chatRoomId}/{page}")

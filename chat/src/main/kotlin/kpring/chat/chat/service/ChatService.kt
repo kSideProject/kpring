@@ -26,12 +26,9 @@ class ChatService(
   fun createChat(
     request: CreateChatRequest,
     userId: String,
-  ): ApiResponse<*> {
+  ): Boolean {
     if (request.type == ChatType.Room) {
-      return createRoomChat(
-        request,
-        userId,
-      )
+      return createRoomChat(request, userId)
     } else {
       return createServerChat(request, userId)
     }
@@ -40,7 +37,7 @@ class ChatService(
   fun createRoomChat(
     request: CreateChatRequest,
     userId: String,
-  ): ApiResponse<*> {
+  ): Boolean  {
     val chat =
       roomChatRepository.save(
         Chat(
@@ -49,8 +46,22 @@ class ChatService(
           content = request.content,
         ),
       )
+    return true
+  }
 
-    return ApiResponse(data = null, status = 201)
+  fun createServerChat(
+    request: CreateChatRequest,
+    userId: String,
+  ): Boolean {
+    val chat =
+      serverChatRepository.save(
+        ServerChat(
+          userId = userId,
+          serverId = request.id,
+          content = request.content,
+        ),
+      )
+    return true
   }
 
   fun getChatsByChatRoom(
@@ -65,21 +76,6 @@ class ChatService(
     val chats: List<Chat> = roomChatRepository.findAllByRoomId(chatRoomId, pageable)
 
     return convertChatsToResponses(chats)
-  }
-
-  fun createServerChat(
-    request: CreateChatRequest,
-    userId: String,
-  ): ApiResponse<*> {
-    val chat =
-      serverChatRepository.save(
-        ServerChat(
-          userId = userId,
-          serverId = request.id,
-          content = request.content,
-        ),
-      )
-    return ApiResponse(data = null, status = 201)
   }
 
   fun checkIfAuthorized(

@@ -7,9 +7,10 @@ import kpring.chat.chat.repository.ServerChatRepository
 import kpring.chat.chatroom.repository.ChatRoomRepository
 import kpring.chat.global.exception.ErrorCode
 import kpring.chat.global.exception.GlobalException
-import kpring.core.chat.chat.dto.request.CreateRoomChatRequest
-import kpring.core.chat.chat.dto.request.CreateServerChatRequest
+import kpring.core.chat.chat.dto.request.ChatType
+import kpring.core.chat.chat.dto.request.CreateChatRequest
 import kpring.core.chat.chat.dto.response.ChatResponse
+import kpring.core.global.dto.response.ApiResponse
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
@@ -22,21 +23,34 @@ class ChatService(
   private val chatRoomRepository: ChatRoomRepository,
   @Value("\${page.size}") val pageSize: Int = 100,
 ) {
-  /*
-     business logic
-   */
-  fun createRoomChat(
-    request: CreateRoomChatRequest,
+  fun createChat(
+    request: CreateChatRequest,
     userId: String,
-  ) {
+  ): ApiResponse<*> {
+    if (request.type == ChatType.Room) {
+      return createRoomChat(
+        request,
+        userId,
+      )
+    } else {
+      return createServerChat(request, userId)
+    }
+  }
+
+  fun createRoomChat(
+    request: CreateChatRequest,
+    userId: String,
+  ): ApiResponse<*> {
     val chat =
       roomChatRepository.save(
         Chat(
           userId = userId,
-          roomId = request.room,
+          roomId = request.id,
           content = request.content,
         ),
       )
+
+    return ApiResponse(data = null, status = 201)
   }
 
   fun getChatsByChatRoom(
@@ -54,17 +68,18 @@ class ChatService(
   }
 
   fun createServerChat(
-    request: CreateServerChatRequest,
+    request: CreateChatRequest,
     userId: String,
-  ) {
+  ): ApiResponse<*> {
     val chat =
       serverChatRepository.save(
         ServerChat(
           userId = userId,
-          serverId = request.server,
+          serverId = request.id,
           content = request.content,
         ),
       )
+    return ApiResponse(data = null, status = 201)
   }
 
   fun checkIfAuthorized(

@@ -36,11 +36,8 @@ paths:
                 $ref: '#/components/schemas/api-v1-access_token260094762'
               examples:
                 post.v1.token:
-                  value: |-
-                    {
-                      "accessToken" : "testToken",
-                      "accessExpireAt" : "1900-01-01T00:00:00"
-                    }
+                  value: "{\r\n  \"accessToken\" : \"testToken\",\r\n  \"accessExpireAt\"\
+                    \ : \"1900-01-01T00:00:00\"\r\n}"
         "400":
           description: "400"
         "500":
@@ -49,8 +46,8 @@ paths:
     post:
       tags:
       - api
-      summary: 서버의 이상으로 인해서 토큰이 생성이 실패한 경우입니다.
-      description: 서버의 이상으로 인해서 토큰이 생성이 실패한 경우입니다.
+      summary: 토큰 생성
+      description: 토큰 생성
       operationId: post_api.v1.token
       parameters:
       - name: Content-Type
@@ -66,27 +63,15 @@ paths:
             schema:
               $ref: '#/components/schemas/api-v1-token-816804784'
             examples:
-              post_api.v1.token_500:
-                value: |-
-                  {
-                    "id" : "test",
-                    "nickname" : "mock user"
-                  }
               post_api.v1.token:
-                value: |-
-                  {
-                    "id" : "test",
-                    "nickname" : "mock user"
-                  }
+                value: "{\r\n  \"id\" : \"test\",\r\n  \"nickname\" : \"mock user\"\
+                  \r\n}"
               post_api.v1.token_400:
-                value: |-
-                  {
-                    "id" : "",
-                    "nickname" : ""
-                  }
+                value: "{\r\n  \"id\" : \"\",\r\n  \"nickname\" : \"\"\r\n}"
+              post_api.v1.token_500:
+                value: "{\r\n  \"id\" : \"test\",\r\n  \"nickname\" : \"mock user\"\
+                  \r\n}"
       responses:
-        "500":
-          description: "500"
         "200":
           description: "200"
           headers:
@@ -104,21 +89,20 @@ paths:
                 $ref: '#/components/schemas/api-v1-token-1585203635'
               examples:
                 post_api.v1.token:
-                  value: |-
-                    {
-                      "accessToken" : "Bearer access token",
-                      "accessExpireAt" : "2000-01-01T00:00:00",
-                      "refreshToken" : "Bearer refresh token",
-                      "refreshExpireAt" : "2000-01-01T00:01:00"
-                    }
+                  value: "{\r\n  \"accessToken\" : \"Bearer access token\",\r\n  \"\
+                    accessExpireAt\" : \"2000-01-01T00:00:00\",\r\n  \"refreshToken\"\
+                    \ : \"Bearer refresh token\",\r\n  \"refreshExpireAt\" : \"2000-01-01T00:01:00\"\
+                    \r\n}"
         "400":
           description: "400"
+        "500":
+          description: "500"
   /api/v2/validation:
     post:
       tags:
       - api
-      summary: 필요한 파라미터를 모두 입력하지 않은 사용자 실수인 경우
-      description: 필요한 파라미터를 모두 입력하지 않은 사용자 실수인 경우
+      summary: 토큰 검증
+      description: 토큰 검증
       operationId: post.v2.validation
       parameters:
       - name: Authorization
@@ -129,8 +113,6 @@ paths:
           type: string
         example: Bearer testtoken
       responses:
-        "400":
-          description: "400"
         "200":
           description: "200"
           headers:
@@ -144,13 +126,10 @@ paths:
                 $ref: '#/components/schemas/api-v2-validation1091437307'
               examples:
                 post.v2.validation200:
-                  value: |-
-                    {
-                      "data" : {
-                        "type" : "ACCESS",
-                        "userId" : "testUserId"
-                      }
-                    }
+                  value: "{\r\n  \"data\" : {\r\n    \"type\" : \"ACCESS\",\r\n  \
+                    \  \"userId\" : \"testUserId\"\r\n  }\r\n}"
+        "400":
+          description: "400"
         "500":
           description: "500"
   /api/v1/token/{jwtToken}:
@@ -168,10 +147,10 @@ paths:
         schema:
           type: string
       responses:
-        "400":
-          description: "400"
         "200":
           description: "200"
+        "400":
+          description: "400"
         "500":
           description: "500"
 components:

@@ -1,5 +1,4 @@
 import { Scene } from "phaser";
-import { Layers } from "../../../types/server";
 import { charanterAnimation, createCharacter } from "./Character";
 import { createLayers } from "./Layers";
 import { addCollider, debugCollision } from "./Debug";
@@ -42,6 +41,7 @@ export class MainMap extends Scene {
 
         this.keyboards = this.input.keyboard?.createCursorKeys()!; // 방향키로 캐리터 조정
         this.cameras.main.startFollow(this.character); // 캐릭터의 움직을 따라 카메라 움직임
+        this.cameras.main.setZoom(2);
 
         // 캐릭터가 접근할 수 없는 곳 블로킹
         if (layers) {

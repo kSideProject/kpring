@@ -8,12 +8,16 @@ export const createCharacter = (
 ): Phaser.Physics.Arcade.Sprite => {
   if (scene.textures.exists("basic_character")) {
     // "basic_character" 라는 텍스처 로드가 완료 되면 캐릭터 생성
-    return scene.physics.add.sprite(
+    const character = scene.physics.add.sprite(
       x, // 캐릭터가 생성되면 기본 x축의 위치
       y, // 캐릭터가 생성되면 기본 y축의 위치
       "basic_character", // preload파일에서 atlas의 key값과 동일한 keyㄴ값
       "move-down-2.png" // 움직이지 않는 상태의 기본 캐릭터
     );
+
+    character.setSize(10, 10); // 캐릭터 사이즈
+
+    return character;
   } else {
     throw new Error("캐릭터가 생성되지 않았습니다.");
   }
@@ -30,7 +34,7 @@ export const charanterAnimation = (scene: Scene) => {
       prefix: "move-down-",
       suffix: ".png",
     }),
-    frameRate: 15,
+    frameRate: 20,
     repeat: -1,
   });
   // Move-Up
@@ -42,7 +46,7 @@ export const charanterAnimation = (scene: Scene) => {
       prefix: "move-up-",
       suffix: ".png",
     }),
-    frameRate: 15,
+    frameRate: 20,
     repeat: -1,
   });
 
@@ -55,7 +59,7 @@ export const charanterAnimation = (scene: Scene) => {
       prefix: "move-left-",
       suffix: ".png",
     }),
-    frameRate: 15,
+    frameRate: 20,
     repeat: -1,
   });
 
@@ -68,7 +72,7 @@ export const charanterAnimation = (scene: Scene) => {
       prefix: "move-right-",
       suffix: ".png",
     }),
-    frameRate: 15,
+    frameRate: 20,
     repeat: -1,
   });
 };

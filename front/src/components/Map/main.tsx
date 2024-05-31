@@ -9,7 +9,7 @@ const config: Phaser.Types.Core.GameConfig = {
     // 물리 엔진 설정
     default: "arcade", // 충돌 감지와 기본적인 물리 효과 제공
     arcade: {
-      debug: false, // 디버그모드 활성화 시 충돌 영역과 물리 효과 확인하고 조정가능
+      debug: true, // 디버그모드 활성화 시 충돌 영역과 물리 효과 확인하고 조정가능
     },
   },
 };

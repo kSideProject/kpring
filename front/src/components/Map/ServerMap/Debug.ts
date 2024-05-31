@@ -5,11 +5,12 @@ import { Layers } from "../../../types/server";
 
 export const debugCollision = (scene: Scene, layers: Layers) => {
   const collidableLayers = [
-    layers.hillsLayer,
+    layers.hillsCollidesLayer,
     layers.groundLayer,
     layers.fenceLayer,
     layers.furnitureLayer,
     layers.woodenHouseLayer,
+    layers.wallsLayer,
   ];
 
   collidableLayers.forEach((layer) => {
@@ -34,7 +35,7 @@ export const renderDebug = (
   layers.fenceLayer?.renderDebug(debugGraphics, debugOptions);
   layers.furnitureLayer?.renderDebug(debugGraphics, debugOptions);
   layers.woodenHouseLayer?.renderDebug(debugGraphics, debugOptions);
-  layers.hillsLayer?.renderDebug(debugGraphics, debugOptions);
+  layers.hillsCollidesLayer?.renderDebug(debugGraphics, debugOptions);
 };
 
 export const addCollider = (
@@ -43,7 +44,7 @@ export const addCollider = (
   layers: Layers
 ) => {
   const collidableLayers = [
-    layers.hillsLayer,
+    layers.hillsCollidesLayer,
     layers.groundLayer,
     layers.fenceLayer,
     layers.furnitureLayer,

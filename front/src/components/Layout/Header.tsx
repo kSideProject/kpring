@@ -88,8 +88,9 @@ const Header = () => {
         anchor="right"
         open={openDrawer === "message"}>
         <MessageRightSideBar close={handleDrawerClose} />
-      </Drawer>
 
+      </Drawer>
+      </Drawer>
 
       <Drawer
       sx={{
@@ -106,8 +107,6 @@ const Header = () => {
       open={IsChatRoomShow}>
       <ChatRoomSideBar />
     </Drawer>
-
-
     </header>
   );
 };

@@ -10,6 +10,8 @@ import kpring.chat.global.exception.GlobalException
 import kpring.core.chat.chat.dto.request.CreateRoomChatRequest
 import kpring.core.chat.chat.dto.request.CreateServerChatRequest
 import kpring.core.chat.chat.dto.response.ChatResponse
+import kpring.core.global.dto.response.ApiResponse
+import kpring.core.server.dto.ServerSimpleInfo
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
@@ -39,18 +41,17 @@ class ChatService(
       )
   }
 
-  fun getChatsByChatRoom(
+  fun getRoomChats(
     chatRoomId: String,
     userId: String,
     page: Int,
-  ): List<ChatResponse> {
-    verifyIfAuthorizedForChatRoom(chatRoomId, userId)
+  ): ApiResponse<List<ChatResponse>> {
+    verifyChatRoomAccess(chatRoomId, userId)
 
-    // find chats by chatRoomId and convert them into DTOs
     val pageable: Pageable = PageRequest.of(page, pageSize)
     val chats: List<Chat> = roomChatRepository.findAllByRoomId(chatRoomId, pageable)
 
-    return convertRoomChatsToResponses(chats)
+    return ApiResponse(data = convertRoomChatsToResponses(chats))
   }
 
   fun createServerChat(
@@ -67,23 +68,38 @@ class ChatService(
       )
   }
 
-  fun getChatsByServer(
+  fun getServerChats(
     serverId: String,
     userId: String,
     page: Int,
-  ): List<ChatResponse> {
+    servers: List<ServerSimpleInfo>,
+  ): ApiResponse<List<ChatResponse>> {
+    verifyUserHasJoinedServer(servers, serverId)
+
     val pageable: Pageable = PageRequest.of(page, pageSize)
     val chats: List<ServerChat> = serverChatRepository.findAllByServerId(serverId, pageable)
 
-    return convertServerChatsToResponses(chats)
+    return ApiResponse(data = convertServerChatsToResponses(chats))
   }
 
-  fun verifyIfAuthorizedForChatRoom(
+  fun verifyUserHasJoinedServer(
+    servers: List<ServerSimpleInfo>,
+    serverId: String,
+  ) {
+    servers.forEach { info ->
+      if (info.id.equals(serverId)) {
+        return
+      }
+    }
+    throw GlobalException(ErrorCode.FORBIDDEN_SERVER)
+  }
+
+  fun verifyChatRoomAccess(
     chatRoomId: String,
     userId: String,
   ) {
     if (!chatRoomRepository.existsByIdAndMembersContaining(chatRoomId, userId)) {
-      throw GlobalException(ErrorCode.UNAUTHORIZED_CHATROOM)
+      throw GlobalException(ErrorCode.FORBIDDEN_CHATROOM)
     }
   }
 

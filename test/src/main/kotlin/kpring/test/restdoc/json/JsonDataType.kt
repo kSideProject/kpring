@@ -8,4 +8,5 @@ enum class JsonDataType(val value: String) {
   Integers("Integer"),
   Booleans("Boolean"),
   Null("Null"),
+  Time("LocalDateTime"),
 }

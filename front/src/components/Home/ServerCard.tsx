@@ -1,21 +1,26 @@
 import { Card, CardContent, CardMedia, Typography } from "@mui/material";
-import React from "react";
-import { serverData } from "../../utils/fakeData";
+import FavoriteStar from "./FavoriteStar";
 
-const ServerCard = () => {
+const ServerCard = ({
+  servers,
+}: {
+  servers: {
+    serverId: string;
+    serverName: string;
+    image: string;
+    members: string[];
+  };
+}) => {
   return (
     <div className="flex flex-wrap gap-3 ">
-      {serverData.map((server) => {
-        return (
-          <Card sx={{ width: 345, cursor: "pointer" }}>
-            <CardMedia sx={{ height: 140 }} image={server.image}></CardMedia>
-            <CardContent>
-              <Typography>{server.serverName}</Typography>
-              <Typography>{server.members.length}명</Typography>
-            </CardContent>
-          </Card>
-        );
-      })}
+      <Card sx={{ width: 345, cursor: "pointer" }}>
+        <CardMedia sx={{ height: 140 }} image={servers.image}></CardMedia>
+        <CardContent>
+          <Typography>{servers.serverName}</Typography>
+          <Typography>{servers.members.length}명</Typography>
+          <FavoriteStar id={servers.serverId} />
+        </CardContent>
+      </Card>
     </div>
   );
 };

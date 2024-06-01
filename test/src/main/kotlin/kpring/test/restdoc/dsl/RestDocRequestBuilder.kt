@@ -2,6 +2,8 @@ package kpring.test.restdoc.dsl
 
 import org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders
 import org.springframework.restdocs.payload.PayloadDocumentation.requestFields
+import org.springframework.restdocs.payload.PayloadDocumentation.requestPartFields
+import org.springframework.restdocs.payload.RequestPartFieldsSnippet
 import org.springframework.restdocs.request.RequestDocumentation
 import org.springframework.restdocs.snippet.Snippet
 
@@ -46,6 +48,16 @@ class RestDocRequestBuilder {
     if (builder.partDescriptors.isNotEmpty()) {
       snippets.add(RequestDocumentation.requestParts(*builder.partDescriptors.toTypedArray()))
     }
+  }
+
+  fun part(
+    name: String,
+    config: RestDocMultipartFieldBuilder.() -> Unit,
+  ) {
+    val builder = RestDocMultipartFieldBuilder()
+    builder.config()
+    val descriptor: RequestPartFieldsSnippet = requestPartFields(name, *builder.fieldDescriptors.toTypedArray())
+    snippets.add(descriptor)
   }
 
   fun snippet(snippet: Snippet) {

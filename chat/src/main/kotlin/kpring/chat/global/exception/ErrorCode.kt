@@ -3,6 +3,9 @@ package kpring.chat.global.exception
 import org.springframework.http.HttpStatus
 
 enum class ErrorCode(val httpStatus: Int, val message: String) {
+  // 400
+  INVALID_CHAT_TYPE(HttpStatus.BAD_REQUEST.value(), "잘못된 ChatType입니다."),
+
   // 403
   FORBIDDEN_CHATROOM(HttpStatus.FORBIDDEN.value(), "접근이 제한된 채팅방 입니다"),
   FORBIDDEN_SERVER(HttpStatus.FORBIDDEN.value(), "접근이 제한된 서버 입니다"),

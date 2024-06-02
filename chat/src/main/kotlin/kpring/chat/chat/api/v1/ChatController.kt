@@ -1,9 +1,11 @@
 package kpring.chat.chat.api.v1
 
 import kpring.chat.chat.service.ChatService
+import kpring.chat.global.exception.ErrorCode
+import kpring.chat.global.exception.GlobalException
 import kpring.core.auth.client.AuthClient
+import kpring.core.chat.chat.dto.request.ChatType
 import kpring.core.chat.chat.dto.request.CreateChatRequest
-import kpring.core.chat.chat.dto.response.ChatResponse
 import kpring.core.global.dto.response.ApiResponse
 import kpring.core.server.client.ServerClient
 import kpring.core.server.dto.request.GetServerCondition
@@ -36,15 +38,18 @@ class ChatController(
     @RequestHeader("Authorization") token: String,
   ): ResponseEntity<*> {
     val userId = authClient.getTokenInfo(token).data!!.userId
-    var result: List<ChatResponse>? = null
-
-    if (type.equals("Room")) {
-      result = chatService.getRoomChats(id, userId, page)
-    } else if (type.equals("Server")) {
-      val serverList = serverClient.getServerList(token, GetServerCondition()).body!!.data!!
-      result = chatService.getServerChats(id, userId, page, serverList)
-    }
-
+    val result =
+      when (type) {
+        ChatType.Room.toString() -> chatService.getRoomChats(id, userId, page)
+        ChatType.Server.toString() ->
+          chatService.getServerChats(
+            id,
+            userId,
+            page,
+            serverClient.getServerList(token, GetServerCondition()).body!!.data!!,
+          )
+        else -> throw GlobalException(ErrorCode.INVALID_CHAT_TYPE)
+      }
     return ResponseEntity.ok().body(ApiResponse(data = result, status = 200))
   }
 }

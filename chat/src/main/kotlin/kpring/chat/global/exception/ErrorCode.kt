@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus
 
 enum class ErrorCode(val httpStatus: Int, val message: String) {
   // 400
+  INVALID_CHAT_TYPE(HttpStatus.BAD_REQUEST.value(), "잘못된 ChatType입니다."),
   INVALID_TOKEN(HttpStatus.BAD_REQUEST.value(), "토큰이 유효하지 않습니다"),
 
   // 401

@@ -63,7 +63,7 @@ class ChatService(
     return convertServerChatsToResponses(chats)
   }
 
-  fun verifyServerAccess(
+  private fun verifyServerAccess(
     servers: List<ServerSimpleInfo>,
     serverId: String,
   ) {
@@ -75,7 +75,7 @@ class ChatService(
     throw GlobalException(ErrorCode.FORBIDDEN_SERVER)
   }
 
-  fun verifyChatRoomAccess(
+  private fun verifyChatRoomAccess(
     chatRoomId: String,
     userId: String,
   ) {
@@ -84,7 +84,7 @@ class ChatService(
     }
   }
 
-  fun convertRoomChatsToResponses(roomChats: List<RoomChat>): List<ChatResponse> {
+  private fun convertRoomChatsToResponses(roomChats: List<RoomChat>): List<ChatResponse> {
     val chatResponse =
       roomChats.map { chat ->
         ChatResponse(chat.id!!, chat.isEdited(), chat.createdAt.toString(), chat.content)
@@ -92,7 +92,7 @@ class ChatService(
     return chatResponse
   }
 
-  fun convertServerChatsToResponses(chats: List<ServerChat>): List<ChatResponse> {
+  private fun convertServerChatsToResponses(chats: List<ServerChat>): List<ChatResponse> {
     val chatResponse =
       chats.map { chat ->
         ChatResponse(chat.id!!, chat.isEdited(), chat.createdAt.toString(), chat.content)

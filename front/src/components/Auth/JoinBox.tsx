@@ -3,9 +3,9 @@ import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
+import axios from "axios";
 import { useNavigate } from "react-router";
 import { JoinValidation } from "../../hooks/JoinValidation";
-
 function JoinBox() {
   const {
     values,
@@ -28,8 +28,45 @@ function JoinBox() {
     setValues((prevValues) => ({ ...prevValues, [field]: value }));
     setErrors((prevErrors) => ({ ...prevErrors, [`${field}Error`]: error }));
   };
+  const submitJoin = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:30002/api/v1/user",
+        {
+          email: values.email,
+          password: values.password,
+          username: values.nickname,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-  const clickSubmitHandler = (e: React.FormEvent) => {
+      // 회원가입 성공
+      alert("회원가입 성공!");
+      console.log("회원가입 성공:", response.data);
+
+      // 입력 폼 초기화
+      setValues({
+        nickname: "",
+        email: "",
+        password: "",
+        passwordConfirm: "",
+      });
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        alert(`Error: ${error.response.data.message}`);
+        console.log("회원가입 오류:", error.response.data);
+      } else {
+        alert("회원가입 과정에서 문제가 발생했습니다.");
+        console.log("회원가입 중 예상치 못한 오류 발생", error);
+      }
+    }
+  };
+
+  const clickSubmitHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const nicknameError = validateNickname(values.nickname);
     const emailError = validateEmail(values.email);
@@ -55,13 +92,7 @@ function JoinBox() {
         !passwordError &&
         !passwordConfirmError
       ) {
-        alert("회원가입 성공!");
-        setValues({
-          nickname: "",
-          email: "",
-          password: "",
-          passwordConfirm: "",
-        });
+        submitJoin();
       }
     }, 0);
   };

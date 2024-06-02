@@ -104,12 +104,21 @@ class ChatControllerTest(
         // When
         val result =
           webTestClient.get().uri(
-            URLBuilder(url).query("id", serverId).query("type", "Server").query("page", 1).build(),
+            URLBuilder(url)
+              .query("id", serverId)
+              .query("type", "Server")
+              .query("page", 1)
+              .build(),
           )
             .header("Authorization", "Bearer mock_token")
             .exchange()
 
-        val docs = result.expectStatus().isOk.expectBody().json(om.writeValueAsString(ApiResponse(data = data)))
+        val docs =
+          result
+            .expectStatus()
+            .isOk
+            .expectBody()
+            .json(om.writeValueAsString(ApiResponse(data = data)))
 
         // Then
         docs.restDoc(
@@ -175,12 +184,21 @@ class ChatControllerTest(
         // When
         val result =
           webTestClient.get().uri(
-            URLBuilder(url).query("id", roomId).query("type", "Room").query("page", 1).build(),
+            URLBuilder(url)
+              .query("id", roomId)
+              .query("type", "Room")
+              .query("page", 1)
+              .build(),
           )
             .header("Authorization", "Bearer mock_token")
             .exchange()
 
-        val docs = result.expectStatus().isOk.expectBody().json(om.writeValueAsString(ApiResponse(data = data)))
+        val docs =
+          result
+            .expectStatus()
+            .isOk
+            .expectBody()
+            .json(om.writeValueAsString(ApiResponse(data = data)))
 
         // Then
         docs.restDoc(

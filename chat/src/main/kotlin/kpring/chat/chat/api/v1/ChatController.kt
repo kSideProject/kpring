@@ -29,7 +29,7 @@ class ChatController(
       chatService.createServerChat(request, userId)
     }
 
-    return ResponseEntity(ApiResponse(data = null, status = 201), HttpStatus.CREATED)
+    return ResponseEntity(ApiResponse<Nothing>(status = 201), HttpStatus.CREATED)
   }
 
   @GetMapping("/chat/{chatRoomId}/{page}")

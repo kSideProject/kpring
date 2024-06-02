@@ -1,6 +1,8 @@
 package kpring.chat.chat.api.v1
 
 import kpring.chat.chat.service.ChatService
+import kpring.chat.global.exception.ErrorCode
+import kpring.chat.global.exception.GlobalException
 import kpring.core.auth.client.AuthClient
 import kpring.core.chat.chat.dto.request.ChatType
 import kpring.core.chat.chat.dto.request.CreateChatRequest
@@ -23,10 +25,10 @@ class ChatController(
   ): ResponseEntity<*> {
     val userId = authClient.getTokenInfo(token).data!!.userId
 
-    if (request.type == ChatType.Room) {
-      chatService.createRoomChat(request, userId)
-    } else {
-      chatService.createServerChat(request, userId)
+    when (request.type) {
+      ChatType.Room -> chatService.createRoomChat(request, userId)
+      ChatType.Server -> chatService.createServerChat(request, userId)
+      else -> throw GlobalException(ErrorCode.INVALID_CHAT_TYPE)
     }
 
     return ResponseEntity(ApiResponse<Nothing>(status = 201), HttpStatus.CREATED)

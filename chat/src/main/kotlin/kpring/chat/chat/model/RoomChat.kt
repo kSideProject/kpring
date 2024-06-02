@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document
 
 @NoArg
 @Document(collection = "chats")
-class Chat(
+class RoomChat(
   val userId: String,
   val roomId: String,
   val content: String,

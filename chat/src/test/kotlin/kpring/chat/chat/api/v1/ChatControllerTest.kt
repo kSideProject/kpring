@@ -13,8 +13,8 @@ import kpring.core.auth.dto.response.TokenInfo
 import kpring.core.auth.enums.TokenType
 import kpring.core.chat.chat.dto.request.ChatType
 import kpring.core.chat.chat.dto.request.CreateChatRequest
-import kpring.core.global.dto.response.ApiResponse
 import kpring.core.chat.chat.dto.response.ChatResponse
+import kpring.core.global.dto.response.ApiResponse
 import kpring.core.server.client.ServerClient
 import kpring.core.server.dto.ServerSimpleInfo
 import kpring.test.restdoc.dsl.restDoc
@@ -111,173 +111,173 @@ class ChatControllerTest(
         }
       }
     }
-  describe("GET /api/v1/chat : getServerChats api test") {
+    describe("GET /api/v1/chat : getServerChats api test") {
 
-    val url = "/api/v1/chat"
-    it("getServerChats api test") {
+      val url = "/api/v1/chat"
+      it("getServerChats api test") {
 
-      // Given
-      val serverId = "test_server_id"
-      val data =
-        listOf(
-          ChatResponse(
+        // Given
+        val serverId = "test_server_id"
+        val data =
+          listOf(
+            ChatResponse(
+              serverId,
+              false,
+              LocalDateTime.now().toString(),
+              "sad",
+            ),
+          )
+        val serverList =
+          listOf(
+            ServerSimpleInfo(
+              id = serverId,
+              name = "test_server_name",
+              bookmarked = true,
+            ),
+          )
+
+        every { authClient.getTokenInfo(any()) } returns
+          ApiResponse(
+            data =
+              TokenInfo(
+                type = TokenType.ACCESS, userId = CommonTest.TEST_USER_ID,
+              ),
+          )
+
+        every { serverClient.getServerList(any(), any()) } returns
+          ResponseEntity.ok().body(ApiResponse(data = serverList))
+
+        every {
+          chatService.getServerChats(
             serverId,
-            false,
-            LocalDateTime.now().toString(),
-            "sad",
-          ),
-        )
-      val serverList =
-        listOf(
-          ServerSimpleInfo(
-            id = serverId,
-            name = "test_server_name",
-            bookmarked = true,
-          ),
-        )
+            CommonTest.TEST_USER_ID,
+            1,
+            serverList,
+          )
+        } returns data
 
-      every { authClient.getTokenInfo(any()) } returns
-        ApiResponse(
-          data =
-          TokenInfo(
-            type = TokenType.ACCESS, userId = CommonTest.TEST_USER_ID,
-          ),
-        )
+        // When
+        val result =
+          webTestClient.get().uri(
+            URLBuilder(url)
+              .query("id", serverId)
+              .query("type", "Server")
+              .query("page", 1)
+              .build(),
+          )
+            .header("Authorization", "Bearer mock_token")
+            .exchange()
 
-      every { serverClient.getServerList(any(), any()) } returns
-        ResponseEntity.ok().body(ApiResponse(data = serverList))
+        val docs =
+          result
+            .expectStatus()
+            .isOk
+            .expectBody()
+            .json(om.writeValueAsString(ApiResponse(data = data)))
 
-      every {
-        chatService.getServerChats(
-          serverId,
-          CommonTest.TEST_USER_ID,
-          1,
-          serverList,
-        )
-      } returns data
+        // Then
+        docs.restDoc(
+          identifier = "get_server_chats_200",
+          description = "서버 채팅 조회 api",
+        ) {
 
-      // When
-      val result =
-        webTestClient.get().uri(
-          URLBuilder(url)
-            .query("id", serverId)
-            .query("type", "Server")
-            .query("page", 1)
-            .build(),
-        )
-          .header("Authorization", "Bearer mock_token")
-          .exchange()
+          request {
+            query {
 
-      val docs =
-        result
-          .expectStatus()
-          .isOk
-          .expectBody()
-          .json(om.writeValueAsString(ApiResponse(data = data)))
-
-      // Then
-      docs.restDoc(
-        identifier = "get_server_chats_200",
-        description = "서버 채팅 조회 api",
-      ) {
-
-        request {
-          query {
-
-            "type" mean "Server / Room"
-            "id" mean "서버 ID"
-            "page" mean "페이지 번호"
+              "type" mean "Server / Room"
+              "id" mean "서버 ID"
+              "page" mean "페이지 번호"
+            }
           }
-        }
 
-        response {
-          body {
-            "status" type JsonDataType.Integers mean "상태 코드"
-            "data[].id" type JsonDataType.Strings mean "서버 ID"
-            "data[].isEdited" type JsonDataType.Booleans mean "메시지가 수정되었는지 여부"
-            "data[].sentAt" type JsonDataType.Strings mean "메시지 생성 시간"
-            "data[].content" type JsonDataType.Strings mean "메시지 내용"
+          response {
+            body {
+              "status" type JsonDataType.Integers mean "상태 코드"
+              "data[].id" type JsonDataType.Strings mean "서버 ID"
+              "data[].isEdited" type JsonDataType.Booleans mean "메시지가 수정되었는지 여부"
+              "data[].sentAt" type JsonDataType.Strings mean "메시지 생성 시간"
+              "data[].content" type JsonDataType.Strings mean "메시지 내용"
+            }
           }
         }
       }
     }
-  }
 
-  describe("GET /api/v1/chat : getRoomChats api test") {
+    describe("GET /api/v1/chat : getRoomChats api test") {
 
-    val url = "/api/v1/chat"
-    it("getRoomChats api test") {
+      val url = "/api/v1/chat"
+      it("getRoomChats api test") {
 
-      // Given
-      val roomId = "test_room_id"
-      val data =
-        listOf(
-          ChatResponse(
+        // Given
+        val roomId = "test_room_id"
+        val data =
+          listOf(
+            ChatResponse(
+              roomId,
+              false,
+              LocalDateTime.now().toString(),
+              "sad",
+            ),
+          )
+
+        every { authClient.getTokenInfo(any()) } returns
+          ApiResponse(
+            data =
+              TokenInfo(
+                type = TokenType.ACCESS, userId = CommonTest.TEST_USER_ID,
+              ),
+          )
+
+        every {
+          chatService.getRoomChats(
             roomId,
-            false,
-            LocalDateTime.now().toString(),
-            "sad",
-          ),
-        )
+            CommonTest.TEST_USER_ID,
+            1,
+          )
+        } returns data
 
-      every { authClient.getTokenInfo(any()) } returns
-        ApiResponse(
-          data =
-          TokenInfo(
-            type = TokenType.ACCESS, userId = CommonTest.TEST_USER_ID,
-          ),
-        )
+        // When
+        val result =
+          webTestClient.get().uri(
+            URLBuilder(url)
+              .query("id", roomId)
+              .query("type", "Room")
+              .query("page", 1)
+              .build(),
+          )
+            .header("Authorization", "Bearer mock_token")
+            .exchange()
 
-      every {
-        chatService.getRoomChats(
-          roomId,
-          CommonTest.TEST_USER_ID,
-          1,
-        )
-      } returns data
+        val docs =
+          result
+            .expectStatus()
+            .isOk
+            .expectBody()
+            .json(om.writeValueAsString(ApiResponse(data = data)))
 
-      // When
-      val result =
-        webTestClient.get().uri(
-          URLBuilder(url)
-            .query("id", roomId)
-            .query("type", "Room")
-            .query("page", 1)
-            .build(),
-        )
-          .header("Authorization", "Bearer mock_token")
-          .exchange()
-
-      val docs =
-        result
-          .expectStatus()
-          .isOk
-          .expectBody()
-          .json(om.writeValueAsString(ApiResponse(data = data)))
-
-      // Then
-      docs.restDoc(
-        identifier = "get_room_chats_200",
-        description = "채팅방 채팅 조회 api",
-      ) {
-        request {
-          query {
-            "type" mean "Server / Room"
-            "id" mean "채팅방 ID"
-            "page" mean "페이지 번호"
+        // Then
+        docs.restDoc(
+          identifier = "get_room_chats_200",
+          description = "채팅방 채팅 조회 api",
+        ) {
+          request {
+            query {
+              "type" mean "Server / Room"
+              "id" mean "채팅방 ID"
+              "page" mean "페이지 번호"
+            }
           }
-        }
 
-        response {
-          body {
-            "status" type JsonDataType.Integers mean "상태 코드"
-            "data[].id" type JsonDataType.Strings mean "채팅방 ID"
-            "data[].isEdited" type JsonDataType.Booleans mean "메시지가 수정되었는지 여부"
-            "data[].sentAt" type JsonDataType.Strings mean "메시지 생성 시간"
-            "data[].content" type JsonDataType.Strings mean "메시지 내용"
+          response {
+            body {
+              "status" type JsonDataType.Integers mean "상태 코드"
+              "data[].id" type JsonDataType.Strings mean "채팅방 ID"
+              "data[].isEdited" type JsonDataType.Booleans mean "메시지가 수정되었는지 여부"
+              "data[].sentAt" type JsonDataType.Strings mean "메시지 생성 시간"
+              "data[].content" type JsonDataType.Strings mean "메시지 내용"
+            }
           }
         }
       }
     }
-  }
   })

@@ -7,9 +7,9 @@ import kpring.core.auth.client.AuthClient
 import kpring.core.chat.chat.dto.request.ChatType
 import kpring.core.chat.chat.dto.request.CreateChatRequest
 import kpring.core.global.dto.response.ApiResponse
-import org.springframework.http.HttpStatus
 import kpring.core.server.client.ServerClient
 import kpring.core.server.dto.request.GetServerCondition
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*

@@ -2,7 +2,6 @@ package kpring.chat.chat
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
@@ -21,7 +20,6 @@ import kpring.core.chat.chat.dto.request.ChatType
 import kpring.core.chat.chat.dto.request.CreateChatRequest
 import kpring.core.server.dto.ServerSimpleInfo
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.data.domain.PageRequest
 
 class ChatServiceTest(
   @Value("\${page.size}") val pageSize: Int = 100,
@@ -35,7 +33,7 @@ class ChatServiceTest(
       // Given
       val request = CreateChatRequest(id = ChatRoomTest.TEST_ROOM_ID, content = ChatTest.CONTENT, type = ChatType.Room)
       val userId = CommonTest.TEST_USER_ID
-      val roomChat = RoomChat(userId, request.room, request.content)
+      val roomChat = RoomChat(userId, request.id, request.content)
       every { roomChatRepository.save(any()) } returns roomChat
 
       // When

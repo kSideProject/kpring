@@ -28,7 +28,7 @@ class ChatService(
   ): Boolean {
     val chat =
       roomChatRepository.save(
-        Chat(
+        RoomChat(
           userId = userId,
           roomId = request.id,
           content = request.content,
@@ -74,7 +74,6 @@ class ChatService(
     verifyServerAccess(servers, serverId)
 
     val pageable: Pageable = PageRequest.of(page, pageSize)
-    val chats: List<Chat> = roomChatRepository.findAllByRoomId(chatRoomId, pageable)
     val chats: List<ServerChat> = serverChatRepository.findAllByServerId(serverId, pageable)
 
     return convertServerChatsToResponses(chats)

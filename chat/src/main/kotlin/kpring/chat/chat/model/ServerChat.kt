@@ -6,10 +6,10 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 
 @NoArg
-@Document(collection = "chats")
-class Chat(
+@Document(collection = "server_chats")
+class ServerChat(
   val userId: String,
-  val roomId: String,
+  val serverId: String,
   val content: String,
 ) : BaseTime() {
   @Id

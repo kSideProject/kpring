@@ -28,3 +28,12 @@ export interface MemberProfileModalProps {
   openModal: boolean;
   closeModal: () => void;
 }
+
+// FIXME :멤버 조회 타입 임의로 지정(이후 API 명세서 수정에 따라 변경 필요) 
+export interface Member{
+
+  id: number;
+  profilePath: string;
+  userName: string;
+
+}

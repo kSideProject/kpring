@@ -7,9 +7,9 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor
 import org.springframework.stereotype.Repository
 
 @Repository
-interface RoomChatRepository : MongoRepository<Chat, String>, QuerydslPredicateExecutor<Chat> {
+interface RoomChatRepository : MongoRepository<RoomChat, String>, QuerydslPredicateExecutor<RoomChat> {
   fun findAllByRoomId(
     roomId: String,
     pageable: Pageable,
-  ): List<Chat>
+  ): List<RoomChat>
 }

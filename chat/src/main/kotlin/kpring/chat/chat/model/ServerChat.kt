@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document
 @NoArg
 @Document(collection = "server_chats")
 class ServerChat(
-  userId: String,
+  val userId: String,
   val serverId: String,
   val content: String,
 ) : BaseTime() {

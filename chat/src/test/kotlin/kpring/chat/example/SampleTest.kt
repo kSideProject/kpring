@@ -3,8 +3,8 @@ package kpring.chat.example
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
-import kpring.chat.chat.model.Chat
-import kpring.chat.chat.model.QChat
+import kpring.chat.chat.model.QRoomChat
+import kpring.chat.chat.model.RoomChat
 import kpring.chat.chat.repository.RoomChatRepository
 import kpring.test.testcontainer.SpringTestContext
 import org.springframework.boot.test.context.SpringBootTest
@@ -25,10 +25,10 @@ class SampleTest(
 
     it("query dsl 적용 테스트") {
       // given
-      val chat = QChat.chat
+      val chat = QRoomChat.roomChat
       repeat(5) { idx ->
         roomChatRepository.save(
-          Chat("testUserId", "testRoomId", "testContent$idx"),
+          RoomChat("testUserId", "testRoomId", "testContent$idx"),
         )
       }
 
@@ -49,11 +49,11 @@ class SampleTest(
 
     it("query dsl 적용 테스트 : 다중 조건") {
       // given
-      val chat = QChat.chat
+      val chat = QRoomChat.roomChat
       roomChatRepository.deleteAll()
       repeat(5) { idx ->
         roomChatRepository.save(
-          Chat("testUserId", "testRoomId", "testContent$idx"),
+          RoomChat("testUserId", "testRoomId", "testContent$idx"),
         )
       }
 

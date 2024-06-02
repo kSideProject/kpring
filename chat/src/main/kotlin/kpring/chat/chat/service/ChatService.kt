@@ -1,6 +1,6 @@
 package kpring.chat.chat.service
 
-import kpring.chat.chat.model.Chat
+import kpring.chat.chat.model.RoomChat
 import kpring.chat.chat.model.ServerChat
 import kpring.chat.chat.repository.RoomChatRepository
 import kpring.chat.chat.repository.ServerChatRepository
@@ -9,6 +9,7 @@ import kpring.chat.global.exception.ErrorCode
 import kpring.chat.global.exception.GlobalException
 import kpring.core.chat.chat.dto.request.CreateChatRequest
 import kpring.core.chat.chat.dto.response.ChatResponse
+import kpring.core.server.dto.ServerSimpleInfo
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
@@ -51,35 +52,68 @@ class ChatService(
     return true
   }
 
-  fun getChatsByChatRoom(
+  fun getRoomChats(
     chatRoomId: String,
     userId: String,
     page: Int,
   ): List<ChatResponse> {
-    checkIfAuthorized(chatRoomId, userId)
+    verifyChatRoomAccess(chatRoomId, userId)
 
-    // find chats by chatRoomId and convert them into DTOs
     val pageable: Pageable = PageRequest.of(page, pageSize)
-    val chats: List<Chat> = roomChatRepository.findAllByRoomId(chatRoomId, pageable)
+    val roomChats: List<RoomChat> = roomChatRepository.findAllByRoomId(chatRoomId, pageable)
 
-    return convertChatsToResponses(chats)
+    return convertRoomChatsToResponses(roomChats)
   }
 
-  fun checkIfAuthorized(
+  fun getServerChats(
+    serverId: String,
+    userId: String,
+    page: Int,
+    servers: List<ServerSimpleInfo>,
+  ): List<ChatResponse> {
+    verifyServerAccess(servers, serverId)
+
+    val pageable: Pageable = PageRequest.of(page, pageSize)
+    val chats: List<Chat> = roomChatRepository.findAllByRoomId(chatRoomId, pageable)
+    val chats: List<ServerChat> = serverChatRepository.findAllByServerId(serverId, pageable)
+
+    return convertServerChatsToResponses(chats)
+  }
+
+  private fun verifyServerAccess(
+    servers: List<ServerSimpleInfo>,
+    serverId: String,
+  ) {
+    servers.forEach { info ->
+      if (info.id.equals(serverId)) {
+        return
+      }
+    }
+    throw GlobalException(ErrorCode.FORBIDDEN_SERVER)
+  }
+
+  private fun verifyChatRoomAccess(
     chatRoomId: String,
     userId: String,
   ) {
-    // check if there is a chatroom with the chatRoomId and the user is one of the members
     if (!chatRoomRepository.existsByIdAndMembersContaining(chatRoomId, userId)) {
-      throw GlobalException(ErrorCode.UNAUTHORIZED_CHATROOM)
+      throw GlobalException(ErrorCode.FORBIDDEN_CHATROOM)
     }
   }
 
-  fun convertChatsToResponses(chats: List<Chat>): List<ChatResponse> {
-    val chatResponses =
-      chats.map { chat ->
-        ChatResponse(chat.roomId, chat.isEdited(), chat.createdAt, chat.content)
+  private fun convertRoomChatsToResponses(roomChats: List<RoomChat>): List<ChatResponse> {
+    val chatResponse =
+      roomChats.map { chat ->
+        ChatResponse(chat.id!!, chat.isEdited(), chat.createdAt.toString(), chat.content)
       }
-    return chatResponses
+    return chatResponse
+  }
+
+  private fun convertServerChatsToResponses(chats: List<ServerChat>): List<ChatResponse> {
+    val chatResponse =
+      chats.map { chat ->
+        ChatResponse(chat.id!!, chat.isEdited(), chat.createdAt.toString(), chat.content)
+      }
+    return chatResponse
   }
 }

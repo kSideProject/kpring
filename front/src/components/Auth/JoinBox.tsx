@@ -77,10 +77,14 @@ function JoinBox() {
       });
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
-        setAlertInfo({
-          severity: "error",
-          message: `Error: ${error.response.data.message}`,
-        });
+        let errorMessage = "회원가입 과정에서 문제가 발생했습니다.";
+        if (error.response.data.message === "Email already exists") {
+          errorMessage = "이미 존재하는 이메일입니다. 다시 시도해주세요.";
+        } else {
+          errorMessage = error.response.data.message || errorMessage;
+        }
+
+        setAlertInfo({ severity: "error", message: errorMessage });
       } else {
         setAlertInfo({
           severity: "error",

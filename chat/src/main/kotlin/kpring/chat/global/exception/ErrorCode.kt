@@ -12,4 +12,8 @@ enum class ErrorCode(val httpStatus: Int, val message: String) {
 
   // 404
   CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "해당 id로 chatroom을 찾을 수 없습니다"),
+
+  // 500
+  INVITATION_LINK_SAVE_FAILURE(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Invitation Link가 저장되지 않았습니다"),
+  GET_EXPIRATION_FAILURE(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Key의 expiration time을 가져올 수 없습니다"),
 }

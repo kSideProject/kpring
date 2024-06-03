@@ -16,6 +16,7 @@ import kpring.chat.global.ChatTest
 import kpring.chat.global.CommonTest
 import kpring.chat.global.exception.ErrorCode
 import kpring.chat.global.exception.GlobalException
+import kpring.core.chat.chat.dto.request.ChatType
 import kpring.core.chat.chat.dto.request.CreateChatRequest
 import kpring.core.server.dto.ServerSimpleInfo
 import org.springframework.beans.factory.annotation.Value
@@ -30,13 +31,13 @@ class ChatServiceTest(
 
     test("createChat 은 새 RoomChat을 저장해야 한다") {
       // Given
-      val request = CreateChatRequest(ChatRoomTest.TEST_ROOM_ID, ChatTest.CONTENT)
+      val request = CreateChatRequest(id = ChatRoomTest.TEST_ROOM_ID, content = ChatTest.CONTENT, type = ChatType.Room)
       val userId = CommonTest.TEST_USER_ID
-      val roomChat = RoomChat(userId, request.room, request.content)
+      val roomChat = RoomChat(userId, request.id, request.content)
       every { roomChatRepository.save(any()) } returns roomChat
 
       // When
-      chatService.createChat(request, userId)
+      chatService.createRoomChat(request, userId)
 
       // Then
       verify { roomChatRepository.save(any()) }

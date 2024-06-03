@@ -9,6 +9,7 @@ import kpring.core.chat.chat.dto.request.CreateChatRequest
 import kpring.core.global.dto.response.ApiResponse
 import kpring.core.server.client.ServerClient
 import kpring.core.server.dto.request.GetServerCondition
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
@@ -26,8 +27,14 @@ class ChatController(
     @RequestHeader("Authorization") token: String,
   ): ResponseEntity<*> {
     val userId = authClient.getTokenInfo(token).data!!.userId
-    val result = chatService.createChat(request, userId)
-    return ResponseEntity.ok().body(result)
+
+    when (request.type) {
+      ChatType.Room -> chatService.createRoomChat(request, userId)
+      ChatType.Server -> chatService.createServerChat(request, userId)
+      else -> throw GlobalException(ErrorCode.INVALID_CHAT_TYPE)
+    }
+
+    return ResponseEntity(ApiResponse<Nothing>(status = 201), HttpStatus.CREATED)
   }
 
   @GetMapping("/chat")

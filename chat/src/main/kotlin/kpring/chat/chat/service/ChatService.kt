@@ -22,18 +22,34 @@ class ChatService(
   private val chatRoomRepository: ChatRoomRepository,
   @Value("\${page.size}") val pageSize: Int = 100,
 ) {
-  fun createChat(
+  fun createRoomChat(
     request: CreateChatRequest,
     userId: String,
-  ) {
-    val roomChat =
+  ): Boolean {
+    val chat =
       roomChatRepository.save(
         RoomChat(
           userId = userId,
-          roomId = request.room,
+          roomId = request.id,
           content = request.content,
         ),
       )
+    return true
+  }
+
+  fun createServerChat(
+    request: CreateChatRequest,
+    userId: String,
+  ): Boolean {
+    val chat =
+      serverChatRepository.save(
+        ServerChat(
+          userId = userId,
+          serverId = request.id,
+          content = request.content,
+        ),
+      )
+    return true
   }
 
   fun getRoomChats(

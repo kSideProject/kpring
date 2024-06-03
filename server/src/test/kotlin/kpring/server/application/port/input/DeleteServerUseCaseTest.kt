@@ -16,35 +16,37 @@ import kpring.server.domain.Server
 import kpring.server.domain.ServerProfile
 import kpring.server.domain.ServerRole
 
-class AddUserAtServerUseCaseTest(
+class DeleteServerUseCaseTest(
   val getServerPort: GetServerPort = mockk(),
   val getServerProfilePort: GetServerProfilePort = mockk(),
   val updateServerPort: UpdateServerPort = mockk(),
   val deleteServerPort: DeleteServerPort = mockk(),
   val service: ServerService = ServerService(mockk(), getServerPort, getServerProfilePort, updateServerPort, deleteServerPort),
 ) : DescribeSpec({
-
-    it("유저 초대시 초대하는 유저가 권한이 없다면 예외를 던진다") {
+    it("삭제하는 서버에 대한 삭제 권한이 없는 유저라면 예외가 발생한다.") {
       // given
-      val invitorId = "invitorId"
+      val serverId = "serverId"
       val userId = "userId"
-      val server = Server(id = "serverId", name = "serverName")
+      val server =
+        Server(
+          id = serverId,
+          name = "serverName",
+        )
       val serverProfile =
         ServerProfile(
-          userId = invitorId,
-          name = "invitor",
-          imagePath = "imagePath",
+          userId = userId,
+          name = "name",
+          imagePath = "/imagePath",
           role = ServerRole.MEMBER,
           server = server,
         )
 
-      every { getServerPort.get(server.id) } returns server
-      every { getServerProfilePort.get(server.id, invitorId) } returns serverProfile
+      every { getServerProfilePort.get(serverId, userId) } returns serverProfile
 
       // when
       val ex =
         shouldThrow<ServiceException> {
-          service.inviteUser(server.id, invitorId, userId)
+          service.deleteServer(serverId, userId)
         }
 
       // then

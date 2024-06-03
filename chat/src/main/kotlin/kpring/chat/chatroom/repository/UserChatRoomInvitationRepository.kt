@@ -26,7 +26,7 @@ class UserChatRoomInvitationRepository(
       value = setInvitation(key, chatRoomId)
     }
 
-    val expiration = getExpiration(key)
+    val expiration = redisTemplate.getExpire(key)
 
     return InvitationResponse(value, LocalDateTime.now().plusSeconds(expiration).toString())
   }
@@ -35,11 +35,11 @@ class UserChatRoomInvitationRepository(
     key: String,
     chatRoomId: String,
   ): String {
-    val invitationLink = generateLink()
+    val invitationCode = generateCode()
     val ops: ValueOperations<String, String> = redisTemplate.opsForValue()
-    ops.set(key, invitationLink, propertyConfig.getExpiration())
-    invitationChatRoomRepository.setInvitationLink(invitationLink, chatRoomId)
-    return invitationLink
+    ops.set(key, invitationCode, propertyConfig.getExpiration())
+    invitationChatRoomRepository.setInvitationCode(invitationCode, chatRoomId)
+    return invitationCode
   }
 
   private fun generateKey(
@@ -49,15 +49,7 @@ class UserChatRoomInvitationRepository(
     return "$userId:$chatRoomId"
   }
 
-  private fun generateLink(): String {
+  private fun generateCode(): String {
     return UUID.randomUUID().toString()
-  }
-
-  private fun getExpiration(key: String): Long {
-    val expiration = redisTemplate.getExpire(key)
-    if (expiration == null || expiration == -1L) {
-      throw GlobalException(ErrorCode.GET_EXPIRATION_FAILURE)
-    }
-    return expiration
   }
 }

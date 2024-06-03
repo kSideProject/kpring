@@ -2,14 +2,17 @@ package kpring.chat.chatroom.service
 
 import kpring.chat.chatroom.model.ChatRoom
 import kpring.chat.chatroom.repository.ChatRoomRepository
+import kpring.chat.chatroom.repository.UserChatRoomInvitationRepository
 import kpring.chat.global.exception.ErrorCode
 import kpring.chat.global.exception.GlobalException
+import kpring.core.chat.chat.dto.response.InvitationResponse
 import kpring.core.chat.chatroom.dto.request.CreateChatRoomRequest
 import org.springframework.stereotype.Service
 
 @Service
 class ChatRoomService(
   private val chatRoomRepository: ChatRoomRepository,
+  private val userChatRoomInvitationRepository: UserChatRoomInvitationRepository,
 ) {
   fun createChatRoom(
     request: CreateChatRoomRequest,
@@ -28,6 +31,14 @@ class ChatRoomService(
     val chatRoom: ChatRoom = getChatRoom(chatRoomId)
     chatRoom.removeUser(userId)
     chatRoomRepository.save(chatRoom)
+  }
+
+  fun getChatRoomInvitation(
+    chatRoomId: String,
+    userId: String,
+  ): InvitationResponse {
+    verifyChatRoomAccess(chatRoomId, userId)
+    return userChatRoomInvitationRepository.getInvitation(chatRoomId, userId)
   }
 
   fun verifyChatRoomAccess(

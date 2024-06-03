@@ -12,7 +12,7 @@ class InvitationChatRoomRepository(
   private val redisTemplate: RedisTemplate<String, String>,
   private val propertyConfig: PropertyConfig,
 ) {
-  fun setInvitationLink(
+  fun setInvitationCode(
     invitationLink: String,
     chatRoomId: String,
   ) {

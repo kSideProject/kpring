@@ -39,65 +39,67 @@ class ChatRoomControllerTest(
   @MockkBean val authClient: AuthClient,
 ) : DescribeSpec({
 
-  val restDocument = ManualRestDocumentation()
-  val webTestClient: WebTestClient =
-    MockMvcWebTestClient.bindToApplicationContext(webContext).configureClient().baseUrl("http://localhost:8081").filter(
-      WebTestClientRestDocumentation.documentationConfiguration(restDocument).operationPreprocessors()
-        .withRequestDefaults(Preprocessors.prettyPrint()).withResponseDefaults(Preprocessors.prettyPrint()),
-    ).build()
+    val restDocument = ManualRestDocumentation()
+    val webTestClient: WebTestClient =
+      MockMvcWebTestClient.bindToApplicationContext(webContext).configureClient().baseUrl("http://localhost:8081").filter(
+        WebTestClientRestDocumentation.documentationConfiguration(restDocument).operationPreprocessors()
+          .withRequestDefaults(Preprocessors.prettyPrint()).withResponseDefaults(Preprocessors.prettyPrint()),
+      ).build()
 
-  beforeSpec { restDocument.beforeTest(this.javaClass, "chat controller") }
+    beforeSpec { restDocument.beforeTest(this.javaClass, "chat controller") }
 
-  afterSpec { restDocument.afterTest() }
+    afterSpec { restDocument.afterTest() }
 
-  describe("GET /api/v1/chatroom/{chatRoomId}/invite : getChatRoomInvitation api test") {
+    describe("GET /api/v1/chatroom/{chatRoomId}/invite : getChatRoomInvitation api test") {
 
-    val url = "/api/v1/chatroom/{chatRoomId}/invite"
-    it("getChatRoomInvitation api test") {
+      val url = "/api/v1/chatroom/{chatRoomId}/invite"
+      it("getChatRoomInvitation api test") {
 
-      // Given
-      val chatRoomId = ChatRoomTest.TEST_ROOM_ID
-      val userId = CommonTest.TEST_USER_ID
-      val key = "62e9df6b-13cb-4673-a6fe-8566451b7f15"
-      val expiration = LocalDateTime.now().plusSeconds(3600).toString()
-      val data = InvitationResponse(key, expiration)
+        // Given
+        val chatRoomId = ChatRoomTest.TEST_ROOM_ID
+        val userId = CommonTest.TEST_USER_ID
+        val key = "62e9df6b-13cb-4673-a6fe-8566451b7f15"
+        val expiration = LocalDateTime.now().plusSeconds(3600).toString()
+        val data = InvitationResponse(key, expiration)
 
-      every { authClient.getTokenInfo(any()) } returns ApiResponse(
-        data = TokenInfo(
-          type = TokenType.ACCESS, userId = CommonTest.TEST_USER_ID,
-        ),
-      )
+        every { authClient.getTokenInfo(any()) } returns
+          ApiResponse(
+            data =
+              TokenInfo(
+                type = TokenType.ACCESS, userId = CommonTest.TEST_USER_ID,
+              ),
+          )
 
-      every {
-        chatRoomService.getChatRoomInvitation(
-          chatRoomId,
-          userId,
-        )
-      } returns data
+        every {
+          chatRoomService.getChatRoomInvitation(
+            chatRoomId,
+            userId,
+          )
+        } returns data
 
-      // When
-      val result = webTestClient.get().uri(url, chatRoomId).header("Authorization", "Bearer mock_token").exchange()
+        // When
+        val result = webTestClient.get().uri(url, chatRoomId).header("Authorization", "Bearer mock_token").exchange()
 
-      val docs = result.expectStatus().isOk.expectBody().json(om.writeValueAsString(ApiResponse(data = data)))
+        val docs = result.expectStatus().isOk.expectBody().json(om.writeValueAsString(ApiResponse(data = data)))
 
-      // Then
-      docs.restDoc(
-        identifier = "getChatRoomInvitation_200",
-        description = "채팅방 참여코드를 위한 key값을 반환하는 api",
-      ) {
-        request {
-          path {
-            "chatRoomId" mean "채팅방 참여코드를 발급할 채팅방 Id"
+        // Then
+        docs.restDoc(
+          identifier = "getChatRoomInvitation_200",
+          description = "채팅방 참여코드를 위한 key값을 반환하는 api",
+        ) {
+          request {
+            path {
+              "chatRoomId" mean "채팅방 참여코드를 발급할 채팅방 Id"
+            }
           }
-        }
 
-        response {
-          body {
-            "data.key" type JsonDataType.Strings mean "참여 코드"
-            "data.expiration" type JsonDataType.Strings mean "참여코드 유효시간"
+          response {
+            body {
+              "data.code" type JsonDataType.Strings mean "참여 코드"
+              "data.expiration" type JsonDataType.Strings mean "참여코드 유효시간"
+            }
           }
         }
       }
     }
-  }
-})
+  })

@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 import Layout from "./components/Layout/Layout";
-import { PhaserGame } from "./components/Phaser/PhaserGame";
+import { ServerMap } from "./components/Phaser/ServerMap";
 import Home from "./pages/Home";
 import Join from "./pages/Join";
 import Login from "./pages/Login";
@@ -14,7 +14,7 @@ function App() {
           <Route path="/join" element={<Join />} />
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
-            <Route path="server/:serverId" element={<PhaserGame />} />
+            <Route path="server/:serverId" element={<ServerMap />} />
           </Route>
         </Routes>
       </BrowserRouter>

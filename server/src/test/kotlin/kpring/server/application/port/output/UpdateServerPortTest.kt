@@ -4,7 +4,6 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldHaveSize
 import kpring.core.server.dto.request.CreateServerRequest
-import kpring.server.domain.ServerUser
 import kpring.test.testcontainer.SpringTestContext
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ContextConfiguration
@@ -34,17 +33,20 @@ class UpdateServerPortTest(
 
     it("가입 유저를 추가할 수 있다.") {
       // given
+      val ownerId = "ownerId"
+      val server = createServerPort.create(CreateServerRequest("serverName"), ownerId)
       val userId = "userId"
-      val server = createServerPort.create(CreateServerRequest("serverName"), userId)
-      val user = ServerUser("test", "test", "test")
-      updateServerPort.inviteUser(server.id, user.id)
+
+      server.registerInvitation(userId)
+      updateServerPort.inviteUser(server.id, userId)
+      val profile = server.addUser(userId, "name", "/path")
 
       // when
-      updateServerPort.addUser(server.id, user)
+      updateServerPort.addUser(profile)
 
       // then
       val result = getServerPort.get(server.id)
-      result.users shouldContain user
+      result.users shouldContain userId
       result.invitedUserIds shouldHaveSize 0
     }
   })

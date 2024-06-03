@@ -6,6 +6,7 @@ import kpring.core.server.dto.ServerInfo
 import kpring.core.server.dto.ServerSimpleInfo
 import kpring.core.server.dto.request.AddUserAtServerRequest
 import kpring.core.server.dto.request.CreateServerRequest
+import kpring.core.server.dto.request.GetServerCondition
 import kpring.server.application.port.input.AddUserAtServerUseCase
 import kpring.server.application.port.input.CreateServerUseCase
 import kpring.server.application.port.input.DeleteServerUseCase
@@ -33,12 +34,13 @@ class RestApiServerController(
       .body(ApiResponse(data = data))
   }
 
-  @GetMapping()
+  @GetMapping
   fun getServerList(
     @RequestHeader("Authorization") token: String,
+    @ModelAttribute condition: GetServerCondition,
   ): ResponseEntity<ApiResponse<List<ServerSimpleInfo>>> {
     val userInfo = authClient.getTokenInfo(token).data!!
-    val data = getServerUseCase.getServerList(userInfo.userId)
+    val data = getServerUseCase.getServerList(condition, userInfo.userId)
     return ResponseEntity.ok()
       .body(ApiResponse(data = data))
   }

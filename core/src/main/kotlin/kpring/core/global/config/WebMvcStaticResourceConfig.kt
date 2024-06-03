@@ -16,7 +16,7 @@ class WebMvcStaticResourceConfig : WebMvcConfigurer {
 
   override fun addCorsMappings(registry: CorsRegistry) {
     registry.addMapping("/**")
-      .allowedOriginPatterns("http://localhost*")
+      .allowedOriginPatterns("*")
       .allowedMethods("GET", "POST", "DELETE", "PUT", "FETCH")
   }
 }

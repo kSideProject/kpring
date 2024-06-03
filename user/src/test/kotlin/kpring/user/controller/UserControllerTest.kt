@@ -14,6 +14,7 @@ import kpring.core.auth.enums.TokenType
 import kpring.core.global.dto.response.ApiResponse
 import kpring.core.global.exception.ServiceException
 import kpring.test.restdoc.dsl.restDoc
+import kpring.test.restdoc.json.JsonDataType.*
 import kpring.user.dto.request.CreateUserRequest
 import kpring.user.dto.request.UpdateUserProfileRequest
 import kpring.user.dto.response.CreateUserResponse
@@ -95,9 +96,9 @@ class UserControllerTest(
                   "Content-Type" mean "application/json"
                 }
                 body {
-                  "email" type "String" mean "이메일"
-                  "password" type "String" mean "비밀번호"
-                  "username" type "String" mean "사용자 이름"
+                  "email" type Strings mean "이메일"
+                  "password" type Strings mean "비밀번호"
+                  "username" type Strings mean "사용자 이름"
                 }
               }
             }
@@ -142,15 +143,15 @@ class UserControllerTest(
                   "Content-Type" mean "application/json"
                 }
                 body {
-                  "email" type "String" mean "이메일"
-                  "password" type "String" mean "비밀번호"
-                  "username" type "String" mean "사용자 이름"
+                  "email" type Strings mean "이메일"
+                  "password" type Strings mean "비밀번호"
+                  "username" type Strings mean "사용자 이름"
                 }
               }
 
               response {
                 body {
-                  "message" type "String" mean "에러 메시지"
+                  "message" type Strings mean "에러 메시지"
                 }
               }
             }
@@ -193,15 +194,15 @@ class UserControllerTest(
                   "Content-Type" mean "application/json"
                 }
                 body {
-                  "email" type "String" mean "이메일"
-                  "password" type "String" mean "비밀번호"
-                  "username" type "String" mean "사용자 이름"
+                  "email" type Strings mean "이메일"
+                  "password" type Strings mean "비밀번호"
+                  "username" type Strings mean "사용자 이름"
                 }
               }
 
               response {
                 body {
-                  "message" type "String" mean "에러 메시지"
+                  "message" type Strings mean "에러 메시지"
                 }
               }
             }
@@ -246,15 +247,15 @@ class UserControllerTest(
                   "Content-Type" mean "application/json"
                 }
                 body {
-                  "email" type "String" mean "이메일"
-                  "password" type "String" mean "비밀번호"
-                  "username" type "String" mean "사용자 이름"
+                  "email" type Strings mean "이메일"
+                  "password" type Strings mean "비밀번호"
+                  "username" type Strings mean "사용자 이름"
                 }
               }
 
               response {
                 body {
-                  "message" type "String" mean "에러 메시지"
+                  "message" type Strings mean "에러 메시지"
                 }
               }
             }
@@ -299,12 +300,12 @@ class UserControllerTest(
                   "Content-Type" mean "application/json"
                 }
                 body {
-                  "email" type "String" mean "이메일"
+                  "email" type Strings mean "이메일"
                 }
               }
               response {
                 body {
-                  "data.email" type "String" mean "이메일"
+                  "data.email" type Strings mean "이메일"
                 }
               }
             }
@@ -344,12 +345,12 @@ class UserControllerTest(
                   "Content-Type" mean "application/json"
                 }
                 body {
-                  "email" type "String" mean "이메일"
+                  "email" type Strings mean "이메일"
                 }
               }
               response {
                 body {
-                  "message" type "String" mean "에러 메시지"
+                  "message" type Strings mean "에러 메시지"
                 }
               }
             }
@@ -389,12 +390,12 @@ class UserControllerTest(
                   "Content-Type" mean "application/json"
                 }
                 body {
-                  "email" type "String" mean "이메일"
+                  "email" type Strings mean "이메일"
                 }
               }
               response {
                 body {
-                  "message" type "String" mean "에러 메시지"
+                  "message" type Strings mean "에러 메시지"
                 }
               }
             }
@@ -408,7 +409,9 @@ class UserControllerTest(
           val token = "Bearer test"
           val data =
             GetUserProfileResponse.builder()
-              .email("test@test.com")
+              .userId(userId)
+              .email(TEST_EMAIL)
+              .username(TEST_USERNAME)
               .build()
           val response = ApiResponse(data = data)
           every { authClient.getTokenInfo(token) }.returns(
@@ -445,7 +448,9 @@ class UserControllerTest(
               }
               response {
                 body {
-                  "data.email" type "String" mean "이메일"
+                  "data.userId" type Strings mean "사용자 아이디"
+                  "data.email" type Strings mean "이메일"
+                  "data.username" type Strings mean "닉네임"
                 }
               }
             }
@@ -483,7 +488,7 @@ class UserControllerTest(
                 header { "Authorization" mean "Bearer token" }
               }
               response {
-                body { "message" type "String" mean "에러 메시지" }
+                body { "message" type Strings mean "에러 메시지" }
               }
             }
         }
@@ -518,7 +523,7 @@ class UserControllerTest(
                 path { "userId" mean "사용자 아이디" }
                 header { "Authorization" mean "Bearer token" }
               }
-              response { body { "message" type "String" mean "에러 메시지" } }
+              response { body { "message" type Strings mean "에러 메시지" } }
             }
         }
       }
@@ -625,7 +630,7 @@ class UserControllerTest(
                 header { "Authorization" mean "jwt 토큰 정보" }
               }
               response {
-                body { "message" type "String" mean "에러 메시지" }
+                body { "message" type Strings mean "에러 메시지" }
               }
             }
         }

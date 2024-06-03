@@ -7,6 +7,7 @@ import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import kpring.core.global.dto.response.ApiResponse
 import kpring.test.restdoc.dsl.restDoc
+import kpring.test.restdoc.json.JsonDataType.*
 import kpring.user.dto.request.LoginRequest
 import kpring.user.dto.request.LogoutRequest
 import kpring.user.dto.response.LoginResponse
@@ -69,14 +70,14 @@ class LoginControllerTest(
         document.restDoc("login200", "로그인 API") {
           request {
             body {
-              "email" type "String" mean "email"
-              "password" type "String" mean "password"
+              "email" type Strings mean "email"
+              "password" type Strings mean "password"
             }
           }
           response {
             body {
-              "data.accessToken" type "String" mean "accessToken"
-              "data.refreshToken" type "String" mean "refreshToken"
+              "data.accessToken" type Strings mean "accessToken"
+              "data.refreshToken" type Strings mean "refreshToken"
             }
           }
         }
@@ -105,8 +106,8 @@ class LoginControllerTest(
           request {
 
             body {
-              "email" type "String" mean "email"
-              "password" type "String" mean "password"
+              "email" type Strings mean "email"
+              "password" type Strings mean "password"
             }
           }
         }
@@ -135,8 +136,8 @@ class LoginControllerTest(
           request {
 
             body {
-              "email" type "String" mean "email"
-              "password" type "String" mean "password"
+              "email" type Strings mean "email"
+              "password" type Strings mean "password"
             }
           }
         }
@@ -166,8 +167,8 @@ class LoginControllerTest(
         document.restDoc("logout200", "로그아웃 API") {
           request {
             body {
-              "accessToken" type "String" mean "accessToken"
-              "refreshToken" type "String" mean "refreshToken"
+              "accessToken" type Strings mean "accessToken"
+              "refreshToken" type Strings mean "refreshToken"
             }
           }
         }
@@ -195,8 +196,8 @@ class LoginControllerTest(
         document.restDoc("logout400", "로그아웃 API") {
           request {
             body {
-              "accessToken" type "String" mean "accessToken"
-              "refreshToken" type "String" mean "refreshToken"
+              "accessToken" type Strings mean "accessToken"
+              "refreshToken" type Strings mean "refreshToken"
             }
           }
         }
@@ -224,8 +225,8 @@ class LoginControllerTest(
         document.restDoc("logout500", "로그아웃 API") {
           request {
             body {
-              "accessToken" type "String" mean "accessToken"
-              "refreshToken" type "String" mean "refreshToken"
+              "accessToken" type Strings mean "accessToken"
+              "refreshToken" type Strings mean "refreshToken"
             }
           }
         }

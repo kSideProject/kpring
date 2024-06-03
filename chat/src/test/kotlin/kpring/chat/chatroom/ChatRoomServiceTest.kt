@@ -7,6 +7,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import kpring.chat.chatroom.model.ChatRoom
 import kpring.chat.chatroom.repository.ChatRoomRepository
+import kpring.chat.chatroom.repository.UserChatRoomInvitationRepository
 import kpring.chat.chatroom.service.ChatRoomService
 import kpring.chat.global.ChatRoomTest
 import kpring.chat.global.CommonTest
@@ -16,7 +17,8 @@ import java.util.*
 class ChatRoomServiceTest : FunSpec({
 
   val chatRoomRepository = mockk<ChatRoomRepository>()
-  val chatRoomService = ChatRoomService(chatRoomRepository)
+  val userChatRoomInvitationRepository = mockk<UserChatRoomInvitationRepository>()
+  val chatRoomService = ChatRoomService(chatRoomRepository, userChatRoomInvitationRepository)
 
   test("createChatRoom 는 새 ChatRoom을 저장해야 한다") {
     // Given

@@ -373,6 +373,7 @@ class RestApiServerControllerTest(
           description = "서버 삭제 api",
         ) {
           request {
+            header { "Authorization" mean "jwt 사용자 토큰" }
             path { "serverId" mean "서버 id" }
           }
         }

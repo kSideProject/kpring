@@ -9,26 +9,39 @@ import kpring.core.global.exception.CommonErrorCode
 import kpring.core.global.exception.ServiceException
 import kpring.server.application.port.output.DeleteServerPort
 import kpring.server.application.port.output.GetServerPort
+import kpring.server.application.port.output.GetServerProfilePort
 import kpring.server.application.port.output.UpdateServerPort
 import kpring.server.application.service.ServerService
 import kpring.server.domain.Server
+import kpring.server.domain.ServerProfile
+import kpring.server.domain.ServerRole
 
 class DeleteServerUseCaseTest(
-  val updateServerPort: UpdateServerPort = mockk(),
   val getServerPort: GetServerPort = mockk(),
+  val getServerProfilePort: GetServerProfilePort = mockk(),
+  val updateServerPort: UpdateServerPort = mockk(),
   val deleteServerPort: DeleteServerPort = mockk(),
-  val service: ServerService = ServerService(mockk(), getServerPort, updateServerPort, deleteServerPort),
+  val service: ServerService = ServerService(mockk(), getServerPort, getServerProfilePort, updateServerPort, deleteServerPort),
 ) : DescribeSpec({
     it("삭제하는 서버에 대한 삭제 권한이 없는 유저라면 예외가 발생한다.") {
       // given
       val serverId = "serverId"
       val userId = "userId"
-
-      every { getServerPort.get(serverId) } returns
+      val server =
         Server(
           id = serverId,
           name = "serverName",
         )
+      val serverProfile =
+        ServerProfile(
+          userId = userId,
+          name = "name",
+          imagePath = "/imagePath",
+          role = ServerRole.MEMBER,
+          server = server,
+        )
+
+      every { getServerProfilePort.get(serverId, userId) } returns serverProfile
 
       // when
       val ex =

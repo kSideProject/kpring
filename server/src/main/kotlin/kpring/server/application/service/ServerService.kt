@@ -103,8 +103,8 @@ class ServerService(
     serverId: String,
     userId: String,
   ) {
-    val server = getServer.get(serverId)
-    if (server.dontHasRole(userId, ServerAuthority.DELETE)) {
+    val serverProfile = getServerProfilePort.get(serverId, userId)
+    if (serverProfile.dontHasRole(ServerAuthority.DELETE)) {
       throw ServiceException(CommonErrorCode.FORBIDDEN)
     }
     deleteServerPort.delete(serverId)

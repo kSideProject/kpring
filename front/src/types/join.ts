@@ -15,3 +15,8 @@ export type JoinBoxValidateErrors = {
 export interface Validators {
   [key: string]: (input: string) => string;
 }
+
+export interface AlertInfo {
+  severity: "success" | "info" | "warning" | "error";
+  message: string;
+}

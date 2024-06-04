@@ -32,7 +32,7 @@ const LeftSideBar = () => {
 
   return (
     <Box sx={{ position: "absolute" }}>
-      <Drawer
+      {/* <Drawer
         variant="permanent"
         sx={{
           width: DRAWER_WIDTH,
@@ -77,7 +77,7 @@ const LeftSideBar = () => {
           close={handleDrawerClose}
           serverID={serverId}
         />
-      </Drawer>
+      </Drawer> */}
     </Box>
   );
 };

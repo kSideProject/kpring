@@ -15,6 +15,7 @@ export class Preloader extends Scene {
     this.load.image("dirtImg", "../assets/dirt.png");
     this.load.image("basicPlantsImg", "../assets/basic_plants.png");
     this.load.image("hillImg", "../assets/hills.png");
+    this.load.image("hillCollidesImg", "../assets/hills_collider.png");
     this.load.image("woodenHouseImg", "../assets/wooden_house.png");
     this.load.image("basicGrassImg", "../assets/basic_grass.png");
     this.load.image("cowImg", "../assets/cow.png");

@@ -7,6 +7,7 @@ import io.mockk.every
 import io.mockk.mockk
 import kpring.core.global.exception.CommonErrorCode
 import kpring.core.global.exception.ServiceException
+import kpring.server.application.port.output.DeleteServerPort
 import kpring.server.application.port.output.GetServerPort
 import kpring.server.application.port.output.GetServerProfilePort
 import kpring.server.application.port.output.UpdateServerPort
@@ -16,10 +17,11 @@ import kpring.server.domain.ServerProfile
 import kpring.server.domain.ServerRole
 
 class AddUserAtServerUseCaseTest(
-  val updateServerPort: UpdateServerPort = mockk(),
   val getServerPort: GetServerPort = mockk(),
   val getServerProfilePort: GetServerProfilePort = mockk(),
-  val service: ServerService = ServerService(mockk(), getServerPort, getServerProfilePort, updateServerPort),
+  val updateServerPort: UpdateServerPort = mockk(),
+  val deleteServerPort: DeleteServerPort = mockk(),
+  val service: ServerService = ServerService(mockk(), getServerPort, getServerProfilePort, updateServerPort, deleteServerPort),
 ) : DescribeSpec({
 
     it("유저 초대시 초대하는 유저가 권한이 없다면 예외를 던진다") {

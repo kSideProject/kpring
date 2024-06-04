@@ -1,0 +1,297 @@
+openapi: 3.0.1
+info:
+  title: Server API
+  description: API document
+  version: 0.1.0
+servers:
+- url: http://localhost:30001
+tags: []
+paths:
+  /api/v1/server:
+    get:
+      tags:
+      - api
+      summary: 서버 목록 조회 api
+      description: 서버 목록 조회 api
+      operationId: get_server_list_info_200
+      parameters:
+      - name: serverIds
+        in: query
+        description: 조회시 해당 서버 목록만을 조회합니다. 값이 없다면 조건은 적용되지 않습니다.
+        required: true
+        schema:
+          type: string
+      - name: Authorization
+        in: header
+        description: jwt access token
+        required: true
+        schema:
+          type: string
+        example: Bearer test_token
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-v1-server-333958256'
+              examples:
+                get_server_list_info_200:
+                  value: |-
+                    {
+                      "data" : [ {
+                        "id" : "server1",
+                        "name" : "test_server",
+                        "bookmarked" : false
+                      }, {
+                        "id" : "server2",
+                        "name" : "test_server",
+                        "bookmarked" : true
+                      } ]
+                    }
+    post:
+      tags:
+      - api
+      summary: 서버 생성 api
+      description: 서버 생성 api
+      operationId: create_server_200
+      parameters:
+      - name: Authorization
+        in: header
+        description: jwt access token
+        required: true
+        schema:
+          type: string
+        example: Bearer mock_token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/api-v1-server-1104088939'
+            examples:
+              create_server_200:
+                value: |-
+                  {
+                    "serverName" : "test server"
+                  }
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-v1-server1708269356'
+              examples:
+                create_server_200:
+                  value: |-
+                    {
+                      "data" : {
+                        "serverId" : "1",
+                        "serverName" : "test server"
+                      }
+                    }
+  /api/v1/server/{serverId}:
+    get:
+      tags:
+      - api
+      summary: 서버 단건 조회 api
+      description: 서버 단건 조회 api
+      operationId: get_server_info_
+      parameters:
+      - name: serverId
+        in: path
+        description: 서버 id
+        required: true
+        schema:
+          type: string
+      responses:
+        "404":
+          description: "404"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-v1-server-serverId1647452815'
+              examples:
+                get_server_info_with_invalid_id:
+                  value: |-
+                    {
+                      "message" : "요청한 자원을 찾을 수 없습니다."
+                    }
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-v1-server-serverId-187176522'
+              examples:
+                get_server_info_200:
+                  value: |-
+                    {
+                      "data" : {
+                        "id" : "test_server_id",
+                        "name" : "test_server",
+                        "users" : [ ]
+                      }
+                    }
+  /api/v1/server/{serverId}/user:
+    put:
+      tags:
+      - api
+      summary: 서버 가입 api
+      description: 서버 가입 api
+      operationId: add_invited_user_200
+      parameters:
+      - name: serverId
+        in: path
+        description: 서버 id
+        required: true
+        schema:
+          type: string
+      - name: Authorization
+        in: header
+        description: jwt access token
+        required: true
+        schema:
+          type: string
+        example: Bearer mock_token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/api-v1-server-serverId-user1444998761'
+            examples:
+              add_invited_user_200:
+                value: |-
+                  {
+                    "userId" : "userId",
+                    "userName" : "test",
+                    "profileImage" : "test"
+                  }
+      responses:
+        "200":
+          description: "200"
+  /api/v1/server/{serverId}/invitation/{userId}:
+    put:
+      tags:
+      - api
+      summary: 서버 초대 api
+      description: 서버 초대 api
+      operationId: invite_user_200
+      parameters:
+      - name: serverId
+        in: path
+        description: 서버 id
+        required: true
+        schema:
+          type: string
+      - name: userId
+        in: path
+        description: 초대할 유저 id
+        required: true
+        schema:
+          type: string
+      - name: Authorization
+        in: header
+        description: jwt access token
+        required: true
+        schema:
+          type: string
+        example: Bearer mock_token
+      responses:
+        "200":
+          description: "200"
+components:
+  schemas:
+    api-v1-server-serverId-187176522:
+      type: object
+      properties:
+        data:
+          required:
+          - id
+          - name
+          - users
+          type: object
+          properties:
+            name:
+              type: string
+              description: 생성된 서버 이름
+            id:
+              type: string
+              description: 서버 id
+            users:
+              type: array
+              description: 서버에 가입된 유저 목록
+              items:
+                oneOf:
+                - type: object
+                - type: boolean
+                - type: string
+                - type: number
+    api-v1-server-1104088939:
+      required:
+      - serverName
+      type: object
+      properties:
+        serverName:
+          type: string
+          description: 생성할 서버의 이름
+    api-v1-server-333958256:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            required:
+            - bookmarked
+            - id
+            - name
+            type: object
+            properties:
+              bookmarked:
+                type: boolean
+                description: 북마크 여부
+              name:
+                type: string
+                description: 서버 이름
+              id:
+                type: string
+                description: 서버 id
+    api-v1-server-serverId-user1444998761:
+      required:
+      - profileImage
+      - userId
+      - userName
+      type: object
+      properties:
+        profileImage:
+          type: string
+          description: 가입할 유저 프로필 이미지
+        userName:
+          type: string
+          description: 가입할 유저 이름
+        userId:
+          type: string
+          description: 가입할 유저 id
+    api-v1-server-serverId1647452815:
+      required:
+      - message
+      type: object
+      properties:
+        message:
+          type: string
+          description: 실패 관련 메시지
+    api-v1-server1708269356:
+      type: object
+      properties:
+        data:
+          required:
+          - serverId
+          - serverName
+          type: object
+          properties:
+            serverName:
+              type: string
+              description: 생성된 서버 이름
+            serverId:
+              type: string
+              description: 서버 id

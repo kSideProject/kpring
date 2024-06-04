@@ -1,0 +1,25 @@
+ingress:
+  name: kpring-ingress
+  enabled: false
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+  hosts:
+    - host:
+      paths:
+        - path: /auth(/|$)(.*)
+          pathType: ImplementationSpecific
+          service: auth-application
+        - path: /user(/|$)(.*)
+          pathType: ImplementationSpecific
+          service: user-application
+        - path: /server(/|$)(.*)
+          pathType: ImplementationSpecific
+          service: server-application
+        - path: /swagger(/|$)(.*)
+          pathType: ImplementationSpecific
+          service: swagger-ui
+  tls: []
+
+resources: {}

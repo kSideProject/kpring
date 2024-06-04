@@ -13,13 +13,14 @@ class WebFluxStaticResourceConfig : WebFluxConfigurer {
   private val logger = LoggerFactory.getLogger("test")
 
   override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
+    logger.info("test run configuration")
     registry.addResourceHandler("/static/**")
       .addResourceLocations("classpath:/static/")
   }
 
   override fun addCorsMappings(registry: CorsRegistry) {
     registry.addMapping("/**")
-      .allowedOriginPatterns("http://localhost*")
+      .allowedOriginPatterns("*")
       .allowedMethods("GET", "POST", "DELETE", "PUT", "FETCH")
   }
 }

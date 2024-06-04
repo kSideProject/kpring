@@ -1,13 +1,9 @@
 package kpring.chat.chatroom.repository
 
 import kpring.chat.global.config.PropertyConfig
-import kpring.chat.global.exception.ErrorCode
-import kpring.chat.global.exception.GlobalException
-import kpring.core.chat.chat.dto.response.InvitationResponse
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.ValueOperations
 import org.springframework.stereotype.Component
-import java.time.LocalDateTime
 import java.util.*
 
 @Component
@@ -16,19 +12,16 @@ class UserChatRoomInvitationRepository(
   private val propertyConfig: PropertyConfig,
   private val invitationChatRoomRepository: InvitationChatRoomRepository,
 ) {
-  fun getInvitation(
+  fun getInvitationCode(
     userId: String,
     chatRoomId: String,
-  ): InvitationResponse {
+  ): String {
     val key = generateKey(userId, chatRoomId)
     var value = redisTemplate.opsForValue().get(key)
     if (value == null) {
       value = setInvitation(key, chatRoomId)
     }
-
-    val expiration = redisTemplate.getExpire(key)
-
-    return InvitationResponse(value, LocalDateTime.now().plusSeconds(expiration).toString())
+    return value
   }
 
   fun setInvitation(
@@ -40,6 +33,14 @@ class UserChatRoomInvitationRepository(
     ops.set(key, invitationCode, propertyConfig.getExpiration())
     invitationChatRoomRepository.setInvitationCode(invitationCode, chatRoomId)
     return invitationCode
+  }
+
+  fun getExpiration(
+    userId: String,
+    chatRoomId: String,
+  ): Long{
+    val key = chatRoomId
+    return redisTemplate.getExpire(key)
   }
 
   private fun generateKey(

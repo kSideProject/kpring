@@ -24,19 +24,18 @@ class ChatRoomService(
     chatRoomId: String,
     userId: String,
   ) {
-    verifyAuthorizationForChatRoom(chatRoomId, userId)
+    verifyChatRoomAccess(chatRoomId, userId)
     val chatRoom: ChatRoom = getChatRoom(chatRoomId)
     chatRoom.removeUser(userId)
     chatRoomRepository.save(chatRoom)
   }
 
-  fun verifyAuthorizationForChatRoom(
+  fun verifyChatRoomAccess(
     chatRoomId: String,
     userId: String,
   ) {
-    // check if there is a chatroom with the chatRoomId and the user is one of the members
     if (!chatRoomRepository.existsByIdAndMembersContaining(chatRoomId, userId)) {
-      throw GlobalException(ErrorCode.UNAUTHORIZED_CHATROOM)
+      throw GlobalException(ErrorCode.FORBIDDEN_CHATROOM)
     }
   }
 

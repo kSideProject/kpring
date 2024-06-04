@@ -5,7 +5,9 @@ import jakarta.validation.constraints.NotNull
 
 data class CreateChatRequest(
   @field:NotNull
-  val room: String,
+  val id: String,
+  @field:NotNull
+  val type: ChatType,
   @field:NotBlank
   val content: String,
 )

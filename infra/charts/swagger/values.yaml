@@ -4,3 +4,6 @@ service:
   image: swaggerapi/swagger-ui
   port: 8080
   nodePort: 30000
+
+swagger:
+  urls: "[{name: 'auth', url: 'http://localhost/auth/static/openapi3.yaml'},{name: 'user', url: 'http://localhost/user/static/openapi3.yaml'}, {name: 'server', url: 'http://localhost/server/static/openapi3.yaml'}]"

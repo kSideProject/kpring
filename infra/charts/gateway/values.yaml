@@ -17,9 +17,6 @@ ingress:
         - path: /server(/|$)(.*)
           pathType: ImplementationSpecific
           service: server-application
-        - path: /swagger(/|$)(.*)
-          pathType: ImplementationSpecific
-          service: swagger-ui
   tls: []
 
 resources: {}

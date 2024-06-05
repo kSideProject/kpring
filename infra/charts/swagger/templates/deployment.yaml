@@ -21,4 +21,8 @@ spec:
           image: {{ .Values.service.image }}
           ports:
             - containerPort: {{ .Values.service.port }}
+          env:
+            - name: URLS
+              value: |
+                {{ .Values.swagger.urls }}
 {{ end }}

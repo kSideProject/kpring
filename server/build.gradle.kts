@@ -68,7 +68,7 @@ kapt {
 }
 
 openapi3 {
-  setServer("http://localhost:30001")
+  setServer("http://localhost/server")
   title = "Server API"
   description = "API document"
   version = "0.1.0"

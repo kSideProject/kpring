@@ -8,7 +8,6 @@ import kpring.chat.global.exception.GlobalException
 import kpring.core.chat.chat.dto.response.InvitationResponse
 import kpring.core.chat.chatroom.dto.request.CreateChatRoomRequest
 import org.springframework.stereotype.Service
-import java.time.LocalDateTime
 
 @Service
 class ChatRoomService(
@@ -39,9 +38,8 @@ class ChatRoomService(
     userId: String,
   ): InvitationResponse {
     verifyChatRoomAccess(chatRoomId, userId)
-    val code = invitationRepository.getInvitationCode(userId,chatRoomId)
-    val expiration = invitationRepository.getExpiration(userId,chatRoomId)
-    return InvitationResponse(code, expiration)
+    val code = invitationRepository.getInvitationCode(userId, chatRoomId)
+    return InvitationResponse(code)
   }
 
   fun verifyChatRoomAccess(

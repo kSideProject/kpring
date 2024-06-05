@@ -48,9 +48,18 @@ class LoginControllerTest(
     feature("API : login API") {
       scenario("200 OK 로그인 성공") {
         // given
-        val request = LoginRequest.builder().email("test@email.com").password("TestPW1234!").build()
+        val request =
+          LoginRequest.builder()
+            .email("test@email.com")
+            .password("tesT@1234")
+            .build()
+
         val data =
-          LoginResponse.builder().accessToken("accessToken").refreshToken("refreshToken").build()
+          LoginResponse.builder()
+            .accessToken("accessToken")
+            .refreshToken("refreshToken")
+            .build()
+
         val response = ApiResponse(data = data)
         every { loginService.login(request) } returns data
 

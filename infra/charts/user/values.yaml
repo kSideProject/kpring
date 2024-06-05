@@ -6,7 +6,7 @@ service:
   nodePort: 30002
 
 api:
-  authServiceUrl: auth-application/api/v1
+  authServiceUrl: http://auth-application
 
 mysql:
   name: user-mysql

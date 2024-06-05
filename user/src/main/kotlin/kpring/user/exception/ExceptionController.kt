@@ -36,6 +36,8 @@ class ExceptionController {
 
   @ExceptionHandler(IllegalArgumentException::class)
   fun handleIllegalArgumentException(e: IllegalArgumentException): ResponseEntity<Void> {
+    logger.error("error message : ", e)
+
     return ResponseEntity.badRequest().build()
   }
 

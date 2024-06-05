@@ -39,8 +39,9 @@ class InvitationRepository(
     userId: String,
     chatRoomId: String,
   ): Long {
-    val key = chatRoomId
-    return redisTemplate.getExpire(key)
+    val key = generateKey(userId, chatRoomId)
+    val expiration = redisTemplate.getExpire(key)
+    return expiration
   }
 
   fun generateCode(

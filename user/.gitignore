@@ -38,3 +38,6 @@ out/
 
 ### Kotlin ###
 .kotlin
+
+### api docs ###
+/src/main/resources/static/openapi3.yaml

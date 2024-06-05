@@ -12,7 +12,7 @@ spec:
   {{- end }}
 
   ports:
-    - port: {{ .Values.service.port }}
+    - port: 80
       targetPort: {{ .Values.service.port }}
       protocol: TCP
       {{- if eq .Values.global.profile "local" }}

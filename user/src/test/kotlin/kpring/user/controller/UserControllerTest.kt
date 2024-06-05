@@ -14,6 +14,7 @@ import kpring.core.auth.enums.TokenType
 import kpring.core.global.dto.response.ApiResponse
 import kpring.core.global.exception.ServiceException
 import kpring.test.restdoc.dsl.restDoc
+import kpring.test.restdoc.json.JsonDataType.*
 import kpring.user.dto.request.CreateUserRequest
 import kpring.user.dto.request.UpdateUserProfileRequest
 import kpring.user.dto.response.CreateUserResponse
@@ -104,13 +105,14 @@ class UserControllerTest(
                   "Content-Type" mean "application/json"
                 }
                 body {
-                  "email" type "String" mean "이메일"
-                  "password" type "String" mean "비밀번호"
-                  "username" type "String" mean "사용자 이름"
+                  "email" type Strings mean "이메일"
+                  "password" type Strings mean "비밀번호"
+                  "username" type Strings mean "사용자 이름"
                 }
               }
             }
         }
+
         it("회원가입 실패 : 이미 존재하는 이메일") {
           // given
           val request =
@@ -150,18 +152,20 @@ class UserControllerTest(
                   "Content-Type" mean "application/json"
                 }
                 body {
-                  "email" type "String" mean "이메일"
-                  "password" type "String" mean "비밀번호"
-                  "username" type "String" mean "사용자 이름"
+                  "email" type Strings mean "이메일"
+                  "password" type Strings mean "비밀번호"
+                  "username" type Strings mean "사용자 이름"
                 }
               }
+
               response {
                 body {
-                  "message" type "String" mean "에러 메시지"
+                  "message" type Strings mean "에러 메시지"
                 }
               }
             }
         }
+
         it("회원가입 실패 : 필수입력 값 미전송") {
           // given
           val request =
@@ -199,18 +203,20 @@ class UserControllerTest(
                   "Content-Type" mean "application/json"
                 }
                 body {
-                  "email" type "String" mean "이메일"
-                  "password" type "String" mean "비밀번호"
-                  "username" type "String" mean "사용자 이름"
+                  "email" type Strings mean "이메일"
+                  "password" type Strings mean "비밀번호"
+                  "username" type Strings mean "사용자 이름"
                 }
               }
+
               response {
                 body {
-                  "message" type "String" mean "에러 메시지"
+                  "message" type Strings mean "에러 메시지"
                 }
               }
             }
         }
+
         it("회원가입 실패 : 서버 내부 오류") {
           // given
           val request =
@@ -250,19 +256,21 @@ class UserControllerTest(
                   "Content-Type" mean "application/json"
                 }
                 body {
-                  "email" type "String" mean "이메일"
-                  "password" type "String" mean "비밀번호"
-                  "username" type "String" mean "사용자 이름"
+                  "email" type Strings mean "이메일"
+                  "password" type Strings mean "비밀번호"
+                  "username" type Strings mean "사용자 이름"
                 }
               }
+
               response {
                 body {
-                  "message" type "String" mean "에러 메시지"
+                  "message" type Strings mean "에러 메시지"
                 }
               }
             }
         }
       }
+
       describe("회원정보 수정 API") {
         it("회원정보 수정 성공") {
           // given
@@ -339,16 +347,17 @@ class UserControllerTest(
                   "file" mean "프로필 이미지 파일"
                 }
                 part("json") {
-                  "email" mean "이메일"
-                  "username" mean "닉네임"
-                  "password" mean "기존 비밀번호"
-                  "newPassword" mean "새 비밀번호"
+                  "email" type Strings mean "이메일"
+                  "username" type Strings mean "닉네임"
+                  "password" type Strings mean "기존 비밀번호"
+                  "newPassword" type Strings mean "새 비밀번호"
                 }
               }
               response {
                 body {
-                  "data.email" type "String" mean "이메일"
-                  "data.username" type "String" mean "닉네임"
+                  "data.email" type Strings mean "이메일"
+                  "data.username" type Strings mean "닉네임"
+                  "data.email" type Strings mean "이메일"
                 }
               }
             }
@@ -423,19 +432,20 @@ class UserControllerTest(
                   "file" mean "프로필 이미지 파일"
                 }
                 part("json") {
-                  "email" mean "이메일"
-                  "username" mean "닉네임"
-                  "password" mean "기존 비밀번호"
-                  "newPassword" mean "새 비밀번호"
+                  "email" type Strings mean "이메일"
+                  "username" type Strings mean "닉네임"
+                  "password" type Strings mean "기존 비밀번호"
+                  "newPassword" type Strings mean "새 비밀번호"
                 }
               }
               response {
                 body {
-                  "message" type "String" mean "에러 메시지"
+                  "message" type Strings mean "에러 메시지"
                 }
               }
             }
         }
+
         it("회원정보 수정 실패 : 서버 내부 오류") {
           // given
           val userId = 1L
@@ -503,20 +513,21 @@ class UserControllerTest(
                   "file" mean "프로필 이미지 파일"
                 }
                 part("json") {
-                  "email" mean "이메일"
-                  "username" mean "닉네임"
-                  "password" mean "기존 비밀번호"
-                  "newPassword" mean "새 비밀번호"
+                  "email" type Strings mean "이메일"
+                  "username" type Strings mean "닉네임"
+                  "password" type Strings mean "기존 비밀번호"
+                  "newPassword" type Strings mean "새 비밀번호"
                 }
               }
               response {
                 body {
-                  "message" type "String" mean "에러 메시지"
+                  "message" type Strings mean "에러 메시지"
                 }
               }
             }
         }
       }
+
       describe("프로필 조회 API") {
         it("조회 성공") {
           // given
@@ -563,13 +574,14 @@ class UserControllerTest(
               }
               response {
                 body {
-                  "data.userId" type Long mean "사용자 아이디"
-                  "data.email" type "String" mean "이메일"
-                  "data.username" type "String" mean "닉네임"
+                  "data.userId" type Strings mean "사용자 아이디"
+                  "data.email" type Strings mean "이메일"
+                  "data.username" type Strings mean "닉네임"
                 }
               }
             }
         }
+
         it("조회 실패 : 권한이 없는 토큰") {
           // given
           val userId = 1L
@@ -602,10 +614,11 @@ class UserControllerTest(
                 header { "Authorization" mean "Bearer token" }
               }
               response {
-                body { "message" type "String" mean "에러 메시지" }
+                body { "message" type Strings mean "에러 메시지" }
               }
             }
         }
+
         it("조회 실패 : 서버 내부 오류") {
           // given
           val userId = 1L
@@ -636,10 +649,11 @@ class UserControllerTest(
                 path { "userId" mean "사용자 아이디" }
                 header { "Authorization" mean "Bearer token" }
               }
-              response { body { "message" type "String" mean "에러 메시지" } }
+              response { body { "message" type Strings mean "에러 메시지" } }
             }
         }
       }
+
       describe("탈퇴 API") {
         it("탈퇴 성공") {
           // given
@@ -677,6 +691,7 @@ class UserControllerTest(
               }
             }
         }
+
         it("탈퇴 실패 : 권한이 없는 토큰") {
           // given
           val userId = 1L
@@ -709,6 +724,7 @@ class UserControllerTest(
               }
             }
         }
+
         it("탈퇴 실패 : 서버 내부 오류") {
           // given
           val userId = 1L
@@ -740,7 +756,7 @@ class UserControllerTest(
                 header { "Authorization" mean "jwt 토큰 정보" }
               }
               response {
-                body { "message" type "String" mean "에러 메시지" }
+                body { "message" type Strings mean "에러 메시지" }
               }
             }
         }

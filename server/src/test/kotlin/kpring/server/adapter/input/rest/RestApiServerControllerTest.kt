@@ -22,6 +22,7 @@ import kpring.core.server.dto.response.CreateServerResponse
 import kpring.server.application.service.ServerService
 import kpring.server.config.CoreConfiguration
 import kpring.test.restdoc.dsl.restDoc
+import kpring.test.restdoc.json.JsonDataType.*
 import kpring.test.web.URLBuilder
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -104,14 +105,14 @@ class RestApiServerControllerTest(
           request {
             header { "Authorization" mean "jwt access token" }
             body {
-              "serverName" type "String" mean "생성할 서버의 이름"
+              "serverName" type Strings mean "생성할 서버의 이름"
             }
           }
 
           response {
             body {
-              "data.serverId" type "String" mean "서버 id"
-              "data.serverName" type "String" mean "생성된 서버 이름"
+              "data.serverId" type Strings mean "서버 id"
+              "data.serverName" type Strings mean "생성된 서버 이름"
             }
           }
         }
@@ -151,9 +152,9 @@ class RestApiServerControllerTest(
 
           response {
             body {
-              "data.id" type "String" mean "서버 id"
-              "data.name" type "String" mean "생성된 서버 이름"
-              "data.users" type "Array" mean "서버에 가입된 유저 목록"
+              "data.id" type Strings mean "서버 id"
+              "data.name" type Strings mean "생성된 서버 이름"
+              "data.users" type Arrays mean "서버에 가입된 유저 목록"
             }
           }
         }
@@ -189,7 +190,7 @@ class RestApiServerControllerTest(
 
           response {
             body {
-              "message" type "String" mean "실패 관련 메시지"
+              "message" type Strings mean "실패 관련 메시지"
             }
           }
         }
@@ -227,9 +228,9 @@ class RestApiServerControllerTest(
             header { "Authorization" mean "jwt access token" }
             path { "serverId" mean "서버 id" }
             body {
-              "userId" type "String" mean "가입할 유저 id"
-              "userName" type "String" mean "가입할 유저 이름"
-              "profileImage" type "String" mean "가입할 유저 프로필 이미지"
+              "userId" type Strings mean "가입할 유저 id"
+              "userName" type Strings mean "가입할 유저 이름"
+              "profileImage" type Strings mean "가입할 유저 프로필 이미지"
             }
           }
         }
@@ -328,10 +329,52 @@ class RestApiServerControllerTest(
 
           response {
             body {
-              "data[].id" type "String" mean "서버 id"
-              "data[].name" type "String" mean "서버 이름"
-              "data[].bookmarked" type "Boolean" mean "북마크 여부"
+              "data[].id" type Strings mean "서버 id"
+              "data[].name" type Strings mean "서버 이름"
+              "data[].bookmarked" type Booleans mean "북마크 여부"
             }
+          }
+        }
+      }
+    }
+
+    describe("DELETE /api/v1/server/{serverId} : 서버 삭제") {
+      val url = "/api/v1/server/{serverId}"
+      it("요청 성공시") {
+        // given
+        val serverId = "test_server_id"
+        val token = "Bearer mock_token"
+        every { authClient.getTokenInfo(token) } returns
+          ApiResponse(
+            data =
+              TokenInfo(
+                type = TokenType.ACCESS,
+                userId = "test_user_id",
+              ),
+          )
+        justRun { serverService.deleteServer(eq(serverId), any()) }
+
+        // when
+        val result =
+          webTestClient.delete()
+            .uri(url, serverId)
+            .header("Authorization", token)
+            .exchange()
+
+        // then
+        val docs =
+          result
+            .expectStatus().isOk
+            .expectBody()
+
+        // docs
+        docs.restDoc(
+          identifier = "delete_server_200",
+          description = "서버 삭제 api",
+        ) {
+          request {
+            header { "Authorization" mean "jwt 사용자 토큰" }
+            path { "serverId" mean "서버 id" }
           }
         }
       }

@@ -1,10 +1,16 @@
 import LoginIcon from "@mui/icons-material/Login";
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
+import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import Snackbar, { SnackbarCloseReason } from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
+import axios from "axios";
+import React, { SyntheticEvent, useState } from "react";
 import { useNavigate } from "react-router";
 import { JoinValidation } from "../../hooks/JoinValidation";
+
+import type { AlertInfo } from "../../types/join";
 
 function JoinBox() {
   const {
@@ -18,7 +24,13 @@ function JoinBox() {
     validatePasswordConfirm,
     validators,
   } = JoinValidation();
+  const [open, setOpen] = useState(false);
+  const [alertInfo, setAlertInfo] = useState<AlertInfo>({
+    severity: "info",
+    message: "",
+  });
 
+  const navigate = useNavigate();
   const onChangeHandler = (
     field: string,
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -28,8 +40,62 @@ function JoinBox() {
     setValues((prevValues) => ({ ...prevValues, [field]: value }));
     setErrors((prevErrors) => ({ ...prevErrors, [`${field}Error`]: error }));
   };
+  const submitJoin = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:30002/api/v1/user",
+        {
+          email: values.email,
+          password: values.password,
+          username: values.nickname,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-  const clickSubmitHandler = (e: React.FormEvent) => {
+      // 회원가입 성공
+      setAlertInfo({
+        severity: "success",
+        message: "회원가입 성공! 3초 후 로그인 페이지로 이동합니다.",
+      });
+      setOpen(true);
+      setValues({ nickname: "", email: "", password: "", passwordConfirm: "" });
+      console.log("회원가입 성공:", response.data);
+      setTimeout(() => {
+        navigate("/login");
+      }, 3000);
+
+      // 입력 폼 초기화
+      setValues({
+        nickname: "",
+        email: "",
+        password: "",
+        passwordConfirm: "",
+      });
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        let errorMessage = "회원가입 과정에서 문제가 발생했습니다.";
+        if (error.response.data.message === "Email already exists") {
+          errorMessage = "이미 존재하는 이메일입니다. 다시 시도해주세요.";
+        } else {
+          errorMessage = error.response.data.message || errorMessage;
+        }
+
+        setAlertInfo({ severity: "error", message: errorMessage });
+      } else {
+        setAlertInfo({
+          severity: "error",
+          message: "회원가입 과정에서 문제가 발생했습니다.",
+        });
+      }
+      setOpen(true);
+    }
+  };
+
+  const clickSubmitHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const nicknameError = validateNickname(values.nickname);
     const emailError = validateEmail(values.email);
@@ -55,15 +121,19 @@ function JoinBox() {
         !passwordError &&
         !passwordConfirmError
       ) {
-        alert("회원가입 성공!");
-        setValues({
-          nickname: "",
-          email: "",
-          password: "",
-          passwordConfirm: "",
-        });
+        submitJoin();
       }
     }, 0);
+  };
+
+  const clickCloseHandler = (
+    event: Event | SyntheticEvent<any, Event>,
+    reason?: SnackbarCloseReason
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpen(false);
   };
 
   const navigation = useNavigate();
@@ -161,6 +231,19 @@ function JoinBox() {
             </Button>
           </div>
         </Box>
+        <Snackbar
+          open={open}
+          autoHideDuration={6000}
+          onClose={clickCloseHandler}
+        >
+          <Alert
+            onClose={clickCloseHandler}
+            severity={alertInfo.severity}
+            sx={{ width: "100%" }}
+          >
+            {alertInfo.message}
+          </Alert>
+        </Snackbar>
       </div>
     </section>
   );

@@ -65,7 +65,7 @@ jib {
     image = "eclipse-temurin:21-jre"
   }
   to {
-    image = "localhost:5000/user-application"
+    image = "youdong98/kpring-user-application"
     setAllowInsecureRegistries(true)
     tags = setOf("latest")
   }

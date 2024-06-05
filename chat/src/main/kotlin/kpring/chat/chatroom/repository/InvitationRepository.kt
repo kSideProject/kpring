@@ -1,6 +1,6 @@
 package kpring.chat.chatroom.repository
 
-import kpring.chat.global.config.PropertyConfig
+import kpring.chat.global.config.ChatRoomProperty
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.ValueOperations
 import org.springframework.stereotype.Component
@@ -11,7 +11,7 @@ import java.util.*
 @Component
 class InvitationRepository(
   private val redisTemplate: RedisTemplate<String, String>,
-  private val propertyConfig: PropertyConfig,
+  private val chatRoomProperty: ChatRoomProperty,
 ) {
   fun getInvitationCode(
     userId: String,
@@ -31,7 +31,7 @@ class InvitationRepository(
   ): String {
     val value = generateValue()
     val ops: ValueOperations<String, String> = redisTemplate.opsForValue()
-    ops.set(key, value, propertyConfig.getExpiration())
+    ops.set(key, value, chatRoomProperty.getExpiration())
     return value
   }
 

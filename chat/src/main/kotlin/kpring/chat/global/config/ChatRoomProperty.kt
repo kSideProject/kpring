@@ -6,7 +6,7 @@ import java.time.Duration
 
 @Configuration
 @ConfigurationProperties(prefix = "chatroom")
-class PropertyConfig {
+class ChatRoomProperty {
   private lateinit var expiration: Duration
 
   fun getExpiration(): Duration {

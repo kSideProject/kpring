@@ -15,6 +15,7 @@ import { serverData } from "../../utils/fakeData";
 import ServerInfoSidebar from "./ServerInfoSidebar";
 import CreateServerForm from "../Server/CreateServerForm";
 import useModal from "../../hooks/Modal";
+import ModalComponent from "../Modal/ModalComponent";
 
 const LeftSideBar = () => {
   const DRAWER_WIDTH = 88; // 왼쪽 서버 사이드바 넓이
@@ -81,7 +82,9 @@ const LeftSideBar = () => {
           serverID={serverId}
         />
       </Drawer>
-      <CreateServerForm />
+      <ModalComponent isOpen={isOpen}>
+        <CreateServerForm></CreateServerForm>
+      </ModalComponent>
     </Box>
   );
 };

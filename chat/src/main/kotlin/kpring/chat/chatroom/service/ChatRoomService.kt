@@ -2,7 +2,7 @@ package kpring.chat.chatroom.service
 
 import kpring.chat.chatroom.model.ChatRoom
 import kpring.chat.chatroom.repository.ChatRoomRepository
-import kpring.chat.chatroom.repository.UserChatRoomInvitationRepository
+import kpring.chat.chatroom.repository.InvitationRepository
 import kpring.chat.global.exception.ErrorCode
 import kpring.chat.global.exception.GlobalException
 import kpring.core.chat.chat.dto.response.InvitationResponse
@@ -13,7 +13,7 @@ import java.time.LocalDateTime
 @Service
 class ChatRoomService(
   private val chatRoomRepository: ChatRoomRepository,
-  private val userChatRoomInvitationRepository: UserChatRoomInvitationRepository,
+  private val invitationRepository: InvitationRepository,
 ) {
   fun createChatRoom(
     request: CreateChatRoomRequest,
@@ -39,9 +39,9 @@ class ChatRoomService(
     userId: String,
   ): InvitationResponse {
     verifyChatRoomAccess(chatRoomId, userId)
-    val code = userChatRoomInvitationRepository.getInvitationCode(userId,chatRoomId)
-    val expiration = userChatRoomInvitationRepository.getExpiration(userId,chatRoomId)
-    return InvitationResponse(code, LocalDateTime.now().plusSeconds(expiration).toString())
+    val code = invitationRepository.getInvitationCode(userId,chatRoomId)
+    val expiration = invitationRepository.getExpiration(userId,chatRoomId)
+    return InvitationResponse(code, expiration)
   }
 
   fun verifyChatRoomAccess(

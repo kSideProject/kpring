@@ -26,7 +26,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.servlet.client.MockMvcWebTestClient
 import org.springframework.web.context.WebApplicationContext
-import java.time.LocalDateTime
 
 @WebMvcTest(controllers = [ChatRoomController::class])
 @ExtendWith(RestDocumentationExtension::class)
@@ -59,8 +58,7 @@ class ChatRoomControllerTest(
         val chatRoomId = ChatRoomTest.TEST_ROOM_ID
         val userId = CommonTest.TEST_USER_ID
         val key = "62e9df6b-13cb-4673-a6fe-8566451b7f15"
-        val expiration = LocalDateTime.now().plusSeconds(3600).toString()
-        val data = InvitationResponse(key, expiration)
+        val data = InvitationResponse(key)
 
         every { authClient.getTokenInfo(any()) } returns
           ApiResponse(
@@ -96,7 +94,6 @@ class ChatRoomControllerTest(
           response {
             body {
               "data.code" type JsonDataType.Strings mean "참여 코드"
-              "data.expiration" type JsonDataType.Strings mean "참여코드 유효시간"
             }
           }
         }

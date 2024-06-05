@@ -13,26 +13,29 @@ import AddIcon from "@mui/icons-material/Add";
 import { useState } from "react";
 import { serverData } from "../../utils/fakeData";
 import ServerInfoSidebar from "./ServerInfoSidebar";
+import CreateServerForm from "../Server/CreateServerForm";
+import useModal from "../../hooks/Modal";
 
 const LeftSideBar = () => {
   const DRAWER_WIDTH = 88; // 왼쪽 서버 사이드바 넓이
-  const [open, setOpen] = useState(false); // 서버 인포 사이드바 열
+  const [openServerInfo, setOpenServerInfo] = useState(false); // 서버 인포 사이드바 열기
+  const { isOpen, openModal } = useModal();
   const [serverId, setServerId] = useState("");
 
   // 왼쪽 멤버 사이드바 오픈 핸들러
   const handleDrawerOpen = (id: string) => {
-    setOpen(true);
+    setOpenServerInfo((openServerInfo) => !openServerInfo);
     setServerId(id);
   };
 
   // 왼쪽 멤버 사이드바 닫기 핸들러
   const handleDrawerClose = () => {
-    setOpen(false);
+    setOpenServerInfo((openServerInfo) => !openServerInfo);
   };
 
   return (
     <Box sx={{ position: "absolute" }}>
-      {/* <Drawer
+      <Drawer
         variant="permanent"
         sx={{
           width: DRAWER_WIDTH,
@@ -45,7 +48,7 @@ const LeftSideBar = () => {
         <List sx={{ display: "flex", flexDirection: "column" }}>
           <ListItem alignItems="center">
             <ListItemButton>
-              <AddIcon></AddIcon>
+              <AddIcon onClick={openModal}></AddIcon>
             </ListItemButton>
           </ListItem>
           <Divider />
@@ -71,13 +74,14 @@ const LeftSideBar = () => {
           })}
         </List>
       </Drawer>
-      <Drawer open={open} variant="persistent">
+      <Drawer open={openServerInfo} variant="persistent">
         <ServerInfoSidebar
-          open={open}
+          open={openServerInfo}
           close={handleDrawerClose}
           serverID={serverId}
         />
-      </Drawer> */}
+      </Drawer>
+      <CreateServerForm />
     </Box>
   );
 };

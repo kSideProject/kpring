@@ -1,7 +1,7 @@
 import StarBorderRoundedIcon from "@mui/icons-material/StarBorderRounded";
 import StarRoundedIcon from "@mui/icons-material/StarRounded";
 import { useIsFavorite } from "../../hooks/FavoriteServer";
-import useFavoriteStore from "../../stores/store";
+import useFavoriteStore from "../../store/useFavoriteStore";
 
 const FavoriteStar = ({ id }: { id: string }) => {
   const isFavorite = useIsFavorite(id);

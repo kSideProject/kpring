@@ -1,6 +1,6 @@
 import { forwardRef, useEffect, useLayoutEffect, useRef } from "react";
 import { EventBus } from "./EventBus";
-import { ServerMapProps, ServerMapTypes } from "../../types/server";
+import { ServerMapProps, ServerMapTypes } from "../../types/map";
 import EnterServer from "./main";
 
 // 서버를 생성하고 관리하는 컴포넌트

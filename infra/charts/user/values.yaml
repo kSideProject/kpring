@@ -1,7 +1,7 @@
 # user service
 service:
   name: user-application
-  image: localhost:5000/user-application:latest
+  image: youdong98/kpring-user-application:latest
   port: 8080
   nodePort: 30002
 

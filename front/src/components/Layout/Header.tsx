@@ -16,8 +16,7 @@ const Header = () => {
   const DRAWER_WIDTH = 240; // 오른쪽 사이드바 넓이
   const [open, setOpen] = useState(false); // 사이드바 열고 닫힌 상태
   const [openDrawer, setOpenDrawer] = useState<string | null>(null); // 메세지 또는 친구 사이드바 상태
-  const IsChatRoomShow = useChatRoomStore(state=>state.isChatRoomShow);
-
+  const IsChatRoomShow = useChatRoomStore((state) => state.isChatRoomShow);
 
   // 오른쪽 사이드바 오픈 핸들러
   const handleDrawerOpen = (sidebar: string) => {
@@ -88,25 +87,23 @@ const Header = () => {
         anchor="right"
         open={openDrawer === "message"}>
         <MessageRightSideBar close={handleDrawerClose} />
-
-      </Drawer>
       </Drawer>
 
       <Drawer
-      sx={{
-        width: DRAWER_WIDTH,
-        flexShrink: 0,
-        "& .MuiDrawer-paper": {
+        sx={{
           width: DRAWER_WIDTH,
-          backgroundColor: "#2A2F4F",
-          color: "white"
-        }, 
-      }}
-      variant="persistent"
-      anchor="right"
-      open={IsChatRoomShow}>
-      <ChatRoomSideBar />
-    </Drawer>
+          flexShrink: 0,
+          "& .MuiDrawer-paper": {
+            width: DRAWER_WIDTH,
+            backgroundColor: "#2A2F4F",
+            color: "white",
+          },
+        }}
+        variant="persistent"
+        anchor="right"
+        open={IsChatRoomShow}>
+        <ChatRoomSideBar />
+      </Drawer>
     </header>
   );
 };

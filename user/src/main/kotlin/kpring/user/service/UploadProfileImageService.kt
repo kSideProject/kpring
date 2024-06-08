@@ -2,6 +2,7 @@ package kpring.user.service
 
 import kpring.core.global.exception.ServiceException
 import kpring.user.exception.UserErrorCode
+import kpring.user.global.SupportedMediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.nio.file.Files
@@ -14,23 +15,23 @@ class UploadProfileImageService {
   public fun saveUploadedFile(
     multipartFile: MultipartFile,
     userId: Long,
-    dirPath: Path,
+    savedPath: Path,
   ): String {
-    if (Files.notExists(dirPath)) {
-      Files.createDirectories(dirPath)
+    if (Files.notExists(savedPath)) {
+      Files.createDirectories(savedPath)
     }
     val extension = multipartFile.originalFilename!!.substringAfterLast('.')
     isFileExtensionSupported(multipartFile)
 
     val uniqueFileName = generateUniqueFileName(userId, extension)
-    val filePath = dirPath.resolve(uniqueFileName)
+    val filePath = savedPath.resolve(uniqueFileName)
     multipartFile.transferTo(filePath.toFile())
 
     return uniqueFileName
   }
 
   private fun isFileExtensionSupported(multipartFile: MultipartFile) {
-    val supportedExtensions = listOf("image/png", "image/jpeg")
+    val supportedExtensions = SupportedMediaType.entries.map { it.mediaType }
     if (multipartFile.contentType !in supportedExtensions) {
       throw ServiceException(UserErrorCode.EXTENSION_NOT_SUPPORTED)
     }

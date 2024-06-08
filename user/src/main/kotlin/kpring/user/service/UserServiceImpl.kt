@@ -40,7 +40,8 @@ class UserServiceImpl(
   ): UpdateUserProfileResponse {
     var newPassword: String? = null
     var uniqueFileName: String? = null
-    val profileImgDir = Paths.get(System.getProperty("user.dir")).resolve(profileImgDirPath)
+    val dir = System.getProperty("user.dir")
+    val profileImgDir = Paths.get(dir)
     val user = getUser(userId)
 
     request.email?.let { handleDuplicateEmail(it) }

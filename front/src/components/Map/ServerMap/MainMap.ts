@@ -10,6 +10,7 @@ export class MainMap extends Scene {
   private isDragging: boolean = false;
   private dragStartX: number = 0;
   private dragStartY: number = 0;
+  private speechBalloon!: Phaser.GameObjects.Text;
 
   constructor() {
     super("MainMap");
@@ -49,6 +50,16 @@ export class MainMap extends Scene {
         } else {
           console.log("레이어가 생성되지 않았습니다.");
         }
+        // 말풍선
+        this.speechBalloon = this.add
+          .text(this.character.x, this.character.y - 20, "", {
+            fontSize: 10,
+            color: "#000",
+            backgroundColor: "#fff",
+            padding: { x: 10, y: 10 },
+            resolution: 2,
+          })
+          .setOrigin(0.5);
       } catch (error) {
         console.error(error);
       }
@@ -86,6 +97,12 @@ export class MainMap extends Scene {
       this.character.anims.play("basic_character_move_right", true);
     } else {
       this.character.anims.stop();
+    }
+    this.speechBalloon.setPosition(this.character.x, this.character.y - 50);
+  }
+  setBalloonText(text: string) {
+    if (this.speechBalloon) {
+      this.speechBalloon.setText(text);
     }
   }
 }

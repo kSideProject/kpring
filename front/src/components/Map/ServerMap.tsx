@@ -2,6 +2,7 @@ import { forwardRef, useEffect, useLayoutEffect, useRef } from "react";
 import { EventBus } from "./EventBus";
 import { ServerMapProps, ServerMapTypes } from "../../types/map";
 import EnterServer from "./main";
+import { MainMap } from "./ServerMap/MainMap";
 
 // 서버를 생성하고 관리하는 컴포넌트
 // forwardRef를 사용해 부모 컴포넌트로부터 ref를 전달 받음
@@ -87,9 +88,31 @@ export const ServerMap = forwardRef<ServerMapTypes, ServerMapProps>(
       };
     }, [currentActiveScene, ref]);
 
+    useEffect(() => {
+      const inputField = document.getElementById(
+        "chat-input"
+      ) as HTMLInputElement;
+      console.log(inputField);
+      const handleKeyEnter = (event: KeyboardEvent) => {
+        if (event.key === "Enter") {
+          const target = event.target as HTMLInputElement;
+
+          const mainScene = mapRef.current?.scene.getScene(
+            "MainMap"
+          ) as MainMap;
+          mainScene?.setBalloonText(target.value);
+        }
+      };
+      inputField?.addEventListener("keydown", handleKeyEnter);
+      return () => {
+        inputField?.removeEventListener("keydown", handleKeyEnter);
+      };
+    }, []);
+
     return (
       <div id="map-container" className="relative">
         <div className="absolute flex left-36 top-20">
+          <div id="menu"></div>
           <div id="zoom-in" className="cursor-pointer">
             확대
           </div>
@@ -99,6 +122,7 @@ export const ServerMap = forwardRef<ServerMapTypes, ServerMapProps>(
           <div id="drag" className="cursor-pointer">
             드래그
           </div>
+          <input type="text" id="chat-input"></input>
         </div>
       </div>
     );

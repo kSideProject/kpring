@@ -38,7 +38,6 @@ import org.springframework.restdocs.request.RequestDocumentation.*
 import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.documentationConfiguration
 import org.springframework.test.web.servlet.client.MockMvcWebTestClient
 import org.springframework.web.context.WebApplicationContext
-import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.reactive.function.BodyInserters
 
 @WebMvcTest(controllers = [UserController::class])
@@ -48,7 +47,6 @@ class UserControllerTest(
   webContext: WebApplicationContext,
   @MockkBean val authClient: AuthClient,
   @MockkBean val userService: UserService,
-  @MockkBean val multipartFile: MultipartFile,
 ) : DescribeSpec(
     {
 

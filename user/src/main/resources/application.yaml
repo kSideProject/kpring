@@ -17,4 +17,4 @@ auth:
 
 file:
   path:
-    profile-dir: user/src/main/resources/static/images/profileImg
+    profile-dir: /

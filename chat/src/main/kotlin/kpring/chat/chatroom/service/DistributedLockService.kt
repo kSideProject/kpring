@@ -31,4 +31,14 @@ class DistributedLockService(
       true
     }
   }
+
+  fun releaseLock(
+    lockId: String,
+    owner: String,
+  ) {
+    val optionalLock = lockRepository.findById(lockId)
+    if (optionalLock.isPresent && optionalLock.get().owner == owner) {
+      lockRepository.deleteById(lockId)
+    }
+  }
 }

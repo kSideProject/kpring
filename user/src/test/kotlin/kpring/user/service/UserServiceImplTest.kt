@@ -72,7 +72,7 @@ class UserServiceImplTest : FunSpec({
       shouldThrow<ServiceException> {
         userService.handleDuplicateEmail(createUserRequest.email)
       }
-    exception.errorCode.message() shouldBe "Email already exists"
+    exception.errorCode.message() shouldBe "이미 존재하는 이메일입니다."
 
     verify { userRepository.save(any()) wasNot Called }
   }

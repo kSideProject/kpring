@@ -5,7 +5,7 @@ enum class ChatType(val type: String) {
   Server("Server"),
   ;
 
-  override fun toString(): String  {
+  override fun toString(): String {
     return type
   }
 }

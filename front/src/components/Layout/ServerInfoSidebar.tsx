@@ -10,16 +10,20 @@ import {
   ListItemText,
   Button,
   styled,
+  Modal,
 } from "@mui/material";
 import { serverData } from "../../utils/fakeData";
-import MemberProfile from "../Profile/MemberProfile";
+import MemberProfile from "../Profile/Profile";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { useNavigate } from "react-router-dom";
 import FavoriteStar from "../Home/FavoriteStar";
+import ModalComponent from "../Modal/ModalComponent";
+import useModal from "../../hooks/Modal";
+import Profile from "../Profile/Profile";
 
 const ServerInfoSidebar: React.FC<ServerInforProps> = ({
   close,
-  open,
+  // open,
   serverID,
 }) => {
   const DrawerHeader = styled("div")(({ theme }) => ({
@@ -29,11 +33,8 @@ const ServerInfoSidebar: React.FC<ServerInforProps> = ({
     ...theme.mixins.toolbar,
     justifyContent: "flex-start",
   }));
-
-  const [openProfile, setOpenProfile] = React.useState(false);
-  const handleOpen = () => setOpenProfile(true);
-  const handleClose = () => setOpenProfile(false);
   const navigate = useNavigate();
+  const { isOpen, openModal, closeModal } = useModal();
 
   return (
     <>
@@ -50,7 +51,7 @@ const ServerInfoSidebar: React.FC<ServerInforProps> = ({
           .map((member) => {
             return (
               <ListItem>
-                <ListItemAvatar onClick={handleOpen}>
+                <ListItemAvatar onClick={openModal}>
                   <Badge
                     color="success"
                     variant="dot"
@@ -67,9 +68,9 @@ const ServerInfoSidebar: React.FC<ServerInforProps> = ({
             );
           })}
       </List>
-      <MemberProfile
-        openModal={openProfile}
-        closeModal={handleClose}></MemberProfile>
+      <ModalComponent isOpen={isOpen}>
+        <Profile closeModal={closeModal} />
+      </ModalComponent>
     </>
   );
 };

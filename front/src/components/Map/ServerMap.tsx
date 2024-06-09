@@ -2,6 +2,7 @@ import { forwardRef, useEffect, useLayoutEffect, useRef } from "react";
 import { EventBus } from "./EventBus";
 import { ServerMapProps, ServerMapTypes } from "../../types/server";
 import EnterServer from "./main";
+import VideoCallBoxList from "../VideoCall/VideoCallBoxList";
 
 // 서버를 생성하고 관리하는 컴포넌트
 // forwardRef를 사용해 부모 컴포넌트로부터 ref를 전달 받음
@@ -99,7 +100,9 @@ export const ServerMap = forwardRef<ServerMapTypes, ServerMapProps>(
           <div id="drag" className="cursor-pointer">
             드래그
           </div>
+          <VideoCallBoxList/>
         </div>
+        
       </div>
     );
   }

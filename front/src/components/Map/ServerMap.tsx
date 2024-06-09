@@ -4,7 +4,7 @@ import { ServerMapProps, ServerMapTypes } from "../../types/map";
 import EnterServer from "./main";
 import { MainMap } from "./ServerMap/MainMap";
 import VideoCallBoxList from "../VideoCall/VideoCallBoxList";
-
+import VideoCallToolBar from "../VideoCall/VideoCallToolBar";
 
 // 서버를 생성하고 관리하는 컴포넌트
 // forwardRef를 사용해 부모 컴포넌트로부터 ref를 전달 받음
@@ -127,6 +127,10 @@ export const ServerMap = forwardRef<ServerMapTypes, ServerMapProps>(
           <input type="text" id="chat-input"></input>
           <VideoCallBoxList/>
         </div>
+        <div className="fixed bottom-[20px] left-1/2 -translate-x-1/3">
+          <VideoCallToolBar/>
+        </div>
+      
       </div>
     );
   }

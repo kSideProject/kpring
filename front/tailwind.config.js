@@ -13,7 +13,13 @@ module.exports = {
         },
         darkPink:{
           DEFAULT : "#E5BEEC",
-        }
+        },
+        gray:{
+          DEFAULT : "hsla(0, 0%, 100%, .9)"
+        },
+        darkGray:{ 
+          DEFAULT : "rgb(39 38 46/var(--tw-text-opacity))"
+        },
       },
     },
   },

@@ -1,5 +1,5 @@
 import { Scene } from "phaser";
-import { Layers } from "../../../types/server";
+import { Layers } from "../../../types/map";
 
 export const createLayers = (map: Phaser.Tilemaps.Tilemap, scene: Scene) => {
   // Tiled에서 그린 잔디, 집, 나무 등과 같은 타일 요소들을 화면에 뿌려준다.

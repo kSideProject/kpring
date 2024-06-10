@@ -1,7 +1,7 @@
 // 이 파일은 캐릭터와 물체의 충돌을 확인하기 위한 디버그 파일입니다.
 
 import { Scene } from "phaser";
-import { Layers } from "../../../types/server";
+import { Layers } from "../../../types/map";
 
 export const debugCollision = (scene: Scene, layers: Layers) => {
   const collidableLayers = [

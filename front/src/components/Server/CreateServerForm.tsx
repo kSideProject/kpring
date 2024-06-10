@@ -1,14 +1,51 @@
-import { Button, FormControl, Input, Select } from "@mui/material";
+import { Input } from "@mui/material";
 
-import React from "react";
+import React, { useState } from "react";
 import useModal from "../../hooks/Modal";
-import { Label } from "@mui/icons-material";
+
 import axios from "axios";
 
 const CreateServerForm = () => {
   const { closeModal, openModal } = useModal();
+  const [jwtToken, setJwtToken] = useState("");
 
-  const onSubmitHandler = async () => {};
+  console.log(jwtToken);
+
+  const onSubmitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const SERVER_URL = "http://localhost/server/api/v1/server";
+
+    try {
+      const res = await axios.post(
+        SERVER_URL,
+        {
+          serverName: "TEST",
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${jwtToken}`,
+          },
+        }
+      );
+      console.log(res);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const tempLogin = async () => {
+    const SERVER_URL = "http://localhost/user/api/v1/login";
+
+    try {
+      const res = await axios.post(SERVER_URL, {
+        email: "test@email.com",
+        password: "tesT@1234",
+      });
+      setJwtToken(res.data.data.accessToken);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <div>
@@ -35,6 +72,7 @@ const CreateServerForm = () => {
         </FormControl> */}
         <button type="submit">서버생성</button>
       </form>
+      <button onClick={() => tempLogin()}>login</button>
     </div>
   );
 };

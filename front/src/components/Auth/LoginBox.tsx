@@ -63,8 +63,7 @@ function LoginBox() {
           "
           border="1px solid #e4d4e7"
           padding="20px"
-          onSubmit={clickSubmitHandler}
-        >
+          onSubmit={clickSubmitHandler}>
           <h2 className="text-center text-2xl font-bold text-primary mt-[5px] mb-[10px]">
             디코타운에 어서오세요!
           </h2>
@@ -100,8 +99,7 @@ function LoginBox() {
               type="submit"
               variant="contained"
               startIcon={<LoginIcon />}
-              sx={{ width: "90%" }}
-            >
+              sx={{ width: "90%" }}>
               로그인
             </Button>
 
@@ -110,8 +108,7 @@ function LoginBox() {
               color="secondary"
               startIcon={<PersonAddAlt1Icon />}
               sx={{ mt: "20px", width: "90%", mb: "20px" }}
-              onClick={() => navigation("/join")}
-            >
+              onClick={() => navigation("/join")}>
               회원가입
             </Button>
           </div>

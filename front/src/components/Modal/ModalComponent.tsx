@@ -1,6 +1,6 @@
 import { Box, Modal } from "@mui/material";
-import React, { ReactNode } from "react";
-import { modalStyle } from "../../types/modal";
+import { ReactNode } from "react";
+import { modalStyle } from "../../style/modal";
 
 interface ModalComponentProps {
   children: ReactNode;

@@ -11,27 +11,26 @@ import {
   Button,
   styled,
   Modal,
+  Box,
+  Typography,
 } from "@mui/material";
+import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import { serverData } from "../../utils/fakeData";
-import MemberProfile from "../Profile/Profile";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { useNavigate } from "react-router-dom";
 import FavoriteStar from "../Home/FavoriteStar";
 import ModalComponent from "../Modal/ModalComponent";
 import useModal from "../../hooks/Modal";
 import Profile from "../Profile/Profile";
 
-const ServerInfoSidebar: React.FC<ServerInforProps> = ({
-  close,
-  // open,
-  serverID,
-}) => {
+const ServerInfoSidebar: React.FC<ServerInforProps> = ({ close, serverID }) => {
   const DrawerHeader = styled("div")(({ theme }) => ({
     display: "flex",
     alignItems: "center",
     padding: theme.spacing(0, 1),
     ...theme.mixins.toolbar,
     justifyContent: "flex-start",
+    flexDirection: "column",
+    width: "240px",
   }));
   const navigate = useNavigate();
   const { isOpen, openModal, closeModal } = useModal();
@@ -39,10 +38,32 @@ const ServerInfoSidebar: React.FC<ServerInforProps> = ({
   return (
     <>
       <DrawerHeader>
-        <ArrowForwardIosIcon onClick={close} />
-        <div>서버 멤버</div>
-        <Button onClick={() => navigate(`server/${serverID}`)}>서버입장</Button>
-        <FavoriteStar id={serverID} />
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: "10px",
+            m: "10px",
+            width: "100%",
+          }}>
+          <ArrowBackIosNewIcon onClick={close} />
+          <Typography>서버이름</Typography>
+          <FavoriteStar id={serverID} />
+        </Box>
+
+        <Button
+          onClick={() => navigate(`server/${serverID}`)}
+          sx={{
+            backgroundColor: "#2A2F4F",
+            width: "100%",
+            color: "#fff",
+            "&:hover": {
+              backgroundColor: "#917FB3",
+            },
+          }}>
+          서버입장
+        </Button>
       </DrawerHeader>
       <Divider />
       <List>

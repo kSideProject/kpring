@@ -7,6 +7,7 @@ import kpring.chat.chatroom.repository.ChatRoomRepository
 import kpring.chat.global.exception.ErrorCode
 import kpring.chat.global.exception.GlobalException
 import kpring.core.chat.chat.dto.request.CreateChatRequest
+import kpring.core.chat.chat.dto.request.UpdateChatRequest
 import kpring.core.chat.chat.dto.response.ChatResponse
 import kpring.core.server.dto.ServerSimpleInfo
 import org.springframework.beans.factory.annotation.Value
@@ -76,6 +77,28 @@ class ChatService(
     val chats: List<Chat> = serverChatRepository.findAllByContextId(serverId, pageable)
 
     return convertChatsToResponses(chats)
+  }
+
+  fun updateRoomChat(
+    request: UpdateChatRequest,
+    userId: String,
+  ): Boolean {
+    val chat = roomChatRepository.findById(request.id).orElseThrow { GlobalException(ErrorCode.CHAT_NOT_FOUND) }
+    chat.verifyAccess(userId)
+    chat.updateContent(request.content)
+    roomChatRepository.save(chat)
+    return true
+  }
+
+  fun updateServerChat(
+    request: UpdateChatRequest,
+    userId: String,
+  ): Boolean {
+    val chat = serverChatRepository.findById(request.id).orElseThrow { GlobalException(ErrorCode.CHAT_NOT_FOUND) }
+    chat.verifyAccess(userId)
+    chat.updateContent(request.content)
+    serverChatRepository.save(chat)
+    return true
   }
 
   private fun verifyServerAccess(

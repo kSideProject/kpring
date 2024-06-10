@@ -9,14 +9,18 @@ class ChatRoom : BaseTime() {
   @Id
   var id: String? = null
 
-  var members: MutableList<String> = mutableListOf()
+  var members: MutableSet<String> = mutableSetOf()
 
   fun getUsers(): List<String> {
-    return members
+    return members.stream().toList()
   }
 
   fun addUsers(list: List<String>) {
     members.addAll(list)
+  }
+
+  fun addUser(userId: String) {
+    members.add(userId)
   }
 
   fun removeUser(userId: String) {

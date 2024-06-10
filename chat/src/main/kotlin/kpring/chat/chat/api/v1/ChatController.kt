@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/v1")
 class ChatController(
   private val chatService: ChatService,
-  val authClient: AuthClient,
-  val serverClient: ServerClient,
+  private val authClient: AuthClient,
+  private val serverClient: ServerClient,
 ) {
   @PostMapping("/chat")
   fun createChat(

@@ -12,18 +12,7 @@ class InvitationService(
   private val invitationRepository: InvitationRepository,
   private val chatRoomProperty: ChatRoomProperty,
 ) {
-  fun getOrCreateInvitation(
-    userId: String,
-    chatRoomId: String,
-  ): String {
-    var code = getInvitation(userId, chatRoomId)
-    if (code == null) {
-      code = setInvitation(userId, chatRoomId)
-    }
-    return code
-  }
-
-  private fun getInvitation(
+  fun getInvitation(
     userId: String,
     chatRoomId: String,
   ): String? {
@@ -31,7 +20,7 @@ class InvitationService(
     return invitationRepository.getValue(key)
   }
 
-  private fun setInvitation(
+  fun setInvitation(
     userId: String,
     chatRoomId: String,
   ): String {

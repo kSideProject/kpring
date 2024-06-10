@@ -37,7 +37,10 @@ class ChatRoomService(
     userId: String,
   ): InvitationResponse {
     verifyChatRoomAccess(chatRoomId, userId)
-    val code = invitationService.getOrCreateInvitation(userId, chatRoomId)
+    var code = invitationService.getInvitation(userId, chatRoomId)
+    if (code == null) {
+      code = invitationService.setInvitation(userId, chatRoomId)
+    }
     val encodedCode = invitationService.generateKeyAndCode(userId, chatRoomId, code)
     return InvitationResponse(encodedCode)
   }

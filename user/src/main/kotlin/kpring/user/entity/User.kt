@@ -16,25 +16,16 @@ class User(
   @Column(nullable = false)
   var password: String,
   var file: String?,
-  @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(
-    name = "user_followers",
-    joinColumns = [JoinColumn(name = "user_id")],
-    inverseJoinColumns = [JoinColumn(name = "follower_id")],
-  )
-  val followers: MutableSet<User> = mutableSetOf(),
-  @ManyToMany(mappedBy = "followers", fetch = FetchType.LAZY)
-  val followees: MutableSet<User> = mutableSetOf(),
+  @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = [CascadeType.ALL])
+  val friends: MutableSet<Friend> = mutableSetOf(),
   // Other fields and methods...
 ) {
-  fun addFollower(follower: User) {
-    followers.add(follower)
-    follower.followees.add(this)
-  }
-
-  fun removeFollower(follower: User) {
-    followers.remove(follower)
-    follower.followees.remove(this)
+  fun addFriendRelation(
+    friend: User,
+    requestStatus: FriendRequestStatus,
+  ) {
+    val friendRelation = Friend(user = this, friend = friend, requestStatus = requestStatus)
+    friends.add(friendRelation)
   }
 
   fun updateInfo(

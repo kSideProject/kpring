@@ -7,13 +7,13 @@ spring:
     mongodb:
       host: ${MONGO_HOST:localhost}
       port: ${MONGO_PORT:27017}
-      username: ${MONGO_USER:root}
+      username: ${MONGO_USERNAME:root}
       password: ${MONGO_PASSWORD:test1234@}
       database: ${MONGO_DATABASE:mongodb}
       authentication-database: admin
 
 auth:
-  url: ${AUTH_SERVICE_URL:http://localhost:8080}
+  url: ${AUTH_SERVICE_URL:http://localhost/auth}
 
 resource:
   default:

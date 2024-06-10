@@ -1,5 +1,5 @@
 import { useState } from "react";
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
+import MuiAppBar from "@mui/material/AppBar";
 import { Box, Drawer, Toolbar, Typography, styled } from "@mui/material";
 import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
 import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
@@ -7,10 +7,7 @@ import FriendsRightSideBar from "./FriendsRightSideBar";
 import MessageRightSideBar from "./MessageRightSideBar";
 import ChatRoomSideBar from "../Chat/ChatRoomSideBar";
 import useChatRoomStore from "../../store/useChatRoomStore";
-
-interface AppBarProps extends MuiAppBarProps {
-  open?: boolean;
-}
+import { AppBarProps } from "../../types/layout";
 
 const Header = () => {
   const DRAWER_WIDTH = 240; // 오른쪽 사이드바 넓이
@@ -34,6 +31,7 @@ const Header = () => {
   const AppBar = styled(MuiAppBar, {
     shouldForwardProp: (prop) => prop !== "open",
   })<AppBarProps>(({ theme, open }) => ({
+    backgroundColor: "#2A2F4F",
     transition: theme.transitions.create(["margin", "width"], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,

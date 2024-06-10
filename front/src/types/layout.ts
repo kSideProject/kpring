@@ -1,3 +1,10 @@
+// Header
+
+import { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
+export interface AppBarProps extends MuiAppBarProps {
+  open?: boolean;
+}
+
 // 오른쪽 사이드바
 export interface SideBarProps {
   close: () => void;

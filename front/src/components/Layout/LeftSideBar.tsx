@@ -47,10 +47,15 @@ const LeftSideBar = () => {
           },
         }}>
         <List sx={{ display: "flex", flexDirection: "column" }}>
-          <ListItem alignItems="center">
-            <ListItemButton>
-              <AddIcon onClick={openModal}></AddIcon>
-            </ListItemButton>
+          <ListItem
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "20px",
+              alignItems: "center",
+            }}>
+            <Avatar></Avatar>
+            <AddIcon onClick={openModal}></AddIcon>
           </ListItem>
           <Divider />
 

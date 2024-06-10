@@ -5,6 +5,7 @@ import kpring.user.dto.request.UpdateUserProfileRequest
 import kpring.user.dto.response.CreateUserResponse
 import kpring.user.dto.response.GetUserProfileResponse
 import kpring.user.dto.response.UpdateUserProfileResponse
+import org.springframework.web.multipart.MultipartFile
 
 interface UserService {
   fun getProfile(userId: Long): GetUserProfileResponse
@@ -12,6 +13,7 @@ interface UserService {
   fun updateProfile(
     userId: Long,
     request: UpdateUserProfileRequest,
+    multipartFile: MultipartFile,
   ): UpdateUserProfileResponse
 
   fun exitUser(userId: Long): Boolean

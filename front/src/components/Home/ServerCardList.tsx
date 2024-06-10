@@ -1,23 +1,16 @@
 import ServerCard from "./ServerCard";
 import { useFilterFavorites } from "../../hooks/FavoriteServer";
+import { ServerCardListProps, ServerType } from "../../types/server";
 
-const ServerCardList = ({
-  servers,
-}: {
-  servers: {
-    serverId: string;
-    serverName: string;
-    image: string;
-    members: string[];
-  }[];
-}) => {
+const ServerCardList: React.FC<ServerCardListProps> = ({ servers }) => {
   const favoriteItems = useFilterFavorites();
+
   return (
     <>
       {servers
-        .filter((server) => favoriteItems.includes(server.serverId))
-        .map((server) => (
-          <ServerCard key={server.serverId} servers={server} />
+        .filter((server: ServerType) => favoriteItems.includes(server.serverId))
+        .map((server: ServerType) => (
+          <ServerCard key={server.serverId} server={server} />
         ))}
     </>
   );

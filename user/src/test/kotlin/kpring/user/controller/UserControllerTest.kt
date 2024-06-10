@@ -25,13 +25,20 @@ import kpring.user.exception.UserErrorCode
 import kpring.user.service.UserService
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.core.io.ByteArrayResource
+import org.springframework.core.io.ClassPathResource
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.http.client.MultipartBodyBuilder
+import org.springframework.mock.web.MockMultipartFile
 import org.springframework.restdocs.ManualRestDocumentation
 import org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint
+import org.springframework.restdocs.payload.PayloadDocumentation.*
+import org.springframework.restdocs.request.RequestDocumentation.*
 import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.documentationConfiguration
 import org.springframework.test.web.servlet.client.MockMvcWebTestClient
 import org.springframework.web.context.WebApplicationContext
+import org.springframework.web.reactive.function.BodyInserters
 
 @WebMvcTest(controllers = [UserController::class])
 @ExtendWith(value = [MockKExtension::class])
@@ -266,21 +273,51 @@ class UserControllerTest(
         it("회원정보 수정 성공") {
           // given
           val userId = 1L
-          val request = UpdateUserProfileRequest.builder().email("test@test.com").build()
-          val data = UpdateUserProfileResponse.builder().email("test@test.com").build()
+          val request =
+            UpdateUserProfileRequest.builder()
+              .email(TEST_EMAIL)
+              .username(TEST_USERNAME)
+              .password(TEST_PASSWORD)
+              .newPassword(TEST_NEW_PASSWORD)
+              .build()
+
+          val fileResource = ClassPathResource(TEST_PROFILE_IMG)
+          val file =
+            MockMultipartFile(
+              "image",
+              fileResource.filename,
+              MediaType.IMAGE_JPEG_VALUE,
+              fileResource.inputStream,
+            )
+          val data =
+            UpdateUserProfileResponse.builder()
+              .email(TEST_EMAIL)
+              .username(TEST_USERNAME)
+              .build()
+
+          val requestJson = objectMapper.writeValueAsString(request)
+
           val response = ApiResponse(data = data)
-          every { userService.updateProfile(userId, request) } returns data
           every { authClient.getTokenInfo(any()) }.returns(
             ApiResponse(data = TokenInfo(TokenType.ACCESS, userId.toString())),
           )
+          every { userService.updateProfile(userId, any(), any()) } returns data
+
+          val bodyBuilder = MultipartBodyBuilder()
+          bodyBuilder.part("json", requestJson, MediaType.APPLICATION_JSON)
+          fileResource.filename?.let {
+            bodyBuilder.part("file", ByteArrayResource(file.bytes), MediaType.IMAGE_JPEG).filename(
+              it,
+            )
+          }
 
           // when
           val result =
             webTestClient.patch()
               .uri("/api/v1/user/{userId}", userId)
               .header("Authorization", "Bearer token")
-              .contentType(MediaType.APPLICATION_JSON)
-              .bodyValue(request)
+              .contentType(MediaType.MULTIPART_FORM_DATA)
+              .body(BodyInserters.fromMultipartData(bodyBuilder.build()))
               .exchange()
 
           // then
@@ -297,14 +334,27 @@ class UserControllerTest(
             ) {
               request {
                 header {
-                  "Content-Type" mean "application/json"
+                  "Authorization" mean "Bearer token"
+                  "Content-Type" mean "multipart/form-data"
                 }
-                body {
+                path {
+                  "userId" mean "사용자 아이디"
+                }
+                part {
+                  "json" mean "회원정보 수정 요청 JSON"
+                  "file" mean "프로필 이미지 파일"
+                }
+                part("json") {
                   "email" type Strings mean "이메일"
+                  "username" type Strings mean "닉네임"
+                  "password" type Strings mean "기존 비밀번호"
+                  "newPassword" type Strings mean "새 비밀번호"
                 }
               }
               response {
                 body {
+                  "data.email" type Strings mean "이메일"
+                  "data.username" type Strings mean "닉네임"
                   "data.email" type Strings mean "이메일"
                 }
               }
@@ -314,18 +364,45 @@ class UserControllerTest(
         it("회원정보 수정 실패 : 권한이 없는 토큰") {
           // given
           val userId = 1L
-          val request = UpdateUserProfileRequest.builder().email("test@test.com").build()
+          val request =
+            UpdateUserProfileRequest.builder()
+              .email(TEST_EMAIL)
+              .username(TEST_USERNAME)
+              .password(TEST_PASSWORD)
+              .newPassword(TEST_NEW_PASSWORD)
+              .build()
+
+          val fileResource = ClassPathResource(TEST_PROFILE_IMG)
+          val file =
+            MockMultipartFile(
+              "image",
+              fileResource.filename,
+              MediaType.IMAGE_JPEG_VALUE,
+              fileResource.inputStream,
+            )
+
+          val requestJson = objectMapper.writeValueAsString(request)
+
           val response =
             FailMessageResponse.builder().message(UserErrorCode.NOT_ALLOWED.message()).build()
           every { authClient.getTokenInfo(any()) } throws ServiceException(UserErrorCode.NOT_ALLOWED)
+
+          val bodyBuilder =
+            MultipartBodyBuilder()
+          bodyBuilder.part("json", requestJson, MediaType.APPLICATION_JSON)
+          fileResource.filename?.let {
+            bodyBuilder.part("file", ByteArrayResource(file.bytes), MediaType.IMAGE_JPEG).filename(
+              it,
+            )
+          }
 
           // when
           val result =
             webTestClient.patch()
               .uri("/api/v1/user/{userId}", userId)
               .header("Authorization", "Bearer token")
-              .contentType(MediaType.APPLICATION_JSON)
-              .bodyValue(request)
+              .contentType(MediaType.MULTIPART_FORM_DATA)
+              .body(BodyInserters.fromMultipartData(bodyBuilder.build()))
               .exchange()
 
           // then
@@ -342,10 +419,21 @@ class UserControllerTest(
             ) {
               request {
                 header {
-                  "Content-Type" mean "application/json"
+                  "Content-Type" mean "multipart/form-data"
+                  "Authorization" mean "Bearer token"
                 }
-                body {
+                path {
+                  "userId" mean "사용자 아이디"
+                }
+                part {
+                  "json" mean "회원정보 수정 요청 JSON"
+                  "file" mean "프로필 이미지 파일"
+                }
+                part("json") {
                   "email" type Strings mean "이메일"
+                  "username" type Strings mean "닉네임"
+                  "password" type Strings mean "기존 비밀번호"
+                  "newPassword" type Strings mean "새 비밀번호"
                 }
               }
               response {
@@ -360,17 +448,43 @@ class UserControllerTest(
           // given
           val userId = 1L
           val token = "Bearer token"
-          val request = UpdateUserProfileRequest.builder().email("test@test.com").build()
+          val request =
+            UpdateUserProfileRequest.builder()
+              .email(TEST_EMAIL)
+              .username(TEST_USERNAME)
+              .password(TEST_PASSWORD)
+              .newPassword(TEST_NEW_PASSWORD)
+              .build()
+
+          val fileResource = ClassPathResource(TEST_PROFILE_IMG)
+          val file =
+            MockMultipartFile(
+              "image",
+              fileResource.filename,
+              MediaType.IMAGE_JPEG_VALUE,
+              fileResource.inputStream,
+            )
+          val requestJson = objectMapper.writeValueAsString(request)
+
           val response = FailMessageResponse.serverError
           every { authClient.getTokenInfo(token) } throws RuntimeException("서버 내부 오류")
+
+          val bodyBuilder =
+            MultipartBodyBuilder()
+          bodyBuilder.part("json", requestJson, MediaType.APPLICATION_JSON)
+          fileResource.filename?.let {
+            bodyBuilder.part("file", ByteArrayResource(file.bytes), MediaType.IMAGE_JPEG).filename(
+              it,
+            )
+          }
 
           // when
           val result =
             webTestClient.patch()
               .uri("/api/v1/user/{userId}", userId)
               .header("Authorization", "Bearer token")
-              .contentType(MediaType.APPLICATION_JSON)
-              .bodyValue(request)
+              .contentType(MediaType.MULTIPART_FORM_DATA)
+              .body(BodyInserters.fromMultipartData(bodyBuilder.build()))
               .exchange()
 
           // then
@@ -387,10 +501,20 @@ class UserControllerTest(
             ) {
               request {
                 header {
-                  "Content-Type" mean "application/json"
+                  "Content-Type" mean "multipart/form-data"
                 }
-                body {
+                path {
+                  "userId" mean "사용자 아이디"
+                }
+                part {
+                  "json" mean "회원정보 수정 요청 JSON"
+                  "file" mean "프로필 이미지 파일"
+                }
+                part("json") {
                   "email" type Strings mean "이메일"
+                  "username" type Strings mean "닉네임"
+                  "password" type Strings mean "기존 비밀번호"
+                  "newPassword" type Strings mean "새 비밀번호"
                 }
               }
               response {
@@ -640,6 +764,8 @@ class UserControllerTest(
   companion object {
     private const val TEST_EMAIL = "test@email.com"
     private const val TEST_PASSWORD = "tesT@1234"
+    private const val TEST_NEW_PASSWORD = "tesT@1234!"
     private const val TEST_USERNAME = "testuser"
+    private const val TEST_PROFILE_IMG = "/images/profileImg"
   }
 }

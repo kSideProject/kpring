@@ -8,10 +8,15 @@ import { Member } from '../../types/layout';
 const VideoCallBoxList = () => {
   const [curVideoCallBoxPage, setCurVideoCallBoxPage] = useState(0);
   const [slicedMemberList, setSlicedMemberList] = useState<Member[]>([]); // 페이징 처리 된 멤버 리스트
-  
+  const serverMemberList = [  {
+    id: 13,
+    userName: "test",
+    profilePath: "https://helpx.adobe.com/content/dam/help/en/photoshop/using/quick-actions/remove-background-before-qa1.png"
+  },];
+
   // 마지막 페이지 수
   const lastPage = useMemo(()=>{
-    const memberCnt = messageMemberList.length;
+    const memberCnt = serverMemberList.length;
     let lastPage = 0;
     if(memberCnt%4 === 0){
       lastPage = Math.floor(memberCnt/4) - 1
@@ -40,7 +45,7 @@ const VideoCallBoxList = () => {
 
   // TODO : 화면공유 멤버 리스트 슬라이싱 함수 
   const sliceMemberList = useCallback(()=>{
-    const newMemberList = messageMemberList.slice(curVideoCallBoxPage*4, (curVideoCallBoxPage*4)+4);
+    const newMemberList = serverMemberList.slice(curVideoCallBoxPage*4, (curVideoCallBoxPage*4)+4);
     setSlicedMemberList(newMemberList)
   },[curVideoCallBoxPage])
 
@@ -55,8 +60,8 @@ const VideoCallBoxList = () => {
       onClick={handleBoxPagePrev} />
       <div className='grid grid-cols-4 h-full w-full'>
         {
-            slicedMemberList.map(member=>(
-                <VideoCallBoxListItem member={member}/>
+            slicedMemberList.map((member,index)=>(
+                <VideoCallBoxListItem key={index} member={member}/>
             ))
         }
       </div>

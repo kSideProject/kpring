@@ -13,6 +13,7 @@ import kpring.core.auth.dto.response.TokenInfo
 import kpring.core.auth.enums.TokenType
 import kpring.core.chat.chat.dto.request.ChatType
 import kpring.core.chat.chat.dto.request.CreateChatRequest
+import kpring.core.chat.chat.dto.request.UpdateChatRequest
 import kpring.core.chat.chat.dto.response.ChatResponse
 import kpring.core.global.dto.response.ApiResponse
 import kpring.core.server.client.ServerClient
@@ -275,6 +276,122 @@ class ChatControllerTest(
               "data[].isEdited" type JsonDataType.Booleans mean "메시지가 수정되었는지 여부"
               "data[].sentAt" type JsonDataType.Strings mean "메시지 생성 시간"
               "data[].content" type JsonDataType.Strings mean "메시지 내용"
+            }
+          }
+        }
+      }
+    }
+
+    describe("PATCH /api/v1/chat : updateChat api test") {
+
+      val url = "/api/v1/chat"
+      it("updateRoomChat api test") {
+
+        // Given
+        val roomId = "test_room_id"
+        val content = "edit test"
+        val request = UpdateChatRequest(id = roomId, type = ChatType.Room, content = content)
+        val userId = CommonTest.TEST_USER_ID
+
+        every { authClient.getTokenInfo(any()) } returns
+          ApiResponse(
+            data =
+              TokenInfo(
+                type = TokenType.ACCESS, userId = userId,
+              ),
+          )
+
+        every {
+          chatService.updateRoomChat(
+            request,
+            CommonTest.TEST_USER_ID,
+          )
+        } returns true
+
+        // When
+        val result =
+          webTestClient.patch().uri(url)
+            .bodyValue(request)
+            .header("Authorization", "Bearer mock_token")
+            .exchange()
+
+        val docs =
+          result
+            .expectStatus()
+            .isOk
+            .expectBody()
+            .json(om.writeValueAsString(ApiResponse<Nothing>(status = 200)))
+
+        // Then
+        docs.restDoc(
+          identifier = "update_chats_200",
+          description = "채팅방 채팅 업데이트 api",
+        ) {
+          response {
+            body {
+              "status" type JsonDataType.Integers mean "상태 코드"
+            }
+          }
+        }
+      }
+      it("updateServerChat api test") {
+
+        // Given
+        val serverId = "test_server_id"
+        val content = "edit test"
+        val request = UpdateChatRequest(id = serverId, type = ChatType.Server, content = content)
+        val userId = CommonTest.TEST_USER_ID
+
+        val serverList =
+          listOf(
+            ServerSimpleInfo(
+              id = serverId,
+              name = "test_server_name",
+              bookmarked = true,
+            ),
+          )
+
+        every { authClient.getTokenInfo(any()) } returns
+          ApiResponse(
+            data =
+              TokenInfo(
+                type = TokenType.ACCESS, userId = userId,
+              ),
+          )
+
+        every { serverClient.getServerList(any(), any()) } returns
+          ResponseEntity.ok().body(ApiResponse(data = serverList))
+
+        every {
+          chatService.updateServerChat(
+            request,
+            userId,
+          )
+        } returns
+          true
+
+        // When
+        val result =
+          webTestClient.patch().uri(url)
+            .bodyValue(request)
+            .header("Authorization", "Bearer mock_token")
+            .exchange()
+
+        val docs =
+          result
+            .expectStatus()
+            .isOk
+            .expectBody()
+            .json(om.writeValueAsString(ApiResponse<Nothing>(status = 200)))
+
+        // Then
+        docs.restDoc(
+          identifier = "update_chats_200",
+          description = "서버 채팅 업데이트 api",
+        ) {
+          response {
+            body {
+              "status" type JsonDataType.Integers mean "상태 코드"
             }
           }
         }

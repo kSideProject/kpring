@@ -1,0 +1,26 @@
+package kpring.chat.chat.model
+
+import kpring.chat.NoArg
+import kpring.chat.global.model.BaseTime
+import org.springframework.data.annotation.Id
+import org.springframework.data.mongodb.core.mapping.Document
+
+@NoArg
+@Document(collection = "chats")
+class Chat(
+  val userId: String,
+  // roomId or serverId
+  val contextId: String,
+  var content: String,
+) : BaseTime() {
+  @Id
+  var id: String? = null
+
+  fun isEdited(): Boolean {
+    return !createdAt.equals(updatedAt)
+  }
+
+  fun updateContent(content: String) {
+    this.content = content
+  }
+}

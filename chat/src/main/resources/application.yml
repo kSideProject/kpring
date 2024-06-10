@@ -20,11 +20,6 @@ spring:
       port: 6379
       password: testpassword1234
 
-    redis:
-      host: localhost
-      port: 6379
-      password: testpassword1234
-
 server:
   port: 8081
 

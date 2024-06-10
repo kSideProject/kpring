@@ -14,6 +14,7 @@ import kpring.user.service.UserService
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 
 @RestController
 @RequestMapping("/api/v1")
@@ -43,12 +44,13 @@ class UserController(
   fun updateUserProfile(
     @RequestHeader("Authorization") token: String,
     @PathVariable userId: Long,
-    @RequestBody request: UpdateUserProfileRequest,
+    @Validated @RequestPart(value = "json") request: UpdateUserProfileRequest,
+    @RequestPart(value = "file") multipartFile: MultipartFile,
   ): ResponseEntity<ApiResponse<UpdateUserProfileResponse>> {
     val validatedUserId = checkIfAccessTokenAndGetUserId(token)
     checkIfUserIsSelf(userId.toString(), validatedUserId)
 
-    val response = userService.updateProfile(userId, request)
+    val response = userService.updateProfile(userId, request, multipartFile)
     return ResponseEntity.ok(ApiResponse(data = response))
   }
 

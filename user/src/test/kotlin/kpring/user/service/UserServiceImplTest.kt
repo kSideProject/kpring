@@ -16,11 +16,13 @@ class UserServiceImplTest : FunSpec({
   val userRepository: UserRepository = mockk()
   val passwordEncoder: PasswordEncoder = mockk()
   val userValidationService: UserValidationService = mockk()
+  val uploadProfileImageService: UploadProfileImageService = mockk()
   val userService =
     UserServiceImpl(
       userRepository,
       passwordEncoder,
       userValidationService,
+      uploadProfileImageService,
     )
   val friendService = FriendService(userRepository)
   lateinit var createUserRequest: CreateUserRequest
@@ -43,6 +45,7 @@ class UserServiceImplTest : FunSpec({
         createUserRequest.username,
         createUserRequest.email,
         createUserRequest.password,
+        null,
       )
 
     every { userService.handleDuplicateEmail(createUserRequest.email) } just Runs
@@ -69,7 +72,7 @@ class UserServiceImplTest : FunSpec({
       shouldThrow<ServiceException> {
         userService.handleDuplicateEmail(createUserRequest.email)
       }
-    exception.errorCode.message() shouldBe "Email already exists"
+    exception.errorCode.message() shouldBe "이미 존재하는 이메일입니다."
 
     verify { userRepository.save(any()) wasNot Called }
   }

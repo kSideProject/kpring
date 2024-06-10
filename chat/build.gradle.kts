@@ -41,6 +41,9 @@ dependencies {
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
   implementation("org.jetbrains.kotlin:kotlin-reflect")
 
+  // non-blocking redis
+  implementation("org.springframework.boot:spring-boot-starter-data-redis")
+
   // test
   testImplementation(project(":test"))
   testImplementation("org.springframework.boot:spring-boot-starter-test")

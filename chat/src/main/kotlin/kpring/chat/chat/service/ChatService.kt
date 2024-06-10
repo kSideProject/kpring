@@ -1,7 +1,6 @@
 package kpring.chat.chat.service
 
-import kpring.chat.chat.model.RoomChat
-import kpring.chat.chat.model.ServerChat
+import kpring.chat.chat.model.Chat
 import kpring.chat.chat.repository.RoomChatRepository
 import kpring.chat.chat.repository.ServerChatRepository
 import kpring.chat.chatroom.repository.ChatRoomRepository
@@ -28,9 +27,9 @@ class ChatService(
   ): Boolean {
     val chat =
       roomChatRepository.save(
-        RoomChat(
+        Chat(
           userId = userId,
-          roomId = request.id,
+          contextId = request.id,
           content = request.content,
         ),
       )
@@ -43,9 +42,9 @@ class ChatService(
   ): Boolean {
     val chat =
       serverChatRepository.save(
-        ServerChat(
+        Chat(
           userId = userId,
-          serverId = request.id,
+          contextId = request.id,
           content = request.content,
         ),
       )
@@ -60,9 +59,9 @@ class ChatService(
     verifyChatRoomAccess(chatRoomId, userId)
 
     val pageable: Pageable = PageRequest.of(page, pageSize)
-    val roomChats: List<RoomChat> = roomChatRepository.findAllByRoomId(chatRoomId, pageable)
+    val roomChats: List<Chat> = roomChatRepository.findAllByContextId(chatRoomId, pageable)
 
-    return convertRoomChatsToResponses(roomChats)
+    return convertChatsToResponses(roomChats)
   }
 
   fun getServerChats(
@@ -74,9 +73,9 @@ class ChatService(
     verifyServerAccess(servers, serverId)
 
     val pageable: Pageable = PageRequest.of(page, pageSize)
-    val chats: List<ServerChat> = serverChatRepository.findAllByServerId(serverId, pageable)
+    val chats: List<Chat> = serverChatRepository.findAllByContextId(serverId, pageable)
 
-    return convertServerChatsToResponses(chats)
+    return convertChatsToResponses(chats)
   }
 
   private fun verifyServerAccess(
@@ -100,15 +99,7 @@ class ChatService(
     }
   }
 
-  private fun convertRoomChatsToResponses(roomChats: List<RoomChat>): List<ChatResponse> {
-    val chatResponse =
-      roomChats.map { chat ->
-        ChatResponse(chat.id!!, chat.isEdited(), chat.createdAt.toString(), chat.content)
-      }
-    return chatResponse
-  }
-
-  private fun convertServerChatsToResponses(chats: List<ServerChat>): List<ChatResponse> {
+  private fun convertChatsToResponses(chats: List<Chat>): List<ChatResponse> {
     val chatResponse =
       chats.map { chat ->
         ChatResponse(chat.id!!, chat.isEdited(), chat.createdAt.toString(), chat.content)

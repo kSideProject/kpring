@@ -1,15 +1,12 @@
 package kpring.user.controller
 
-import kpring.core.auth.client.AuthClient
-import kpring.core.auth.enums.TokenType
 import kpring.core.global.dto.response.ApiResponse
-import kpring.core.global.exception.ServiceException
 import kpring.user.dto.request.CreateUserRequest
 import kpring.user.dto.request.UpdateUserProfileRequest
 import kpring.user.dto.response.CreateUserResponse
 import kpring.user.dto.response.GetUserProfileResponse
 import kpring.user.dto.response.UpdateUserProfileResponse
-import kpring.user.exception.UserErrorCode
+import kpring.user.global.AuthValidator
 import kpring.user.service.UserService
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
@@ -20,14 +17,14 @@ import org.springframework.web.multipart.MultipartFile
 @RequestMapping("/api/v1")
 class UserController(
   val userService: UserService,
-  val authClient: AuthClient,
+  val authValidator: AuthValidator,
 ) {
   @GetMapping("/user/{userId}")
   fun getUserProfile(
     @RequestHeader("Authorization") token: String,
     @PathVariable userId: Long,
   ): ResponseEntity<ApiResponse<GetUserProfileResponse>> {
-    checkIfAccessTokenAndGetUserId(token)
+    authValidator.checkIfAccessTokenAndGetUserId(token)
     val response = userService.getProfile(userId)
     return ResponseEntity.ok(ApiResponse(data = response))
   }
@@ -47,8 +44,8 @@ class UserController(
     @Validated @RequestPart(value = "json") request: UpdateUserProfileRequest,
     @RequestPart(value = "file") multipartFile: MultipartFile,
   ): ResponseEntity<ApiResponse<UpdateUserProfileResponse>> {
-    val validatedUserId = checkIfAccessTokenAndGetUserId(token)
-    checkIfUserIsSelf(userId.toString(), validatedUserId)
+    val validatedUserId = authValidator.checkIfAccessTokenAndGetUserId(token)
+    authValidator.checkIfUserIsSelf(userId.toString(), validatedUserId)
 
     val response = userService.updateProfile(userId, request, multipartFile)
     return ResponseEntity.ok(ApiResponse(data = response))
@@ -59,8 +56,8 @@ class UserController(
     @RequestHeader("Authorization") token: String,
     @PathVariable userId: Long,
   ): ResponseEntity<ApiResponse<Any>> {
-    val validatedUserId = checkIfAccessTokenAndGetUserId(token)
-    checkIfUserIsSelf(userId.toString(), validatedUserId)
+    val validatedUserId = authValidator.checkIfAccessTokenAndGetUserId(token)
+    authValidator.checkIfUserIsSelf(userId.toString(), validatedUserId)
 
     val isExit = userService.exitUser(userId)
 
@@ -68,24 +65,6 @@ class UserController(
       ResponseEntity.ok().build()
     } else {
       ResponseEntity.badRequest().build()
-    }
-  }
-
-  private fun checkIfAccessTokenAndGetUserId(token: String): String {
-    val validationResult = authClient.getTokenInfo(token)
-    if (validationResult.data!!.type != TokenType.ACCESS) {
-      throw ServiceException(UserErrorCode.BAD_REQUEST)
-    }
-
-    return validationResult.data!!.userId
-  }
-
-  private fun checkIfUserIsSelf(
-    userId: String,
-    validatedUserId: String,
-  ) {
-    if (userId != validatedUserId) {
-      throw ServiceException(UserErrorCode.NOT_ALLOWED)
     }
   }
 }

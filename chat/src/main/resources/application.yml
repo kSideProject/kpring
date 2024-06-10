@@ -10,6 +10,13 @@ spring:
       database: mongodb
       authentication-database: admin
       authSource: admin
+      repositories:
+        enabled: true
+
+    redis:
+      host: localhost
+      port: 6379
+      password: testpassword1234
 
 server:
   port: 8081
@@ -17,6 +24,10 @@ server:
 auth:
   url: "http://localhost:30000/"
 url:
-    server: "http://localhost:8080/"
+  server: "http://localhost:8080/"
+
 page:
   size: 100
+chatroom:
+  expiration: 1d
+  baseurl: "http://localhost:8081/"

@@ -6,7 +6,7 @@ import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import kpring.chat.chat.model.RoomChat
+import kpring.chat.chat.model.Chat
 import kpring.chat.chat.repository.RoomChatRepository
 import kpring.chat.chat.repository.ServerChatRepository
 import kpring.chat.chat.service.ChatService
@@ -33,7 +33,7 @@ class ChatServiceTest(
       // Given
       val request = CreateChatRequest(id = ChatRoomTest.TEST_ROOM_ID, content = ChatTest.CONTENT, type = ChatType.Room)
       val userId = CommonTest.TEST_USER_ID
-      val roomChat = RoomChat(userId, request.id, request.content)
+      val roomChat = Chat(userId, request.id, request.content)
       every { roomChatRepository.save(any()) } returns roomChat
 
       // When

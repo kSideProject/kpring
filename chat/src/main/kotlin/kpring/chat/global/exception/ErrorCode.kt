@@ -9,7 +9,9 @@ enum class ErrorCode(val httpStatus: Int, val message: String) {
   // 403
   FORBIDDEN_CHATROOM(HttpStatus.FORBIDDEN.value(), "접근이 제한된 채팅방 입니다"),
   FORBIDDEN_SERVER(HttpStatus.FORBIDDEN.value(), "접근이 제한된 서버 입니다"),
+  FORBIDDEN_CHAT(HttpStatus.FORBIDDEN.value(), "접근이 제한된 채팅 입니다"),
 
   // 404
   CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "해당 id로 chatroom을 찾을 수 없습니다"),
+  CHAT_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "해당 id로 채팅을 찾을 수 없습니다"),
 }

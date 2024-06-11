@@ -18,6 +18,7 @@ import kpring.core.server.dto.request.AddUserAtServerRequest
 import kpring.core.server.dto.request.CreateServerRequest
 import kpring.core.server.dto.request.GetServerCondition
 import kpring.core.server.dto.response.CreateServerResponse
+import kpring.server.application.service.CategoryService
 import kpring.server.application.service.ServerService
 import kpring.server.config.CoreConfiguration
 import kpring.test.restdoc.dsl.restDoc
@@ -46,6 +47,7 @@ class RestApiServerControllerTest(
   webContext: WebApplicationContext,
   @MockkBean val serverService: ServerService,
   @MockkBean val authClient: AuthClient,
+  @MockkBean val categoryService: CategoryService,
 ) : MvcWebTestClientDescribeSpec(
     testMethodName = "RestApiServerControllerTest",
     webContext = webContext,

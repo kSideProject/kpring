@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/v1")
 class ChatController(
   private val chatService: ChatService,
-  val authClient: AuthClient,
-  val serverClient: ServerClient,
+  private val authClient: AuthClient,
+  private val serverClient: ServerClient,
 ) {
   @PostMapping("/chat")
   fun createChat(
@@ -71,7 +71,6 @@ class ChatController(
       when (request.type) {
         ChatType.Room -> chatService.updateRoomChat(request, userId)
         ChatType.Server -> chatService.updateServerChat(request, userId)
-        else -> throw GlobalException(ErrorCode.INVALID_CHAT_TYPE)
       }
     return ResponseEntity.ok().body(ApiResponse<Nothing>(status = 200))
   }

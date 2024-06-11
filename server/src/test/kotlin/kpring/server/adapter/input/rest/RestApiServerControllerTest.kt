@@ -22,8 +22,8 @@ import kpring.server.application.service.ServerService
 import kpring.server.config.CoreConfiguration
 import kpring.test.restdoc.dsl.restDoc
 import kpring.test.restdoc.json.JsonDataType.*
+import kpring.test.web.MvcWebTestClientDescribeSpec
 import kpring.test.web.URLBuilder
-import kpring.test.web.WebTestClientDescribeSpec
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.context.annotation.Import
@@ -41,7 +41,7 @@ class RestApiServerControllerTest(
   webContext: WebApplicationContext,
   @MockkBean val serverService: ServerService,
   @MockkBean val authClient: AuthClient,
-) : WebTestClientDescribeSpec(
+) : MvcWebTestClientDescribeSpec(
     testMethodName = "RestApiServerControllerTest",
     webContext = webContext,
     body = { client ->

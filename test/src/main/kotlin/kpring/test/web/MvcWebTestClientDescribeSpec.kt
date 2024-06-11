@@ -8,7 +8,7 @@ import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.servlet.client.MockMvcWebTestClient
 import org.springframework.web.context.WebApplicationContext
 
-open class WebTestClientDescribeSpec(
+open class MvcWebTestClientDescribeSpec(
   testMethodName: String,
   webContext: WebApplicationContext,
   body: DescribeSpec.(webTestClient: WebTestClient) -> Unit = {},

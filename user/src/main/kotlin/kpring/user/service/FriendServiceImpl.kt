@@ -43,7 +43,7 @@ class FriendServiceImpl(
     TODO("Not yet implemented")
   }
 
-  private fun checkSelfFriend(
+  fun checkSelfFriend(
     user: User,
     friend: User,
   ) {
@@ -52,7 +52,7 @@ class FriendServiceImpl(
     }
   }
 
-  private fun checkFriendRelationExists(
+  fun checkFriendRelationExists(
     userId: Long,
     friendId: Long,
   ) {

@@ -2,10 +2,12 @@ package kpring.server.adapter.input.rest
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
+import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import kpring.core.auth.client.AuthClient
 import kpring.core.global.dto.response.ApiResponse
 import kpring.core.server.dto.CategoryInfo
+import kpring.server.application.service.CategoryService
 import kpring.server.application.service.ServerService
 import kpring.server.config.CoreConfiguration
 import kpring.test.restdoc.dsl.restDoc
@@ -32,6 +34,7 @@ class CategoryControllerTest(
   webContext: WebApplicationContext,
   @MockkBean val serverService: ServerService,
   @MockkBean val authClient: AuthClient,
+  @MockkBean val categoryService: CategoryService,
 ) : MvcWebTestClientDescribeSpec(
     "Rest api server category controller test",
     webContext,
@@ -41,9 +44,16 @@ class CategoryControllerTest(
           // given
           val data =
             listOf(
-              CategoryInfo("카테고리1"),
-              CategoryInfo("카테고리2"),
+              CategoryInfo(
+                id = "SERVER_CATEGORY_1",
+                name = "category1",
+              ),
+              CategoryInfo(
+                id = "SERVER_CATEGORY_2",
+                name = "category2",
+              ),
             )
+          every { categoryService.getCategories() } returns data
           // when
           val result =
             client.get()

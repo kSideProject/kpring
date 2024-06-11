@@ -30,7 +30,12 @@ import org.springframework.context.annotation.Import
 import org.springframework.web.context.WebApplicationContext
 
 @Import(CoreConfiguration::class)
-@WebMvcTest(controllers = [RestApiServerController::class])
+@WebMvcTest(
+  controllers = [
+    RestApiServerController::class,
+    CategoryController::class,
+  ],
+)
 @ExtendWith(
   value = [
     MockKExtension::class,

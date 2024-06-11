@@ -84,7 +84,7 @@ class ChatService(
     userId: String,
   ): Boolean {
     val chat = roomChatRepository.findById(request.id).orElseThrow { GlobalException(ErrorCode.CHAT_NOT_FOUND) }
-    chat.verifyAccess(userId)
+    verifyIfAuthor(userId, chat)
     chat.updateContent(request.content)
     roomChatRepository.save(chat)
     return true
@@ -95,10 +95,19 @@ class ChatService(
     userId: String,
   ): Boolean {
     val chat = serverChatRepository.findById(request.id).orElseThrow { GlobalException(ErrorCode.CHAT_NOT_FOUND) }
-    chat.verifyAccess(userId)
+    verifyIfAuthor(userId, chat)
     chat.updateContent(request.content)
     serverChatRepository.save(chat)
     return true
+  }
+
+  fun verifyIfAuthor(
+    userId: String,
+    chat: Chat,
+  ) {
+    if (userId != chat.userId) {
+      throw GlobalException(ErrorCode.FORBIDDEN_CHAT)
+    }
   }
 
   private fun verifyServerAccess(

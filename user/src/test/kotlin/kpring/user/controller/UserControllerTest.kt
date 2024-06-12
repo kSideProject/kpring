@@ -7,6 +7,8 @@ import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import kpring.core.auth.client.AuthClient
+import kpring.core.auth.dto.response.TokenInfo
+import kpring.core.auth.enums.TokenType
 import kpring.core.global.dto.response.ApiResponse
 import kpring.core.global.exception.ServiceException
 import kpring.test.restdoc.dsl.restDoc
@@ -19,6 +21,7 @@ import kpring.user.dto.response.GetUserProfileResponse
 import kpring.user.dto.response.UpdateUserProfileResponse
 import kpring.user.exception.UserErrorCode
 import kpring.user.global.AuthValidator
+import kpring.user.global.CommonTest
 import kpring.user.service.UserService
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -296,6 +299,9 @@ class UserControllerTest(
           val requestJson = objectMapper.writeValueAsString(request)
 
           val response = ApiResponse(data = data)
+          every { authClient.getTokenInfo(any()) }.returns(
+            ApiResponse(data = TokenInfo(TokenType.ACCESS, CommonTest.TEST_USER_ID.toString())),
+          )
           every { authValidator.checkIfAccessTokenAndGetUserId(any()) } returns userId.toString()
           every { authValidator.checkIfUserIsSelf(any(), any()) } returns Unit
           every { userService.updateProfile(userId, any(), any()) } returns data
@@ -382,10 +388,7 @@ class UserControllerTest(
 
           val response =
             FailMessageResponse.builder().message(UserErrorCode.NOT_ALLOWED.message()).build()
-          every { authValidator.checkIfAccessTokenAndGetUserId(any()) } throws
-            ServiceException(
-              UserErrorCode.NOT_ALLOWED,
-            )
+          every { authClient.getTokenInfo(any()) } throws ServiceException(UserErrorCode.NOT_ALLOWED)
 
           val bodyBuilder =
             MultipartBodyBuilder()
@@ -447,7 +450,6 @@ class UserControllerTest(
         it("회원정보 수정 실패 : 서버 내부 오류") {
           // given
           val userId = 1L
-          val token = "Bearer token"
           val request =
             UpdateUserProfileRequest.builder()
               .email(TEST_EMAIL)
@@ -467,7 +469,7 @@ class UserControllerTest(
           val requestJson = objectMapper.writeValueAsString(request)
 
           val response = FailMessageResponse.serverError
-          every { authValidator.checkIfAccessTokenAndGetUserId(any()) } throws RuntimeException("서버 내부 오류")
+          every { authClient.getTokenInfo(any()) } throws RuntimeException("서버 내부 오류")
 
           val bodyBuilder =
             MultipartBodyBuilder()
@@ -538,6 +540,9 @@ class UserControllerTest(
               .username(TEST_USERNAME)
               .build()
           val response = ApiResponse(data = data)
+          every { authClient.getTokenInfo(any()) }.returns(
+            ApiResponse(data = TokenInfo(TokenType.ACCESS, CommonTest.TEST_USER_ID.toString())),
+          )
           every { authValidator.checkIfAccessTokenAndGetUserId(any()) } returns userId.toString()
           every { userService.getProfile(userId) } returns data
 
@@ -584,10 +589,7 @@ class UserControllerTest(
           val token = "Bearer test"
           val response =
             FailMessageResponse.builder().message(UserErrorCode.NOT_ALLOWED.message()).build()
-          every { authValidator.checkIfAccessTokenAndGetUserId(any()) } throws
-            ServiceException(
-              UserErrorCode.NOT_ALLOWED,
-            )
+          every { authClient.getTokenInfo(any()) } throws ServiceException(UserErrorCode.NOT_ALLOWED)
 
           // when
           val result =
@@ -622,9 +624,7 @@ class UserControllerTest(
           // given
           val userId = 1L
           val token = "Bearer test"
-          every {
-            authValidator.checkIfAccessTokenAndGetUserId(any())
-          } throws RuntimeException("서버 내부 오류")
+          every { authClient.getTokenInfo(any()) } throws RuntimeException("서버 내부 오류")
           val response = FailMessageResponse.serverError
 
           // when
@@ -659,6 +659,9 @@ class UserControllerTest(
         it("탈퇴 성공") {
           // given
           val userId = 1L
+          every { authClient.getTokenInfo(any()) }.returns(
+            ApiResponse(data = TokenInfo(TokenType.ACCESS, CommonTest.TEST_USER_ID.toString())),
+          )
           every { authValidator.checkIfAccessTokenAndGetUserId(any()) } returns userId.toString()
           every { authValidator.checkIfUserIsSelf(any(), any()) } returns Unit
           every { userService.exitUser(userId) } returns true
@@ -694,9 +697,7 @@ class UserControllerTest(
         it("탈퇴 실패 : 권한이 없는 토큰") {
           // given
           val userId = 1L
-          every {
-            authValidator.checkIfAccessTokenAndGetUserId(any())
-          } throws ServiceException(UserErrorCode.NOT_ALLOWED)
+          every { authClient.getTokenInfo(any()) } throws ServiceException(UserErrorCode.NOT_ALLOWED)
 
           // when
           val result =
@@ -727,10 +728,7 @@ class UserControllerTest(
         it("탈퇴 실패 : 서버 내부 오류") {
           // given
           val userId = 1L
-          val token = "Bearer token"
-          every {
-            authValidator.checkIfAccessTokenAndGetUserId(any())
-          } throws RuntimeException("서버 내부 오류")
+          every { authClient.getTokenInfo(any()) } throws RuntimeException("서버 내부 오류")
 
           // when
           val result =

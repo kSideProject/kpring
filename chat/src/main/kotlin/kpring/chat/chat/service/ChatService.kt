@@ -101,7 +101,7 @@ class ChatService(
     return true
   }
 
-  fun verifyIfAuthor(
+  private fun verifyIfAuthor(
     userId: String,
     chat: Chat,
   ) {

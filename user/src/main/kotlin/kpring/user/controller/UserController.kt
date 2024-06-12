@@ -1,5 +1,6 @@
 package kpring.user.controller
 
+import kpring.core.auth.client.AuthClient
 import kpring.core.global.dto.response.ApiResponse
 import kpring.user.dto.request.CreateUserRequest
 import kpring.user.dto.request.UpdateUserProfileRequest
@@ -16,15 +17,17 @@ import org.springframework.web.multipart.MultipartFile
 @RestController
 @RequestMapping("/api/v1")
 class UserController(
-  val userService: UserService,
-  val authValidator: AuthValidator,
+  private val userService: UserService,
+  private val authValidator: AuthValidator,
+  private val authClient: AuthClient,
 ) {
   @GetMapping("/user/{userId}")
   fun getUserProfile(
     @RequestHeader("Authorization") token: String,
     @PathVariable userId: Long,
   ): ResponseEntity<ApiResponse<GetUserProfileResponse>> {
-    authValidator.checkIfAccessTokenAndGetUserId(token)
+    val validationResult = authClient.getTokenInfo(token)
+    authValidator.checkIfAccessTokenAndGetUserId(validationResult)
     val response = userService.getProfile(userId)
     return ResponseEntity.ok(ApiResponse(data = response))
   }
@@ -44,7 +47,8 @@ class UserController(
     @Validated @RequestPart(value = "json") request: UpdateUserProfileRequest,
     @RequestPart(value = "file") multipartFile: MultipartFile,
   ): ResponseEntity<ApiResponse<UpdateUserProfileResponse>> {
-    val validatedUserId = authValidator.checkIfAccessTokenAndGetUserId(token)
+    val validationResult = authClient.getTokenInfo(token)
+    val validatedUserId = authValidator.checkIfAccessTokenAndGetUserId(validationResult)
     authValidator.checkIfUserIsSelf(userId.toString(), validatedUserId)
 
     val response = userService.updateProfile(userId, request, multipartFile)
@@ -56,7 +60,8 @@ class UserController(
     @RequestHeader("Authorization") token: String,
     @PathVariable userId: Long,
   ): ResponseEntity<ApiResponse<Any>> {
-    val validatedUserId = authValidator.checkIfAccessTokenAndGetUserId(token)
+    val validationResult = authClient.getTokenInfo(token)
+    val validatedUserId = authValidator.checkIfAccessTokenAndGetUserId(validationResult)
     authValidator.checkIfUserIsSelf(userId.toString(), validatedUserId)
 
     val isExit = userService.exitUser(userId)

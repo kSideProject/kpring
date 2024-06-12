@@ -1,5 +1,6 @@
 package kpring.user.controller
 
+import kpring.core.auth.client.AuthClient
 import kpring.core.global.dto.response.ApiResponse
 import kpring.user.dto.response.DeleteFriendResponse
 import kpring.user.dto.response.GetFriendsResponse
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*
 class FriendController(
   private val friendService: FriendService,
   private val authValidator: AuthValidator,
+  private val authClient: AuthClient,
 ) {
   @PostMapping("/user/{userId}/friend/{friendId}")
   fun addFriend(
@@ -21,7 +23,8 @@ class FriendController(
     @PathVariable userId: Long,
     @PathVariable friendId: Long,
   ): ResponseEntity<ApiResponse<AddFriendResponse>> {
-    val validatedUserId = authValidator.checkIfAccessTokenAndGetUserId(token)
+    val validationResult = authClient.getTokenInfo(token)
+    val validatedUserId = authValidator.checkIfAccessTokenAndGetUserId(validationResult)
     authValidator.checkIfUserIsSelf(userId.toString(), validatedUserId)
     val response = friendService.addFriend(userId, friendId)
     return ResponseEntity.ok(ApiResponse(data = response))
@@ -32,7 +35,8 @@ class FriendController(
     @RequestHeader("Authorization") token: String,
     @PathVariable userId: Long,
   ): ResponseEntity<ApiResponse<GetFriendsResponse>> {
-    authValidator.checkIfAccessTokenAndGetUserId(token)
+    val validationResult = authClient.getTokenInfo(token)
+    authValidator.checkIfAccessTokenAndGetUserId(validationResult)
     val response = friendService.getFriends(userId)
     return ResponseEntity.ok(ApiResponse(data = response))
   }
@@ -43,7 +47,8 @@ class FriendController(
     @PathVariable userId: Long,
     @PathVariable friendId: Long,
   ): ResponseEntity<ApiResponse<DeleteFriendResponse>> {
-    val validatedUserId = authValidator.checkIfAccessTokenAndGetUserId(token)
+    val validationResult = authClient.getTokenInfo(token)
+    val validatedUserId = authValidator.checkIfAccessTokenAndGetUserId(validationResult)
     authValidator.checkIfUserIsSelf(userId.toString(), validatedUserId)
     val response = friendService.deleteFriend(userId, friendId)
     return ResponseEntity.ok(ApiResponse(data = response))

@@ -55,7 +55,7 @@ class ServerService(
     val server = getServer.get(serverId)
     val serverProfiles = getServerProfilePort.getAll(server.id!!)
     return ServerInfo(
-      id = server.id!!,
+      id = server.id,
       name = server.name,
       users =
         serverProfiles.map { profile ->
@@ -65,6 +65,8 @@ class ServerService(
             profileImage = profile.imagePath,
           )
         },
+      theme = server.theme.toInfo(),
+      categories = server.categories.map(Category::toInfo),
     )
   }
 

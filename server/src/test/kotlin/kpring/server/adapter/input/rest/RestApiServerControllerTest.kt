@@ -14,6 +14,7 @@ import kpring.core.global.exception.CommonErrorCode
 import kpring.core.global.exception.ServiceException
 import kpring.core.server.dto.ServerInfo
 import kpring.core.server.dto.ServerSimpleInfo
+import kpring.core.server.dto.ServerUserInfo
 import kpring.core.server.dto.request.AddUserAtServerRequest
 import kpring.core.server.dto.request.CreateServerRequest
 import kpring.core.server.dto.request.GetServerCondition
@@ -188,7 +189,17 @@ class RestApiServerControllerTest(
         it("요청 성공시") {
           // given
           val serverId = "test_server_id"
-          val data = ServerInfo(id = serverId, name = "test_server", users = emptyList())
+          val data =
+            ServerInfo(
+              id = serverId,
+              name = "test_server",
+              users =
+                listOf(
+                  ServerUserInfo(id = "test_user_id", name = "hong gil dong", profileImage = "/image.png"),
+                ),
+              theme = Theme.default().toInfo(),
+              categories = listOf(Category.SERVER_CATEGORY1, Category.SERVER_CATEGORY2).map(Category::toInfo),
+            )
           every { serverService.getServerInfo(serverId) } returns data
 
           // when
@@ -217,7 +228,16 @@ class RestApiServerControllerTest(
               body {
                 "data.id" type Strings mean "서버 id"
                 "data.name" type Strings mean "생성된 서버 이름"
-                "data.users" type Arrays mean "서버에 가입된 유저 목록"
+
+                "data.users[].id" type Strings mean "유저 id"
+                "data.users[].name" type Strings mean "유저 이름"
+                "data.users[].profileImage" type Strings mean "유저 프로필 이미지"
+
+                "data.theme.id" type Strings mean "테마 id"
+                "data.theme.name" type Strings mean "테마 이름"
+
+                "data.categories[].id" type Strings mean "카테고리 id"
+                "data.categories[].name" type Strings mean "카테고리 이름"
               }
             }
           }

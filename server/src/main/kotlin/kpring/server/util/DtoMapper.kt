@@ -5,7 +5,7 @@ import kpring.core.server.dto.ServerThemeInfo
 import kpring.server.domain.Category
 import kpring.server.domain.Theme
 
-fun Category.toInfo(): CategoryInfo  {
+fun Category.toInfo(): CategoryInfo {
   return CategoryInfo(
     id = this.name,
     name = this.toString(),

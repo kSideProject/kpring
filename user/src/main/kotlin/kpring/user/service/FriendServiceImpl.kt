@@ -4,7 +4,6 @@ import kpring.core.global.exception.ServiceException
 import kpring.user.dto.response.DeleteFriendResponse
 import kpring.user.dto.response.GetFriendsResponse
 import kpring.user.dto.result.AddFriendResponse
-import kpring.user.entity.FriendRequestStatus
 import kpring.user.entity.User
 import kpring.user.exception.UserErrorCode
 import kpring.user.repository.FriendRepository
@@ -30,8 +29,8 @@ class FriendServiceImpl(
 
     checkSelfFriend(user, friend)
     checkFriendRelationExists(userId, friendId)
-    user.addFriendRelation(friend, FriendRequestStatus.REQUESTED)
-    friend.addFriendRelation(user, FriendRequestStatus.RECEIVED)
+    user.requestFriend(friend)
+    friend.receiveFriendRequest(user)
 
     return AddFriendResponse(friend.id!!)
   }

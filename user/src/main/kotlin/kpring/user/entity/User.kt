@@ -20,11 +20,23 @@ class User(
   val friends: MutableSet<Friend> = mutableSetOf(),
   // Other fields and methods...
 ) {
-  fun addFriendRelation(
-    friend: User,
-    requestStatus: FriendRequestStatus,
-  ) {
-    val friendRelation = Friend(user = this, friend = friend, requestStatus = requestStatus)
+  fun requestFriend(user: User) {
+    val friendRelation =
+      Friend(
+        user = this,
+        friend = user,
+        requestStatus = FriendRequestStatus.REQUESTED,
+      )
+    friends.add(friendRelation)
+  }
+
+  fun receiveFriendRequest(user: User) {
+    val friendRelation =
+      Friend(
+        user = this,
+        friend = user,
+        requestStatus = FriendRequestStatus.RECEIVED,
+      )
     friends.add(friendRelation)
   }
 

@@ -30,10 +30,7 @@ class ServerService(
   val updateServerPort: UpdateServerPort,
   val deleteServerPort: DeleteServerPort,
 ) : CreateServerUseCase, GetServerInfoUseCase, AddUserAtServerUseCase, DeleteServerUseCase {
-  override fun createServer(
-    req: CreateServerRequest,
-    userId: String,
-  ): CreateServerResponse {
+  override fun createServer(req: CreateServerRequest): CreateServerResponse {
     val server = createServerPort.create(req)
     return CreateServerResponse(
       serverId = server.id,

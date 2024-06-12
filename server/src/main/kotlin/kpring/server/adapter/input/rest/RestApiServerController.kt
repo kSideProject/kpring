@@ -38,7 +38,7 @@ class RestApiServerController(
     }
 
     // logic
-    val data = createServerUseCase.createServer(request, userInfo.userId)
+    val data = createServerUseCase.createServer(request)
 
     return ResponseEntity.ok()
       .body(ApiResponse(data = data))

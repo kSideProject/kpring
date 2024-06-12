@@ -72,7 +72,7 @@ class RestApiServerControllerTest(
                   userId = userId,
                 ),
             )
-          every { serverService.createServer(eq(request), any()) } returns data
+          every { serverService.createServer(eq(request)) } returns data
 
           // when
           val result =

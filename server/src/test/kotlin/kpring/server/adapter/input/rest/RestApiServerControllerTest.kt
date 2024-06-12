@@ -64,13 +64,15 @@ class RestApiServerControllerTest(
         it("요청 성공시") {
           // given
           val userId = "test_user_id"
+          val userName = "test host"
 
-          val request = CreateServerRequest(serverName = "test server", userId = userId)
+          val request = CreateServerRequest(serverName = "test server", userId = userId, hostName = userName)
           val data =
             CreateServerResponse(
               serverId = "1",
               serverName = request.serverName,
               theme = Theme.default().toInfo(),
+              hostName = userName,
               categories = listOf(Category.SERVER_CATEGORY1, Category.SERVER_CATEGORY2).map(Category::toInfo),
             )
 
@@ -107,6 +109,7 @@ class RestApiServerControllerTest(
             request {
               header { "Authorization" mean "jwt access token" }
               body {
+                "hostName" type Strings mean "생성할 서버의 대표 유저 이름"
                 "serverName" type Strings mean "생성할 서버의 이름"
                 "userId" type Strings mean "서버를 생성하는 유저의 id"
                 "theme" type Strings mean "생성할 서버의 테마" optional true
@@ -116,6 +119,8 @@ class RestApiServerControllerTest(
 
             response {
               body {
+                "data.hostName" type Strings mean "생성된 서버의 대표 유저 이름"
+
                 "data.serverId" type Strings mean "서버 id"
                 "data.serverName" type Strings mean "생성된 서버 이름"
 
@@ -132,8 +137,8 @@ class RestApiServerControllerTest(
         it("요청 실패시 : 요청한 유저와 서버 권한을 가진 유저가 일치하지 않는 경우") {
           // given
           val serverOwnerId = "server owner id"
-
-          val request = CreateServerRequest(serverName = "test server", userId = serverOwnerId)
+          val serverOwnerName = "server owner name"
+          val request = CreateServerRequest(serverName = "test server", userId = serverOwnerId, hostName = serverOwnerName)
 
           every { authClient.getTokenInfo(any()) } returns
             ApiResponse(
@@ -167,6 +172,7 @@ class RestApiServerControllerTest(
             request {
               header { "Authorization" mean "jwt access token" }
               body {
+                "hostName" type Strings mean "생성할 서버의 대표 유저 이름"
                 "serverName" type Strings mean "생성할 서버의 이름"
                 "userId" type Strings mean "서버를 생성하는 유저의 id"
                 "theme" type Strings mean "생성할 서버의 테마" optional true

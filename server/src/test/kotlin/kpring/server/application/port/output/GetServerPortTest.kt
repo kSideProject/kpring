@@ -37,7 +37,8 @@ class GetServerPortTest(
     it("저장된 서버의 정보를 조회할 수 있다.") {
       // given
       val userIds = mutableSetOf("id")
-      val domain = Server(name = "test", users = userIds)
+      val hostName = "hostname"
+      val domain = Server(name = "test", users = userIds, hostName = hostName)
       val serverEntity = serverRepository.save(ServerEntity(domain))
 
       // when
@@ -64,7 +65,8 @@ class GetServerPortTest(
       // given
       val userId = "test-user"
       val userIds = mutableSetOf(userId)
-      val server = Server(name = "server", users = userIds)
+      val hostName = "hostname"
+      val server = Server(name = "server", users = userIds, hostName = hostName)
 
       repeat(2) {
         serverRepository.save(ServerEntity(server))

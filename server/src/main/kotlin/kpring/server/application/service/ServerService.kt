@@ -41,12 +41,14 @@ class ServerService(
           users = mutableSetOf(req.userId),
           theme = req.theme,
           categories = req.categories,
+          hostName = req.hostName,
         ),
       )
     return CreateServerResponse(
       serverId = server.id!!,
       serverName = server.name,
       theme = server.theme.toInfo(),
+      hostName = server.host.name,
       categories = server.categories.map(Category::toInfo),
     )
   }

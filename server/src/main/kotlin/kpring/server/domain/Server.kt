@@ -10,14 +10,16 @@ class Server(
   val invitedUserIds: MutableSet<String> = mutableSetOf(),
   val theme: Theme,
   val categories: Set<Category>,
+  val host: ServerHost,
 ) {
   constructor(
     name: String,
-    users: MutableSet<String> = mutableSetOf(),
-    invitedUserIds: MutableSet<String> = mutableSetOf(),
     theme: String? = null,
     categories: List<String>? = null,
-  ) : this(null, name, users, invitedUserIds, initTheme(theme), initCategories(categories))
+    hostName: String,
+    users: MutableSet<String> = mutableSetOf(),
+    invitedUserIds: MutableSet<String> = mutableSetOf(),
+  ) : this(null, name, users, invitedUserIds, initTheme(theme), initCategories(categories), ServerHost(hostName))
 
   companion object {
     // -----------start : 초기화 로직 ------------

@@ -19,7 +19,8 @@ class UpdateServerPortTest(
     it("유저를 초대가 작동한다.") {
       // given
       val userId = "userId"
-      val domain = Server(name = "serverName", users = mutableSetOf(userId))
+      val username = "hostname"
+      val domain = Server(name = "serverName", users = mutableSetOf(userId), hostName = username)
       val server = createServerPort.create(domain)
 
       // when
@@ -35,7 +36,8 @@ class UpdateServerPortTest(
     it("가입 유저를 추가할 수 있다.") {
       // given
       val ownerId = "ownerId"
-      val domain = Server(name = "serverName", users = mutableSetOf(ownerId))
+      val ownerName = "hostname"
+      val domain = Server(name = "serverName", users = mutableSetOf(ownerId), hostName = ownerName)
       val server = createServerPort.create(domain)
       val userId = "userId"
 

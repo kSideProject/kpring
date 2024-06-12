@@ -17,9 +17,9 @@ class ServerTest : DescribeSpec({
     // given
     val server =
       Server(
-        "serverName",
-        mutableSetOf(),
+        name = "serverName",
         invitedUserIds = mutableSetOf("invitedUserId"),
+        hostName = "hostname",
       )
 
     // when
@@ -34,9 +34,9 @@ class ServerTest : DescribeSpec({
     // given
     val server =
       Server(
-        "serverName",
-        mutableSetOf(),
+        name = "serverName",
         invitedUserIds = mutableSetOf("invitedUserId"),
+        hostName = "hostname",
       )
     val profile = server.addUser("invitedUserId", "userName", "profileImageUrl")
 
@@ -52,7 +52,7 @@ class ServerTest : DescribeSpec({
 
   it("테마를 지정하지 않은 서버는 기본 테마를 가진다.") {
     // given & when
-    val server = Server("serverName")
+    val server = Server(name = "serverName", hostName = "hostname")
 
     // then
     server.theme shouldBe Theme.default()
@@ -60,7 +60,7 @@ class ServerTest : DescribeSpec({
 
   it("카테고리를 지정하지 않은 서버는 빈 카테고리 목록을 가진다.") {
     // given & when
-    val server = Server("serverName")
+    val server = Server(name = "serverName", hostName = "hostname")
 
     // then
     server.categories shouldBe emptySet()

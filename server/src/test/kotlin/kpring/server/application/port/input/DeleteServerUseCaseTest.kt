@@ -27,9 +27,12 @@ class DeleteServerUseCaseTest(
       // given
       val serverId = "serverId"
       val userId = "userId"
+      val userName = "username"
       val server =
         Server(
           name = "serverName",
+          hostName = userName,
+          users = mutableSetOf(userId),
         )
       val serverProfile =
         ServerProfile(

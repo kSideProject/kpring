@@ -18,7 +18,8 @@ class SaveServerPortTest(
     it("서버를 저장하면 생성한 유저는 서버의 소유자가 된다.") {
       // given
       val userId = "userId"
-      val domain = Server(name = "test", users = mutableSetOf(userId))
+      val hostName = "serverHost"
+      val domain = Server(name = "test", users = mutableSetOf(userId), hostName = hostName)
 
       // when
       val server = saveServerPort.create(domain)

@@ -28,8 +28,9 @@ class AddUserAtServerUseCaseTest(
       // given
       val invitorId = "invitorId"
       val userId = "userId"
+      val userName = "hostName"
       val serverId = "serverId"
-      val server = Server(name = "serverName")
+      val server = Server(name = "serverName", hostName = userName)
       val serverProfile =
         ServerProfile(
           id = null,

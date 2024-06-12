@@ -84,6 +84,7 @@ class ServerService(
           bookmarked = profile.bookmarked,
           categories = profile.server.categories.map(Category::toInfo),
           theme = profile.server.theme.toInfo(),
+          hostName = profile.server.host.name,
         )
       }
   }

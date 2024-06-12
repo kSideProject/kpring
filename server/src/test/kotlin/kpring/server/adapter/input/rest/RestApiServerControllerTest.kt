@@ -375,6 +375,7 @@ class RestApiServerControllerTest(
         it("요청 성공시") {
           // given
           val userId = "test user id"
+          val hostName = "host user"
           val categories = listOf(Category.SERVER_CATEGORY1.toInfo())
           val data =
             listOf(
@@ -384,6 +385,7 @@ class RestApiServerControllerTest(
                 bookmarked = false,
                 categories = categories,
                 theme = Theme.default().toInfo(),
+                hostName = hostName,
               ),
               ServerSimpleInfo(
                 id = "server2",
@@ -391,6 +393,7 @@ class RestApiServerControllerTest(
                 bookmarked = true,
                 categories = categories,
                 theme = Theme.default().toInfo(),
+                hostName = hostName,
               ),
             )
           val condition = GetServerCondition(serverIds = listOf("server1", "server2"))
@@ -440,6 +443,8 @@ class RestApiServerControllerTest(
 
                 "data[].categories[].id" type Strings mean "카테고리 id"
                 "data[].categories[].name" type Strings mean "카테고리 이름"
+
+                "data[].hostName" type Strings mean "서버 대표 유저 이름"
               }
             }
           }

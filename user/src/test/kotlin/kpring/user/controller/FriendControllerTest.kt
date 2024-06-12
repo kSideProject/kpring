@@ -5,6 +5,9 @@ import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.DescribeSpec
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
+import kpring.core.auth.client.AuthClient
+import kpring.core.auth.dto.response.TokenInfo
+import kpring.core.auth.enums.TokenType
 import kpring.core.global.dto.response.ApiResponse
 import kpring.core.global.exception.ServiceException
 import kpring.test.restdoc.dsl.restDoc
@@ -30,6 +33,7 @@ internal class FriendControllerTest(
   webContext: WebApplicationContext,
   @MockkBean val friendService: FriendServiceImpl,
   @MockkBean val authValidator: AuthValidator,
+  @MockkBean val authClient: AuthClient,
 ) : DescribeSpec({
 
     val restDocument = ManualRestDocumentation()
@@ -53,6 +57,10 @@ internal class FriendControllerTest(
         // given
         val data = AddFriendResponse(friendId = CommonTest.TEST_FRIEND_ID)
         val response = ApiResponse(data = data)
+
+        every { authClient.getTokenInfo(any()) }.returns(
+          ApiResponse(data = TokenInfo(TokenType.ACCESS, CommonTest.TEST_USER_ID.toString())),
+        )
         every {
           authValidator.checkIfAccessTokenAndGetUserId(any())
         } returns CommonTest.TEST_USER_ID.toString()
@@ -103,10 +111,7 @@ internal class FriendControllerTest(
         // given
         val response =
           FailMessageResponse.builder().message(UserErrorCode.NOT_ALLOWED.message()).build()
-        every { authValidator.checkIfAccessTokenAndGetUserId(any()) } throws
-          ServiceException(
-            UserErrorCode.NOT_ALLOWED,
-          )
+        every { authClient.getTokenInfo(any()) } throws ServiceException(UserErrorCode.NOT_ALLOWED)
 
         // when
         val result =
@@ -148,9 +153,7 @@ internal class FriendControllerTest(
 
       it("친구신청 실패 : 서버 내부 오류") {
         // given
-        every {
-          authValidator.checkIfAccessTokenAndGetUserId(any())
-        } throws RuntimeException("서버 내부 오류")
+        every { authClient.getTokenInfo(any()) } throws RuntimeException("서버 내부 오류")
         val response = FailMessageResponse.serverError
 
         // when

@@ -5,7 +5,6 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.*
 import kpring.core.global.exception.ServiceException
-import kpring.user.entity.FriendRequestStatus
 import kpring.user.entity.User
 import kpring.user.exception.UserErrorCode
 import kpring.user.global.CommonTest
@@ -42,8 +41,8 @@ internal class FriendServiceImplTest : FunSpec({
     every {
       friendRepository.existsByUserIdAndFriendId(CommonTest.TEST_USER_ID, CommonTest.TEST_FRIEND_ID)
     } returns false
-    every { user.addFriendRelation(friend, FriendRequestStatus.REQUESTED) } just Runs
-    every { friend.addFriendRelation(user, FriendRequestStatus.RECEIVED) } just Runs
+    every { user.requestFriend(friend) } just Runs
+    every { friend.receiveFriendRequest(user) } just Runs
 
     val response = friendService.addFriend(CommonTest.TEST_USER_ID, CommonTest.TEST_FRIEND_ID)
     response.friendId shouldBe friend.id
@@ -71,7 +70,8 @@ internal class FriendServiceImplTest : FunSpec({
       }
     exception.errorCode.message() shouldBe "자기자신에게 친구요청을 보낼 수 없습니다"
 
-    verify(exactly = 0) { user.addFriendRelation(any(), any()) }
+    verify(exactly = 0) { user.requestFriend(any()) }
+    verify(exactly = 0) { user.receiveFriendRequest(any()) }
   }
 
   test("친구신청_실패_이미 친구인 케이스") {

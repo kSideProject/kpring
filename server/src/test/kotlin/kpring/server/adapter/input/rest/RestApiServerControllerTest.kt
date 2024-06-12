@@ -59,7 +59,9 @@ class RestApiServerControllerTest(
         val url = "/api/v1/server"
         it("요청 성공시") {
           // given
-          val request = CreateServerRequest(serverName = "test server")
+          val userId = "test_user_id"
+
+          val request = CreateServerRequest(serverName = "test server", userId = userId)
           val data = CreateServerResponse(serverId = "1", serverName = request.serverName)
 
           every { authClient.getTokenInfo(any()) } returns
@@ -67,7 +69,7 @@ class RestApiServerControllerTest(
               data =
                 TokenInfo(
                   type = TokenType.ACCESS,
-                  userId = "test_user_id",
+                  userId = userId,
                 ),
             )
           every { serverService.createServer(eq(request), any()) } returns data
@@ -96,6 +98,9 @@ class RestApiServerControllerTest(
               header { "Authorization" mean "jwt access token" }
               body {
                 "serverName" type Strings mean "생성할 서버의 이름"
+                "userId" type Strings mean "서버를 생성하는 유저의 id"
+                "theme" type Strings mean "생성할 서버의 테마" optional true
+                "categories" type Arrays mean "생성할 서버의 카테고리 목록" optional true
               }
             }
 

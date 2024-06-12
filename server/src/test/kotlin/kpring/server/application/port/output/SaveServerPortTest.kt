@@ -18,7 +18,11 @@ class SaveServerPortTest(
     it("서버를 저장하면 생성한 유저는 서버의 소유자가 된다.") {
       // given
       val userId = "userId"
-      val req = CreateServerRequest(serverName = "serverName")
+      val req =
+        CreateServerRequest(
+          serverName = "serverName",
+          userId = userId,
+        )
 
       // when
       val server = saveServerPort.create(req, userId)

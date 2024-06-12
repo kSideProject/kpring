@@ -51,4 +51,20 @@ class ServerTest : DescribeSpec({
     // then
     result shouldBe ServerErrorCode.ALREADY_REGISTERED_USER
   }
+
+  it("테마를 지정하지 않은 서버는 기본 테마를 가진다.") {
+    // given & when
+    val server = Server("serverId", "serverName")
+
+    // then
+    server.theme shouldBe Theme.default()
+  }
+
+  it("카테고리를 지정하지 않은 서버는 빈 카테고리 목록을 가진다.") {
+    // given & when
+    val server = Server("serverId", "serverName")
+
+    // then
+    server.categories shouldBe emptySet()
+  }
 })

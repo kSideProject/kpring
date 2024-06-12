@@ -8,6 +8,8 @@ class Server(
   val name: String,
   val users: MutableSet<String> = mutableSetOf(),
   val invitedUserIds: MutableSet<String> = mutableSetOf(),
+  val theme: Theme = Theme.default(),
+  val categories: Set<Category> = emptySet(),
 ) {
   private fun isInvited(userId: String): Boolean {
     return invitedUserIds.contains(userId)

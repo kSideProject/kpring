@@ -20,10 +20,7 @@ class SaveServerPortMongoImpl(
   @Value("\${resource.default.profileImagePath}")
   private lateinit var defaultImagePath: String
 
-  override fun create(
-    req: CreateServerRequest,
-    userId: String,
-  ): Server {
+  override fun create(req: CreateServerRequest): Server {
     // create server
     val serverEntity =
       serverRepository.save(ServerEntity(name = req.serverName))
@@ -31,7 +28,7 @@ class SaveServerPortMongoImpl(
     // create owner server profile
     serverProfileRepository.save(
       ServerProfileEntity(
-        userId = userId,
+        userId = req.userId,
         // todo change
         name = "USER_${UUID.randomUUID()}",
         // todo change

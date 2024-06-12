@@ -25,7 +25,7 @@ class SaveServerPortTest(
         )
 
       // when
-      val server = saveServerPort.create(req, userId)
+      val server = saveServerPort.create(req)
       val profile = getServerProfilePort.get(server.id, userId)
 
       // then

@@ -34,7 +34,7 @@ class ServerService(
     req: CreateServerRequest,
     userId: String,
   ): CreateServerResponse {
-    val server = createServerPort.create(req, userId)
+    val server = createServerPort.create(req)
     return CreateServerResponse(
       serverId = server.id,
       serverName = server.name,

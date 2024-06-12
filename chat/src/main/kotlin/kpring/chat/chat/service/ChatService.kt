@@ -101,6 +101,26 @@ class ChatService(
     return true
   }
 
+  fun deleteRoomChat(
+    chatId: String,
+    userId: String,
+  ): Boolean {
+    val chat = roomChatRepository.findById(chatId).orElseThrow { GlobalException(ErrorCode.CHAT_NOT_FOUND) }
+    verifyIfAuthor(userId, chat)
+    roomChatRepository.delete(chat)
+    return true
+  }
+
+  fun deleteServerChat(
+    chatId: String,
+    userId: String,
+  ): Boolean {
+    val chat = serverChatRepository.findById(chatId).orElseThrow { GlobalException(ErrorCode.CHAT_NOT_FOUND) }
+    verifyIfAuthor(userId, chat)
+    serverChatRepository.delete(chat)
+    return true
+  }
+
   private fun verifyIfAuthor(
     userId: String,
     chat: Chat,

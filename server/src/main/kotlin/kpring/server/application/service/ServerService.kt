@@ -42,6 +42,7 @@ class ServerService(
           theme = req.theme,
           categories = req.categories,
           hostName = req.hostName,
+          hostId = req.userId,
         ),
       )
     return CreateServerResponse(

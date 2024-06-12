@@ -17,9 +17,10 @@ class Server(
     theme: String? = null,
     categories: List<String>? = null,
     hostName: String,
+    hostId: String,
     users: MutableSet<String> = mutableSetOf(),
     invitedUserIds: MutableSet<String> = mutableSetOf(),
-  ) : this(null, name, users, invitedUserIds, initTheme(theme), initCategories(categories), ServerHost(hostName))
+  ) : this(null, name, users, invitedUserIds, initTheme(theme), initCategories(categories), ServerHost(hostName, hostId))
 
   companion object {
     // -----------start : 초기화 로직 ------------

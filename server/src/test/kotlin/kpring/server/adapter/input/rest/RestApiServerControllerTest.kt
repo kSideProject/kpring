@@ -21,6 +21,9 @@ import kpring.core.server.dto.response.CreateServerResponse
 import kpring.server.application.service.CategoryService
 import kpring.server.application.service.ServerService
 import kpring.server.config.CoreConfiguration
+import kpring.server.domain.Category
+import kpring.server.domain.Theme
+import kpring.server.util.toInfo
 import kpring.test.restdoc.dsl.restDoc
 import kpring.test.restdoc.json.JsonDataType.*
 import kpring.test.web.MvcWebTestClientDescribeSpec
@@ -62,7 +65,13 @@ class RestApiServerControllerTest(
           val userId = "test_user_id"
 
           val request = CreateServerRequest(serverName = "test server", userId = userId)
-          val data = CreateServerResponse(serverId = "1", serverName = request.serverName)
+          val data =
+            CreateServerResponse(
+              serverId = "1",
+              serverName = request.serverName,
+              theme = Theme.default().toInfo(),
+              categories = listOf(Category.SERVER_CATEGORY1, Category.SERVER_CATEGORY2).map(Category::toInfo),
+            )
 
           every { authClient.getTokenInfo(any()) } returns
             ApiResponse(
@@ -108,6 +117,12 @@ class RestApiServerControllerTest(
               body {
                 "data.serverId" type Strings mean "서버 id"
                 "data.serverName" type Strings mean "생성된 서버 이름"
+
+                "data.theme.id" type Strings mean "테마 id"
+                "data.theme.name" type Strings mean "테마 이름"
+
+                "data.categories[].id" type Strings mean "카테고리 id"
+                "data.categories[].name" type Strings mean "카테고리 이름"
               }
             }
           }
@@ -145,7 +160,7 @@ class RestApiServerControllerTest(
 
           // docs
           docs.restDoc(
-            identifier = "create_server_200",
+            identifier = "create_server_fail-400",
             description = "서버 생성 api",
           ) {
             request {

@@ -18,8 +18,10 @@ import kpring.server.application.port.output.GetServerPort
 import kpring.server.application.port.output.GetServerProfilePort
 import kpring.server.application.port.output.SaveServerPort
 import kpring.server.application.port.output.UpdateServerPort
+import kpring.server.domain.Category
 import kpring.server.domain.Server
 import kpring.server.domain.ServerAuthority
+import kpring.server.util.toInfo
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -44,6 +46,8 @@ class ServerService(
     return CreateServerResponse(
       serverId = server.id!!,
       serverName = server.name,
+      theme = server.theme.toInfo(),
+      categories = server.categories.map(Category::toInfo),
     )
   }
 

@@ -74,4 +74,20 @@ class ChatController(
       }
     return ResponseEntity.ok().body(ApiResponse<Nothing>(status = 200))
   }
+
+  @DeleteMapping("/chat/{chatId}")
+  fun deleteChat(
+    @RequestParam("type") type: String,
+    @PathVariable("chatId") chatId: String,
+    @RequestHeader("Authorization") token: String,
+  ): ResponseEntity<*> {
+    val userId = authClient.getTokenInfo(token).data!!.userId
+    val result =
+      when (type) {
+        ChatType.Room.toString() -> chatService.deleteRoomChat(chatId, userId)
+        ChatType.Server.toString() -> chatService.deleteServerChat(chatId, userId)
+        else -> throw GlobalException(ErrorCode.INVALID_CHAT_TYPE)
+      }
+    return ResponseEntity.ok().body(ApiResponse<Nothing>(status = 200))
+  }
 }

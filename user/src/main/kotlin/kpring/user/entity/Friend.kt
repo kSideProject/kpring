@@ -7,13 +7,13 @@ import jakarta.persistence.*
 class Friend(
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  var id: Long? = null,
+  private var id: Long? = null,
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
-  var user: User,
+  private var user: User,
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "friend_id")
-  var friend: User,
+  private var friend: User,
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
   var requestStatus: FriendRequestStatus,

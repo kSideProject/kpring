@@ -192,4 +192,48 @@ class ChatServiceTest(
       result shouldBe true
       verify { roomChatRepository.save(any()) }
     }
+
+    test("deleteServerChat 은 권한이 있는 사용자의 요청에 따라 Chat 삭제") {
+      // Given
+      val serverId = "test_server_id"
+      val chatId = "test_chat_id"
+      val userId = CommonTest.TEST_USER_ID
+      val chat =
+        Chat(
+          userId,
+          serverId,
+          "content",
+        )
+
+      every { serverChatRepository.findById(chatId) } returns Optional.of(chat)
+      every { serverChatRepository.delete(chat) } returns Unit
+
+      // When
+      val result = chatService.deleteServerChat(chatId, userId)
+
+      // Then
+      result shouldBe true
+    }
+
+    test("deleteRoomChat 은 권한이 있는 사용자의 요청에 따라 Chat 삭제") {
+      // Given
+      val roomId = "test_room_id"
+      val chatId = "test_chat_id"
+      val userId = CommonTest.TEST_USER_ID
+      val chat =
+        Chat(
+          userId,
+          roomId,
+          "content",
+        )
+
+      every { roomChatRepository.findById(chatId) } returns Optional.of(chat)
+      every { roomChatRepository.delete(chat) } returns Unit
+
+      // When
+      val result = chatService.deleteRoomChat(chatId, userId)
+
+      // Then
+      result shouldBe true
+    }
   })

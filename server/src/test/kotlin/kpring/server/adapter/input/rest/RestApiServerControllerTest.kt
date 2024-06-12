@@ -369,10 +369,23 @@ class RestApiServerControllerTest(
         it("요청 성공시") {
           // given
           val userId = "test user id"
+          val categories = listOf(Category.SERVER_CATEGORY1.toInfo())
           val data =
             listOf(
-              ServerSimpleInfo(id = "server1", name = "test_server", bookmarked = false),
-              ServerSimpleInfo(id = "server2", name = "test_server", bookmarked = true),
+              ServerSimpleInfo(
+                id = "server1",
+                name = "test_server",
+                bookmarked = false,
+                categories = categories,
+                theme = Theme.default().toInfo(),
+              ),
+              ServerSimpleInfo(
+                id = "server2",
+                name = "test_server",
+                bookmarked = true,
+                categories = categories,
+                theme = Theme.default().toInfo(),
+              ),
             )
           val condition = GetServerCondition(serverIds = listOf("server1", "server2"))
 
@@ -415,6 +428,12 @@ class RestApiServerControllerTest(
                 "data[].id" type Strings mean "서버 id"
                 "data[].name" type Strings mean "서버 이름"
                 "data[].bookmarked" type Booleans mean "북마크 여부"
+
+                "data[].theme.id" type Strings mean "테마 id"
+                "data[].theme.name" type Strings mean "테마 이름"
+
+                "data[].categories[].id" type Strings mean "카테고리 id"
+                "data[].categories[].name" type Strings mean "카테고리 이름"
               }
             }
           }

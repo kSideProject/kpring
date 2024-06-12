@@ -80,6 +80,8 @@ class ServerService(
           id = profile.server.id!!,
           name = profile.server.name,
           bookmarked = profile.bookmarked,
+          categories = profile.server.categories.map(Category::toInfo),
+          theme = profile.server.theme.toInfo(),
         )
       }
   }

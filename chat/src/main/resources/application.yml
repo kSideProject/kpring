@@ -1,6 +1,8 @@
 spring:
   application:
     name: chat
+  main:
+    allow-bean-definition-overriding: true
   data:
     mongodb:
       host: localhost
@@ -10,6 +12,8 @@ spring:
       database: mongodb
       authentication-database: admin
       authSource: admin
+      repositories:
+        enabled: true
 
     redis:
       host: localhost

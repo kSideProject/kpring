@@ -16,21 +16,31 @@ import org.springframework.data.mongodb.core.mapping.Document
  */
 @Document(collection = "server")
 class ServerEntity(
-  var name: String,
-  var users: MutableList<String> = mutableListOf(),
-  var invitedUserIds: MutableList<String> = mutableListOf(),
-  val theme: Theme = Theme.default(),
-  val categories: Set<Category> = emptySet(),
-) {
   @Id
-  lateinit var id: String
+  val id: String?,
+  var name: String,
+  var users: MutableSet<String>,
+  var invitedUserIds: MutableSet<String>,
+  val theme: Theme,
+  val categories: Set<Category>,
+) {
+  constructor(server: Server) : this(
+    id = server.id,
+    name = server.name,
+    users = server.users,
+    invitedUserIds = server.invitedUserIds,
+    theme = server.theme,
+    categories = server.categories,
+  )
 
   fun toDomain(): Server {
     return Server(
       id = id,
       name = name,
-      users = users.toMutableSet(),
+      users = users,
       invitedUserIds = invitedUserIds.toMutableSet(),
+      theme = theme,
+      categories = categories,
     )
   }
 }

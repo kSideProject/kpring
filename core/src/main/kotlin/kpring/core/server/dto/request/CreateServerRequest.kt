@@ -4,5 +4,5 @@ data class CreateServerRequest(
   val serverName: String,
   val userId: String,
   val theme: String? = null,
-  val categories: List<String> = listOf(),
+  val categories: List<String>? = null,
 )

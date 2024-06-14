@@ -12,8 +12,8 @@ import kpring.core.global.dto.response.ApiResponse
 import kpring.core.global.exception.ServiceException
 import kpring.test.restdoc.dsl.restDoc
 import kpring.test.restdoc.json.JsonDataType.Strings
+import kpring.user.dto.response.AddFriendResponse
 import kpring.user.dto.response.FailMessageResponse
-import kpring.user.dto.result.AddFriendResponse
 import kpring.user.exception.UserErrorCode
 import kpring.user.global.AuthValidator
 import kpring.user.global.CommonTest

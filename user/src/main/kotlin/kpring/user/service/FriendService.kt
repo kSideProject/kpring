@@ -1,8 +1,8 @@
 package kpring.user.service
 
+import kpring.user.dto.response.AddFriendResponse
 import kpring.user.dto.response.DeleteFriendResponse
 import kpring.user.dto.response.GetFriendsResponse
-import kpring.user.dto.result.AddFriendResponse
 
 interface FriendService {
   fun getFriends(userId: Long): GetFriendsResponse

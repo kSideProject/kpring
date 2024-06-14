@@ -1,9 +1,9 @@
 package kpring.user.service
 
 import kpring.core.global.exception.ServiceException
+import kpring.user.dto.response.AddFriendResponse
 import kpring.user.dto.response.DeleteFriendResponse
 import kpring.user.dto.response.GetFriendsResponse
-import kpring.user.dto.result.AddFriendResponse
 import kpring.user.entity.User
 import kpring.user.exception.UserErrorCode
 import kpring.user.repository.FriendRepository

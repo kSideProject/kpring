@@ -6,7 +6,7 @@ import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import kpring.chat.chat.model.RoomChat
+import kpring.chat.chat.model.Chat
 import kpring.chat.chat.repository.RoomChatRepository
 import kpring.chat.chat.repository.ServerChatRepository
 import kpring.chat.chat.service.ChatService
@@ -18,8 +18,10 @@ import kpring.chat.global.exception.ErrorCode
 import kpring.chat.global.exception.GlobalException
 import kpring.core.chat.chat.dto.request.ChatType
 import kpring.core.chat.chat.dto.request.CreateChatRequest
+import kpring.core.chat.chat.dto.request.UpdateChatRequest
 import kpring.core.server.dto.ServerSimpleInfo
 import org.springframework.beans.factory.annotation.Value
+import java.util.*
 
 class ChatServiceTest(
   @Value("\${page.size}") val pageSize: Int = 100,
@@ -33,7 +35,7 @@ class ChatServiceTest(
       // Given
       val request = CreateChatRequest(id = ChatRoomTest.TEST_ROOM_ID, content = ChatTest.CONTENT, type = ChatType.Room)
       val userId = CommonTest.TEST_USER_ID
-      val roomChat = RoomChat(userId, request.id, request.content)
+      val roomChat = Chat(userId, request.id, request.content)
       every { roomChatRepository.save(any()) } returns roomChat
 
       // When
@@ -84,5 +86,110 @@ class ChatServiceTest(
       errorCodeField.isAccessible = true
       val errorCode = errorCodeField.get(exception) as ErrorCode
       errorCode shouldBe ErrorCode.FORBIDDEN_SERVER
+    }
+
+    test("updateRoomChat 은 권한이 없는 사용자에게 에러 발생") {
+      // Given
+      val roomId = "test_room_id"
+      val chatId = "test_chat_id"
+      val contentUpdate = "content update"
+      val request = UpdateChatRequest(id = chatId, type = ChatType.Room, content = contentUpdate)
+      val anotherUserId = CommonTest.TEST_ANOTHER_USER_ID
+      val userId = CommonTest.TEST_USER_ID
+      val chat =
+        Chat(
+          userId,
+          roomId,
+          "content",
+        )
+
+      every { roomChatRepository.findById(request.id) } returns Optional.of(chat)
+
+      // When & Then
+      val exception =
+        shouldThrow<GlobalException> {
+          chatService.updateRoomChat(request, anotherUserId)
+        }
+      val errorCodeField = GlobalException::class.java.getDeclaredField("errorCode")
+      errorCodeField.isAccessible = true
+      val errorCode = errorCodeField.get(exception) as ErrorCode
+      errorCode shouldBe ErrorCode.FORBIDDEN_CHAT
+    }
+
+    test("updateServerChat 은 권한이 없는 사용자에게 에러 발생") {
+      // Given
+      val serverId = "test_server_id"
+      val chatId = "test_chat_id"
+      val contentUpdate = "content update"
+      val request = UpdateChatRequest(id = chatId, type = ChatType.Server, content = contentUpdate)
+      val anotherUserId = CommonTest.TEST_ANOTHER_USER_ID
+      val userId = CommonTest.TEST_USER_ID
+      val chat =
+        Chat(
+          userId,
+          serverId,
+          "content",
+        )
+
+      every { serverChatRepository.findById(request.id) } returns Optional.of(chat)
+
+      // When & Then
+      val exception =
+        shouldThrow<GlobalException> {
+          chatService.updateServerChat(request, anotherUserId)
+        }
+      val errorCodeField = GlobalException::class.java.getDeclaredField("errorCode")
+      errorCodeField.isAccessible = true
+      val errorCode = errorCodeField.get(exception) as ErrorCode
+      errorCode shouldBe ErrorCode.FORBIDDEN_CHAT
+    }
+
+    test("updateRoomChat 은 권한이 있는 사용자의 요청에 따라 Chat 수정") {
+      // Given
+      val roomId = "test_room_id"
+      val chatId = "test_chat_id"
+      val contentUpdate = "content update"
+      val request = UpdateChatRequest(id = chatId, type = ChatType.Room, content = contentUpdate)
+      val userId = CommonTest.TEST_USER_ID
+      val chat =
+        Chat(
+          userId,
+          roomId,
+          "content",
+        )
+
+      every { roomChatRepository.findById(request.id) } returns Optional.of(chat)
+
+      // When
+      val result = chatService.updateRoomChat(request, userId)
+
+      // Then
+      result shouldBe true
+      verify { roomChatRepository.save(any()) }
+    }
+
+    test("updateServerChat 은 권한이 있는 사용자의 요청에 따라 Chat 수정") {
+      // Given
+      val serverId = "test_server_id"
+      val chatId = "test_chat_id"
+      val contentUpdate = "content update"
+      val request = UpdateChatRequest(id = chatId, type = ChatType.Server, content = contentUpdate)
+      val userId = CommonTest.TEST_USER_ID
+      val chat =
+        Chat(
+          userId,
+          serverId,
+          "content",
+        )
+      val updated =
+
+        every { serverChatRepository.findById(request.id) } returns Optional.of(chat)
+
+      // When
+      val result = chatService.updateRoomChat(request, userId)
+
+      // Then
+      result shouldBe true
+      verify { roomChatRepository.save(any()) }
     }
   })

@@ -6,16 +6,21 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 
 @NoArg
-@Document(collection = "server_chats")
-class ServerChat(
+@Document(collection = "chats")
+class Chat(
   val userId: String,
-  val serverId: String,
-  val content: String,
+  // roomId or serverId
+  val contextId: String,
+  var content: String,
 ) : BaseTime() {
   @Id
   var id: String? = null
 
   fun isEdited(): Boolean {
     return !createdAt.equals(updatedAt)
+  }
+
+  fun updateContent(content: String) {
+    this.content = content
   }
 }

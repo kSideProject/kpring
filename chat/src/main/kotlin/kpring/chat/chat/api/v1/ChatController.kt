@@ -6,6 +6,7 @@ import kpring.chat.global.exception.GlobalException
 import kpring.core.auth.client.AuthClient
 import kpring.core.chat.chat.dto.request.ChatType
 import kpring.core.chat.chat.dto.request.CreateChatRequest
+import kpring.core.chat.chat.dto.request.UpdateChatRequest
 import kpring.core.global.dto.response.ApiResponse
 import kpring.core.server.client.ServerClient
 import kpring.core.server.dto.request.GetServerCondition
@@ -18,8 +19,8 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/v1")
 class ChatController(
   private val chatService: ChatService,
-  val authClient: AuthClient,
-  val serverClient: ServerClient,
+  private val authClient: AuthClient,
+  private val serverClient: ServerClient,
 ) {
   @PostMapping("/chat")
   fun createChat(
@@ -58,5 +59,19 @@ class ChatController(
         else -> throw GlobalException(ErrorCode.INVALID_CHAT_TYPE)
       }
     return ResponseEntity.ok().body(ApiResponse(data = result, status = 200))
+  }
+
+  @PatchMapping("/chat")
+  fun updateChat(
+    @Validated @RequestBody request: UpdateChatRequest,
+    @RequestHeader("Authorization") token: String,
+  ): ResponseEntity<*> {
+    val userId = authClient.getTokenInfo(token).data!!.userId
+    val result =
+      when (request.type) {
+        ChatType.Room -> chatService.updateRoomChat(request, userId)
+        ChatType.Server -> chatService.updateServerChat(request, userId)
+      }
+    return ResponseEntity.ok().body(ApiResponse<Nothing>(status = 200))
   }
 }

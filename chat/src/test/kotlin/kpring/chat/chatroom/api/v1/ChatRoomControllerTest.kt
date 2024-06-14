@@ -9,6 +9,7 @@ import kpring.chat.chatroom.api.v1.ChatRoomController
 import kpring.chat.chatroom.service.ChatRoomService
 import kpring.chat.global.ChatRoomTest
 import kpring.chat.global.CommonTest
+import kpring.chat.global.config.TestMongoConfig
 import kpring.core.auth.client.AuthClient
 import kpring.core.auth.dto.response.TokenInfo
 import kpring.core.auth.enums.TokenType
@@ -18,6 +19,7 @@ import kpring.test.restdoc.dsl.restDoc
 import kpring.test.restdoc.json.JsonDataType
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.context.annotation.Import
 import org.springframework.restdocs.ManualRestDocumentation
 import org.springframework.restdocs.RestDocumentationExtension
 import org.springframework.restdocs.operation.preprocess.Preprocessors
@@ -31,6 +33,7 @@ import org.springframework.web.context.WebApplicationContext
 @ExtendWith(RestDocumentationExtension::class)
 @ExtendWith(SpringExtension::class)
 @ExtendWith(MockKExtension::class)
+@Import(TestMongoConfig::class)
 class ChatRoomControllerTest(
   private val om: ObjectMapper,
   webContext: WebApplicationContext,

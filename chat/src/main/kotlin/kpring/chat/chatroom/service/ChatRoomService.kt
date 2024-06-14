@@ -46,11 +46,23 @@ class ChatRoomService(
     return InvitationResponse(encodedCode)
   }
 
+  fun joinChatRoom(
+    code: String,
+    userId: String,
+  ): Boolean {
+    val decodedCode = invitationService.decodeCode(code)
+    val invitationInfo = invitationService.getInvitationInfoFromCode(decodedCode)
+    verifyInvitationExistence(invitationInfo)
+    val chatRoom = getChatRoom(invitationInfo.chatRoomId)
+    chatRoom.addUser(userId)
+    chatRoomRepository.save(chatRoom)
+    return true
+  }
+
   private fun verifyInvitationExistence(invitationInfo: InvitationInfo) {
-    if (invitationInfo.code != invitationService.getInvitation(invitationInfo.userId, invitationInfo.chatRoomId))
-      {
-        throw GlobalException(ErrorCode.EXPIRED_INVITATION)
-      }
+    if (invitationInfo.code != invitationService.getInvitation(invitationInfo.userId, invitationInfo.chatRoomId)) {
+      throw GlobalException(ErrorCode.EXPIRED_INVITATION)
+    }
   }
 
   private fun verifyChatRoomAccess(

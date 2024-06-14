@@ -1,5 +1,6 @@
 package kpring.chat.chatroom.service
 
+import kpring.chat.chatroom.dto.InvitationInfo
 import kpring.chat.chatroom.model.ChatRoom
 import kpring.chat.chatroom.repository.ChatRoomRepository
 import kpring.chat.global.exception.ErrorCode
@@ -43,6 +44,13 @@ class ChatRoomService(
     }
     val encodedCode = invitationService.generateKeyAndCode(userId, chatRoomId, code)
     return InvitationResponse(encodedCode)
+  }
+
+  private fun verifyInvitationExistence(invitationInfo: InvitationInfo) {
+    if (invitationInfo.code != invitationService.getInvitation(invitationInfo.userId, invitationInfo.chatRoomId))
+      {
+        throw GlobalException(ErrorCode.EXPIRED_INVITATION)
+      }
   }
 
   private fun verifyChatRoomAccess(

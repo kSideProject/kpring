@@ -45,4 +45,14 @@ class ChatRoomController(
     val result = chatRoomService.getChatRoomInvitation(chatRoomId, userId)
     return ResponseEntity.ok().body(ApiResponse(data = result))
   }
+
+  @PatchMapping("/chatroom/{code}/join")
+  fun joinChatRoom(
+    @PathVariable("code") code: String,
+    @RequestHeader("Authorization") token: String,
+  ): ResponseEntity<*> {
+    val userId = authClient.getTokenInfo(token).data!!.userId
+    val result = chatRoomService.joinChatRoom(code, userId)
+    return ResponseEntity.ok().body(ApiResponse<Nothing>(status = 200))
+  }
 }

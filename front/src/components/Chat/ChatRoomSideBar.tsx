@@ -9,7 +9,6 @@ const ChatRoomSideBar = () => {
     setIsChatRoomShow(false);
   },[setIsChatRoomShow])
 
-
   const DrawerHeader = styled("div")(({ theme }) => ({
     display: "flex",
     height: "8rem",
@@ -23,8 +22,7 @@ const ChatRoomSideBar = () => {
     <DrawerHeader >
       <ArrowForwardIosIcon 
       onClick={handleChatRoomClose} 
-      sx={{color:"white"}}
-      className="cursor-pointer"
+      sx={{color:"white", cursor:'pointer'}}
       />
       <Box>
         <div >다이렉트 메세지</div>

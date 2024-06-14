@@ -3,6 +3,7 @@ import MicIcon from '@mui/icons-material/Mic';
 import PhotoCameraFrontIcon from '@mui/icons-material/PhotoCameraFront';
 import MonitorIcon from '@mui/icons-material/Monitor';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import { Box } from '@mui/material';
 
 // TODO : 비디오 툴바
 const VideoCallToolBar = () => {
@@ -16,8 +17,17 @@ const VideoCallToolBar = () => {
         },
       };
   return (
-    <div className="bg-gray w-[200px] h-[48px] rounded-3xl flex justify-center items-center justify-around px-2">
-        <div className='cursor-pointer'>
+    <Box sx={{
+        backgroundColor: 'hsla(0, 0%, 100%, .9)',
+        width: '200px',
+        height: '48px',
+        borderRadius: '24px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-around',
+        paddingX: '8px'
+    }}>
+        <Box sx={{cursor: 'pointer'}}>
             <MicIcon sx={iconStyle}/>
             <ArrowDropUpIcon 
             sx={{
@@ -26,8 +36,8 @@ const VideoCallToolBar = () => {
                     backgroundColor: '#C7C8CC',
                 }
             }}/>
-        </div>
-        <div className='cursor-pointer'>
+        </Box>
+        <Box sx={{cursor: 'pointer'}}>
             <PhotoCameraFrontIcon  sx={iconStyle}/>
             <ArrowDropUpIcon 
             sx={{
@@ -37,12 +47,12 @@ const VideoCallToolBar = () => {
                 }
             }}
             />
-        </div>
-        <div className='cursor-pointer'>
+        </Box>
+        <Box sx={{cursor: 'pointer'}}>
             <MonitorIcon sx={iconStyle}/>
-        </div>
+        </Box>
 
-    </div>
+    </Box>
   )
 }
 

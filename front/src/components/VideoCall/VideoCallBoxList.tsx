@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import VideoCallBoxListItem from './VideoCallBoxListItem'
-import { messageMemberList } from "../../utils/fakeData";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { Member } from '../../types/layout';
+import { Box } from '@mui/material';
 
 const VideoCallBoxList = () => {
   const [curVideoCallBoxPage, setCurVideoCallBoxPage] = useState(0);
@@ -54,22 +54,33 @@ const VideoCallBoxList = () => {
   }, [sliceMemberList]);
   
   return (
-    <div className='w-[55rem] h-[10rem] flex items-center'>
+    <Box sx={{width: '880px', height:'160px', display:'flex', alignItems:'center'}}>
       <ArrowBackIosIcon 
-      className={`${curVideoCallBoxPage === 0 ? 'text-gray-400' : 'text-black cursor-pointer'}`}
+      sx={{
+        color: `${curVideoCallBoxPage === 0 ? 'gray': 'black'}`,
+        cursor: 'pointer'
+      }}
       onClick={handleBoxPagePrev} />
-      <div className='grid grid-cols-4 h-full w-full'>
+      <Box   sx={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(4, 1fr)',
+        height: '100%',
+        width: '100%'
+      }}>
         {
             slicedMemberList.map((member,index)=>(
                 <VideoCallBoxListItem key={index} member={member}/>
             ))
         }
-      </div>
+      </Box>
       <ArrowForwardIosIcon 
-      className={`${curVideoCallBoxPage===lastPage? 'text-gray-400' : 'text-black cursor-pointer'}`}
+      sx={{
+        color: `${curVideoCallBoxPage === 0 ? 'gray': 'black'}`,
+        cursor: 'pointer'
+      }}
       onClick={handleBoxPageNext}
       />
-    </div>
+    </Box>
   )
 }
 

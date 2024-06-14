@@ -10,5 +10,6 @@ interface CommonTest {
     const val TEST_TOKEN = "Bearer test"
 
     const val TEST_FRIEND_ID = 2L
+    const val TEST_FRIEND_USERNAME = "friend"
   }
 }

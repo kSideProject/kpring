@@ -5,6 +5,8 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.*
 import kpring.core.global.exception.ServiceException
+import kpring.user.entity.Friend
+import kpring.user.entity.FriendRequestStatus
 import kpring.user.entity.User
 import kpring.user.exception.UserErrorCode
 import kpring.user.global.CommonTest
@@ -97,6 +99,21 @@ internal class FriendServiceImplTest : FunSpec({
     verify { friendService.checkSelfFriend(user, friend) }
     verify {
       friendService.checkFriendRelationExists(CommonTest.TEST_USER_ID, CommonTest.TEST_FRIEND_ID)
+    }
+  }
+
+  test("친구신청조회_성공") {
+    val friend = mockk<User>(relaxed = true)
+    val friendList = listOf(mockk<Friend>(relaxed = true))
+
+    every {
+      friendRepository.findAllByUserIdAndRequestStatus(CommonTest.TEST_USER_ID, FriendRequestStatus.RECEIVED)
+    } returns friendList
+
+    val response = friendService.getFriendRequests(CommonTest.TEST_USER_ID)
+    for (request in response.friendRequests) {
+      request.friendId shouldBe friend.id
+      request.username shouldBe friend.username
     }
   }
 })

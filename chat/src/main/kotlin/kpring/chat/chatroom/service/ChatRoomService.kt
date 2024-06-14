@@ -45,7 +45,7 @@ class ChatRoomService(
     return InvitationResponse(encodedCode)
   }
 
-  fun verifyChatRoomAccess(
+  private fun verifyChatRoomAccess(
     chatRoomId: String,
     userId: String,
   ) {
@@ -54,7 +54,7 @@ class ChatRoomService(
     }
   }
 
-  fun getChatRoom(chatRoomId: String): ChatRoom {
+  private fun getChatRoom(chatRoomId: String): ChatRoom {
     val chatRoom: ChatRoom =
       chatRoomRepository.findById(chatRoomId).orElseThrow { GlobalException(ErrorCode.CHATROOM_NOT_FOUND) }
     return chatRoom

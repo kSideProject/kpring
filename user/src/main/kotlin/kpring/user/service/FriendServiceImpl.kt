@@ -3,6 +3,7 @@ package kpring.user.service
 import kpring.core.global.exception.ServiceException
 import kpring.user.dto.response.AddFriendResponse
 import kpring.user.dto.response.DeleteFriendResponse
+import kpring.user.dto.response.GetFriendRequestsResponse
 import kpring.user.dto.response.GetFriendsResponse
 import kpring.user.entity.User
 import kpring.user.exception.UserErrorCode
@@ -16,6 +17,10 @@ class FriendServiceImpl(
   private val userServiceImpl: UserServiceImpl,
   private val friendRepository: FriendRepository,
 ) : FriendService {
+  override fun getFriendRequests(userId: Long): GetFriendRequestsResponse {
+    TODO("Not yet implemented")
+  }
+
   override fun getFriends(userId: Long): GetFriendsResponse {
     TODO("Not yet implemented")
   }

@@ -40,7 +40,7 @@ class ChatController(
 
   @GetMapping("/chat")
   fun getChats(
-    @RequestParam("type") type: String,
+    @RequestParam("type") type: ChatType,
     @RequestParam("id") id: String,
     @RequestParam("page") page: Int,
     @RequestHeader("Authorization") token: String,
@@ -48,15 +48,14 @@ class ChatController(
     val userId = authClient.getTokenInfo(token).data!!.userId
     val result =
       when (type) {
-        ChatType.Room.toString() -> chatService.getRoomChats(id, userId, page)
-        ChatType.Server.toString() ->
+        ChatType.Room -> chatService.getRoomChats(id, userId, page)
+        ChatType.Server ->
           chatService.getServerChats(
             id,
             userId,
             page,
             serverClient.getServerList(token, GetServerCondition()).body!!.data!!,
           )
-        else -> throw GlobalException(ErrorCode.INVALID_CHAT_TYPE)
       }
     return ResponseEntity.ok().body(ApiResponse(data = result, status = 200))
   }
@@ -77,16 +76,15 @@ class ChatController(
 
   @DeleteMapping("/chat/{chatId}")
   fun deleteChat(
-    @RequestParam("type") type: String,
+    @RequestParam("type") type: ChatType,
     @PathVariable("chatId") chatId: String,
     @RequestHeader("Authorization") token: String,
   ): ResponseEntity<*> {
     val userId = authClient.getTokenInfo(token).data!!.userId
     val result =
       when (type) {
-        ChatType.Room.toString() -> chatService.deleteRoomChat(chatId, userId)
-        ChatType.Server.toString() -> chatService.deleteServerChat(chatId, userId)
-        else -> throw GlobalException(ErrorCode.INVALID_CHAT_TYPE)
+        ChatType.Room -> chatService.deleteRoomChat(chatId, userId)
+        ChatType.Server -> chatService.deleteServerChat(chatId, userId)
       }
     return ResponseEntity.ok().body(ApiResponse<Nothing>(status = 200))
   }

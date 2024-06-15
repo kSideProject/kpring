@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, TextField } from "@mui/material";
+import { TextField } from "@mui/material";
 import useChatInputStore from "../../store/useChatInputStore";
 import { Send } from "@mui/icons-material";
 
@@ -10,6 +10,12 @@ const ChatInputField = () => {
     e.preventDefault();
     if (chatInputValue.trim() !== "") {
       setChatInputValue(chatInputValue);
+
+      const event = new CustomEvent("updateBalloonText", {
+        detail: chatInputValue,
+      });
+      window.dispatchEvent(event);
+
       setChatInputValue("");
     }
   };
@@ -20,6 +26,7 @@ const ChatInputField = () => {
         type="text"
         value={chatInputValue}
         onChange={(e) => setChatInputValue(e.target.value)}
+        sx={{ wordBreak: "break" }}
       />
 
       <Send></Send>

@@ -7,9 +7,6 @@ export class MainMap extends Scene {
   private mapInstance!: Phaser.Game;
   private character!: Phaser.Physics.Arcade.Sprite;
   private keyboards!: Phaser.Types.Input.Keyboard.CursorKeys;
-  private isDragging: boolean = false;
-  private dragStartX: number = 0;
-  private dragStartY: number = 0;
   private speechBalloon!: Phaser.GameObjects.Text;
 
   constructor() {
@@ -60,6 +57,11 @@ export class MainMap extends Scene {
             resolution: 2,
           })
           .setOrigin(0.5);
+
+        window.addEventListener("updateBalloonText", (event: Event) => {
+          const customEvent = event as CustomEvent<string>;
+          this.setBalloonText(customEvent.detail);
+        });
       } catch (error) {
         console.error(error);
       }
@@ -82,6 +84,20 @@ export class MainMap extends Scene {
     }
 
     this.character.setVelocity(0);
+
+    this.input.keyboard?.on("keydown", (e: KeyboardEvent) => {
+      if (document.activeElement?.tagName === "INPUT") {
+        this.input.keyboard?.removeCapture(
+          Phaser.Input.Keyboard.KeyCodes.SPACE
+        );
+        this.input.keyboard?.removeCapture(Phaser.Input.Keyboard.KeyCodes.UP);
+        this.input.keyboard?.removeCapture(Phaser.Input.Keyboard.KeyCodes.DOWN);
+        this.input.keyboard?.removeCapture(Phaser.Input.Keyboard.KeyCodes.LEFT);
+        this.input.keyboard?.removeCapture(
+          Phaser.Input.Keyboard.KeyCodes.RIGHT
+        );
+      }
+    });
 
     if (this.keyboards.down.isDown) {
       this.character.setVelocityY(100);

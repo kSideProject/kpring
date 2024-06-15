@@ -100,6 +100,7 @@ export class MainMap extends Scene {
     }
     this.speechBalloon.setPosition(this.character.x, this.character.y - 50);
   }
+
   setBalloonText(text: string) {
     if (this.speechBalloon) {
       this.speechBalloon.setText(text);

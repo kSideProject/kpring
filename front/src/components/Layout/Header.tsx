@@ -1,6 +1,6 @@
 import { useState } from "react";
 import MuiAppBar from "@mui/material/AppBar";
-import { Box, Drawer, Toolbar, Typography, styled } from "@mui/material";
+import { Box, Drawer, Input, Toolbar, Typography, styled } from "@mui/material";
 import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
 import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import FriendsRightSideBar from "./FriendsRightSideBar";

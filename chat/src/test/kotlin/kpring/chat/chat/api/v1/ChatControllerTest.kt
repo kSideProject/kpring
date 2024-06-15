@@ -96,6 +96,7 @@ class ChatControllerTest(
             .bodyValue(request)
             .exchange()
 
+        // Then
         val docs =
           result
             .expectStatus()
@@ -103,7 +104,6 @@ class ChatControllerTest(
             .expectBody()
             .json(om.writeValueAsString(ApiResponse(data = null, status = 201)))
 
-        // Then
         docs.restDoc(
           identifier = "create_chat_201",
           description = "채팅 생성 api",
@@ -173,6 +173,7 @@ class ChatControllerTest(
             .header("Authorization", "Bearer mock_token")
             .exchange()
 
+        // Then
         val docs =
           result
             .expectStatus()
@@ -180,7 +181,6 @@ class ChatControllerTest(
             .expectBody()
             .json(om.writeValueAsString(ApiResponse(data = data)))
 
-        // Then
         docs.restDoc(
           identifier = "get_server_chats_200",
           description = "서버 채팅 조회 api",
@@ -253,6 +253,7 @@ class ChatControllerTest(
             .header("Authorization", "Bearer mock_token")
             .exchange()
 
+        // Then
         val docs =
           result
             .expectStatus()
@@ -260,7 +261,6 @@ class ChatControllerTest(
             .expectBody()
             .json(om.writeValueAsString(ApiResponse(data = data)))
 
-        // Then
         docs.restDoc(
           identifier = "get_room_chats_200",
           description = "채팅방 채팅 조회 api",
@@ -319,6 +319,7 @@ class ChatControllerTest(
             .header("Authorization", "Bearer mock_token")
             .exchange()
 
+        // Then
         val docs =
           result
             .expectStatus()
@@ -326,7 +327,6 @@ class ChatControllerTest(
             .expectBody()
             .json(om.writeValueAsString(ApiResponse<Nothing>(status = 200)))
 
-        // Then
         docs.restDoc(
           identifier = "update_chats_200",
           description = "채팅방 채팅 업데이트 api",
@@ -381,6 +381,7 @@ class ChatControllerTest(
             .header("Authorization", "Bearer mock_token")
             .exchange()
 
+        // Then
         val docs =
           result
             .expectStatus()
@@ -388,7 +389,6 @@ class ChatControllerTest(
             .expectBody()
             .json(om.writeValueAsString(ApiResponse<Nothing>(status = 200)))
 
-        // Then
         docs.restDoc(
           identifier = "update_chats_200",
           description = "서버 채팅 업데이트 api",
@@ -439,6 +439,7 @@ class ChatControllerTest(
             .header("Authorization", "Bearer mock_token")
             .exchange()
 
+        // Then
         val docs =
           result
             .expectStatus()
@@ -446,7 +447,6 @@ class ChatControllerTest(
             .expectBody()
             .json(om.writeValueAsString(ApiResponse<Nothing>(status = 200)))
 
-        // Then
         docs.restDoc(
           identifier = "delete_room_chat_200",
           description = "채팅방 채팅 삭제 api",
@@ -499,6 +499,7 @@ class ChatControllerTest(
             .header("Authorization", "Bearer mock_token")
             .exchange()
 
+        // Then
         val docs =
           result
             .expectStatus()
@@ -506,7 +507,6 @@ class ChatControllerTest(
             .expectBody()
             .json(om.writeValueAsString(ApiResponse<Nothing>(status = 200)))
 
-        // Then
         docs.restDoc(
           identifier = "delete_server_chat_200",
           description = "서버 채팅 삭제 api",

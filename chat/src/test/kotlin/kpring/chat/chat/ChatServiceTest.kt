@@ -3,9 +3,7 @@ package kpring.chat.chat
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
+import io.mockk.*
 import kpring.chat.chat.model.Chat
 import kpring.chat.chat.repository.RoomChatRepository
 import kpring.chat.chat.repository.ServerChatRepository
@@ -206,7 +204,7 @@ class ChatServiceTest(
         )
 
       every { serverChatRepository.findById(chatId) } returns Optional.of(chat)
-      every { serverChatRepository.delete(chat) } returns Unit
+      every { serverChatRepository.delete(chat) } just Runs
 
       // When
       val result = chatService.deleteServerChat(chatId, userId)
@@ -228,7 +226,7 @@ class ChatServiceTest(
         )
 
       every { roomChatRepository.findById(chatId) } returns Optional.of(chat)
-      every { roomChatRepository.delete(chat) } returns Unit
+      every { roomChatRepository.delete(chat) } just Runs
 
       // When
       val result = chatService.deleteRoomChat(chatId, userId)

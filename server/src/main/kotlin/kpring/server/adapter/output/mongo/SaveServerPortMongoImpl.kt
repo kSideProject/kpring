@@ -1,6 +1,5 @@
 package kpring.server.adapter.output.mongo
 
-import kpring.core.server.dto.request.CreateServerRequest
 import kpring.server.adapter.output.mongo.entity.ServerEntity
 import kpring.server.adapter.output.mongo.entity.ServerProfileEntity
 import kpring.server.adapter.output.mongo.repository.ServerProfileRepository
@@ -20,18 +19,15 @@ class SaveServerPortMongoImpl(
   @Value("\${resource.default.profileImagePath}")
   private lateinit var defaultImagePath: String
 
-  override fun create(
-    req: CreateServerRequest,
-    userId: String,
-  ): Server {
+  override fun create(server: Server): Server {
     // create server
-    val serverEntity =
-      serverRepository.save(ServerEntity(name = req.serverName))
+    val serverEntity = serverRepository.save(ServerEntity(server))
 
     // create owner server profile
     serverProfileRepository.save(
       ServerProfileEntity(
-        userId = userId,
+        id = null,
+        userId = server.users.first(),
         // todo change
         name = "USER_${UUID.randomUUID()}",
         // todo change
@@ -43,10 +39,6 @@ class SaveServerPortMongoImpl(
     )
 
     // mapping
-    return Server(
-      id = serverEntity.id,
-      name = serverEntity.name,
-      users = mutableSetOf(),
-    )
+    return serverEntity.toDomain()
   }
 }

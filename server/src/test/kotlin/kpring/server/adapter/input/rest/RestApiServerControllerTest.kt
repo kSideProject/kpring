@@ -21,6 +21,9 @@ import kpring.core.server.dto.response.CreateServerResponse
 import kpring.server.application.service.CategoryService
 import kpring.server.application.service.ServerService
 import kpring.server.config.CoreConfiguration
+import kpring.server.domain.Category
+import kpring.server.domain.Theme
+import kpring.server.util.toInfo
 import kpring.test.restdoc.dsl.restDoc
 import kpring.test.restdoc.json.JsonDataType.*
 import kpring.test.web.MvcWebTestClientDescribeSpec
@@ -59,18 +62,26 @@ class RestApiServerControllerTest(
         val url = "/api/v1/server"
         it("요청 성공시") {
           // given
-          val request = CreateServerRequest(serverName = "test server")
-          val data = CreateServerResponse(serverId = "1", serverName = request.serverName)
+          val userId = "test_user_id"
+
+          val request = CreateServerRequest(serverName = "test server", userId = userId)
+          val data =
+            CreateServerResponse(
+              serverId = "1",
+              serverName = request.serverName,
+              theme = Theme.default().toInfo(),
+              categories = listOf(Category.SERVER_CATEGORY1, Category.SERVER_CATEGORY2).map(Category::toInfo),
+            )
 
           every { authClient.getTokenInfo(any()) } returns
             ApiResponse(
               data =
                 TokenInfo(
                   type = TokenType.ACCESS,
-                  userId = "test_user_id",
+                  userId = userId,
                 ),
             )
-          every { serverService.createServer(eq(request), any()) } returns data
+          every { serverService.createServer(eq(request)) } returns data
 
           // when
           val result =
@@ -96,6 +107,9 @@ class RestApiServerControllerTest(
               header { "Authorization" mean "jwt access token" }
               body {
                 "serverName" type Strings mean "생성할 서버의 이름"
+                "userId" type Strings mean "서버를 생성하는 유저의 id"
+                "theme" type Strings mean "생성할 서버의 테마" optional true
+                "categories" type Arrays mean "생성할 서버의 카테고리 목록" optional true
               }
             }
 
@@ -103,6 +117,65 @@ class RestApiServerControllerTest(
               body {
                 "data.serverId" type Strings mean "서버 id"
                 "data.serverName" type Strings mean "생성된 서버 이름"
+
+                "data.theme.id" type Strings mean "테마 id"
+                "data.theme.name" type Strings mean "테마 이름"
+
+                "data.categories[].id" type Strings mean "카테고리 id"
+                "data.categories[].name" type Strings mean "카테고리 이름"
+              }
+            }
+          }
+        }
+
+        it("요청 실패시 : 요청한 유저와 서버 권한을 가진 유저가 일치하지 않는 경우") {
+          // given
+          val serverOwnerId = "server owner id"
+
+          val request = CreateServerRequest(serverName = "test server", userId = serverOwnerId)
+
+          every { authClient.getTokenInfo(any()) } returns
+            ApiResponse(
+              data =
+                TokenInfo(
+                  type = TokenType.ACCESS,
+                  userId = "request user id",
+                ),
+            )
+
+          // when
+          val result =
+            client.post()
+              .uri(url)
+              .header("Authorization", "Bearer mock_token")
+              .bodyValue(request)
+              .exchange()
+
+          // then
+          val docs =
+            result
+              .expectStatus().isBadRequest
+              .expectBody()
+              .json(om.writeValueAsString(ApiResponse<Any>(message = "유저 정보가 일치하지 않습니다")))
+
+          // docs
+          docs.restDoc(
+            identifier = "create_server_fail-400",
+            description = "서버 생성 api",
+          ) {
+            request {
+              header { "Authorization" mean "jwt access token" }
+              body {
+                "serverName" type Strings mean "생성할 서버의 이름"
+                "userId" type Strings mean "서버를 생성하는 유저의 id"
+                "theme" type Strings mean "생성할 서버의 테마" optional true
+                "categories" type Arrays mean "생성할 서버의 카테고리 목록" optional true
+              }
+            }
+
+            response {
+              body {
+                "message" type Strings mean "실패 메시지"
               }
             }
           }

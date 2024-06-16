@@ -1,6 +1,7 @@
 package kpring.server.domain
 
 class ServerProfile(
+  val id: String?,
   val userId: String,
   val name: String,
   val imagePath: String,

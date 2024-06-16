@@ -28,9 +28,11 @@ class AddUserAtServerUseCaseTest(
       // given
       val invitorId = "invitorId"
       val userId = "userId"
-      val server = Server(id = "serverId", name = "serverName")
+      val serverId = "serverId"
+      val server = Server(name = "serverName")
       val serverProfile =
         ServerProfile(
+          id = null,
           userId = invitorId,
           name = "invitor",
           imagePath = "imagePath",
@@ -38,13 +40,13 @@ class AddUserAtServerUseCaseTest(
           server = server,
         )
 
-      every { getServerPort.get(server.id) } returns server
-      every { getServerProfilePort.get(server.id, invitorId) } returns serverProfile
+      every { getServerPort.get(serverId) } returns server
+      every { getServerProfilePort.get(serverId, invitorId) } returns serverProfile
 
       // when
       val ex =
         shouldThrow<ServiceException> {
-          service.inviteUser(server.id, invitorId, userId)
+          service.inviteUser(serverId, invitorId, userId)
         }
 
       // then

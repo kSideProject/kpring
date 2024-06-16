@@ -29,11 +29,11 @@ class DeleteServerUseCaseTest(
       val userId = "userId"
       val server =
         Server(
-          id = serverId,
           name = "serverName",
         )
       val serverProfile =
         ServerProfile(
+          id = null,
           userId = userId,
           name = "name",
           imagePath = "/imagePath",

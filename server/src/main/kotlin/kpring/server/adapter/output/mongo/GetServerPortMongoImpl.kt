@@ -3,6 +3,7 @@ package kpring.server.adapter.output.mongo
 import kpring.core.global.exception.CommonErrorCode
 import kpring.core.global.exception.ServiceException
 import kpring.server.adapter.output.mongo.entity.QServerEntity
+import kpring.server.adapter.output.mongo.entity.ServerEntity
 import kpring.server.adapter.output.mongo.repository.ServerRepository
 import kpring.server.application.port.output.GetServerPort
 import kpring.server.domain.Server
@@ -17,12 +18,7 @@ class GetServerPortMongoImpl(
       serverRepository.findById(id)
         .orElseThrow { throw ServiceException(CommonErrorCode.NOT_FOUND) }
 
-    return Server(
-      id = serverEntity.id,
-      name = serverEntity.name,
-      users = serverEntity.users.toMutableSet(),
-      invitedUserIds = serverEntity.invitedUserIds.toMutableSet(),
-    )
+    return serverEntity.toDomain()
   }
 
   override fun getServerWith(userId: String): List<Server> {
@@ -32,13 +28,6 @@ class GetServerPortMongoImpl(
         server.users.any().eq(userId),
       )
 
-    return servers.map { entity ->
-      Server(
-        id = entity.id,
-        name = entity.name,
-        users = entity.users.toMutableSet(),
-        invitedUserIds = entity.invitedUserIds.toMutableSet(),
-      )
-    }
+    return servers.map(ServerEntity::toDomain)
   }
 }

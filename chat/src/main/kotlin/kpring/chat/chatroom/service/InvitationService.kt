@@ -39,14 +39,15 @@ class InvitationService(
     return encodeCode(key, code)
   }
 
-  fun decodeCode(encodedString: String): String {
+  private fun decodeCode(encodedString: String): String {
     val decodedBytes = Base64.getUrlDecoder().decode(encodedString)
     val decodedString = String(decodedBytes, StandardCharsets.UTF_8)
     return decodedString
   }
 
   fun getInvitationInfoFromCode(code: String): InvitationInfo {
-    val keyAndValue: List<String> = code.split(",")
+    val decodedCode = decodeCode(code)
+    val keyAndValue: List<String> = decodedCode.split(",")
     val userIdAndChatRoomId: List<String> = keyAndValue[0].split(":")
     return InvitationInfo(userIdAndChatRoomId[0], userIdAndChatRoomId[1], keyAndValue[1])
   }

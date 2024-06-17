@@ -50,8 +50,7 @@ class ChatRoomService(
     code: String,
     userId: String,
   ): Boolean {
-    val decodedCode = invitationService.decodeCode(code)
-    val invitationInfo = invitationService.getInvitationInfoFromCode(decodedCode)
+    val invitationInfo = invitationService.getInvitationInfoFromCode(code)
     verifyInvitationExistence(invitationInfo)
     val chatRoom = getChatRoom(invitationInfo.chatRoomId)
     chatRoom.addUser(userId)

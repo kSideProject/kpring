@@ -22,7 +22,8 @@ const MemberListItem : React.FC<MemberListItemProps>= ({member, handleProfileOpe
 
   return (
     <div>
-        <ListItem sx={{'&:hover': {
+        <ListItem sx={{
+          '&:hover': {
             backgroundColor: "#FDE2F3",
             }
         }}>

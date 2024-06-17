@@ -18,7 +18,7 @@ class ChatRoomService(
     request: CreateChatRoomRequest,
     userId: String,
   ) {
-    val chatRoom = ChatRoom()
+    val chatRoom = ChatRoom(members = mutableSetOf(userId))
     chatRoom.addUsers(request.users)
     chatRoomRepository.save(chatRoom)
   }

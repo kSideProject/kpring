@@ -5,12 +5,10 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 
 @Document(collection = "chatrooms")
-class ChatRoom : BaseTime() {
-  @Id
-  var id: String? = null
-
-  var members: MutableSet<String> = mutableSetOf()
-
+class ChatRoom(
+  @Id val id: String? = null,
+  val members: MutableSet<String> = mutableSetOf(),
+) : BaseTime() {
   fun getUsers(): Set<String> {
     return members
   }

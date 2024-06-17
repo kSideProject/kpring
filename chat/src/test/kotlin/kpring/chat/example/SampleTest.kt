@@ -28,7 +28,7 @@ class SampleTest(
       val chat = QChat.chat
       repeat(5) { idx ->
         roomChatRepository.save(
-          Chat("testUserId", "testRoomId", "testContent$idx"),
+          Chat(userId = "testUserId", contextId = "testRoomId", content = "testContent$idx"),
         )
       }
 
@@ -53,7 +53,7 @@ class SampleTest(
       roomChatRepository.deleteAll()
       repeat(5) { idx ->
         roomChatRepository.save(
-          Chat("testUserId", "testRoomId", "testContent$idx"),
+          Chat(userId = "testUserId", contextId = "testRoomId", content = "testContent$idx"),
         )
       }
 

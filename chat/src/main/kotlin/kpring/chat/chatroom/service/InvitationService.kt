@@ -46,10 +46,10 @@ class InvitationService(
   }
 
   fun getInvitationInfoFromCode(code: String): InvitationInfo {
-    val decodedCode = decodeCode(code)
-    val keyAndValue: List<String> = decodedCode.split(",")
-    val userIdAndChatRoomId: List<String> = keyAndValue[0].split(":")
-    return InvitationInfo(userIdAndChatRoomId[0], userIdAndChatRoomId[1], keyAndValue[1])
+    val decodedCode = decodeCode(code) // decode encoded code
+    val keyAndValue: List<String> = decodedCode.split(",") // a code is consisted of key,value
+    val userIdAndChatRoomId: List<String> = keyAndValue[0].split(":") // a key is consisted of userId:chatRoomId
+    return InvitationInfo(userId = userIdAndChatRoomId[0], chatRoomId = userIdAndChatRoomId[1], code = keyAndValue[1])
   }
 
   private fun encodeCode(

@@ -70,8 +70,10 @@ tasks.asciidoctor {
   dependsOn(tasks.test)
 }
 
+val hostname = "152.70.145.249"
+
 openapi3 {
-  setServer("http://144.24.59.91/auth")
+  setServer("http://$hostname/auth")
   title = "Auth API"
   description = "API document"
   version = "0.1.0"

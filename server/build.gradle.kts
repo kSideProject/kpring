@@ -67,8 +67,10 @@ kapt {
   annotationProcessor("org.springframework.data.mongodb.repository.support.MongoAnnotationProcessor")
 }
 
+val hostname = "152.70.145.249"
+
 openapi3 {
-  setServer("http://144.24.59.91/server")
+  setServer("http://$hostname/server")
   title = "Server API"
   description = "API document"
   version = "0.1.0"

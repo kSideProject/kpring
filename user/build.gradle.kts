@@ -51,8 +51,10 @@ dependencies {
   implementation("org.springframework.restdocs:spring-restdocs-asciidoctor")
 }
 
+val hostname = "152.70.145.249"
+
 openapi3 {
-  setServer("http://144.24.59.91/user")
+  setServer("http://$hostname/user")
   title = "User API"
   description = "API document"
   version = "0.1.0"

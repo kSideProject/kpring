@@ -71,7 +71,7 @@ tasks.asciidoctor {
 }
 
 openapi3 {
-  setServer("http://localhost/auth")
+  setServer("http://144.24.59.91/auth")
   title = "Auth API"
   description = "API document"
   version = "0.1.0"

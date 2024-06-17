@@ -52,7 +52,7 @@ dependencies {
 }
 
 openapi3 {
-  setServer("http://localhost/user")
+  setServer("http://144.24.59.91/user")
   title = "User API"
   description = "API document"
   version = "0.1.0"

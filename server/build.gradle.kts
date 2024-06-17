@@ -79,6 +79,12 @@ openapi3 {
 jib {
   from {
     image = "eclipse-temurin:21-jre"
+    platforms {
+      platform {
+        architecture = "arm64"
+        os = "linux"
+      }
+    }
   }
   to {
     image = "youdong98/kpring-server-application"

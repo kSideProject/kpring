@@ -11,13 +11,13 @@ class ServerProfileTest : DescribeSpec({
     val userId = "invitedUserId"
     val server =
       Server(
-        id = "serverId",
         name = "serverName",
         invitedUserIds = mutableSetOf("invitedUserId"),
         users = mutableSetOf(userId),
       )
     val serverProfile =
       ServerProfile(
+        id = null,
         server = server,
         name = "name",
         imagePath = "/imagePath",

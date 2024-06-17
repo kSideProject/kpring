@@ -36,6 +36,7 @@ class GetServerProfileMongoImpl(
     val server = serverEntity.toDomain()
     val serverProfile =
       ServerProfile(
+        id = serverProfileEntity.id,
         server = server,
         userId = serverProfileEntity.userId,
         name = serverProfileEntity.name,
@@ -60,7 +61,7 @@ class GetServerProfileMongoImpl(
     // get server
     val targetServerIds =
       serverProfileEntities
-        .map { it.serverId }
+        .map { it.serverId!! }
 
     val qServer = QServerEntity.serverEntity
 
@@ -76,6 +77,7 @@ class GetServerProfileMongoImpl(
       val serverEntity = serverMap[it.serverId]!!
       val server = serverEntity.toDomain()
       ServerProfile(
+        id = serverEntity.id,
         server = server,
         userId = it.userId,
         name = it.name,
@@ -97,6 +99,7 @@ class GetServerProfileMongoImpl(
 
     return serverProfileEntities.map {
       ServerProfile(
+        id = it.id,
         server = server,
         userId = it.userId,
         name = it.name,

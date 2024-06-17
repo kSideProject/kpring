@@ -35,7 +35,8 @@ class ChatServiceTest(
       // Given
       val request = CreateChatRequest(id = ChatRoomTest.TEST_ROOM_ID, content = ChatTest.CONTENT, type = ChatType.Room)
       val userId = CommonTest.TEST_USER_ID
-      val roomChat = Chat(userId, request.id, request.content)
+      val chatId = ChatTest.TEST_CHAT_ID
+      val roomChat = Chat(chatId, userId, request.id, request.content)
       every { roomChatRepository.save(any()) } returns roomChat
 
       // When
@@ -98,6 +99,7 @@ class ChatServiceTest(
       val userId = CommonTest.TEST_USER_ID
       val chat =
         Chat(
+          chatId,
           userId,
           roomId,
           "content",
@@ -126,6 +128,7 @@ class ChatServiceTest(
       val userId = CommonTest.TEST_USER_ID
       val chat =
         Chat(
+          chatId,
           userId,
           serverId,
           "content",
@@ -153,6 +156,7 @@ class ChatServiceTest(
       val userId = CommonTest.TEST_USER_ID
       val chat =
         Chat(
+          chatId,
           userId,
           roomId,
           "content",
@@ -177,6 +181,7 @@ class ChatServiceTest(
       val userId = CommonTest.TEST_USER_ID
       val chat =
         Chat(
+          chatId,
           userId,
           serverId,
           "content",

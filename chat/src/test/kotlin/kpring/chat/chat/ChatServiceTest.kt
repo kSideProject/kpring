@@ -203,9 +203,10 @@ class ChatServiceTest(
       val userId = CommonTest.TEST_USER_ID
       val chat =
         Chat(
-          userId,
-          serverId,
-          "content",
+          id = chatId,
+          userId = userId,
+          contextId = serverId,
+          content = "content",
         )
 
       every { serverChatRepository.findById(chatId) } returns Optional.of(chat)
@@ -225,9 +226,10 @@ class ChatServiceTest(
       val userId = CommonTest.TEST_USER_ID
       val chat =
         Chat(
-          userId,
-          roomId,
-          "content",
+          id = chatId,
+          userId = userId,
+          contextId = roomId,
+          content = "content",
         )
 
       every { roomChatRepository.findById(chatId) } returns Optional.of(chat)

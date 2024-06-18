@@ -5,7 +5,7 @@ on:
     branches: [ main ] # push 되었을 때, 실행
 
 jobs:
-  cd:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -30,3 +30,37 @@ jobs:
       # Gradle jib를 통한 이미지 배포
       - name: update image using jib
         run: ./gradlew --info jib
+
+  tagging:
+    needs:
+      - build
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: set tag
+        run: |
+          echo "IMAGE_TAG=$(git rev-parse --short=8 HEAD)" >> $GITHUB_ENV
+
+      - name: checkout infra repository
+        uses: actions/checkout@v4
+        with:
+          repository: kSideProject/kpring-infra
+          ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          ref: main
+
+      - name: edit infra repository tag
+        run: |
+          echo 'env(IMAGE_TAG)'
+          yq eval -i '.service.tag = env(IMAGE_TAG)' ./charts/server/values.yaml
+          yq eval -i '.service.tag = env(IMAGE_TAG)' ./charts/user/values.yaml
+          yq eval -i '.service.tag = env(IMAGE_TAG)' ./charts/auth/values.yaml
+
+      - name: commit
+        uses: leigholiver/commit-with-deploy-key@v1.0.4
+        with:
+          source: .
+          destination_repo: kSideProject/kpring-infra
+          deploy_key: ${{ secrets.SSH_PRIVATE_KEY }}
+          commit_message: 'ci: update tag to env(IMAGE_TAG)''

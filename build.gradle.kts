@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.springframework.boot.gradle.tasks.bundling.BootJar
+import java.io.IOException
 
 plugins {
   id("org.springframework.boot") version "3.2.4"
@@ -17,7 +18,7 @@ repositories {
 
 allprojects {
   group = "com.sideproject"
-  version = "0.0.1-SNAPSHOT"
+  version = "git rev-parse --short=8 HEAD".runCommand(workingDir = rootDir)
 
   repositories {
     mavenCentral()
@@ -53,3 +54,25 @@ subprojects {
     debug.set(true)
   }
 }
+
+/**
+ * cli 실행 결과를 반환한기 위한 함수
+ */
+fun String.runCommand(
+  workingDir: File = File("."),
+  timeoutAmount: Long = 60,
+  timeoutUnit: TimeUnit = TimeUnit.SECONDS,
+): String =
+  ProcessBuilder(split("\\s(?=(?:[^'\"`]*(['\"`])[^'\"`]*\\1)*[^'\"`]*$)".toRegex()))
+    .directory(workingDir)
+    .redirectOutput(ProcessBuilder.Redirect.PIPE)
+    .redirectError(ProcessBuilder.Redirect.PIPE)
+    .start()
+    .apply { waitFor(timeoutAmount, timeoutUnit) }
+    .run {
+      val error = errorStream.bufferedReader().readText().trim()
+      if (error.isNotEmpty()) {
+        throw IOException(error)
+      }
+      inputStream.bufferedReader().readText().trim()
+    }

@@ -7,6 +7,7 @@ import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import kpring.chat.chat.service.ChatService
 import kpring.chat.global.ChatRoomTest
+import kpring.chat.global.ChatTest
 import kpring.chat.global.CommonTest
 import kpring.chat.global.config.TestMongoConfig
 import kpring.core.auth.client.AuthClient
@@ -95,6 +96,7 @@ class ChatControllerTest(
             .bodyValue(request)
             .exchange()
 
+        // Then
         val docs =
           result
             .expectStatus()
@@ -102,7 +104,6 @@ class ChatControllerTest(
             .expectBody()
             .json(om.writeValueAsString(ApiResponse(data = null, status = 201)))
 
-        // Then
         docs.restDoc(
           identifier = "create_chat_201",
           description = "채팅 생성 api",
@@ -172,6 +173,7 @@ class ChatControllerTest(
             .header("Authorization", "Bearer mock_token")
             .exchange()
 
+        // Then
         val docs =
           result
             .expectStatus()
@@ -179,7 +181,6 @@ class ChatControllerTest(
             .expectBody()
             .json(om.writeValueAsString(ApiResponse(data = data)))
 
-        // Then
         docs.restDoc(
           identifier = "get_server_chats_200",
           description = "서버 채팅 조회 api",
@@ -252,6 +253,7 @@ class ChatControllerTest(
             .header("Authorization", "Bearer mock_token")
             .exchange()
 
+        // Then
         val docs =
           result
             .expectStatus()
@@ -259,7 +261,6 @@ class ChatControllerTest(
             .expectBody()
             .json(om.writeValueAsString(ApiResponse(data = data)))
 
-        // Then
         docs.restDoc(
           identifier = "get_room_chats_200",
           description = "채팅방 채팅 조회 api",
@@ -318,6 +319,7 @@ class ChatControllerTest(
             .header("Authorization", "Bearer mock_token")
             .exchange()
 
+        // Then
         val docs =
           result
             .expectStatus()
@@ -325,7 +327,6 @@ class ChatControllerTest(
             .expectBody()
             .json(om.writeValueAsString(ApiResponse<Nothing>(status = 200)))
 
-        // Then
         docs.restDoc(
           identifier = "update_chats_200",
           description = "채팅방 채팅 업데이트 api",
@@ -380,6 +381,7 @@ class ChatControllerTest(
             .header("Authorization", "Bearer mock_token")
             .exchange()
 
+        // Then
         val docs =
           result
             .expectStatus()
@@ -387,11 +389,137 @@ class ChatControllerTest(
             .expectBody()
             .json(om.writeValueAsString(ApiResponse<Nothing>(status = 200)))
 
-        // Then
         docs.restDoc(
           identifier = "update_chats_200",
           description = "서버 채팅 업데이트 api",
         ) {
+          response {
+            body {
+              "status" type JsonDataType.Integers mean "상태 코드"
+            }
+          }
+        }
+      }
+    }
+
+    describe("DELETE /api/v1/chat : deleteChat api test") {
+
+      val url = "/api/v1/chat/{chatId}"
+      // Given
+      val userId = CommonTest.TEST_USER_ID
+
+      it("deleteRoomChat api test") {
+
+        // Given
+        val chatId = ChatTest.TEST_CHAT_ID
+
+        every { authClient.getTokenInfo(any()) } returns
+          ApiResponse(
+            data =
+              TokenInfo(
+                type = TokenType.ACCESS, userId = userId,
+              ),
+          )
+
+        every {
+          chatService.deleteRoomChat(
+            chatId,
+            userId,
+          )
+        } returns true
+
+        // When
+        val result =
+          webTestClient.delete().uri(
+            URLBuilder(url)
+              .query("type", "Room")
+              .build(),
+            chatId,
+          )
+            .header("Authorization", "Bearer mock_token")
+            .exchange()
+
+        // Then
+        val docs =
+          result
+            .expectStatus()
+            .isOk
+            .expectBody()
+            .json(om.writeValueAsString(ApiResponse<Nothing>(status = 200)))
+
+        docs.restDoc(
+          identifier = "delete_room_chat_200",
+          description = "채팅방 채팅 삭제 api",
+        ) {
+          request {
+            query {
+              "type" mean "Server / Room"
+            }
+            path {
+              "chatId" mean "채팅 ID"
+            }
+          }
+
+          response {
+            body {
+              "status" type JsonDataType.Integers mean "상태 코드"
+            }
+          }
+        }
+      }
+
+      it("deleteServerChat api test") {
+
+        // Given
+        val chatId = ChatTest.TEST_CHAT_ID
+
+        every { authClient.getTokenInfo(any()) } returns
+          ApiResponse(
+            data =
+              TokenInfo(
+                type = TokenType.ACCESS, userId = userId,
+              ),
+          )
+
+        every {
+          chatService.deleteServerChat(
+            chatId,
+            userId,
+          )
+        } returns true
+
+        // When
+        val result =
+          webTestClient.delete().uri(
+            URLBuilder(url)
+              .query("type", "Server")
+              .build(),
+            chatId,
+          )
+            .header("Authorization", "Bearer mock_token")
+            .exchange()
+
+        // Then
+        val docs =
+          result
+            .expectStatus()
+            .isOk
+            .expectBody()
+            .json(om.writeValueAsString(ApiResponse<Nothing>(status = 200)))
+
+        docs.restDoc(
+          identifier = "delete_server_chat_200",
+          description = "서버 채팅 삭제 api",
+        ) {
+          request {
+            query {
+              "type" mean "Server / Room"
+            }
+            path {
+              "chatId" mean "채팅 ID"
+            }
+          }
+
           response {
             body {
               "status" type JsonDataType.Integers mean "상태 코드"

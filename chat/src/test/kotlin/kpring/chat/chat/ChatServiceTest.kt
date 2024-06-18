@@ -3,9 +3,7 @@ package kpring.chat.chat
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
+import io.mockk.*
 import kpring.chat.chat.model.Chat
 import kpring.chat.chat.repository.RoomChatRepository
 import kpring.chat.chat.repository.ServerChatRepository
@@ -35,7 +33,8 @@ class ChatServiceTest(
       // Given
       val request = CreateChatRequest(id = ChatRoomTest.TEST_ROOM_ID, content = ChatTest.CONTENT, type = ChatType.Room)
       val userId = CommonTest.TEST_USER_ID
-      val roomChat = Chat(userId, request.id, request.content)
+      val chatId = ChatTest.TEST_CHAT_ID
+      val roomChat = Chat(chatId, userId, request.id, request.content)
       every { roomChatRepository.save(any()) } returns roomChat
 
       // When
@@ -98,6 +97,7 @@ class ChatServiceTest(
       val userId = CommonTest.TEST_USER_ID
       val chat =
         Chat(
+          chatId,
           userId,
           roomId,
           "content",
@@ -126,6 +126,7 @@ class ChatServiceTest(
       val userId = CommonTest.TEST_USER_ID
       val chat =
         Chat(
+          chatId,
           userId,
           serverId,
           "content",
@@ -153,6 +154,7 @@ class ChatServiceTest(
       val userId = CommonTest.TEST_USER_ID
       val chat =
         Chat(
+          chatId,
           userId,
           roomId,
           "content",
@@ -177,6 +179,7 @@ class ChatServiceTest(
       val userId = CommonTest.TEST_USER_ID
       val chat =
         Chat(
+          chatId,
           userId,
           serverId,
           "content",
@@ -191,5 +194,51 @@ class ChatServiceTest(
       // Then
       result shouldBe true
       verify { roomChatRepository.save(any()) }
+    }
+
+    test("deleteServerChat 은 권한이 있는 사용자의 요청에 따라 Chat 삭제") {
+      // Given
+      val serverId = "test_server_id"
+      val chatId = "test_chat_id"
+      val userId = CommonTest.TEST_USER_ID
+      val chat =
+        Chat(
+          id = chatId,
+          userId = userId,
+          contextId = serverId,
+          content = "content",
+        )
+
+      every { serverChatRepository.findById(chatId) } returns Optional.of(chat)
+      every { serverChatRepository.delete(chat) } just Runs
+
+      // When
+      val result = chatService.deleteServerChat(chatId, userId)
+
+      // Then
+      result shouldBe true
+    }
+
+    test("deleteRoomChat 은 권한이 있는 사용자의 요청에 따라 Chat 삭제") {
+      // Given
+      val roomId = "test_room_id"
+      val chatId = "test_chat_id"
+      val userId = CommonTest.TEST_USER_ID
+      val chat =
+        Chat(
+          id = chatId,
+          userId = userId,
+          contextId = roomId,
+          content = "content",
+        )
+
+      every { roomChatRepository.findById(chatId) } returns Optional.of(chat)
+      every { roomChatRepository.delete(chat) } just Runs
+
+      // When
+      val result = chatService.deleteRoomChat(chatId, userId)
+
+      // Then
+      result shouldBe true
     }
   })

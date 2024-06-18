@@ -16,9 +16,16 @@ const MemberList: React.FC<MemberListProps> = ({ memberList }) => {
 
   return (
     <>
-      <List className="overflow-auto scrollbar-hide">
-        {memberList.map((member) => (
-          <MemberListItem member={member} handleProfileOpen={openModal} />
+      <List sx={{
+        overflow: 'auto',
+        '&::-webkit-scrollbar': {
+          display: 'none',
+        },
+        '-ms-overflow-style': 'none',
+        'scrollbar-width': 'none',
+        }}>
+        {memberList.map((member,index) => (
+          <MemberListItem member={member} key={index} handleProfileOpen={openModal} />
         ))}
       </List>
       <ModalComponent isOpen={isOpen}>

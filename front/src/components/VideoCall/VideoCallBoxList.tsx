@@ -1,17 +1,22 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import VideoCallBoxListItem from './VideoCallBoxListItem'
-import { messageMemberList } from "../../utils/fakeData";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { Member } from '../../types/layout';
+import { Box } from '@mui/material';
 
 const VideoCallBoxList = () => {
   const [curVideoCallBoxPage, setCurVideoCallBoxPage] = useState(0);
   const [slicedMemberList, setSlicedMemberList] = useState<Member[]>([]); // 페이징 처리 된 멤버 리스트
-  
+  const serverMemberList = [  {
+    id: 13,
+    userName: "test",
+    profilePath: "https://helpx.adobe.com/content/dam/help/en/photoshop/using/quick-actions/remove-background-before-qa1.png"
+  },];
+
   // 마지막 페이지 수
   const lastPage = useMemo(()=>{
-    const memberCnt = messageMemberList.length;
+    const memberCnt = serverMemberList.length;
     let lastPage = 0;
     if(memberCnt%4 === 0){
       lastPage = Math.floor(memberCnt/4) - 1
@@ -40,7 +45,7 @@ const VideoCallBoxList = () => {
 
   // TODO : 화면공유 멤버 리스트 슬라이싱 함수 
   const sliceMemberList = useCallback(()=>{
-    const newMemberList = messageMemberList.slice(curVideoCallBoxPage*4, (curVideoCallBoxPage*4)+4);
+    const newMemberList = serverMemberList.slice(curVideoCallBoxPage*4, (curVideoCallBoxPage*4)+4);
     setSlicedMemberList(newMemberList)
   },[curVideoCallBoxPage])
 
@@ -49,22 +54,33 @@ const VideoCallBoxList = () => {
   }, [sliceMemberList]);
   
   return (
-    <div className='w-[55rem] h-[10rem] flex items-center'>
+    <Box sx={{width: '880px', height:'160px', display:'flex', alignItems:'center'}}>
       <ArrowBackIosIcon 
-      className={`${curVideoCallBoxPage === 0 ? 'text-gray-400' : 'text-black cursor-pointer'}`}
+      sx={{
+        color: `${curVideoCallBoxPage === 0 ? 'gray': 'black'}`,
+        cursor: 'pointer'
+      }}
       onClick={handleBoxPagePrev} />
-      <div className='grid grid-cols-4 h-full w-full'>
+      <Box   sx={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(4, 1fr)',
+        height: '100%',
+        width: '100%'
+      }}>
         {
-            slicedMemberList.map(member=>(
-                <VideoCallBoxListItem member={member}/>
+            slicedMemberList.map((member,index)=>(
+                <VideoCallBoxListItem key={index} member={member}/>
             ))
         }
-      </div>
+      </Box>
       <ArrowForwardIosIcon 
-      className={`${curVideoCallBoxPage===lastPage? 'text-gray-400' : 'text-black cursor-pointer'}`}
+      sx={{
+        color: `${curVideoCallBoxPage === 0 ? 'gray': 'black'}`,
+        cursor: 'pointer'
+      }}
       onClick={handleBoxPageNext}
       />
-    </div>
+    </Box>
   )
 }
 

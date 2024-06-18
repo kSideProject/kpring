@@ -9,6 +9,7 @@ import kpring.core.global.exception.CommonErrorCode
 import kpring.core.global.exception.ServiceException
 import kpring.server.adapter.output.mongo.entity.ServerEntity
 import kpring.server.adapter.output.mongo.repository.ServerRepository
+import kpring.server.domain.Server
 import kpring.test.testcontainer.SpringTestContext
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ContextConfiguration
@@ -35,14 +36,12 @@ class GetServerPortTest(
 
     it("저장된 서버의 정보를 조회할 수 있다.") {
       // given
-      val userIds = mutableListOf("id")
-      val serverEntity =
-        serverRepository.save(
-          ServerEntity(name = "test", users = userIds),
-        )
+      val userIds = mutableSetOf("id")
+      val domain = Server(name = "test", users = userIds)
+      val serverEntity = serverRepository.save(ServerEntity(domain))
 
       // when
-      val server = getServerPort.get(serverEntity.id)
+      val server = getServerPort.get(serverEntity.id!!)
 
       // then
       server.name shouldBe "test"
@@ -64,10 +63,11 @@ class GetServerPortTest(
     it("유저가 속한 서버 목록을 조회할 수 있다.") {
       // given
       val userId = "test-user"
-      val userIds = mutableListOf(userId)
+      val userIds = mutableSetOf(userId)
+      val server = Server(name = "server", users = userIds)
 
       repeat(2) {
-        serverRepository.save(ServerEntity(name = "test$it", users = userIds))
+        serverRepository.save(ServerEntity(server))
       }
 
       // when

@@ -89,7 +89,7 @@ class UserServiceImpl(
     }
   }
 
-  private fun getUser(userId: Long): User {
+  fun getUser(userId: Long): User {
     return userRepository.findById(userId)
       .orElseThrow { throw ServiceException(UserErrorCode.USER_NOT_FOUND) }
   }

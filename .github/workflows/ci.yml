@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ dev ] # push 되었을 때, 실행
+    branches: [ main ] # push 되었을 때, 실행
 
 jobs:
   cd:

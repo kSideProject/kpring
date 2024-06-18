@@ -21,6 +21,6 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      # Gradle test를 실행한다
+      # Gradle jib를 통한 이미지 배포
       - name: update image using jib
         run: ./gradlew --info jib

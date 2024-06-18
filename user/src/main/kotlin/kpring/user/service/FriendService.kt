@@ -15,6 +15,11 @@ interface FriendService {
     friendId: Long,
   ): AddFriendResponse
 
+  fun acceptFriendRequest(
+    userId: Long,
+    friendId: Long,
+  ): AddFriendResponse
+
   fun deleteFriend(
     userId: Long,
     friendId: Long,

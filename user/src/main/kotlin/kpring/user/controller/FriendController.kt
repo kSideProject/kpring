@@ -54,6 +54,19 @@ class FriendController(
     return ResponseEntity.ok(ApiResponse(data = response))
   }
 
+  @PatchMapping("/user/{userId}/friend/{friendId}")
+  fun acceptFriendRequest(
+    @RequestHeader("Authorization") token: String,
+    @PathVariable userId: Long,
+    @PathVariable friendId: Long,
+  ): ResponseEntity<ApiResponse<AddFriendResponse>> {
+    val validationResult = authClient.getTokenInfo(token)
+    val validatedUserId = authValidator.checkIfAccessTokenAndGetUserId(validationResult)
+    authValidator.checkIfUserIsSelf(userId.toString(), validatedUserId)
+    val response = friendService.acceptFriendRequest(userId, friendId)
+    return ResponseEntity.ok(ApiResponse(data = response))
+  }
+
   @DeleteMapping("/user/{userId}/friend/{friendId}")
   fun deleteFriend(
     @RequestHeader("Authorization") token: String,

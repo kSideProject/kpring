@@ -49,6 +49,13 @@ class FriendServiceImpl(
     return AddFriendResponse(friend.id!!)
   }
 
+  override fun acceptFriendRequest(
+    userId: Long,
+    friendId: Long,
+  ): AddFriendResponse {
+    TODO("Not yet implemented")
+  }
+
   override fun deleteFriend(
     userId: Long,
     friendId: Long,

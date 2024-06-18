@@ -67,7 +67,7 @@ kapt {
   annotationProcessor("org.springframework.data.mongodb.repository.support.MongoAnnotationProcessor")
 }
 
-val hostname = "152.70.145.249"
+val hostname = "kpring.duckdns.org"
 
 openapi3 {
   setServer("http://$hostname/server")

@@ -70,7 +70,7 @@ tasks.asciidoctor {
   dependsOn(tasks.test)
 }
 
-val hostname = "152.70.145.249"
+val hostname = "kpring.duckdns.org"
 
 openapi3 {
   setServer("http://$hostname/auth")

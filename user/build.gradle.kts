@@ -75,7 +75,7 @@ jib {
   to {
     image = "youdong98/kpring-user-application"
     setAllowInsecureRegistries(true)
-    tags = setOf("latest")
+    tags = setOf("latest", System.nanoTime().toString())
   }
   container {
     jvmFlags = listOf("-Xms512m", "-Xmx512m")

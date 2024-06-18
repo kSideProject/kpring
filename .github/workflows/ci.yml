@@ -63,4 +63,4 @@ jobs:
           source: .
           destination_repo: kSideProject/kpring-infra
           deploy_key: ${{ secrets.SSH_PRIVATE_KEY }}
-          commit_message: 'ci: update tag to env(IMAGE_TAG)''
+          commit_message: 'ci: update tag to env(IMAGE_TAG)'

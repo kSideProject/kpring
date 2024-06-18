@@ -1,14 +1,15 @@
 package kpring.user.service
 
 import kpring.core.global.exception.ServiceException
-import kpring.user.dto.response.DeleteFriendResponse
-import kpring.user.dto.response.GetFriendsResponse
-import kpring.user.dto.result.AddFriendResponse
+import kpring.user.dto.response.*
+import kpring.user.entity.Friend
+import kpring.user.entity.FriendRequestStatus
 import kpring.user.entity.User
 import kpring.user.exception.UserErrorCode
 import kpring.user.repository.FriendRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.stream.Collectors
 
 @Service
 @Transactional
@@ -16,6 +17,19 @@ class FriendServiceImpl(
   private val userServiceImpl: UserServiceImpl,
   private val friendRepository: FriendRepository,
 ) : FriendService {
+  override fun getFriendRequests(userId: Long): GetFriendRequestsResponse {
+    val friendRelations: List<Friend> =
+      friendRepository.findAllByUserIdAndRequestStatus(userId, FriendRequestStatus.RECEIVED)
+    val friendRequests: MutableList<GetFriendRequestResponse> = mutableListOf()
+
+    friendRelations.stream().map { friendRelation ->
+      val friend = friendRelation.friend
+      GetFriendRequestResponse(friend.id!!, friend.username)
+    }.collect(Collectors.toList())
+
+    return GetFriendRequestsResponse(userId, friendRequests)
+  }
+
   override fun getFriends(userId: Long): GetFriendsResponse {
     TODO("Not yet implemented")
   }

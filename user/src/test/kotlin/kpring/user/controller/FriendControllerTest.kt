@@ -11,9 +11,12 @@ import kpring.core.auth.enums.TokenType
 import kpring.core.global.dto.response.ApiResponse
 import kpring.core.global.exception.ServiceException
 import kpring.test.restdoc.dsl.restDoc
+import kpring.test.restdoc.json.JsonDataType
 import kpring.test.restdoc.json.JsonDataType.Strings
+import kpring.user.dto.response.AddFriendResponse
 import kpring.user.dto.response.FailMessageResponse
-import kpring.user.dto.result.AddFriendResponse
+import kpring.user.dto.response.GetFriendRequestResponse
+import kpring.user.dto.response.GetFriendRequestsResponse
 import kpring.user.exception.UserErrorCode
 import kpring.user.global.AuthValidator
 import kpring.user.global.CommonTest
@@ -183,6 +186,153 @@ internal class FriendControllerTest(
               path {
                 "userId" mean "사용자 아이디"
                 "friendId" mean "친구신청을 받은 사용자의 아이디"
+              }
+              header { "Authorization" mean "Bearer token" }
+            }
+            response {
+              body {
+                "message" type Strings mean "에러 메시지"
+              }
+            }
+          }
+      }
+    }
+
+    describe("친구신청 조회 API") {
+      it("친구신청 조회 성공") {
+        // given
+        val friendRequest =
+          GetFriendRequestResponse(
+            friendId = CommonTest.TEST_FRIEND_ID,
+            username = CommonTest.TEST_FRIEND_USERNAME,
+          )
+        val data =
+          GetFriendRequestsResponse(
+            userId = CommonTest.TEST_USER_ID,
+            friendRequests = mutableListOf(friendRequest),
+          )
+        val response = ApiResponse(data = data)
+
+        every { authClient.getTokenInfo(any()) }.returns(
+          ApiResponse(data = TokenInfo(TokenType.ACCESS, CommonTest.TEST_USER_ID.toString())),
+        )
+        every {
+          authValidator.checkIfAccessTokenAndGetUserId(any())
+        } returns CommonTest.TEST_USER_ID.toString()
+        every { authValidator.checkIfUserIsSelf(any(), any()) } returns Unit
+        every {
+          friendService.getFriendRequests(CommonTest.TEST_USER_ID)
+        } returns data
+
+        // when
+        val result =
+          webTestClient.get()
+            .uri(
+              "/api/v1/user/{userId}/requests",
+              CommonTest.TEST_USER_ID,
+            )
+            .header("Authorization", CommonTest.TEST_TOKEN)
+            .exchange()
+
+        // then
+        val docsRoot =
+          result
+            .expectStatus().isOk
+            .expectBody().json(objectMapper.writeValueAsString(response))
+
+        // docs
+        docsRoot
+          .restDoc(
+            identifier = "getFriendRequests200",
+            description = "친구신청 조회 API",
+          ) {
+            request {
+              path {
+                "userId" mean "사용자 아이디"
+              }
+              header { "Authorization" mean "Bearer token" }
+            }
+            response {
+              body {
+                "data.userId" type Strings mean "사용자 아이디"
+                "data.friendRequests" type JsonDataType.Arrays mean "친구신청한 사용자 리스트"
+                "data.friendRequests[].friendId" type Strings mean "친구신청한 사용자 아이디"
+                "data.friendRequests[].username" type Strings mean "친구신청한 사용자 닉네임"
+              }
+            }
+          }
+      }
+      it("친구신청 조회 실패 : 권한이 없는 토큰") {
+        // given
+        val response =
+          FailMessageResponse.builder().message(UserErrorCode.NOT_ALLOWED.message()).build()
+        every { authClient.getTokenInfo(any()) } throws ServiceException(UserErrorCode.NOT_ALLOWED)
+
+        // when
+        val result =
+          webTestClient.get()
+            .uri(
+              "/api/v1/user/{userId}/requests",
+              CommonTest.TEST_USER_ID,
+            )
+            .header("Authorization", CommonTest.TEST_TOKEN)
+            .exchange()
+
+        // then
+        val docsRoot =
+          result
+            .expectStatus().isForbidden
+            .expectBody().json(objectMapper.writeValueAsString(response))
+
+        // docs
+        docsRoot
+          .restDoc(
+            identifier = "getFriendRequests403",
+            description = "친구신청 조회 API",
+          ) {
+            request {
+              path {
+                "userId" mean "사용자 아이디"
+              }
+              header { "Authorization" mean "Bearer token" }
+            }
+            response {
+              body {
+                "message" type Strings mean "에러 메시지"
+              }
+            }
+          }
+      }
+      it("친구신청 조회 실패 : 서버 내부 오류") {
+        // given
+        val response = FailMessageResponse.serverError
+        every { authClient.getTokenInfo(any()) } throws RuntimeException("서버 내부 오류")
+
+        // when
+        val result =
+          webTestClient.get()
+            .uri(
+              "/api/v1/user/{userId}/requests",
+              CommonTest.TEST_USER_ID,
+            )
+            .header("Authorization", CommonTest.TEST_TOKEN)
+            .exchange()
+
+        // then
+        val docsRoot =
+          result
+            .expectStatus().isEqualTo(500)
+            .expectBody().json(objectMapper.writeValueAsString(response))
+
+        // docs
+        docsRoot
+          .restDoc(
+            identifier = "getFriendRequests500",
+            description = "친구신청 조회 API",
+          ) {
+            request {
+              path {
+                "userId" mean "사용자 아이디"
               }
               header { "Authorization" mean "Bearer token" }
             }

@@ -9,6 +9,7 @@ import kpring.user.exception.UserErrorCode
 import kpring.user.repository.FriendRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.stream.Collectors
 
 @Service
 @Transactional
@@ -21,10 +22,10 @@ class FriendServiceImpl(
       friendRepository.findAllByUserIdAndRequestStatus(userId, FriendRequestStatus.RECEIVED)
     val friendRequests: MutableList<GetFriendRequestResponse> = mutableListOf()
 
-    for (friendRelation in friendRelations) {
+    friendRelations.stream().map { friendRelation ->
       val friend = friendRelation.friend
-      friendRequests.add(GetFriendRequestResponse(friend.id!!, friend.username))
-    }
+      GetFriendRequestResponse(friend.id!!, friend.username)
+    }.collect(Collectors.toList())
 
     return GetFriendRequestsResponse(userId, friendRequests)
   }

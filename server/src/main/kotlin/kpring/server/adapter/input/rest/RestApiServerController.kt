@@ -27,9 +27,19 @@ class RestApiServerController(
   fun createServer(
     @RequestHeader("Authorization") token: String,
     @RequestBody request: CreateServerRequest,
-  ): ResponseEntity<ApiResponse<*>> {
+  ): ResponseEntity<ApiResponse<Any>> {
+    // get and validate user token
     val userInfo = authClient.getTokenInfo(token).data!!
-    val data = createServerUseCase.createServer(request, userInfo.userId)
+
+    // validate userId
+    if (userInfo.userId != request.userId) {
+      return ResponseEntity.badRequest()
+        .body(ApiResponse(message = "유저 정보가 일치하지 않습니다"))
+    }
+
+    // logic
+    val data = createServerUseCase.createServer(request)
+
     return ResponseEntity.ok()
       .body(ApiResponse(data = data))
   }

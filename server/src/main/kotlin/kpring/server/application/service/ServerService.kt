@@ -18,7 +18,10 @@ import kpring.server.application.port.output.GetServerPort
 import kpring.server.application.port.output.GetServerProfilePort
 import kpring.server.application.port.output.SaveServerPort
 import kpring.server.application.port.output.UpdateServerPort
+import kpring.server.domain.Category
+import kpring.server.domain.Server
 import kpring.server.domain.ServerAuthority
+import kpring.server.util.toInfo
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -30,22 +33,29 @@ class ServerService(
   val updateServerPort: UpdateServerPort,
   val deleteServerPort: DeleteServerPort,
 ) : CreateServerUseCase, GetServerInfoUseCase, AddUserAtServerUseCase, DeleteServerUseCase {
-  override fun createServer(
-    req: CreateServerRequest,
-    userId: String,
-  ): CreateServerResponse {
-    val server = createServerPort.create(req, userId)
+  override fun createServer(req: CreateServerRequest): CreateServerResponse {
+    val server =
+      createServerPort.create(
+        Server(
+          name = req.serverName,
+          users = mutableSetOf(req.userId),
+          theme = req.theme,
+          categories = req.categories,
+        ),
+      )
     return CreateServerResponse(
-      serverId = server.id,
+      serverId = server.id!!,
       serverName = server.name,
+      theme = server.theme.toInfo(),
+      categories = server.categories.map(Category::toInfo),
     )
   }
 
   override fun getServerInfo(serverId: String): ServerInfo {
     val server = getServer.get(serverId)
-    val serverProfiles = getServerProfilePort.getAll(server.id)
+    val serverProfiles = getServerProfilePort.getAll(server.id!!)
     return ServerInfo(
-      id = server.id,
+      id = server.id!!,
       name = server.name,
       users =
         serverProfiles.map { profile ->
@@ -65,7 +75,7 @@ class ServerService(
     return getServerProfilePort.getProfiles(condition, userId)
       .map { profile ->
         ServerSimpleInfo(
-          id = profile.server.id,
+          id = profile.server.id!!,
           name = profile.server.name,
           bookmarked = profile.bookmarked,
         )
@@ -86,7 +96,7 @@ class ServerService(
     // register invitation
     val server = serverProfile.server
     server.registerInvitation(userId)
-    updateServerPort.inviteUser(server.id, userId)
+    updateServerPort.inviteUser(server.id!!, userId)
   }
 
   @Transactional

@@ -1,6 +1,7 @@
 package kpring.user.entity
 
 import jakarta.persistence.*
+import kpring.user.dto.request.UpdateUserProfileRequest
 
 @Entity
 @Table(name = "tb_user")
@@ -14,24 +15,42 @@ class User(
   var email: String,
   @Column(nullable = false)
   var password: String,
-  @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(
-    name = "user_followers",
-    joinColumns = [JoinColumn(name = "user_id")],
-    inverseJoinColumns = [JoinColumn(name = "follower_id")],
-  )
-  val followers: MutableSet<User> = mutableSetOf(),
-  @ManyToMany(mappedBy = "followers", fetch = FetchType.LAZY)
-  val followees: MutableSet<User> = mutableSetOf(),
+  var file: String?,
+  @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = [CascadeType.ALL])
+  val friends: MutableSet<Friend> = mutableSetOf(),
   // Other fields and methods...
 ) {
-  fun addFollower(follower: User) {
-    followers.add(follower)
-    follower.followees.add(this)
+  fun requestFriend(user: User) {
+    val friendRelation =
+      Friend(
+        user = this,
+        friend = user,
+        requestStatus = FriendRequestStatus.REQUESTED,
+      )
+    friends.add(friendRelation)
   }
 
-  fun removeFollower(follower: User) {
-    followers.remove(follower)
-    follower.followees.remove(this)
+  fun receiveFriendRequest(user: User) {
+    val friendRelation =
+      Friend(
+        user = this,
+        friend = user,
+        requestStatus = FriendRequestStatus.RECEIVED,
+      )
+    friends.add(friendRelation)
+  }
+
+  fun updateInfo(
+    request: UpdateUserProfileRequest,
+    newPassword: String?,
+    file: String?,
+  ) {
+    request.email?.let { this.email = it }
+    request.username?.let { this.username = it }
+    newPassword?.let { this.password = it }
+
+    if (this.file != null || file != null) {
+      this.file = file
+    }
   }
 }

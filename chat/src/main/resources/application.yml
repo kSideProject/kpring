@@ -1,6 +1,8 @@
 spring:
   application:
     name: chat
+  main:
+    allow-bean-definition-overriding: true
   data:
     mongodb:
       host: localhost
@@ -10,13 +12,24 @@ spring:
       database: mongodb
       authentication-database: admin
       authSource: admin
+      repositories:
+        enabled: true
+
+    redis:
+      host: localhost
+      port: 6379
+      password: testpassword1234
 
 server:
   port: 8081
 
 auth:
-  url: "http://localhost:30000/"
+  url: "http://localhost:30001/"
 url:
-    server: "http://localhost:8080/"
+  server: "http://localhost:8080/"
+
 page:
   size: 100
+chatroom:
+  expiration: 1d
+  baseurl: "http://localhost:8081/"

@@ -7,12 +7,15 @@ import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import kpring.chat.chat.service.ChatService
 import kpring.chat.global.ChatRoomTest
+import kpring.chat.global.ChatTest
 import kpring.chat.global.CommonTest
+import kpring.chat.global.config.TestMongoConfig
 import kpring.core.auth.client.AuthClient
 import kpring.core.auth.dto.response.TokenInfo
 import kpring.core.auth.enums.TokenType
 import kpring.core.chat.chat.dto.request.ChatType
 import kpring.core.chat.chat.dto.request.CreateChatRequest
+import kpring.core.chat.chat.dto.request.UpdateChatRequest
 import kpring.core.chat.chat.dto.response.ChatResponse
 import kpring.core.global.dto.response.ApiResponse
 import kpring.core.server.client.ServerClient
@@ -22,6 +25,7 @@ import kpring.test.restdoc.json.JsonDataType
 import kpring.test.web.URLBuilder
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.context.annotation.Import
 import org.springframework.http.ResponseEntity
 import org.springframework.restdocs.ManualRestDocumentation
 import org.springframework.restdocs.RestDocumentationExtension
@@ -37,6 +41,7 @@ import java.time.LocalDateTime
 @ExtendWith(RestDocumentationExtension::class)
 @ExtendWith(SpringExtension::class)
 @ExtendWith(MockKExtension::class)
+@Import(TestMongoConfig::class)
 class ChatControllerTest(
   private val om: ObjectMapper,
   webContext: WebApplicationContext,
@@ -91,6 +96,7 @@ class ChatControllerTest(
             .bodyValue(request)
             .exchange()
 
+        // Then
         val docs =
           result
             .expectStatus()
@@ -98,7 +104,6 @@ class ChatControllerTest(
             .expectBody()
             .json(om.writeValueAsString(ApiResponse(data = null, status = 201)))
 
-        // Then
         docs.restDoc(
           identifier = "create_chat_201",
           description = "채팅 생성 api",
@@ -168,6 +173,7 @@ class ChatControllerTest(
             .header("Authorization", "Bearer mock_token")
             .exchange()
 
+        // Then
         val docs =
           result
             .expectStatus()
@@ -175,7 +181,6 @@ class ChatControllerTest(
             .expectBody()
             .json(om.writeValueAsString(ApiResponse(data = data)))
 
-        // Then
         docs.restDoc(
           identifier = "get_server_chats_200",
           description = "서버 채팅 조회 api",
@@ -248,6 +253,7 @@ class ChatControllerTest(
             .header("Authorization", "Bearer mock_token")
             .exchange()
 
+        // Then
         val docs =
           result
             .expectStatus()
@@ -255,7 +261,6 @@ class ChatControllerTest(
             .expectBody()
             .json(om.writeValueAsString(ApiResponse(data = data)))
 
-        // Then
         docs.restDoc(
           identifier = "get_room_chats_200",
           description = "채팅방 채팅 조회 api",
@@ -275,6 +280,249 @@ class ChatControllerTest(
               "data[].isEdited" type JsonDataType.Booleans mean "메시지가 수정되었는지 여부"
               "data[].sentAt" type JsonDataType.Strings mean "메시지 생성 시간"
               "data[].content" type JsonDataType.Strings mean "메시지 내용"
+            }
+          }
+        }
+      }
+    }
+
+    describe("PATCH /api/v1/chat : updateChat api test") {
+
+      val url = "/api/v1/chat"
+      it("updateRoomChat api test") {
+
+        // Given
+        val roomId = "test_room_id"
+        val content = "edit test"
+        val request = UpdateChatRequest(id = roomId, type = ChatType.Room, content = content)
+        val userId = CommonTest.TEST_USER_ID
+
+        every { authClient.getTokenInfo(any()) } returns
+          ApiResponse(
+            data =
+              TokenInfo(
+                type = TokenType.ACCESS, userId = userId,
+              ),
+          )
+
+        every {
+          chatService.updateRoomChat(
+            request,
+            CommonTest.TEST_USER_ID,
+          )
+        } returns true
+
+        // When
+        val result =
+          webTestClient.patch().uri(url)
+            .bodyValue(request)
+            .header("Authorization", "Bearer mock_token")
+            .exchange()
+
+        // Then
+        val docs =
+          result
+            .expectStatus()
+            .isOk
+            .expectBody()
+            .json(om.writeValueAsString(ApiResponse<Nothing>(status = 200)))
+
+        docs.restDoc(
+          identifier = "update_chats_200",
+          description = "채팅방 채팅 업데이트 api",
+        ) {
+          response {
+            body {
+              "status" type JsonDataType.Integers mean "상태 코드"
+            }
+          }
+        }
+      }
+      it("updateServerChat api test") {
+
+        // Given
+        val serverId = "test_server_id"
+        val content = "edit test"
+        val request = UpdateChatRequest(id = serverId, type = ChatType.Server, content = content)
+        val userId = CommonTest.TEST_USER_ID
+
+        val serverList =
+          listOf(
+            ServerSimpleInfo(
+              id = serverId,
+              name = "test_server_name",
+              bookmarked = true,
+            ),
+          )
+
+        every { authClient.getTokenInfo(any()) } returns
+          ApiResponse(
+            data =
+              TokenInfo(
+                type = TokenType.ACCESS, userId = userId,
+              ),
+          )
+
+        every { serverClient.getServerList(any(), any()) } returns
+          ResponseEntity.ok().body(ApiResponse(data = serverList))
+
+        every {
+          chatService.updateServerChat(
+            request,
+            userId,
+          )
+        } returns
+          true
+
+        // When
+        val result =
+          webTestClient.patch().uri(url)
+            .bodyValue(request)
+            .header("Authorization", "Bearer mock_token")
+            .exchange()
+
+        // Then
+        val docs =
+          result
+            .expectStatus()
+            .isOk
+            .expectBody()
+            .json(om.writeValueAsString(ApiResponse<Nothing>(status = 200)))
+
+        docs.restDoc(
+          identifier = "update_chats_200",
+          description = "서버 채팅 업데이트 api",
+        ) {
+          response {
+            body {
+              "status" type JsonDataType.Integers mean "상태 코드"
+            }
+          }
+        }
+      }
+    }
+
+    describe("DELETE /api/v1/chat : deleteChat api test") {
+
+      val url = "/api/v1/chat/{chatId}"
+      // Given
+      val userId = CommonTest.TEST_USER_ID
+
+      it("deleteRoomChat api test") {
+
+        // Given
+        val chatId = ChatTest.TEST_CHAT_ID
+
+        every { authClient.getTokenInfo(any()) } returns
+          ApiResponse(
+            data =
+              TokenInfo(
+                type = TokenType.ACCESS, userId = userId,
+              ),
+          )
+
+        every {
+          chatService.deleteRoomChat(
+            chatId,
+            userId,
+          )
+        } returns true
+
+        // When
+        val result =
+          webTestClient.delete().uri(
+            URLBuilder(url)
+              .query("type", "Room")
+              .build(),
+            chatId,
+          )
+            .header("Authorization", "Bearer mock_token")
+            .exchange()
+
+        // Then
+        val docs =
+          result
+            .expectStatus()
+            .isOk
+            .expectBody()
+            .json(om.writeValueAsString(ApiResponse<Nothing>(status = 200)))
+
+        docs.restDoc(
+          identifier = "delete_room_chat_200",
+          description = "채팅방 채팅 삭제 api",
+        ) {
+          request {
+            query {
+              "type" mean "Server / Room"
+            }
+            path {
+              "chatId" mean "채팅 ID"
+            }
+          }
+
+          response {
+            body {
+              "status" type JsonDataType.Integers mean "상태 코드"
+            }
+          }
+        }
+      }
+
+      it("deleteServerChat api test") {
+
+        // Given
+        val chatId = ChatTest.TEST_CHAT_ID
+
+        every { authClient.getTokenInfo(any()) } returns
+          ApiResponse(
+            data =
+              TokenInfo(
+                type = TokenType.ACCESS, userId = userId,
+              ),
+          )
+
+        every {
+          chatService.deleteServerChat(
+            chatId,
+            userId,
+          )
+        } returns true
+
+        // When
+        val result =
+          webTestClient.delete().uri(
+            URLBuilder(url)
+              .query("type", "Server")
+              .build(),
+            chatId,
+          )
+            .header("Authorization", "Bearer mock_token")
+            .exchange()
+
+        // Then
+        val docs =
+          result
+            .expectStatus()
+            .isOk
+            .expectBody()
+            .json(om.writeValueAsString(ApiResponse<Nothing>(status = 200)))
+
+        docs.restDoc(
+          identifier = "delete_server_chat_200",
+          description = "서버 채팅 삭제 api",
+        ) {
+          request {
+            query {
+              "type" mean "Server / Room"
+            }
+            path {
+              "chatId" mean "채팅 ID"
+            }
+          }
+
+          response {
+            body {
+              "status" type JsonDataType.Integers mean "상태 코드"
             }
           }
         }

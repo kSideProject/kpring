@@ -16,7 +16,7 @@ import { messageMemberList } from "../../utils/fakeData";
 const FriendsRightSideBar: React.FC<SideBarProps> = ({ close }) => {
   const DrawerHeader = styled("div")(({ theme }) => ({
     display: "flex",
-    height: "8rem",
+    height: "128",
     alignItems: "center",
     padding: theme.spacing(0, 1),
     ...theme.mixins.toolbar,
@@ -29,19 +29,29 @@ const FriendsRightSideBar: React.FC<SideBarProps> = ({ close }) => {
 
   return (
     <>
-      <DrawerHeader className="flex-col">
-        <Box className="w-full flex py-3 px-1">
-          <ArrowForwardIosIcon onClick={close} className="cursor-pointer"/>
-          <Box className="w-full flex justify-between">
-            <div className="pl-1">친구 목록</div>
-            <Box className="relative">
+      <DrawerHeader sx={{flexDirection: 'column'}}>
+        <Box 
+        sx={{
+          width: '100%',
+          display: 'flex',
+          paddingX: '4px',
+          paddingY: '12px'
+          }}>
+          <ArrowForwardIosIcon onClick={close} sx={{cursor: 'pointer'}}/>
+          <Box 
+          sx={{
+            width:'100%',
+            display: 'flex',
+            justifyContent: 'space-between'
+          }}>
+            <Box sx={{paddingLeft: '4px'}}>친구 목록</Box>
+            <Box sx={{position: 'relative'}}>
               { openDropDown?
                 <KeyboardArrowUpIcon 
-                  sx={{color: "purple"}}
-                  className="cursor-pointer" 
+                  sx={{color:"purple", cursor: 'pointer'}}
                   onClick={toggleDropDown}
                 />:
-                <KeyboardArrowDownIcon className="cursor-pointer" onClick={toggleDropDown}/>
+                <KeyboardArrowDownIcon onClick={toggleDropDown} sx={{cursor: 'pointer'}}/>
               }
               { openDropDown && 
                 <DropDown dropDownItems={dropDownItems}/>
@@ -59,7 +69,7 @@ const FriendsRightSideBar: React.FC<SideBarProps> = ({ close }) => {
               },
             }
           }} 
-          sx={{paddingBottom: "1rem"}}
+          sx={{paddingBottom: "16px"}}
           />
       </DrawerHeader>
       <Divider />

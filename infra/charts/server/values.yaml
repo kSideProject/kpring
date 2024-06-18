@@ -1,7 +1,7 @@
 # server service
 service:
   name: server-application
-  image: localhost:5000/server-application:latest
+  image: youdong98/kpring-server-application:latest
   port: 8080
   nodePort: 30003
 

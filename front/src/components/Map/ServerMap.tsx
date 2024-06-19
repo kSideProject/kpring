@@ -2,9 +2,12 @@ import { forwardRef, useEffect, useLayoutEffect, useRef } from "react";
 import { EventBus } from "./EventBus";
 import { ServerMapProps, ServerMapTypes } from "../../types/map";
 import EnterServer from "./main";
-import { MainMap } from "./ServerMap/MainMap";
 import VideoCallBoxList from "../VideoCall/VideoCallBoxList";
+
+import useChatInputStore from "../../store/useChatInputStore";
+
 import VideoCallToolBar from "../VideoCall/VideoCallToolBar";
+
 
 // 서버를 생성하고 관리하는 컴포넌트
 // forwardRef를 사용해 부모 컴포넌트로부터 ref를 전달 받음
@@ -12,6 +15,7 @@ export const ServerMap = forwardRef<ServerMapTypes, ServerMapProps>(
   function ServerMap({ currentActiveScene }, ref) {
     // Phaser.Game 인스턴스를 저장하기 위한 ref 생성
     const mapRef = useRef<Phaser.Game | null>(null!);
+    const chatInputValue = useChatInputStore((state) => state.inputValue);
 
     // 브라우저 화면 크기에 따라서 맵의 크기도 리사이즈 되는 함수
     const resizeMap = () => {
@@ -40,7 +44,7 @@ export const ServerMap = forwardRef<ServerMapTypes, ServerMapProps>(
         resizeMap();
         window.addEventListener("resize", resizeMap, false);
 
-        // 확대 & 축소 이벤트
+        // 화면 확대
         document.getElementById("zoom-in")?.addEventListener("click", () => {
           if (mapRef.current) {
             const mainCamera = mapRef.current.scene.scenes[1].cameras.main;
@@ -50,6 +54,7 @@ export const ServerMap = forwardRef<ServerMapTypes, ServerMapProps>(
           }
         });
 
+        //  화면 축소
         document.getElementById("zoom-out")?.addEventListener("click", () => {
           if (mapRef.current) {
             const mainCamera = mapRef.current.scene.scenes[1].cameras.main;
@@ -90,29 +95,14 @@ export const ServerMap = forwardRef<ServerMapTypes, ServerMapProps>(
       };
     }, [currentActiveScene, ref]);
 
-    useEffect(() => {
-      const inputField = document.getElementById(
-        "chat-input"
-      ) as HTMLInputElement;
-      console.log(inputField);
-      const handleKeyEnter = (event: KeyboardEvent) => {
-        if (event.key === "Enter") {
-          const target = event.target as HTMLInputElement;
-
-          const mainScene = mapRef.current?.scene.getScene(
-            "MainMap"
-          ) as MainMap;
-          mainScene?.setBalloonText(target.value);
-        }
-      };
-      inputField?.addEventListener("keydown", handleKeyEnter);
-      return () => {
-        inputField?.removeEventListener("keydown", handleKeyEnter);
-      };
-    }, []);
+    useEffect(() => {}, []);
 
     return (
-      <div id="map-container" className="relative">
+      <div id="map-container">
+        <div className="absolute flex left-36 top-20">
+          <VideoCallBoxList />
+        </div>
+
         <div className="absolute flex left-36 top-20">
           <div id="menu"></div>
           <div id="zoom-in" className="cursor-pointer">
@@ -124,8 +114,6 @@ export const ServerMap = forwardRef<ServerMapTypes, ServerMapProps>(
           <div id="drag" className="cursor-pointer">
             드래그
           </div>
-          <input type="text" id="chat-input"></input>
-          <VideoCallBoxList/>
         </div>
         <div className="fixed bottom-[20px] left-1/2 -translate-x-1/3">
           <VideoCallToolBar/>

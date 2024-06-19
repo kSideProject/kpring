@@ -51,7 +51,7 @@ dependencies {
   implementation("org.springframework.restdocs:spring-restdocs-asciidoctor")
 }
 
-val hostname = "152.70.145.249"
+val hostname = "kpring.duckdns.org"
 
 openapi3 {
   setServer("http://$hostname/user")
@@ -75,7 +75,7 @@ jib {
   to {
     image = "youdong98/kpring-user-application"
     setAllowInsecureRegistries(true)
-    tags = setOf("latest")
+    tags = setOf("latest", version.toString())
   }
   container {
     jvmFlags = listOf("-Xms512m", "-Xmx512m")

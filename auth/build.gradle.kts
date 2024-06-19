@@ -70,7 +70,7 @@ tasks.asciidoctor {
   dependsOn(tasks.test)
 }
 
-val hostname = "152.70.145.249"
+val hostname = "kpring.duckdns.org"
 
 openapi3 {
   setServer("http://$hostname/auth")
@@ -94,7 +94,7 @@ jib {
   to {
     image = "youdong98/kpring-auth-application"
     setAllowInsecureRegistries(true)
-    tags = setOf("latest")
+    tags = setOf("latest", version.toString())
   }
   container {
     jvmFlags = listOf("-Xms512m", "-Xmx512m")

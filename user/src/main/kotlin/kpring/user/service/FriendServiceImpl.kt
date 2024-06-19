@@ -20,12 +20,12 @@ class FriendServiceImpl(
   override fun getFriendRequests(userId: Long): GetFriendRequestsResponse {
     val friendRelations: List<Friend> =
       friendRepository.findAllByUserIdAndRequestStatus(userId, FriendRequestStatus.RECEIVED)
-    val friendRequests: MutableList<GetFriendRequestResponse> = mutableListOf()
 
-    friendRelations.stream().map { friendRelation ->
-      val friend = friendRelation.friend
-      GetFriendRequestResponse(friend.id!!, friend.username)
-    }.collect(Collectors.toList())
+    val friendRequests =
+      friendRelations.stream().map { friendRelation ->
+        val friend = friendRelation.friend
+        GetFriendRequestResponse(friend.id!!, friend.username)
+      }.collect(Collectors.toList())
 
     return GetFriendRequestsResponse(userId, friendRequests)
   }

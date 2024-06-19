@@ -5,6 +5,35 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { useNavigate } from "react-router";
 import { LoginValidation } from "../../hooks/LoginValidation";
+import { useLoginStore } from "../../store/useLoginStore";
+
+async function login(email: string, password: string) {
+  try {
+    const response = await fetch(
+      "http://kpring.duckdns.org/user/api/v1/login",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      }
+    );
+
+    const data = await response.json();
+    if (response.ok) {
+      console.log("로그인 성공:", data);
+      return data.data;
+    } else {
+      console.error("로그인 실패:", data);
+      return null;
+    }
+  } catch (error) {
+    console.error("API 호출 중 오류 발생:", error);
+    return null;
+  }
+}
+
 function LoginBox() {
   const {
     values,
@@ -15,6 +44,7 @@ function LoginBox() {
     validatePassword,
     validators,
   } = LoginValidation();
+  const { setTokens } = useLoginStore();
   const onChangeHandler = (
     field: string,
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -25,30 +55,20 @@ function LoginBox() {
     setErrors((prevErrors) => ({ ...prevErrors, [`${field}Error`]: error }));
   };
 
-  const clickSubmitHandler = (e: React.FormEvent) => {
+  const clickSubmitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const emailError = validateEmail(values.email);
-    const passwordError = validatePassword(values.password);
-
-    setErrors({
-      emailError,
-      passwordError,
-    });
-
-    // setState가 비동기적으로 업데이트되어서 업데이트 완료 후 검사하도록 처리
-    setTimeout(() => {
-      // 유효성 검사를 해서 모든 에러가 없을때만 실행이 되고 alert를 통해 사용자에게 성공 메세지를 보여줌
-      if (!emailError && !passwordError) {
-        alert("로그인 성공!");
-        setValues({
-          email: "",
-          password: "",
-        });
-      }
-    }, 0);
+    //console.log("폼 제출 시도:", values);
+    const result = await login(values.email, values.password);
+    if (result) {
+      //console.log("토큰 설정:", result);
+      setTokens(result.accessToken, result.refreshToken);
+      //navigate("/");
+    } else {
+      console.error("로그인 실패.");
+      alert("로그인 실패. 이메일 혹은 비밀번호를 확인해 주세요.");
+    }
   };
-  const navigation = useNavigate();
+  const navigate = useNavigate();
   return (
     <section className="flex justify-center mt-[200px]">
       <div className="mt-[30px] w-[400px] text-center">
@@ -63,7 +83,8 @@ function LoginBox() {
           "
           border="1px solid #e4d4e7"
           padding="20px"
-          onSubmit={clickSubmitHandler}>
+          onSubmit={clickSubmitHandler}
+        >
           <h2 className="text-center text-2xl font-bold text-primary mt-[5px] mb-[10px]">
             디코타운에 어서오세요!
           </h2>
@@ -99,7 +120,8 @@ function LoginBox() {
               type="submit"
               variant="contained"
               startIcon={<LoginIcon />}
-              sx={{ width: "90%" }}>
+              sx={{ width: "90%" }}
+            >
               로그인
             </Button>
 
@@ -108,7 +130,8 @@ function LoginBox() {
               color="secondary"
               startIcon={<PersonAddAlt1Icon />}
               sx={{ mt: "20px", width: "90%", mb: "20px" }}
-              onClick={() => navigation("/join")}>
+              onClick={() => navigate("/join")}
+            >
               회원가입
             </Button>
           </div>

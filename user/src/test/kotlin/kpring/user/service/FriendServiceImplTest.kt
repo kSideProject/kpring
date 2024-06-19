@@ -13,7 +13,6 @@ import kpring.user.global.CommonTest
 import kpring.user.repository.FriendRepository
 import kpring.user.repository.UserRepository
 import org.springframework.security.crypto.password.PasswordEncoder
-import java.util.*
 
 internal class FriendServiceImplTest : FunSpec({
   val userRepository: UserRepository = mockk()
@@ -131,14 +130,14 @@ internal class FriendServiceImplTest : FunSpec({
         CommonTest.TEST_FRIEND_ID,
         FriendRequestStatus.RECEIVED,
       )
-    } returns Optional.of(receivedFriend)
+    } returns receivedFriend
     every {
       friendRepository.findByUserIdAndFriendIdAndRequestStatus(
         CommonTest.TEST_FRIEND_ID,
         CommonTest.TEST_USER_ID,
         FriendRequestStatus.REQUESTED,
       )
-    } returns Optional.of(requestedFriend)
+    } returns requestedFriend
 
     every { receivedFriend.updateRequestStatus(any()) } just Runs
     every { requestedFriend.updateRequestStatus(any()) } just Runs
@@ -176,14 +175,14 @@ internal class FriendServiceImplTest : FunSpec({
         CommonTest.TEST_FRIEND_ID,
         FriendRequestStatus.RECEIVED,
       )
-    } returns Optional.empty()
+    } throws ServiceException(UserErrorCode.FRIENDSHIP_ALREADY_EXISTS_OR_NOT_FOUND)
     every {
       friendRepository.findByUserIdAndFriendIdAndRequestStatus(
         CommonTest.TEST_FRIEND_ID,
         CommonTest.TEST_USER_ID,
         FriendRequestStatus.REQUESTED,
       )
-    } returns Optional.empty()
+    } throws ServiceException(UserErrorCode.FRIENDSHIP_ALREADY_EXISTS_OR_NOT_FOUND)
 
     val exception =
       shouldThrow<ServiceException> {

@@ -94,6 +94,6 @@ class FriendServiceImpl(
   ): Friend {
     return friendRepository
       .findByUserIdAndFriendIdAndRequestStatus(userId, friendId, requestStatus)
-      .orElseThrow { throw ServiceException(UserErrorCode.FRIENDSHIP_ALREADY_EXISTS_OR_NOT_FOUND) }
+      ?: throw ServiceException(UserErrorCode.FRIENDSHIP_ALREADY_EXISTS_OR_NOT_FOUND)
   }
 }

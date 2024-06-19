@@ -344,4 +344,153 @@ internal class FriendControllerTest(
           }
       }
     }
+    describe("친구신청 수락 API") {
+      it("친구신청 수락 성공") {
+        // given
+        val data =
+          AddFriendResponse(friendId = CommonTest.TEST_FRIEND_ID)
+
+        val response = ApiResponse(data = data)
+        every { authClient.getTokenInfo(any()) }.returns(
+          ApiResponse(data = TokenInfo(TokenType.ACCESS, CommonTest.TEST_USER_ID.toString())),
+        )
+        every { authValidator.checkIfAccessTokenAndGetUserId(any()) } returns CommonTest.TEST_USER_ID.toString()
+        every { authValidator.checkIfUserIsSelf(any(), any()) } returns Unit
+        every {
+          friendService.acceptFriendRequest(
+            CommonTest.TEST_USER_ID,
+            CommonTest.TEST_FRIEND_ID,
+          )
+        } returns data
+
+        // when
+        val result =
+          webTestClient.patch()
+            .uri(
+              "/api/v1/user/{userId}/friend/{friendId}",
+              CommonTest.TEST_USER_ID,
+              CommonTest.TEST_FRIEND_ID,
+            )
+            .header("Authorization", CommonTest.TEST_TOKEN)
+            .exchange()
+
+        // then
+        val docsRoot =
+          result
+            .expectStatus().isOk
+            .expectBody().json(objectMapper.writeValueAsString(response))
+
+        // docs
+        docsRoot
+          .restDoc(
+            identifier = "acceptFriendRequest200",
+            description = "친구신청 수락 API",
+          ) {
+            request {
+              path {
+                "userId" mean "사용자 아이디"
+                "friendId" mean "친구신청을 받은 사용자의 아이디"
+              }
+              header {
+                "Authorization" mean "Bearer token"
+              }
+            }
+            response {
+              body {
+                "data.friendId" type Strings mean "친구신청을 받은 사용자의 아이디"
+              }
+            }
+          }
+      }
+      it("친구신청 수락 실패 : 권한이 없는 토큰") {
+        // given
+        val response =
+          FailMessageResponse.builder().message(UserErrorCode.NOT_ALLOWED.message()).build()
+        every { authClient.getTokenInfo(any()) } throws ServiceException(UserErrorCode.NOT_ALLOWED)
+
+        // when
+        val result =
+          webTestClient.patch()
+            .uri(
+              "/api/v1/user/{userId}/friend/{friendId}",
+              CommonTest.TEST_USER_ID,
+              CommonTest.TEST_FRIEND_ID,
+            )
+            .header("Authorization", CommonTest.TEST_TOKEN)
+            .exchange()
+
+        // then
+        val docsRoot =
+          result
+            .expectStatus().isForbidden
+            .expectBody().json(objectMapper.writeValueAsString(response))
+
+        // docs
+        docsRoot
+          .restDoc(
+            identifier = "acceptFriendRequest403",
+            description = "친구신청 수락 API",
+          ) {
+            request {
+              path {
+                "userId" mean "사용자 아이디"
+                "friendId" mean "친구신청을 받은 사용자의 아이디"
+              }
+              header {
+                "Authorization" mean "Bearer token"
+              }
+            }
+            response {
+              body {
+                "message" type Strings mean "에러 메시지"
+              }
+            }
+          }
+      }
+      it("친구신청 수락 실패 : 서버 내부 오류") {
+        // given
+        val response =
+          FailMessageResponse.serverError
+        every { authClient.getTokenInfo(any()) } throws RuntimeException("서버 내부 오류")
+
+        // when
+        val result =
+          webTestClient.patch()
+            .uri(
+              "/api/v1/user/{userId}/friend/{friendId}",
+              CommonTest.TEST_USER_ID,
+              CommonTest.TEST_FRIEND_ID,
+            )
+            .header("Authorization", CommonTest.TEST_TOKEN)
+            .exchange()
+
+        // then
+        val docsRoot =
+          result
+            .expectStatus().isEqualTo(500)
+            .expectBody().json(objectMapper.writeValueAsString(response))
+
+        // docs
+        docsRoot
+          .restDoc(
+            identifier = "acceptFriendRequest500",
+            description = "친구신청 수락 API",
+          ) {
+            request {
+              path {
+                "userId" mean "사용자 아이디"
+                "friendId" mean "친구신청을 받은 사용자의 아이디"
+              }
+              header {
+                "Authorization" mean "Bearer token"
+              }
+            }
+            response {
+              body {
+                "message" type Strings mean "에러 메시지"
+              }
+            }
+          }
+      }
+    }
   })

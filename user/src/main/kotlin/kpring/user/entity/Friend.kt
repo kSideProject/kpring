@@ -17,4 +17,8 @@ class Friend(
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
   var requestStatus: FriendRequestStatus,
-)
+) {
+  fun updateRequestStatus(requestStatus: FriendRequestStatus) {
+    this.requestStatus = requestStatus
+  }
+}

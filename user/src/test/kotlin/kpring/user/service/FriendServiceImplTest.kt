@@ -190,4 +190,67 @@ internal class FriendServiceImplTest : FunSpec({
       }
     exception.errorCode.message() shouldBe "해당하는 친구신청이 없거나 이미 친구입니다."
   }
+
+  test("친구삭제_성공") {
+    val user = mockk<User>(relaxed = true)
+    val friend = mockk<User>(relaxed = true)
+    val userFriendRelation = mockk<Friend>(relaxed = true)
+    val friendFriendRelation = mockk<Friend>(relaxed = true)
+
+    every { userService.getUser(CommonTest.TEST_USER_ID) } returns user
+    every { userService.getUser(CommonTest.TEST_FRIEND_ID) } returns friend
+
+    every {
+      friendRepository.findByUserIdAndFriendIdAndRequestStatus(
+        CommonTest.TEST_USER_ID,
+        CommonTest.TEST_FRIEND_ID,
+        FriendRequestStatus.ACCEPTED,
+      )
+    } returns userFriendRelation
+    every {
+      friendRepository.findByUserIdAndFriendIdAndRequestStatus(
+        CommonTest.TEST_FRIEND_ID,
+        CommonTest.TEST_USER_ID,
+        FriendRequestStatus.ACCEPTED,
+      )
+    } returns friendFriendRelation
+
+    every { friendRepository.delete(any()) } just Runs
+
+    val response =
+      friendService.deleteFriend(CommonTest.TEST_USER_ID, CommonTest.TEST_FRIEND_ID)
+//    response.friendId shouldBe CommonTest.TEST_FRIEND_ID
+
+    verify { user.removeFriendRelation(userFriendRelation) }
+    verify { friend.removeFriendRelation(friendFriendRelation) }
+    verify(exactly = 2) { friendRepository.delete(any()) }
+  }
+
+  test("친구삭제_실패_해당하는 친구가 없는 케이스") {
+    val user = mockk<User>(relaxed = true)
+    val friend = mockk<User>(relaxed = true)
+
+    every { userService.getUser(CommonTest.TEST_USER_ID) } returns user
+    every { userService.getUser(CommonTest.TEST_FRIEND_ID) } returns friend
+    every {
+      friendRepository.findByUserIdAndFriendIdAndRequestStatus(
+        CommonTest.TEST_USER_ID,
+        CommonTest.TEST_FRIEND_ID,
+        FriendRequestStatus.ACCEPTED,
+      )
+    } throws ServiceException(UserErrorCode.FRIEND_NOT_FOUND)
+    every {
+      friendRepository.findByUserIdAndFriendIdAndRequestStatus(
+        CommonTest.TEST_FRIEND_ID,
+        CommonTest.TEST_USER_ID,
+        FriendRequestStatus.ACCEPTED,
+      )
+    } throws ServiceException(UserErrorCode.FRIEND_NOT_FOUND)
+
+    val exception =
+      shouldThrow<ServiceException> {
+        friendService.deleteFriend(CommonTest.TEST_USER_ID, CommonTest.TEST_FRIEND_ID)
+      }
+    exception.errorCode.message() shouldBe "해당하는 친구가 없습니다."
+  }
 })

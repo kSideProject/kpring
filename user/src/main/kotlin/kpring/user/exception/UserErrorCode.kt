@@ -24,6 +24,7 @@ enum class UserErrorCode(
     "4032",
     "해당하는 친구신청이 없거나 이미 친구입니다.",
   ),
+  FRIEND_NOT_FOUND(HttpStatus.BAD_REQUEST, "4033", "해당하는 친구가 없습니다."),
   ;
 
   override fun message(): String = this.message

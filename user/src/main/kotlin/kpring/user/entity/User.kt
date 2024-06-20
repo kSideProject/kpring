@@ -40,6 +40,11 @@ class User(
     friends.add(friendRelation)
   }
 
+  fun removeFriendRelation(friendRelation: Friend) {
+    friends.remove(friendRelation)
+    friendRelation.friend.friends.removeIf { it.friend == this }
+  }
+
   fun updateInfo(
     request: UpdateUserProfileRequest,
     newPassword: String?,

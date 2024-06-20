@@ -66,7 +66,20 @@ class FriendServiceImpl(
     userId: Long,
     friendId: Long,
   ): DeleteFriendResponse {
-    TODO("Not yet implemented")
+    val user = userServiceImpl.getUser(userId)
+    val friend = userServiceImpl.getUser(friendId)
+
+    val userFriendRelation = getFriendshipWithStatus(userId, friendId, FriendRequestStatus.ACCEPTED)
+    val friendFriendRelation =
+      getFriendshipWithStatus(friendId, userId, FriendRequestStatus.ACCEPTED)
+
+    user.removeFriendRelation(userFriendRelation)
+    friend.removeFriendRelation(friendFriendRelation)
+
+    friendRepository.delete(userFriendRelation)
+    friendRepository.delete(friendFriendRelation)
+
+    return DeleteFriendResponse(friendId)
   }
 
   fun checkSelfFriend(
@@ -92,6 +105,11 @@ class FriendServiceImpl(
     friendId: Long,
     requestStatus: FriendRequestStatus,
   ): Friend {
+    if (requestStatus == FriendRequestStatus.ACCEPTED) {
+      return friendRepository
+        .findByUserIdAndFriendIdAndRequestStatus(userId, friendId, requestStatus)
+        ?: throw ServiceException(UserErrorCode.FRIEND_NOT_FOUND)
+    }
     return friendRepository
       .findByUserIdAndFriendIdAndRequestStatus(userId, friendId, requestStatus)
       ?: throw ServiceException(UserErrorCode.FRIENDSHIP_ALREADY_EXISTS_OR_NOT_FOUND)

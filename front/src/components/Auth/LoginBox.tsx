@@ -3,10 +3,9 @@ import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-
 import Snackbar, { SnackbarCloseReason } from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
-import React, { SyntheticEvent, useState } from "react";
+import React, { SyntheticEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { LoginValidation } from "../../hooks/LoginValidation";
 import { useLoginStore } from "../../store/useLoginStore";
@@ -57,6 +56,16 @@ function LoginBox() {
   const { setTokens } = useLoginStore();
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const accessToken = localStorage.getItem("dicoTown_AccessToken");
+    const refreshToken = localStorage.getItem("dicoTown_RefreshToken");
+    if (accessToken && refreshToken) {
+      setTokens(accessToken, refreshToken);
+      console.log("토큰을 불러왔음");
+    }
+  }, [setTokens]);
+
   const onChangeHandler = (
     field: string,
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>

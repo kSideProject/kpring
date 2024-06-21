@@ -7,8 +7,8 @@ interface LoginState {
 }
 
 export const useLoginStore = create<LoginState>((set) => ({
-  accessToken: "",
-  refreshToken: "",
+  accessToken: localStorage.getItem("dicoTown_AccessToken") || "",
+  refreshToken: localStorage.getItem("dicoTown_RefreshToken") || "",
   setTokens: (accessToken, refreshToken) => {
     set({ accessToken, refreshToken });
     localStorage.setItem("dicoTown_AccessToken", accessToken);

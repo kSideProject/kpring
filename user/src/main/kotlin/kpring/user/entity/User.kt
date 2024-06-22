@@ -16,7 +16,12 @@ class User(
   @Column(nullable = false)
   var password: String,
   var file: String?,
-  @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = [CascadeType.ALL])
+  @OneToMany(
+    fetch = FetchType.LAZY,
+    mappedBy = "user",
+    cascade = [CascadeType.ALL],
+    orphanRemoval = true,
+  )
   val friends: MutableSet<Friend> = mutableSetOf(),
   // Other fields and methods...
 ) {

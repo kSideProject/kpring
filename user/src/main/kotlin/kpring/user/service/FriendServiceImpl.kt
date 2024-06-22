@@ -67,17 +67,10 @@ class FriendServiceImpl(
     friendId: Long,
   ): DeleteFriendResponse {
     val user = userServiceImpl.getUser(userId)
-    val friend = userServiceImpl.getUser(friendId)
+    userServiceImpl.getUser(friendId)
 
     val userFriendRelation = getFriendshipWithStatus(userId, friendId, FriendRequestStatus.ACCEPTED)
-    val friendFriendRelation =
-      getFriendshipWithStatus(friendId, userId, FriendRequestStatus.ACCEPTED)
-
     user.removeFriendRelation(userFriendRelation)
-    friend.removeFriendRelation(friendFriendRelation)
-
-    friendRepository.delete(userFriendRelation)
-    friendRepository.delete(friendFriendRelation)
 
     return DeleteFriendResponse(friendId)
   }

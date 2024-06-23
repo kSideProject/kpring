@@ -89,7 +89,7 @@ jib {
     }
   }
   to {
-    image = "youdong98/kpring-server-application"
+    image = "kpring/server-application"
     setAllowInsecureRegistries(true)
     tags = setOf("latest", version.toString())
   }
@@ -97,5 +97,3 @@ jib {
     jvmFlags = listOf("-Xms512m", "-Xmx512m")
   }
 }
-
-tasks.getByName("jib").dependsOn("openapi3")

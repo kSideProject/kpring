@@ -14,4 +14,10 @@ interface FriendRepository : JpaRepository<Friend, Long> {
     userId: Long,
     requestStatus: FriendRequestStatus,
   ): List<Friend>
+
+  fun findByUserIdAndFriendIdAndRequestStatus(
+    userId: Long,
+    friendId: Long,
+    requestStatus: FriendRequestStatus,
+  ): Friend?
 }

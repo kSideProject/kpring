@@ -15,7 +15,6 @@ import {
   Typography,
 } from "@mui/material";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
-import { serverData } from "../../utils/fakeData";
 import { useNavigate } from "react-router-dom";
 import FavoriteStar from "../Home/FavoriteStar";
 import ModalComponent from "../Modal/ModalComponent";
@@ -67,7 +66,7 @@ const ServerInfoSidebar: React.FC<ServerInforProps> = ({ close, serverID }) => {
       </DrawerHeader>
       <Divider />
       <List>
-        {serverData
+        {/* {serverData
           .filter((server) => server.serverId === serverID)
           .map((member) => {
             return (
@@ -87,7 +86,7 @@ const ServerInfoSidebar: React.FC<ServerInforProps> = ({ close, serverID }) => {
                 <ListItemText primary={member.members} />
               </ListItem>
             );
-          })}
+          })} */}
       </List>
       <ModalComponent isOpen={isOpen}>
         <Profile closeModal={closeModal} />

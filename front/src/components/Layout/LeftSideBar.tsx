@@ -11,7 +11,6 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { useState } from "react";
-import { serverData } from "../../utils/fakeData";
 import ServerInfoSidebar from "./ServerInfoSidebar";
 import CreateServerForm from "../Server/CreateServerForm";
 import useModal from "../../hooks/Modal";
@@ -59,7 +58,7 @@ const LeftSideBar = () => {
           </ListItem>
           <Divider />
 
-          {serverData.map((server) => {
+          {/* {serverData.map((server) => {
             return (
               <ListItem alignItems="center" key={server.serverId}>
                 <Tooltip title={server.serverName}>
@@ -77,7 +76,7 @@ const LeftSideBar = () => {
                 </Tooltip>
               </ListItem>
             );
-          })}
+          })} */}
         </List>
       </Drawer>
       <Drawer open={openServerInfo} variant="persistent">

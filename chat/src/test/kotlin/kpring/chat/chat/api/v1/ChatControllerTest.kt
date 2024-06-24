@@ -17,6 +17,7 @@ import kpring.core.chat.chat.dto.response.ChatResponse
 import kpring.core.global.dto.response.ApiResponse
 import kpring.core.server.client.ServerClient
 import kpring.core.server.dto.ServerSimpleInfo
+import kpring.core.server.dto.ServerThemeInfo
 import kpring.test.restdoc.dsl.restDoc
 import kpring.test.restdoc.json.JsonDataType
 import kpring.test.web.URLBuilder
@@ -133,6 +134,13 @@ class ChatControllerTest(
               id = serverId,
               name = "test_server_name",
               bookmarked = true,
+              hostName = "test host name",
+              categories = listOf(),
+              theme =
+                ServerThemeInfo(
+                  id = "test_theme_id",
+                  name = "test_theme_name",
+                ),
             ),
           )
 

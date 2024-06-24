@@ -19,6 +19,7 @@ import kpring.chat.global.exception.GlobalException
 import kpring.core.chat.chat.dto.request.ChatType
 import kpring.core.chat.chat.dto.request.CreateChatRequest
 import kpring.core.server.dto.ServerSimpleInfo
+import kpring.core.server.dto.ServerThemeInfo
 import org.springframework.beans.factory.annotation.Value
 
 class ChatServiceTest(
@@ -72,6 +73,13 @@ class ChatServiceTest(
             id = serverId2,
             name = "test_server_name",
             bookmarked = true,
+            hostName = "test host name",
+            categories = listOf(),
+            theme =
+              ServerThemeInfo(
+                id = "test_theme_id",
+                name = "test_theme_name",
+              ),
           ),
         )
 

@@ -8,6 +8,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { JwtPayload, jwtDecode } from "jwt-decode";
 import axios from "axios";
+import useFetchServers from "../../hooks/FetchServer";
 
 interface UserIdJwtPayload extends JwtPayload {
   userId: string;
@@ -21,6 +22,8 @@ const CreateServerForm = () => {
     theme: "",
     categories: "",
   });
+
+  useFetchServers(token);
 
   // 페이지가 로드 되었을 때, userId를 jwt-token에 추출해오기
   useEffect(() => {

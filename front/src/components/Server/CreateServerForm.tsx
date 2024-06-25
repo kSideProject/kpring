@@ -6,15 +6,15 @@ import {
   SelectChangeEvent,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { JwtPayload, jwtDecode } from "jwt-decode";
+import axios from "axios";
 
-interface MyJwtPayload extends JwtPayload {
+interface UserIdJwtPayload extends JwtPayload {
   userId: string;
 }
 
 const CreateServerForm = () => {
-  const jwtToken = localStorage.getItem("dicoTown_AccessToken");
+  const token = localStorage.getItem("dicoTown_AccessToken");
   const [serverInfo, setServerInfo] = useState({
     serverName: "",
     userId: "",
@@ -25,9 +25,8 @@ const CreateServerForm = () => {
   // 페이지가 로드 되었을 때, userId를 jwt-token에 추출해오기
   useEffect(() => {
     try {
-      if (jwtToken) {
-        const decoded = jwtDecode<MyJwtPayload>(jwtToken);
-        console.log(decoded);
+      if (token) {
+        const decoded = jwtDecode<UserIdJwtPayload>(token);
         setServerInfo((prevServerInfo) => ({
           ...prevServerInfo,
           userId: decoded.userId,
@@ -36,12 +35,11 @@ const CreateServerForm = () => {
     } catch (error) {
       console.log(error);
     }
-  }, []);
+  }, [token]);
 
   const handleChange = (e: SelectChangeEvent) => {
     setServerInfo((prevServerInfo) => ({
       ...prevServerInfo,
-      userId: e.target.value,
       categories: e.target.value,
     }));
   };
@@ -54,15 +52,15 @@ const CreateServerForm = () => {
       const res = await axios.post(
         SERVER_URL,
         {
-          serverName: "test server",
-          userId: serverInfo.userId,
+          serverName: "yoyo",
+          // userId: serverInfo.userId,
           theme: null,
           categories: null,
         },
         {
           headers: {
-            Authorization: `Bearer ${jwtToken}`,
-            userId: serverInfo.userId,
+            Authorization: `Bearer ${token}`,
+            // userId: serverInfo.userId,
           },
         }
       );

@@ -9,6 +9,7 @@ import kpring.user.exception.UserErrorCode
 import kpring.user.repository.FriendRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.nio.file.Paths
 import java.util.stream.Collectors
 
 @Service
@@ -31,7 +32,11 @@ class FriendServiceImpl(
   }
 
   override fun getFriends(userId: Long): GetFriendsResponse {
-    TODO("Not yet implemented")
+    val friendRelations: List<Friend> =
+      friendRepository.findAllByUserIdAndRequestStatus(userId, FriendRequestStatus.ACCEPTED)
+    val friends = createFriendResponseList(friendRelations)
+
+    return GetFriendsResponse(userId, friends)
   }
 
   override fun addFriend(
@@ -125,5 +130,19 @@ class FriendServiceImpl(
     return friendRepository
       .findByUserIdAndFriendIdAndRequestStatus(userId, friendId, FriendRequestStatus.ACCEPTED)
       ?: throw ServiceException(UserErrorCode.FRIEND_NOT_FOUND)
+  }
+
+  private fun createFriendResponseList(friendRelations: List<Friend>): List<GetFriendResponse> {
+    val dir = System.getProperty("user.dir")
+    val imagePath = Paths.get(dir)
+
+    val friends =
+      friendRelations.stream().map { friendRelation ->
+        val friend = friendRelation.friend
+        val profileImgUrl = friend.file?.let { imagePath.resolve(it) }
+        GetFriendResponse(friend.id!!, friend.username, friend.email, profileImgUrl)
+      }.collect(Collectors.toList())
+
+    return friends
   }
 }

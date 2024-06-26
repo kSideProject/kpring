@@ -34,8 +34,8 @@ internal class FriendServiceImplTest : FunSpec({
     )
 
   test("친구신청_성공") {
-    val user = mockk<User>(relaxed = true)
-    val friend = mockk<User>(relaxed = true)
+    val user = mockk<User> { every { id } returns CommonTest.TEST_USER_ID }
+    val friend = mockk<User> { every { id } returns CommonTest.TEST_FRIEND_ID }
 
     every { userService.getUser(CommonTest.TEST_USER_ID) } returns user
     every { userService.getUser(CommonTest.TEST_FRIEND_ID) } returns friend
@@ -47,7 +47,7 @@ internal class FriendServiceImplTest : FunSpec({
     every { friend.receiveFriendRequest(user) } just Runs
 
     val response = friendService.addFriend(CommonTest.TEST_USER_ID, CommonTest.TEST_FRIEND_ID)
-    response.friendId shouldBe friend.id
+    response.friendId shouldBe CommonTest.TEST_FRIEND_ID
 
     verify { friendService.checkSelfFriend(user, friend) }
     verify {
@@ -56,7 +56,7 @@ internal class FriendServiceImplTest : FunSpec({
   }
 
   test("친구신청_실패_자기자신을 친구로 추가하는 케이스") {
-    val user = mockk<User>(relaxed = true)
+    val user = mockk<User>()
 
     every { userService.getUser(CommonTest.TEST_USER_ID) } returns user
     every {
@@ -77,8 +77,8 @@ internal class FriendServiceImplTest : FunSpec({
   }
 
   test("친구신청_실패_이미 친구인 케이스") {
-    val user = mockk<User>(relaxed = true)
-    val friend = mockk<User>(relaxed = true)
+    val user = mockk<User>()
+    val friend = mockk<User>()
 
     every { userService.getUser(CommonTest.TEST_USER_ID) } returns user
     every { userService.getUser(CommonTest.TEST_FRIEND_ID) } returns friend
@@ -103,9 +103,17 @@ internal class FriendServiceImplTest : FunSpec({
   }
 
   test("친구신청조회_성공") {
-    val friend = mockk<User>(relaxed = true)
-    val friendList = listOf(mockk<Friend>(relaxed = true))
+    val friendInfo =
+      mockk<User> {
+        every { id } returns CommonTest.TEST_FRIEND_ID
+        every { username } returns CommonTest.TEST_FRIEND_USERNAME
+      }
+    val friend =
+      mockk<Friend> {
+        every { friend } returns friendInfo
+      }
 
+    val friendList = listOf(friend)
     every {
       friendRepository.findAllByUserIdAndRequestStatus(
         CommonTest.TEST_USER_ID,
@@ -114,28 +122,33 @@ internal class FriendServiceImplTest : FunSpec({
     } returns friendList
 
     val response = friendService.getFriendRequests(CommonTest.TEST_USER_ID)
+    response.userId shouldBe CommonTest.TEST_USER_ID
     for (request in response.friendRequests) {
-      request.friendId shouldBe friend.id
-      request.username shouldBe friend.username
+      request.friendId shouldBe CommonTest.TEST_FRIEND_ID
+      request.username shouldBe CommonTest.TEST_FRIEND_USERNAME
     }
   }
 
   test("친구신청수락_성공") {
-    val receivedFriend = mockk<Friend>(relaxed = true)
-    val requestedFriend = mockk<Friend>(relaxed = true)
+    val receivedFriend =
+      mockk<Friend> {
+        every { requestStatus } returns FriendRequestStatus.RECEIVED
+      }
+    val requestedFriend =
+      mockk<Friend> {
+        every { requestStatus } returns FriendRequestStatus.REQUESTED
+      }
 
     every {
-      friendRepository.findByUserIdAndFriendIdAndRequestStatus(
+      friendRepository.findByUserIdAndFriendId(
         CommonTest.TEST_USER_ID,
         CommonTest.TEST_FRIEND_ID,
-        FriendRequestStatus.RECEIVED,
       )
     } returns receivedFriend
     every {
-      friendRepository.findByUserIdAndFriendIdAndRequestStatus(
+      friendRepository.findByUserIdAndFriendId(
         CommonTest.TEST_FRIEND_ID,
         CommonTest.TEST_USER_ID,
-        FriendRequestStatus.REQUESTED,
       )
     } returns requestedFriend
 
@@ -147,47 +160,88 @@ internal class FriendServiceImplTest : FunSpec({
     response.friendId shouldBe CommonTest.TEST_FRIEND_ID
 
     verify(exactly = 2) {
-      friendRepository.findByUserIdAndFriendIdAndRequestStatus(any(), any(), any())
+      friendRepository.findByUserIdAndFriendId(any(), any())
     }
   }
 
   test("친구신청수락_실패_해당하는 친구신청이 없는 케이스") {
     every {
-      friendRepository.findByUserIdAndFriendIdAndRequestStatus(
+      friendRepository.findByUserIdAndFriendId(
         CommonTest.TEST_USER_ID,
         CommonTest.TEST_FRIEND_ID,
-        FriendRequestStatus.RECEIVED,
       )
-    } throws ServiceException(UserErrorCode.FRIENDSHIP_ALREADY_EXISTS_OR_NOT_FOUND)
+    } throws ServiceException(UserErrorCode.FRIENDSHIP_NOT_FOUND)
 
     val exception =
       shouldThrow<ServiceException> {
         friendService.acceptFriendRequest(CommonTest.TEST_USER_ID, CommonTest.TEST_FRIEND_ID)
       }
-    exception.errorCode.message() shouldBe "해당하는 친구신청이 없거나 이미 친구입니다."
+    exception.errorCode.message() shouldBe "해당하는 친구신청이 없습니다."
   }
 
   test("친구신청수락_실패_이미 친구인 케이스") {
 
     every {
-      friendRepository.findByUserIdAndFriendIdAndRequestStatus(
+      friendRepository.findByUserIdAndFriendId(
         CommonTest.TEST_USER_ID,
         CommonTest.TEST_FRIEND_ID,
-        FriendRequestStatus.RECEIVED,
       )
-    } throws ServiceException(UserErrorCode.FRIENDSHIP_ALREADY_EXISTS_OR_NOT_FOUND)
+    } throws ServiceException(UserErrorCode.FRIENDSHIP_ALREADY_EXISTS)
     every {
-      friendRepository.findByUserIdAndFriendIdAndRequestStatus(
+      friendRepository.findByUserIdAndFriendId(
         CommonTest.TEST_FRIEND_ID,
         CommonTest.TEST_USER_ID,
-        FriendRequestStatus.REQUESTED,
       )
-    } throws ServiceException(UserErrorCode.FRIENDSHIP_ALREADY_EXISTS_OR_NOT_FOUND)
+    } throws ServiceException(UserErrorCode.FRIENDSHIP_ALREADY_EXISTS)
 
     val exception =
       shouldThrow<ServiceException> {
         friendService.acceptFriendRequest(CommonTest.TEST_USER_ID, CommonTest.TEST_FRIEND_ID)
       }
-    exception.errorCode.message() shouldBe "해당하는 친구신청이 없거나 이미 친구입니다."
+    exception.errorCode.message() shouldBe "이미 친구입니다."
+  }
+
+  test("친구삭제_성공") {
+    val user = mockk<User>()
+    val friend = mockk<User>()
+    val userFriendRelation = mockk<Friend>()
+
+    every { userService.getUser(CommonTest.TEST_USER_ID) } returns user
+    every { userService.getUser(CommonTest.TEST_FRIEND_ID) } returns friend
+
+    every {
+      friendRepository.findByUserIdAndFriendIdAndRequestStatus(
+        CommonTest.TEST_USER_ID,
+        CommonTest.TEST_FRIEND_ID,
+        FriendRequestStatus.ACCEPTED,
+      )
+    } returns userFriendRelation
+
+    every { user.removeFriendRelation(userFriendRelation) } just Runs
+
+    val response =
+      friendService.deleteFriend(CommonTest.TEST_USER_ID, CommonTest.TEST_FRIEND_ID)
+    response.friendId shouldBe CommonTest.TEST_FRIEND_ID
+  }
+
+  test("친구삭제_실패_해당하는 친구가 없는 케이스") {
+    val user = mockk<User>()
+    val friend = mockk<User>()
+
+    every { userService.getUser(CommonTest.TEST_USER_ID) } returns user
+    every { userService.getUser(CommonTest.TEST_FRIEND_ID) } returns friend
+    every {
+      friendRepository.findByUserIdAndFriendIdAndRequestStatus(
+        CommonTest.TEST_USER_ID,
+        CommonTest.TEST_FRIEND_ID,
+        FriendRequestStatus.ACCEPTED,
+      )
+    } throws ServiceException(UserErrorCode.FRIEND_NOT_FOUND)
+
+    val exception =
+      shouldThrow<ServiceException> {
+        friendService.deleteFriend(CommonTest.TEST_USER_ID, CommonTest.TEST_FRIEND_ID)
+      }
+    exception.errorCode.message() shouldBe "해당하는 친구가 없습니다."
   }
 })

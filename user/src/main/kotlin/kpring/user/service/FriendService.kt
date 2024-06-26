@@ -14,6 +14,12 @@ interface FriendService {
    */
   fun getFriendRequests(userId: Long): GetFriendRequestsResponse
 
+  /**
+   * 로그인한 사용자가 친구목록을 조회하는 메서드
+   *
+   * @param userId : 로그인한 사용자의 ID.
+   * @return 로그인한 사용자 ID, 해당 사용자가 조회하고자 하는 친구목록을 담은 GetFriendsResponse 리턴
+   */
   fun getFriends(userId: Long): GetFriendsResponse
 
   /**

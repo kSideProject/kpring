@@ -53,8 +53,8 @@ class FriendServiceImpl(
     userId: Long,
     friendId: Long,
   ): AddFriendResponse {
-    val receivedFriend = getFriendshipWithStatus(userId, friendId, FriendRequestStatus.RECEIVED)
-    val requestedFriend = getFriendshipWithStatus(friendId, userId, FriendRequestStatus.REQUESTED)
+    val receivedFriend = getPendingFriendship(userId, friendId)
+    val requestedFriend = getPendingFriendship(friendId, userId)
 
     receivedFriend.updateRequestStatus(FriendRequestStatus.ACCEPTED)
     requestedFriend.updateRequestStatus(FriendRequestStatus.ACCEPTED)
@@ -66,7 +66,13 @@ class FriendServiceImpl(
     userId: Long,
     friendId: Long,
   ): DeleteFriendResponse {
-    TODO("Not yet implemented")
+    val user = userServiceImpl.getUser(userId)
+    userServiceImpl.getUser(friendId)
+
+    val userFriendRelation = findAcceptedFriendship(userId, friendId)
+    user.removeFriendRelation(userFriendRelation)
+
+    return DeleteFriendResponse(friendId)
   }
 
   fun checkSelfFriend(
@@ -87,13 +93,37 @@ class FriendServiceImpl(
     }
   }
 
-  private fun getFriendshipWithStatus(
+  private fun findFriendship(
     userId: Long,
     friendId: Long,
-    requestStatus: FriendRequestStatus,
+  ): Friend {
+    val friendship =
+      friendRepository.findByUserIdAndFriendId(userId, friendId)
+        ?: throw ServiceException(UserErrorCode.FRIENDSHIP_NOT_FOUND)
+    return friendship
+  }
+
+  private fun checkNotAcceptedFriendship(friendship: Friend) {
+    if (friendship.requestStatus == FriendRequestStatus.ACCEPTED) {
+      throw ServiceException(UserErrorCode.FRIENDSHIP_ALREADY_EXISTS)
+    }
+  }
+
+  private fun getPendingFriendship(
+    userId: Long,
+    friendId: Long,
+  ): Friend {
+    val friendship = findFriendship(userId, friendId)
+    checkNotAcceptedFriendship(friendship)
+    return friendship
+  }
+
+  private fun findAcceptedFriendship(
+    userId: Long,
+    friendId: Long,
   ): Friend {
     return friendRepository
-      .findByUserIdAndFriendIdAndRequestStatus(userId, friendId, requestStatus)
-      ?: throw ServiceException(UserErrorCode.FRIENDSHIP_ALREADY_EXISTS_OR_NOT_FOUND)
+      .findByUserIdAndFriendIdAndRequestStatus(userId, friendId, FriendRequestStatus.ACCEPTED)
+      ?: throw ServiceException(UserErrorCode.FRIEND_NOT_FOUND)
   }
 }

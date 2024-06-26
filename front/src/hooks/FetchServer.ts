@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { FetchedServerType } from "../types/server";
 
 // 서버데이터 가져오기
 const fetchServers = async (token: string) => {
@@ -14,7 +15,7 @@ const fetchServers = async (token: string) => {
       },
     });
 
-    return response;
+    return response.data as FetchedServerType;
   } catch (error) {
     console.log(error);
   }

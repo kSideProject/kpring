@@ -21,6 +21,7 @@ import ModalComponent from "../Modal/ModalComponent";
 import useModal from "../../hooks/Modal";
 import Profile from "../Profile/Profile";
 import useFetchServers from "../../hooks/FetchServer";
+import { ServerResponseType, ServerType } from "../../types/server";
 
 const ServerInfoSidebar: React.FC<ServerInforProps> = ({ close, serverID }) => {
   const token = localStorage.getItem("dicoTown_AccessToken");
@@ -35,6 +36,7 @@ const ServerInfoSidebar: React.FC<ServerInforProps> = ({ close, serverID }) => {
   }));
   const navigate = useNavigate();
   const { isOpen, openModal, closeModal } = useModal();
+  const { data } = useFetchServers(token);
 
   return (
     <>
@@ -67,29 +69,7 @@ const ServerInfoSidebar: React.FC<ServerInforProps> = ({ close, serverID }) => {
         </Button>
       </DrawerHeader>
       <Divider />
-      <List>
-        {/* {serverData
-          .filter((server) => server.serverId === serverID)
-          .map((member) => {
-            return (
-              <ListItem>
-                <ListItemAvatar onClick={openModal}>
-                  <Badge
-                    color="success"
-                    variant="dot"
-                    overlap="circular"
-                    anchorOrigin={{ vertical: "bottom", horizontal: "right" }}>
-                    <Avatar
-                      alt="user nickname"
-                      src="https://images.unsplash.com/photo-1517849845537-4d257902454a?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                    />
-                  </Badge>
-                </ListItemAvatar>
-                <ListItemText primary={member.members} />
-              </ListItem>
-            );
-          })} */}
-      </List>
+
       <ModalComponent isOpen={isOpen}>
         <Profile closeModal={closeModal} />
       </ModalComponent>

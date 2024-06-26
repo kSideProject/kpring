@@ -15,12 +15,15 @@ import ServerInfoSidebar from "./ServerInfoSidebar";
 import CreateServerForm from "../Server/CreateServerForm";
 import useModal from "../../hooks/Modal";
 import ModalComponent from "../Modal/ModalComponent";
+import useFetchServers from "../../hooks/FetchServer";
 
 const LeftSideBar = () => {
   const DRAWER_WIDTH = 88; // 왼쪽 서버 사이드바 넓이
   const [openServerInfo, setOpenServerInfo] = useState(false); // 서버 인포 사이드바 열기
   const { isOpen, openModal } = useModal();
   const [serverId, setServerId] = useState("");
+  const token = localStorage.getItem("dicoTown_AccessToken");
+  const { data } = useFetchServers(token);
 
   // 왼쪽 멤버 사이드바 오픈 핸들러
   const handleDrawerOpen = (id: string) => {
@@ -58,25 +61,24 @@ const LeftSideBar = () => {
           </ListItem>
           <Divider />
 
-          {/* {serverData.map((server) => {
+          {data?.data.map((server) => {
             return (
-              <ListItem alignItems="center" key={server.serverId}>
-                <Tooltip title={server.serverName}>
+              <ListItem alignItems="center" key={server.id}>
+                <Tooltip title={server.name}>
                   <ListItemAvatar
                     sx={{
                       display: "flex",
                       justifyContent: "center",
                       alignItems: "center",
                     }}>
-                    <Avatar
-                      src={server.image}
-                      onClick={() => handleDrawerOpen(server.serverId)}
-                    />
+                    <Avatar onClick={() => handleDrawerOpen(server.id)}>
+                      {server.name}
+                    </Avatar>
                   </ListItemAvatar>
                 </Tooltip>
               </ListItem>
             );
-          })} */}
+          })}
         </List>
       </Drawer>
       <Drawer open={openServerInfo} variant="persistent">

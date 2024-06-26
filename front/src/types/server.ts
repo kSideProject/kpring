@@ -15,6 +15,16 @@ export interface ServerType {
   categories: CategoriesType[] | null;
 }
 
+export interface ServerResponseType {
+  id: string;
+  name: string;
+  bookmarked: boolean;
+}
+
+export interface FetchedServerType {
+  data: ServerResponseType[];
+}
+
 export interface ServerCardProps {
   server: ServerType;
 }

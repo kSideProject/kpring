@@ -23,16 +23,12 @@ interface UserIdJwtPayload extends JwtPayload {
 const CreateServerForm = () => {
   const token = localStorage.getItem("dicoTown_AccessToken");
   const { mutate } = useUpdatedServers(token);
-  const { data } = useFetchServers(token);
-
-  console.log(data);
 
   const [serverName, setServerName] = useState("");
   const [userId, setUserId] = useState("");
   const [theme, setTheme] = useState<ThemeType | null>(null);
   const [categories, setCategories] = useState<CategoriesType[]>([]);
 
-  console.log(data);
   // 페이지가 로드 되었을 때, userId를 jwt에서 추출.
   useEffect(() => {
     if (token) {
@@ -61,7 +57,7 @@ const CreateServerForm = () => {
   };
 
   const onChangeThemeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTheme({ id: e.target.value, name: e.target.value });
+    setTheme({ id: e.target.id, name: e.target.value });
   };
 
   // 서버 생성 onSubmit Handler
@@ -71,8 +67,8 @@ const CreateServerForm = () => {
     const newServer: ServerType = {
       serverName,
       userId,
-      theme: theme as ThemeType,
-      categories,
+      theme: theme as ThemeType, // 수정예정
+      categories, // 수정예정
     };
 
     mutate(newServer);
@@ -81,6 +77,7 @@ const CreateServerForm = () => {
   return (
     <div>
       <h2>새로운 서버 생성</h2>
+
       <form onSubmit={onSubmitHandler}>
         <Box sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
           <FormControl sx={{ m: 2 }}>

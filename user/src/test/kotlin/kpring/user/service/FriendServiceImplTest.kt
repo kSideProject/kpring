@@ -13,6 +13,7 @@ import kpring.user.global.CommonTest
 import kpring.user.repository.FriendRepository
 import kpring.user.repository.UserRepository
 import org.springframework.security.crypto.password.PasswordEncoder
+import java.nio.file.Paths
 
 internal class FriendServiceImplTest : FunSpec({
   val userRepository: UserRepository = mockk()
@@ -243,5 +244,38 @@ internal class FriendServiceImplTest : FunSpec({
         friendService.deleteFriend(CommonTest.TEST_USER_ID, CommonTest.TEST_FRIEND_ID)
       }
     exception.errorCode.message() shouldBe "해당하는 친구가 없습니다."
+  }
+
+  test("친구조회_성공") {
+    val dir = System.getProperty("user.dir")
+    val imagePath = Paths.get(dir)
+    val friendInfo =
+      mockk<User> {
+        every { id } returns CommonTest.TEST_FRIEND_ID
+        every { username } returns CommonTest.TEST_FRIEND_USERNAME
+        every { email } returns CommonTest.TEST_FRIEND_EMAIL
+        every { file } returns CommonTest.TEST_PROFILE_IMG
+      }
+    val friend =
+      mockk<Friend> {
+        every { friend } returns friendInfo
+      }
+
+    val friends = listOf(friend)
+    every {
+      friendRepository.findAllByUserIdAndRequestStatus(
+        CommonTest.TEST_USER_ID,
+        FriendRequestStatus.ACCEPTED,
+      )
+    } returns friends
+
+    val response = friendService.getFriends(CommonTest.TEST_USER_ID)
+    response.userId shouldBe CommonTest.TEST_USER_ID
+    for (request in response.friends) {
+      request.friendId shouldBe CommonTest.TEST_FRIEND_ID
+      request.username shouldBe CommonTest.TEST_FRIEND_USERNAME
+      request.email shouldBe CommonTest.TEST_FRIEND_EMAIL
+      request.imagePath shouldBe imagePath.resolve(CommonTest.TEST_PROFILE_IMG)
+    }
   }
 })

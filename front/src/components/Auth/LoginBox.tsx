@@ -5,35 +5,44 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Snackbar, { SnackbarCloseReason } from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
+import axios from "axios";
 import React, { SyntheticEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import { refreshAccessToken, validateAccessToken } from "../../api/token";
 import { LoginValidation } from "../../hooks/LoginValidation";
 import { useLoginStore } from "../../store/useLoginStore";
-
 import type { AlertInfo } from "../../types/join";
 async function login(email: string, password: string) {
   try {
-    const response = await fetch(
+    const response = await axios.post(
       "http://kpring.duckdns.org/user/api/v1/login",
+      { email, password },
       {
-        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
       }
     );
 
-    const data = await response.json();
-    if (response.ok) {
-      console.log("로그인 성공:", data);
-      return data.data;
-    } else {
-      console.error("로그인 실패:", data);
-      return null;
-    }
+    const data = response.data;
+    console.log("로그인 성공:", data);
+    return data.data;
   } catch (error) {
-    console.error("API 호출 중 오류 발생:", error);
+    if (axios.isAxiosError(error)) {
+      if (error.response) {
+        // 서버 응답이 있지만, 응답 코드가 2xx가 아님
+        console.error("로그인 실패:", error.response.data);
+      } else if (error.request) {
+        // 요청이 이루어졌으나 응답을 받지 못함
+        console.error("응답 없음:", error.request);
+      } else {
+        // 요청 설정 중에 문제 발생
+        console.error("API 호출 중 오류 발생:", error.message);
+      }
+    } else {
+      // axios 에러가 아닌 경우
+      console.error("예상치 못한 오류 발생:", error);
+    }
     return null;
   }
 }
@@ -58,13 +67,33 @@ function LoginBox() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const accessToken = localStorage.getItem("dicoTown_AccessToken");
-    const refreshToken = localStorage.getItem("dicoTown_RefreshToken");
-    if (accessToken && refreshToken) {
-      setTokens(accessToken, refreshToken);
-      console.log("토큰을 불러왔음");
-    }
-  }, [setTokens]);
+    const checkAndSetTokens = async () => {
+      //localStorage에서 토큰 가져오기
+      const accessToken = localStorage.getItem("dicoTown_AccessToken");
+      const refreshToken = localStorage.getItem("dicoTown_RefreshToken");
+
+      //accessToken이 유효한지 검증하고 유효하지 않으면 refreshToken 사용해서 새로운 토큰 발급하기
+      if (accessToken && refreshToken) {
+        const isTokenValid = await validateAccessToken(accessToken);
+        if (!isTokenValid) {
+          const newTokens = await refreshAccessToken(refreshToken);
+          if (newTokens) {
+            setTokens(newTokens.accessToken, newTokens.refreshToken);
+            console.log("새로운 토큰 저장 완료.");
+          } else {
+            //accessToken 이 유효하지 않고, 새로운 토큰 발급도 실패하면 로그인 페이지로 리디렉션
+            console.error("새로운 토큰 발급 실패. 로그인 페이지로 이동합니다.");
+            navigate("/login");
+          }
+        } else {
+          setTokens(accessToken, refreshToken);
+          console.log("토큰을 불러왔음");
+        }
+      }
+    };
+
+    checkAndSetTokens();
+  }, [setTokens, navigate]);
 
   const onChangeHandler = (
     field: string,

@@ -1,13 +1,19 @@
 import {
+  Box,
   Button,
-  InputLabel,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
+  Checkbox,
+  FormControl,
+  FormControlLabel,
+  FormGroup,
+  FormLabel,
+  Input,
+  Radio,
+  RadioGroup,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { JwtPayload, jwtDecode } from "jwt-decode";
-import axios from "axios";
+import useUpdatedServers from "../../hooks/UpdatedServer";
+import { ServerType, CategoriesType, ThemeType } from "../../types/server";
 import useFetchServers from "../../hooks/FetchServer";
 
 interface UserIdJwtPayload extends JwtPayload {
@@ -16,79 +22,124 @@ interface UserIdJwtPayload extends JwtPayload {
 
 const CreateServerForm = () => {
   const token = localStorage.getItem("dicoTown_AccessToken");
-  const [serverInfo, setServerInfo] = useState({
-    serverName: "",
-    userId: "",
-    theme: "",
-    categories: "",
-  });
+  const { mutate } = useUpdatedServers(token);
+  const { data } = useFetchServers(token);
 
-  useFetchServers(token);
+  console.log(data);
 
-  // 페이지가 로드 되었을 때, userId를 jwt-token에 추출해오기
+  const [serverName, setServerName] = useState("");
+  const [userId, setUserId] = useState("");
+  const [theme, setTheme] = useState<ThemeType | null>(null);
+  const [categories, setCategories] = useState<CategoriesType[]>([]);
+
+  console.log(data);
+  // 페이지가 로드 되었을 때, userId를 jwt에서 추출.
   useEffect(() => {
-    try {
-      if (token) {
+    if (token) {
+      try {
         const decoded = jwtDecode<UserIdJwtPayload>(token);
-        setServerInfo((prevServerInfo) => ({
-          ...prevServerInfo,
-          userId: decoded.userId,
-        }));
+        setUserId(decoded.userId);
+      } catch (error) {
+        console.log(error);
       }
-    } catch (error) {
-      console.log(error);
     }
   }, [token]);
 
-  const handleChange = (e: SelectChangeEvent) => {
-    setServerInfo((prevServerInfo) => ({
-      ...prevServerInfo,
-      categories: e.target.value,
-    }));
+  // 각 Input의 onChange Handlers
+  const onChangeServerName = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setServerName(e.target.value);
   };
 
+  const onChangeCategories = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value, checked } = e.target;
+    const category = { id, name: value };
+    setCategories((prevCategories) =>
+      checked
+        ? [...prevCategories, category]
+        : prevCategories.filter((category) => category.id !== value)
+    );
+  };
+
+  const onChangeThemeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTheme({ id: e.target.value, name: e.target.value });
+  };
+
+  // 서버 생성 onSubmit Handler
   const onSubmitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const SERVER_URL = "http://kpring.duckdns.org/server/api/v1/server";
 
-    try {
-      const res = await axios.post(
-        SERVER_URL,
-        {
-          serverName: "yoyo",
-          // userId: serverInfo.userId,
-          theme: null,
-          categories: null,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            // userId: serverInfo.userId,
-          },
-        }
-      );
-      console.log(res);
-    } catch (error) {
-      console.error(error);
-    }
+    const newServer: ServerType = {
+      serverName,
+      userId,
+      theme: theme as ThemeType,
+      categories,
+    };
+
+    mutate(newServer);
   };
 
   return (
     <div>
       <h2>새로운 서버 생성</h2>
       <form onSubmit={onSubmitHandler}>
-        <InputLabel>
-          <Select
-            labelId="demo-simple-select-label"
-            label="서버 카테고리"
-            value={serverInfo.categories}
-            onChange={handleChange}>
-            <MenuItem value={"personal"}>개인</MenuItem>
-            <MenuItem value={"game"}>게임</MenuItem>
-            <MenuItem value={"edu"}>학습</MenuItem>
-          </Select>
-        </InputLabel>
-        <Button type="submit">서버생성</Button>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+          <FormControl sx={{ m: 2 }}>
+            <FormLabel>서버이름</FormLabel>
+            <Input value={serverName} onChange={onChangeServerName}></Input>
+          </FormControl>
+
+          <FormControl sx={{ m: 2 }}>
+            <FormLabel>서버 카테고리</FormLabel>
+            <FormGroup onChange={onChangeCategories}>
+              <FormControlLabel
+                label="개인"
+                control={<Checkbox value="personal" id="SERVER_CATEGORY1" />}
+              />
+              <FormControlLabel
+                label="교육/학습"
+                control={<Checkbox value="education" id="SERVER_CATEGORY2" />}
+              />
+              <FormControlLabel
+                label="게임"
+                control={<Checkbox value="game" id="SERVER_CATEGORY3" />}
+              />
+            </FormGroup>
+          </FormControl>
+
+          <FormControl sx={{ m: 2 }}>
+            <FormLabel>서버 테마</FormLabel>
+
+            <RadioGroup onChange={onChangeThemeChange} row>
+              <FormControlLabel
+                labelPlacement="top"
+                id="SERVER_THEME_001"
+                value="forest"
+                control={<Radio />}
+                label={
+                  <img
+                    src="https://images.unsplash.com/photo-1718889339117-d90a40b1250b?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    width={100}
+                    alt="숲 테마"
+                  />
+                }></FormControlLabel>
+
+              <FormControlLabel
+                labelPlacement="top"
+                id="SERVER_THEME_002"
+                value="office"
+                control={<Radio />}
+                label={
+                  <img
+                    src="https://images.unsplash.com/photo-1718889339117-d90a40b1250b?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    width={100}
+                    alt="숲 테마"
+                  />
+                }></FormControlLabel>
+            </RadioGroup>
+          </FormControl>
+
+          <Button type="submit">서버생성</Button>
+        </Box>
       </form>
     </div>
   );

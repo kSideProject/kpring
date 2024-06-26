@@ -1,13 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-export interface Servers {
-  serverName: string;
-  userId: string;
-  theme: string;
-  categories: string;
-}
-
+// 서버데이터 가져오기
 const fetchServers = async (token: string) => {
   const url = "http://kpring.duckdns.org/server/api/v1/server";
 
@@ -20,7 +14,6 @@ const fetchServers = async (token: string) => {
       },
     });
 
-    console.log(response);
     return response;
   } catch (error) {
     console.log(error);

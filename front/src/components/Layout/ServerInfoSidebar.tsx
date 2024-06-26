@@ -20,8 +20,10 @@ import FavoriteStar from "../Home/FavoriteStar";
 import ModalComponent from "../Modal/ModalComponent";
 import useModal from "../../hooks/Modal";
 import Profile from "../Profile/Profile";
+import useFetchServers from "../../hooks/FetchServer";
 
 const ServerInfoSidebar: React.FC<ServerInforProps> = ({ close, serverID }) => {
+  const token = localStorage.getItem("dicoTown_AccessToken");
   const DrawerHeader = styled("div")(({ theme }) => ({
     display: "flex",
     alignItems: "center",

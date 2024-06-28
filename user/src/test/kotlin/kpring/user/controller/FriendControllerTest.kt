@@ -12,7 +12,7 @@ import kpring.core.global.dto.response.ApiResponse
 import kpring.core.global.exception.ServiceException
 import kpring.test.restdoc.dsl.restDoc
 import kpring.test.restdoc.json.JsonDataType
-import kpring.test.restdoc.json.JsonDataType.Strings
+import kpring.test.restdoc.json.JsonDataType.*
 import kpring.user.dto.response.*
 import kpring.user.exception.UserErrorCode
 import kpring.user.global.AuthValidator
@@ -25,6 +25,7 @@ import org.springframework.restdocs.operation.preprocess.Preprocessors
 import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation
 import org.springframework.test.web.servlet.client.MockMvcWebTestClient
 import org.springframework.web.context.WebApplicationContext
+import java.nio.file.Paths
 
 @WebMvcTest(controllers = [FriendController::class])
 @ExtendWith(value = [MockKExtension::class])
@@ -625,6 +626,162 @@ internal class FriendControllerTest(
                 path {
                   "userId" mean "사용자 아이디"
                   "friendId" mean "친구신청을 받은 사용자의 아이디"
+                }
+                header {
+                  "Authorization" mean "Bearer token"
+                }
+              }
+              response {
+                body {
+                  "message" type Strings mean "에러 메시지"
+                }
+              }
+            }
+        }
+      }
+
+      describe("친구조회 API") {
+        it("친구조회 성공") {
+          // given
+          val imagePath = Paths.get(CommonTest.TEST_PROFILE_IMG_PATH)
+          val friend =
+            GetFriendResponse(
+              CommonTest.TEST_FRIEND_ID,
+              CommonTest.TEST_FRIEND_USERNAME,
+              CommonTest.TEST_FRIEND_EMAIL,
+              imagePath.resolve(CommonTest.TEST_PROFILE_IMG),
+            )
+          val data = GetFriendsResponse(CommonTest.TEST_USER_ID, listOf(friend))
+
+          val response = ApiResponse(data = data)
+          every { authClient.getTokenInfo(any()) }.returns(
+            ApiResponse(data = TokenInfo(TokenType.ACCESS, CommonTest.TEST_USER_ID.toString())),
+          )
+          every { authValidator.checkIfAccessTokenAndGetUserId(any()) } returns CommonTest.TEST_USER_ID.toString()
+          every {
+            friendService.getFriends(
+              CommonTest.TEST_USER_ID,
+            )
+          } returns data
+
+          // when
+          val result =
+            webTestClient.get()
+              .uri(
+                "/api/v1/user/{userId}/friends",
+                CommonTest.TEST_USER_ID,
+              )
+              .header("Authorization", CommonTest.TEST_TOKEN)
+              .exchange()
+
+          // then
+          val docsRoot =
+            result
+              .expectStatus().isOk
+              .expectBody().json(objectMapper.writeValueAsString(response))
+
+          // docs
+          docsRoot
+            .restDoc(
+              identifier = "getFriends200",
+              description = "친구조회 API",
+            ) {
+              request {
+                path {
+                  "userId" mean "사용자 아이디"
+                }
+                header {
+                  "Authorization" mean "Bearer token"
+                }
+              }
+              response {
+                body {
+                  "data.userId" type Strings mean "로그인한 사용자 아이디"
+                  "data.friends" type Arrays mean "로그인한 사용자의 친구목록"
+                  "data.friends[].friendId" type Strings mean "친구 아이디"
+                  "data.friends[].username" type Strings mean "친구 닉네임"
+                  "data.friends[].email" type Strings mean "친구 이메일"
+                  "data.friends[].imagePath" type Objects mean "친구 프로필 사진 저장 경로"
+                }
+              }
+            }
+        }
+
+        it("친구조회 실패 : 권한이 없는 토큰") {
+          // given
+          val response =
+            FailMessageResponse.builder().message(UserErrorCode.NOT_ALLOWED.message()).build()
+          every { authClient.getTokenInfo(any()) } throws ServiceException(UserErrorCode.NOT_ALLOWED)
+
+          // when
+          val result =
+            webTestClient.get()
+              .uri(
+                "/api/v1/user/{userId}/friends",
+                CommonTest.TEST_USER_ID,
+              )
+              .header("Authorization", CommonTest.TEST_TOKEN)
+              .exchange()
+
+          // then
+          val docsRoot =
+            result
+              .expectStatus().isForbidden
+              .expectBody().json(objectMapper.writeValueAsString(response))
+
+          // docs
+          docsRoot
+            .restDoc(
+              identifier = "getFriends403",
+              description = "친구조회 API",
+            ) {
+              request {
+                path {
+                  "userId" mean "사용자 아이디"
+                }
+                header {
+                  "Authorization" mean "Bearer token"
+                }
+              }
+              response {
+                body {
+                  "message" type Strings mean "에러 메시지"
+                }
+              }
+            }
+        }
+
+        it("친구조회 실패 : 서버 내부 오류") {
+          // given
+          val response =
+            FailMessageResponse.serverError
+          every { authClient.getTokenInfo(any()) } throws RuntimeException("서버 내부 오류")
+
+          // when
+          val result =
+            webTestClient.get()
+              .uri(
+                "/api/v1/user/{userId}/friends",
+                CommonTest.TEST_USER_ID,
+              )
+              .header("Authorization", CommonTest.TEST_TOKEN)
+              .exchange()
+
+          // then
+          val docsRoot =
+            result
+              .expectStatus().isEqualTo(500)
+              .expectBody().json(objectMapper.writeValueAsString(response))
+
+          // docs
+          docsRoot
+            .restDoc(
+              identifier = "getFriends500",
+              description = "친구조회 API",
+            ) {
+              request {
+                path {
+                  "userId" mean "사용자 아이디"
                 }
                 header {
                   "Authorization" mean "Bearer token"

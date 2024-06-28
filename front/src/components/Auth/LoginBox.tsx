@@ -6,9 +6,8 @@ import Button from "@mui/material/Button";
 import Snackbar, { SnackbarCloseReason } from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
 import axios from "axios";
-import React, { SyntheticEvent, useEffect, useState } from "react";
+import React, { SyntheticEvent, useState } from "react";
 import { useNavigate } from "react-router";
-import { refreshAccessToken, validateAccessToken } from "../../api/token";
 import { LoginValidation } from "../../hooks/LoginValidation";
 import { useLoginStore } from "../../store/useLoginStore";
 import type { AlertInfo } from "../../types/join";
@@ -65,35 +64,6 @@ function LoginBox() {
   const { setTokens } = useLoginStore();
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const checkAndSetTokens = async () => {
-      //localStorage에서 토큰 가져오기
-      const accessToken = localStorage.getItem("dicoTown_AccessToken");
-      const refreshToken = localStorage.getItem("dicoTown_RefreshToken");
-
-      //accessToken이 유효한지 검증하고 유효하지 않으면 refreshToken 사용해서 새로운 토큰 발급하기
-      if (accessToken && refreshToken) {
-        const isTokenValid = await validateAccessToken(accessToken);
-        if (!isTokenValid) {
-          const newTokens = await refreshAccessToken(refreshToken);
-          if (newTokens) {
-            setTokens(newTokens.accessToken, newTokens.refreshToken);
-            console.log("새로운 토큰 저장 완료.");
-          } else {
-            //accessToken 이 유효하지 않고, 새로운 토큰 발급도 실패하면 로그인 페이지로 리디렉션
-            console.error("새로운 토큰 발급 실패. 로그인 페이지로 이동합니다.");
-            navigate("/login");
-          }
-        } else {
-          setTokens(accessToken, refreshToken);
-          console.log("토큰을 불러왔음");
-        }
-      }
-    };
-
-    checkAndSetTokens();
-  }, [setTokens, navigate]);
 
   const onChangeHandler = (
     field: string,

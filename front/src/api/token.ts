@@ -1,18 +1,20 @@
-import axios from "axios";
+import axiosInstance from "./axiosInstance";
 
 // 토큰 검증 API
-async function validateAccessToken(token: string) {
+export async function validateAccessToken(token: string): Promise<boolean> {
+  console.log("액세트 토큰이 유효한가?:", token);
   try {
-    const response = await axios.post(
-      "http://kpring.duckdns.org/auth/api/v2/validation",
+    const response = await axiosInstance.post(
+      "/auth/api/v2/validation",
       {},
       {
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       }
     );
+    console.log("액세스 토큰 응답 상태(status):", response.status);
+    console.log("액세스토큰 응답 데이터:", response.data);
 
     if (response.status === 200) {
       console.log("토큰 검증 성공:", response.data);
@@ -28,19 +30,22 @@ async function validateAccessToken(token: string) {
 }
 
 // 새로운 accessToken 요청
-async function refreshAccessToken(refreshToken: string) {
+export async function refreshAccessToken(
+  refreshToken: string
+): Promise<{ accessToken: string; refreshToken: string } | null> {
+  console.log("리프레시 토큰으로 새로운 액세스 토큰 요청:", refreshToken);
   try {
-    const response = await axios.post(
-      "http://kpring.duckdns.org/auth/api/v1/acess_token",
-      {
-        refreshToken,
-      },
+    const response = await axiosInstance.post(
+      "/auth/api/v1/access_token",
+      { refreshToken },
       {
         headers: {
           "Content-Type": "application/json",
         },
       }
     );
+    console.log("새로운 액세스 토큰 응답 상태(status):", response.status);
+    console.log("새로운 액세스 토큰 응답 데이터 :", response.data);
 
     if (response.status === 200) {
       console.log("accessToken 갱신 성공:", response.data);
@@ -54,5 +59,3 @@ async function refreshAccessToken(refreshToken: string) {
     return null;
   }
 }
-
-export { refreshAccessToken, validateAccessToken };

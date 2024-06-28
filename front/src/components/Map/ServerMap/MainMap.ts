@@ -37,7 +37,7 @@ export class MainMap extends Scene {
         this.character = createCharacter(this, 300, 300);
         charanterAnimation(this);
 
-        this.keyboards = this.input.keyboard?.createCursorKeys()!; // 방향키로 캐리터 조정
+        this.keyboards = this.input.keyboard?.createCursorKeys()!; // 방향키로 캐릭터 조정
         this.cameras.main.startFollow(this.character); // 캐릭터의 움직을 따라 카메라 움직임
         this.cameras.main.setZoom(2);
 
@@ -87,15 +87,7 @@ export class MainMap extends Scene {
 
     this.input.keyboard?.on("keydown", (e: KeyboardEvent) => {
       if (document.activeElement?.tagName === "INPUT") {
-        this.input.keyboard?.removeCapture(
-          Phaser.Input.Keyboard.KeyCodes.SPACE
-        );
-        this.input.keyboard?.removeCapture(Phaser.Input.Keyboard.KeyCodes.UP);
-        this.input.keyboard?.removeCapture(Phaser.Input.Keyboard.KeyCodes.DOWN);
-        this.input.keyboard?.removeCapture(Phaser.Input.Keyboard.KeyCodes.LEFT);
-        this.input.keyboard?.removeCapture(
-          Phaser.Input.Keyboard.KeyCodes.RIGHT
-        );
+        this.input.keyboard?.clearCaptures();
       }
     });
 

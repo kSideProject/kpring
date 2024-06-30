@@ -14,6 +14,12 @@ interface FriendService {
    */
   fun getFriendRequests(userId: Long): GetFriendRequestsResponse
 
+  /**
+   * 로그인한 사용자가 친구목록을 조회하는 메서드
+   *
+   * @param userId : 로그인한 사용자의 ID.
+   * @return 로그인한 사용자 ID, 해당 사용자가 조회하고자 하는 친구목록을 담은 GetFriendsResponse 리턴
+   */
   fun getFriends(userId: Long): GetFriendsResponse
 
   /**
@@ -46,6 +52,14 @@ interface FriendService {
     friendId: Long,
   ): AddFriendResponse
 
+  /***
+   * 사용자가 친구와의 관계를 끊을 때 친구 상태를 삭제하는 메서드
+   *
+   * @param userId : 로그인한 사용자 ID.
+   * @param friendId : 기존에 친구였지만 친구관계를 삭제하고자 하는 사용자 ID.
+   * @return 전에 친구였던 사용자의 ID를 담고 있는 DeleteFriendResponse 리턴
+   * @throws FRIEND_NOT_FOUND : 친구 중에 friendId 를 가진 사용자가 없을 경우 발생하는 예외
+   */
   fun deleteFriend(
     userId: Long,
     friendId: Long,

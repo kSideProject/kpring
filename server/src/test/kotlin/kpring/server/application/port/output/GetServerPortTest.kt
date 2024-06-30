@@ -2,14 +2,14 @@ package kpring.server.application.port.output
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
-import io.kotest.matchers.collections.shouldContain
+import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import kpring.core.global.exception.CommonErrorCode
 import kpring.core.global.exception.ServiceException
 import kpring.server.adapter.output.mongo.entity.ServerEntity
 import kpring.server.adapter.output.mongo.repository.ServerRepository
-import kpring.server.domain.Server
+import kpring.server.util.testServer
 import kpring.test.testcontainer.SpringTestContext
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ContextConfiguration
@@ -36,17 +36,16 @@ class GetServerPortTest(
 
     it("저장된 서버의 정보를 조회할 수 있다.") {
       // given
-      val userIds = mutableSetOf("id")
-      val domain = Server(name = "test", users = userIds)
+      val domain = testServer()
       val serverEntity = serverRepository.save(ServerEntity(domain))
 
       // when
       val server = getServerPort.get(serverEntity.id!!)
 
       // then
-      server.name shouldBe "test"
-      server.users shouldHaveSize 1
-      server.users shouldContain "id"
+      server.name shouldBe domain.name
+      server.users shouldHaveSize domain.users.size
+      server.users shouldContainAll domain.users
     }
 
     it("존재하지 않은 서버를 조회하면 예외가 발생한다.") {
@@ -63,8 +62,7 @@ class GetServerPortTest(
     it("유저가 속한 서버 목록을 조회할 수 있다.") {
       // given
       val userId = "test-user"
-      val userIds = mutableSetOf(userId)
-      val server = Server(name = "server", users = userIds)
+      val server = testServer(id = null, hostId = userId)
 
       repeat(2) {
         serverRepository.save(ServerEntity(server))
@@ -76,8 +74,8 @@ class GetServerPortTest(
       // then
       servers shouldHaveSize 2
       servers.forEach {
-        it.users shouldHaveSize 1
-        it.users shouldContain userId
+        it.users shouldHaveSize server.users.size
+        it.users shouldContainAll server.users
       }
     }
   })

@@ -14,6 +14,7 @@ import kpring.core.global.exception.CommonErrorCode
 import kpring.core.global.exception.ServiceException
 import kpring.core.server.dto.ServerInfo
 import kpring.core.server.dto.ServerSimpleInfo
+import kpring.core.server.dto.ServerUserInfo
 import kpring.core.server.dto.request.AddUserAtServerRequest
 import kpring.core.server.dto.request.CreateServerRequest
 import kpring.core.server.dto.request.GetServerCondition
@@ -63,13 +64,15 @@ class RestApiServerControllerTest(
         it("요청 성공시") {
           // given
           val userId = "test_user_id"
+          val userName = "test host"
 
-          val request = CreateServerRequest(serverName = "test server", userId = userId)
+          val request = CreateServerRequest(serverName = "test server", userId = userId, hostName = userName)
           val data =
             CreateServerResponse(
               serverId = "1",
               serverName = request.serverName,
               theme = Theme.default().toInfo(),
+              hostName = userName,
               categories = listOf(Category.SERVER_CATEGORY1, Category.SERVER_CATEGORY2).map(Category::toInfo),
             )
 
@@ -106,6 +109,7 @@ class RestApiServerControllerTest(
             request {
               header { "Authorization" mean "jwt access token" }
               body {
+                "hostName" type Strings mean "생성할 서버의 대표 유저 이름"
                 "serverName" type Strings mean "생성할 서버의 이름"
                 "userId" type Strings mean "서버를 생성하는 유저의 id"
                 "theme" type Strings mean "생성할 서버의 테마" optional true
@@ -115,6 +119,8 @@ class RestApiServerControllerTest(
 
             response {
               body {
+                "data.hostName" type Strings mean "생성된 서버의 대표 유저 이름"
+
                 "data.serverId" type Strings mean "서버 id"
                 "data.serverName" type Strings mean "생성된 서버 이름"
 
@@ -131,8 +137,8 @@ class RestApiServerControllerTest(
         it("요청 실패시 : 요청한 유저와 서버 권한을 가진 유저가 일치하지 않는 경우") {
           // given
           val serverOwnerId = "server owner id"
-
-          val request = CreateServerRequest(serverName = "test server", userId = serverOwnerId)
+          val serverOwnerName = "server owner name"
+          val request = CreateServerRequest(serverName = "test server", userId = serverOwnerId, hostName = serverOwnerName)
 
           every { authClient.getTokenInfo(any()) } returns
             ApiResponse(
@@ -166,6 +172,7 @@ class RestApiServerControllerTest(
             request {
               header { "Authorization" mean "jwt access token" }
               body {
+                "hostName" type Strings mean "생성할 서버의 대표 유저 이름"
                 "serverName" type Strings mean "생성할 서버의 이름"
                 "userId" type Strings mean "서버를 생성하는 유저의 id"
                 "theme" type Strings mean "생성할 서버의 테마" optional true
@@ -188,7 +195,17 @@ class RestApiServerControllerTest(
         it("요청 성공시") {
           // given
           val serverId = "test_server_id"
-          val data = ServerInfo(id = serverId, name = "test_server", users = emptyList())
+          val data =
+            ServerInfo(
+              id = serverId,
+              name = "test_server",
+              users =
+                listOf(
+                  ServerUserInfo(id = "test_user_id", name = "hong gil dong", profileImage = "/image.png"),
+                ),
+              theme = Theme.default().toInfo(),
+              categories = listOf(Category.SERVER_CATEGORY1, Category.SERVER_CATEGORY2).map(Category::toInfo),
+            )
           every { serverService.getServerInfo(serverId) } returns data
 
           // when
@@ -217,7 +234,16 @@ class RestApiServerControllerTest(
               body {
                 "data.id" type Strings mean "서버 id"
                 "data.name" type Strings mean "생성된 서버 이름"
-                "data.users" type Arrays mean "서버에 가입된 유저 목록"
+
+                "data.users[].id" type Strings mean "유저 id"
+                "data.users[].name" type Strings mean "유저 이름"
+                "data.users[].profileImage" type Strings mean "유저 프로필 이미지"
+
+                "data.theme.id" type Strings mean "테마 id"
+                "data.theme.name" type Strings mean "테마 이름"
+
+                "data.categories[].id" type Strings mean "카테고리 id"
+                "data.categories[].name" type Strings mean "카테고리 이름"
               }
             }
           }
@@ -349,10 +375,26 @@ class RestApiServerControllerTest(
         it("요청 성공시") {
           // given
           val userId = "test user id"
+          val hostName = "host user"
+          val categories = listOf(Category.SERVER_CATEGORY1.toInfo())
           val data =
             listOf(
-              ServerSimpleInfo(id = "server1", name = "test_server", bookmarked = false),
-              ServerSimpleInfo(id = "server2", name = "test_server", bookmarked = true),
+              ServerSimpleInfo(
+                id = "server1",
+                name = "test_server",
+                bookmarked = false,
+                categories = categories,
+                theme = Theme.default().toInfo(),
+                hostName = hostName,
+              ),
+              ServerSimpleInfo(
+                id = "server2",
+                name = "test_server",
+                bookmarked = true,
+                categories = categories,
+                theme = Theme.default().toInfo(),
+                hostName = hostName,
+              ),
             )
           val condition = GetServerCondition(serverIds = listOf("server1", "server2"))
 
@@ -395,6 +437,14 @@ class RestApiServerControllerTest(
                 "data[].id" type Strings mean "서버 id"
                 "data[].name" type Strings mean "서버 이름"
                 "data[].bookmarked" type Booleans mean "북마크 여부"
+
+                "data[].theme.id" type Strings mean "테마 id"
+                "data[].theme.name" type Strings mean "테마 이름"
+
+                "data[].categories[].id" type Strings mean "카테고리 id"
+                "data[].categories[].name" type Strings mean "카테고리 이름"
+
+                "data[].hostName" type Strings mean "서버 대표 유저 이름"
               }
             }
           }

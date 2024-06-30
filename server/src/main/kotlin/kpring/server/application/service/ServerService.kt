@@ -41,12 +41,15 @@ class ServerService(
           users = mutableSetOf(req.userId),
           theme = req.theme,
           categories = req.categories,
+          hostName = req.hostName,
+          hostId = req.userId,
         ),
       )
     return CreateServerResponse(
       serverId = server.id!!,
       serverName = server.name,
       theme = server.theme.toInfo(),
+      hostName = server.host.name,
       categories = server.categories.map(Category::toInfo),
     )
   }
@@ -55,7 +58,7 @@ class ServerService(
     val server = getServer.get(serverId)
     val serverProfiles = getServerProfilePort.getAll(server.id!!)
     return ServerInfo(
-      id = server.id!!,
+      id = server.id,
       name = server.name,
       users =
         serverProfiles.map { profile ->
@@ -65,6 +68,8 @@ class ServerService(
             profileImage = profile.imagePath,
           )
         },
+      theme = server.theme.toInfo(),
+      categories = server.categories.map(Category::toInfo),
     )
   }
 
@@ -78,6 +83,9 @@ class ServerService(
           id = profile.server.id!!,
           name = profile.server.name,
           bookmarked = profile.bookmarked,
+          categories = profile.server.categories.map(Category::toInfo),
+          theme = profile.server.theme.toInfo(),
+          hostName = profile.server.host.name,
         )
       }
   }

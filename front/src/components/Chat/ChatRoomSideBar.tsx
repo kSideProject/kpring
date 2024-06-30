@@ -11,10 +11,7 @@ const ChatRoomSideBar = () => {
   );
   const handleChatRoomClose = useCallback(() => {
     setIsChatRoomShow(false);
-
   }, [setIsChatRoomShow]);
-
-  },[setIsChatRoomShow])
 
   const DrawerHeader = styled("div")(({ theme }) => ({
     display: "flex",
@@ -26,18 +23,10 @@ const ChatRoomSideBar = () => {
   }));
 
   return (
-
     <DrawerHeader>
       <ArrowForwardIosIcon
         onClick={handleChatRoomClose}
-        sx={{ color: "white" }}
-        className="cursor-pointer"
-
-    <DrawerHeader >
-      <ArrowForwardIosIcon 
-      onClick={handleChatRoomClose} 
-      sx={{color:"white", cursor:'pointer'}}
-
+        sx={{ color: "white", cursor: "pointer" }}
       />
       <Box>
         <div>다이렉트 메세지</div>

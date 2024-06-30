@@ -10,14 +10,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # jdk 21 환경 구성
       - name: set up jdk 21
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '21'
 
-      # Gradle wrapper 파일 실행 권한주기
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
@@ -29,6 +27,23 @@ jobs:
 
       - name: make api documents
         run: ./gradlew --info openapi3
+
+      - name: configure openapi3 spec
+        run: |
+          yq eval -i '.components.securitySchemes.bearerAuth.type = "http"' ./server/src/main/resources/static/openapi3.yaml
+          yq eval -i '.components.securitySchemes.bearerAuth.scheme = "bearer"' ./server/src/main/resources/static/openapi3.yaml
+          yq eval -i '.components.securitySchemes.bearerAuth.bearerFormat = "JWT"' ./server/src/main/resources/static/openapi3.yaml
+          yq eval -i '.security[0].bearerAuth = []' ./server/src/main/resources/static/openapi3.yaml
+          
+          yq eval -i '.components.securitySchemes.bearerAuth.type = "http"' ./user/src/main/resources/static/openapi3.yaml
+          yq eval -i '.components.securitySchemes.bearerAuth.scheme = "bearer"' ./user/src/main/resources/static/openapi3.yaml
+          yq eval -i '.components.securitySchemes.bearerAuth.bearerFormat = "JWT"' ./user/src/main/resources/static/openapi3.yaml
+          yq eval -i '.security[0].bearerAuth = []' ./user/src/main/resources/static/openapi3.yaml
+          
+          yq eval -i '.components.securitySchemes.bearerAuth.type = "http"' ./auth/src/main/resources/static/openapi3.yaml
+          yq eval -i '.components.securitySchemes.bearerAuth.scheme = "bearer"' ./auth/src/main/resources/static/openapi3.yaml
+          yq eval -i '.components.securitySchemes.bearerAuth.bearerFormat = "JWT"' ./auth/src/main/resources/static/openapi3.yaml
+          yq eval -i '.security[0].bearerAuth = []' ./auth/src/main/resources/static/openapi3.yaml
 
       - name: push image using jib
         run: ./gradlew --info jib

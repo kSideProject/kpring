@@ -1,8 +1,28 @@
+export interface ThemeType {
+  id: string;
+  name: string;
+}
+
+export interface CategoriesType {
+  id: string;
+  name: string;
+}
+
 export interface ServerType {
-  serverId: string;
   serverName: string;
-  image: string;
-  members: string[];
+  userId: string;
+  theme: ThemeType | null;
+  categories: CategoriesType[] | null;
+}
+
+export interface ServerResponseType {
+  id: string;
+  name: string;
+  bookmarked: boolean;
+}
+
+export interface FetchedServerType {
+  data: ServerResponseType[];
 }
 
 export interface ServerCardProps {

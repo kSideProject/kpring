@@ -1,7 +1,0 @@
-# service enable setting
-global:
-  profile: local
-  enable:
-    auth: true
-    user: true
-    server: true

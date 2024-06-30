@@ -36,9 +36,10 @@ class ChatRoomServiceTest : FunSpec({
   test("exitChatRoom 은 요청한 사람이 members의 일원이라면 삭제해야 한다") {
     // Given
     val chatRoom =
-      ChatRoom().apply {
+      ChatRoom(
         id =
-          ChatRoomTest.TEST_ROOM_ID
+          ChatRoomTest.TEST_ROOM_ID,
+      ).apply {
         addUsers(ChatRoomTest.TEST_MEMBERS)
       }
     every { chatRoomRepository.findById(chatRoom.id!!) } returns Optional.of(chatRoom)

@@ -1,14 +1,17 @@
-import React, { useCallback } from 'react'
-import useChatRoomStore from '../../store/useChatRoomStore'
-import { Box, styled } from '@mui/material';
+import { useCallback } from "react";
+import useChatRoomStore from "../../store/useChatRoomStore";
+import { Box, styled } from "@mui/material";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
-const ChatRoomSideBar = () => {
-  const setIsChatRoomShow = useChatRoomStore((state)=> state.setIsChatRoomShow);
-  const handleChatRoomClose = useCallback(()=>{
-    setIsChatRoomShow(false);
-  },[setIsChatRoomShow])
+import ChatInputField from "./ChatInputField";
 
+const ChatRoomSideBar = () => {
+  const setIsChatRoomShow = useChatRoomStore(
+    (state) => state.setIsChatRoomShow
+  );
+  const handleChatRoomClose = useCallback(() => {
+    setIsChatRoomShow(false);
+  }, [setIsChatRoomShow]);
 
   const DrawerHeader = styled("div")(({ theme }) => ({
     display: "flex",
@@ -20,17 +23,17 @@ const ChatRoomSideBar = () => {
   }));
 
   return (
-    <DrawerHeader >
-      <ArrowForwardIosIcon 
-      onClick={handleChatRoomClose} 
-      sx={{color:"white"}}
-      className="cursor-pointer"
+    <DrawerHeader>
+      <ArrowForwardIosIcon
+        onClick={handleChatRoomClose}
+        sx={{ color: "white", cursor: "pointer" }}
       />
       <Box>
-        <div >다이렉트 메세지</div>
+        <div>다이렉트 메세지</div>
+        <ChatInputField />
       </Box>
     </DrawerHeader>
-  )
-}
+  );
+};
 
-export default ChatRoomSideBar
+export default ChatRoomSideBar;

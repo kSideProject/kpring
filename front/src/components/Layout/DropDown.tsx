@@ -1,4 +1,4 @@
-import { Box } from '@mui/material'
+import { Box, List, ListItem } from '@mui/material'
 import React, { useMemo } from 'react'
 
 interface DropDownProps{
@@ -9,18 +9,24 @@ const DropDown: React.FC<DropDownProps> = ({dropDownItems}) => {
 
     const dropDownList = useMemo(()=>{
         return dropDownItems.map((item, index)=>{
-            return <li className='h-10 leading-10'>{item}</li>
+            return <ListItem sx={{height:'40px', lineHeight: '40px'}} key={index}>{item}</ListItem>
         })
     },[dropDownItems])
 
     
 return (
-    <Box className='absolute top-11 right-0 w-32 h-auto z-50 bg-dark text-pink shadow-md'>
-        <ul className='flex flex-col items-center'>
-            {
-                dropDownList
-            }
-        </ul>
+    <Box sx={{
+      position: 'absolute',
+      top: '44px',
+      right: '0px',
+      width: '128px',
+      height: 'auto',
+      zIndex: '50',
+      backgroundColor: '#2A2F4F',
+      color: '#FDE2F3',
+      boxShadow: '5px',
+    }}>
+        <List>{dropDownList}</List>
     </Box>
   )
 }

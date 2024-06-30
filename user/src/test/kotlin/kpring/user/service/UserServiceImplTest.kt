@@ -24,7 +24,6 @@ class UserServiceImplTest : FunSpec({
       userValidationService,
       uploadProfileImageService,
     )
-  val friendService = FriendService(userRepository)
   lateinit var createUserRequest: CreateUserRequest
 
   beforeTest {
@@ -38,6 +37,7 @@ class UserServiceImplTest : FunSpec({
   }
 
   test("회원가입_성공") {
+    // given
     val userId = 1L
     val user =
       User(
@@ -54,8 +54,10 @@ class UserServiceImplTest : FunSpec({
     every { passwordEncoder.encode(createUserRequest.password) } returns ENCODED_PASSWORD
     every { userRepository.save(any()) } returns user
 
+    // when
     val response = userService.createUser(createUserRequest)
 
+    // then
     verify { userRepository.save(any()) }
 
     userId shouldBe response.id
@@ -65,56 +67,21 @@ class UserServiceImplTest : FunSpec({
   }
 
   test("회원가입_실패_이메일중복케이스") {
+    // given
     every { userService.handleDuplicateEmail(TEST_EMAIL) } throws
       ServiceException(UserErrorCode.ALREADY_EXISTS_EMAIL)
 
+    // when
     val exception =
       shouldThrow<ServiceException> {
         userService.handleDuplicateEmail(createUserRequest.email)
       }
+
+    // then
     exception.errorCode.message() shouldBe "이미 존재하는 이메일입니다."
 
     verify { userRepository.save(any()) wasNot Called }
   }
-
-//    test("친구추가_성공") {
-//        val user = User(id = 1L, username = "user1", followers = mutableSetOf(), followees = mutableSetOf())
-//        val friend = User(id = 2L, username = "user2", followers = mutableSetOf(), followees = mutableSetOf())
-//
-//        `when`(userRepository.findById(user.id!!)).thenReturn(Optional.of(user))
-//        `when`(userRepository.findById(friend.id!!)).thenReturn(Optional.of(friend))
-//
-//        val result: AddFriendResponse = friendService.addFriend(AddFriendRequest(friend.id!!), user.id)
-//
-//        assertEquals(friend.id!!, result.friendId)
-//
-//        // Verify that the followers and followees relationships are updated
-//        user.followers.forEach { follower ->
-//            assertEquals(1, follower.followees.size)
-//            assertEquals(user, follower.followees.first())
-//        }
-//        user.followees.forEach { followee ->
-//            assertEquals(1, followee.followers.size)
-//            assertEquals(user, followee.followers.first())
-//        }
-//
-//        verify(userRepository).findById(user.id!!)
-//    }
-//
-//    test("친구추가실패_유저조회불가능케이스") {
-//        val userId = 2L
-//        val friendId = 1L
-//
-//        `when`(userRepository.findById(userId)).thenReturn(Optional.empty())
-//
-//        val exception = assertThrows(IllegalArgumentException::class.java) {
-//            friendService.addFriend(AddFriendRequest(friendId), userId)
-//        }
-//
-//        assertEquals("User not found", exception.message)
-//
-//        verify(userRepository).findById(userId)
-//    }
 }) {
   companion object {
     private const val TEST_EMAIL = "test@email.com"

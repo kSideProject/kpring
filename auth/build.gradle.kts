@@ -70,8 +70,10 @@ tasks.asciidoctor {
   dependsOn(tasks.test)
 }
 
+val hostname = "kpring.duckdns.org"
+
 openapi3 {
-  setServer("http://localhost/auth")
+  setServer("http://$hostname/auth")
   title = "Auth API"
   description = "API document"
   version = "0.1.0"
@@ -82,15 +84,19 @@ openapi3 {
 jib {
   from {
     image = "eclipse-temurin:21-jre"
+    platforms {
+      platform {
+        architecture = "arm64"
+        os = "linux"
+      }
+    }
   }
   to {
-    image = "youdong98/kpring-auth-application"
+    image = "kpring/auth-application"
     setAllowInsecureRegistries(true)
-    tags = setOf("latest")
+    tags = setOf("latest", version.toString())
   }
   container {
     jvmFlags = listOf("-Xms512m", "-Xmx512m")
   }
 }
-
-tasks.getByName("jib").dependsOn("openapi3")

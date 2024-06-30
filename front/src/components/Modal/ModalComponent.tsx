@@ -1,6 +1,6 @@
 import { Box, Modal } from "@mui/material";
 import { ReactNode } from "react";
-import { modalStyle } from "../../style/modal";
+import { globalColors } from "../../style/globalStyles";
 
 interface ModalComponentProps {
   children: ReactNode;
@@ -13,7 +13,19 @@ const ModalComponent = ({ children, isOpen }: ModalComponentProps) => {
       open={isOpen}
       aria-labelledby="parent-modal-title"
       aria-describedby="parent-modal-description">
-      <Box sx={modalStyle}>{children}</Box>
+      <Box
+        sx={{
+          position: "absolute" as "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: 400,
+          bgcolor: globalColors.primary,
+          boxShadow: 24,
+          p: 4,
+        }}>
+        {children}
+      </Box>
     </Modal>
   );
 };

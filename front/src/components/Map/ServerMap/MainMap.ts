@@ -7,9 +7,6 @@ export class MainMap extends Scene {
   private mapInstance!: Phaser.Game;
   private character!: Phaser.Physics.Arcade.Sprite;
   private keyboards!: Phaser.Types.Input.Keyboard.CursorKeys;
-  private isDragging: boolean = false;
-  private dragStartX: number = 0;
-  private dragStartY: number = 0;
   private speechBalloon!: Phaser.GameObjects.Text;
 
   constructor() {
@@ -40,7 +37,7 @@ export class MainMap extends Scene {
         this.character = createCharacter(this, 300, 300);
         charanterAnimation(this);
 
-        this.keyboards = this.input.keyboard?.createCursorKeys()!; // 방향키로 캐리터 조정
+        this.keyboards = this.input.keyboard?.createCursorKeys()!; // 방향키로 캐릭터 조정
         this.cameras.main.startFollow(this.character); // 캐릭터의 움직을 따라 카메라 움직임
         this.cameras.main.setZoom(2);
 
@@ -60,6 +57,11 @@ export class MainMap extends Scene {
             resolution: 2,
           })
           .setOrigin(0.5);
+
+        window.addEventListener("updateBalloonText", (event: Event) => {
+          const customEvent = event as CustomEvent<string>;
+          this.setBalloonText(customEvent.detail);
+        });
       } catch (error) {
         console.error(error);
       }
@@ -83,6 +85,12 @@ export class MainMap extends Scene {
 
     this.character.setVelocity(0);
 
+    this.input.keyboard?.on("keydown", (e: KeyboardEvent) => {
+      if (document.activeElement?.tagName === "INPUT") {
+        this.input.keyboard?.clearCaptures();
+      }
+    });
+
     if (this.keyboards.down.isDown) {
       this.character.setVelocityY(100);
       this.character.anims.play("basic_character_move_down", true);
@@ -100,6 +108,7 @@ export class MainMap extends Scene {
     }
     this.speechBalloon.setPosition(this.character.x, this.character.y - 50);
   }
+
   setBalloonText(text: string) {
     if (this.speechBalloon) {
       this.speechBalloon.setText(text);

@@ -1,6 +1,8 @@
 package kpring.server.adapter.output.mongo
 
 import kpring.server.adapter.output.mongo.entity.ServerEntity
+import kpring.server.adapter.output.mongo.entity.ServerProfileEntity
+import kpring.server.adapter.output.mongo.repository.ServerProfileRepository
 import kpring.server.adapter.output.mongo.repository.ServerRepository
 import kpring.server.application.port.output.UpdateServerPort
 import kpring.server.domain.ServerProfile
@@ -15,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class UpdateServerPortMongoImpl(
   val serverRepository: ServerRepository,
+  val serverProfileRepository: ServerProfileRepository,
   val template: MongoTemplate,
 ) : UpdateServerPort {
   override fun addUser(profile: ServerProfile) {
@@ -28,6 +31,8 @@ class UpdateServerPortMongoImpl(
         .push("users", profile.userId),
       ServerEntity::class.java,
     )
+
+    serverProfileRepository.save(ServerProfileEntity(profile))
   }
 
   override fun inviteUser(

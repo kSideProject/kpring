@@ -2,7 +2,7 @@ import axiosInstance from "./axiosInstance";
 
 // 토큰 검증 API
 export async function validateAccessToken(token: string): Promise<boolean> {
-  console.log("액세트 토큰이 유효한가?:", token);
+  console.log("액세스토큰:", token);
   try {
     const response = await axiosInstance.post(
       "/auth/api/v2/validation",

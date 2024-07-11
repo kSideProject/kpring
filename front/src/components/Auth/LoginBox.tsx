@@ -12,9 +12,10 @@ import { LoginValidation } from "../../hooks/LoginValidation";
 import { useLoginStore } from "../../store/useLoginStore";
 import type { AlertInfo } from "../../types/join";
 async function login(email: string, password: string) {
+  console.log(process.env.REACT_APP_BASE_URL);
   try {
     const response = await axios.post(
-      "http://kpring.duckdns.org/user/api/v1/login",
+      `${process.env.REACT_APP_BASE_URL}/user/api/v1/login`,
       { email, password },
       {
         headers: {

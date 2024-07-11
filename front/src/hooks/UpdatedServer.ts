@@ -3,7 +3,7 @@ import axios from "axios";
 import { ServerType } from "../types/server";
 
 const createServers = async (data: ServerType, token: string) => {
-  const url = "http://kpring.duckdns.org/server/api/v1/server";
+  const url = "https://kpring.duckdns.org/server/api/v1/server";
 
   console.log(data);
 

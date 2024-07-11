@@ -70,7 +70,7 @@ kapt {
 val hostname = "kpring.duckdns.org"
 
 openapi3 {
-  setServer("http://$hostname/server")
+  setServer("https://$hostname/server")
   title = "Server API"
   description = "API document"
   version = "0.1.0"

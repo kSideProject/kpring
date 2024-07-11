@@ -1,8 +1,9 @@
+import { CircularProgress } from "@mui/material";
+
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { validateAccessToken } from "../../api/token";
 import { useLoginStore } from "../../store/useLoginStore";
-
 const AuthLayout = () => {
   const navigate = useNavigate();
   const { accessToken } = useLoginStore();
@@ -22,7 +23,11 @@ const AuthLayout = () => {
   }, [accessToken, navigate]);
 
   if (isLoading) {
-    return <div>로딩중</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <CircularProgress color="primary" size={150} />
+      </div>
+    );
   }
 
   return <Outlet />;

@@ -167,7 +167,7 @@ function LoginBox() {
             helperText={errors.passwordError}
             InputProps={{
               endAdornment: (
-                <IconButton onClick={togglePasswordVisibility} edge="start">
+                <IconButton onClick={togglePasswordVisibility} edge="end">
                   {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
                 </IconButton>
               ),

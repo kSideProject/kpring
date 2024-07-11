@@ -1,35 +1,47 @@
 import LoginIcon from "@mui/icons-material/Login";
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
+import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import Snackbar, { SnackbarCloseReason } from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
+import axios from "axios";
+import React, { SyntheticEvent, useState } from "react";
 import { useNavigate } from "react-router";
 import { LoginValidation } from "../../hooks/LoginValidation";
 import { useLoginStore } from "../../store/useLoginStore";
-
+import type { AlertInfo } from "../../types/join";
 async function login(email: string, password: string) {
   try {
-    const response = await fetch(
+    const response = await axios.post(
       "http://kpring.duckdns.org/user/api/v1/login",
+      { email, password },
       {
-        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
       }
     );
 
-    const data = await response.json();
-    if (response.ok) {
-      console.log("로그인 성공:", data);
-      return data.data;
-    } else {
-      console.error("로그인 실패:", data);
-      return null;
-    }
+    const data = response.data;
+    console.log("로그인 성공:", data);
+    return data.data;
   } catch (error) {
-    console.error("API 호출 중 오류 발생:", error);
+    if (axios.isAxiosError(error)) {
+      if (error.response) {
+        // 서버 응답이 있지만, 응답 코드가 2xx가 아님
+        console.error("로그인 실패:", error.response.data);
+      } else if (error.request) {
+        // 요청이 이루어졌으나 응답을 받지 못함
+        console.error("응답 없음:", error.request);
+      } else {
+        // 요청 설정 중에 문제 발생
+        console.error("API 호출 중 오류 발생:", error.message);
+      }
+    } else {
+      // axios 에러가 아닌 경우
+      console.error("예상치 못한 오류 발생:", error);
+    }
     return null;
   }
 }
@@ -44,7 +56,15 @@ function LoginBox() {
     validatePassword,
     validators,
   } = LoginValidation();
+  const [open, setOpen] = useState(false);
+  const [alertInfo, setAlertInfo] = useState<AlertInfo>({
+    severity: "info",
+    message: "",
+  });
   const { setTokens } = useLoginStore();
+
+  const navigate = useNavigate();
+
   const onChangeHandler = (
     field: string,
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -62,13 +82,36 @@ function LoginBox() {
     if (result) {
       //console.log("토큰 설정:", result);
       setTokens(result.accessToken, result.refreshToken);
-      //navigate("/");
+
+      setAlertInfo({
+        severity: "success",
+        message: "로그인 성공! 3초 후 메인 페이지로 이동합니다.",
+      });
+      setOpen(true);
+
+      setTimeout(() => {
+        navigate("/");
+      }, 3000);
     } else {
       console.error("로그인 실패.");
-      alert("로그인 실패. 이메일 혹은 비밀번호를 확인해 주세요.");
+      setAlertInfo({
+        severity: "error",
+        message: "로그인 실패. 이메일 혹은 비밀번호를 확인해 주세요.",
+      });
+      setOpen(true);
     }
   };
-  const navigate = useNavigate();
+
+  const clickCloseHandler = (
+    event: Event | SyntheticEvent<any, Event>,
+    reason?: SnackbarCloseReason
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpen(false);
+  };
+
   return (
     <section className="flex justify-center mt-[200px]">
       <div className="mt-[30px] w-[400px] text-center">
@@ -136,6 +179,19 @@ function LoginBox() {
             </Button>
           </div>
         </Box>
+        <Snackbar
+          open={open}
+          autoHideDuration={6000}
+          onClose={clickCloseHandler}
+        >
+          <Alert
+            onClose={clickCloseHandler}
+            severity={alertInfo.severity}
+            sx={{ width: "100%" }}
+          >
+            {alertInfo.message}
+          </Alert>
+        </Snackbar>
       </div>
     </section>
   );

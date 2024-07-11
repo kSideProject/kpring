@@ -73,7 +73,7 @@ tasks.asciidoctor {
 val hostname = "kpring.duckdns.org"
 
 openapi3 {
-  setServer("http://$hostname/auth")
+  setServer("https://$hostname/auth")
   title = "Auth API"
   description = "API document"
   version = "0.1.0"

@@ -1,20 +1,8 @@
 // ** 아바타에 필요한 요소들을 모아 놓은 파일입니다 ** //
 
-export const skins = [
-  "skin1",
-  "skin2",
-  "skin3",
-  "skin4",
-  "skin5",
-  "skin6",
-  "skin7",
-  "skin8",
-];
-
+// ** 아바타 코스튬
 export const top = [
   "top1",
-  // "top2",
-  // "stop",
   // "top4",
   // "top5",
   // "top6",
@@ -34,6 +22,17 @@ export const bottom = [
 ];
 
 // ** 아바타 피부색
+export const skins = [
+  "skin1",
+  "skin2",
+  "skin3",
+  "skin4",
+  "skin5",
+  "skin6",
+  "skin7",
+  "skin8",
+];
+
 export const skinAssets = [
   {
     key: "skin1",

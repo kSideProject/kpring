@@ -1,5 +1,5 @@
 import { Scene } from "phaser";
-import { bottomAssets, skinAssets, topAssets } from "../Avatar/avatarAssets";
+import { skinAssets } from "../Avatar/avatarAssets";
 
 export class Preloader extends Scene {
   constructor() {
@@ -13,17 +13,15 @@ export class Preloader extends Scene {
       }
     });
 
-    topAssets.forEach((top) => {
-      if (top.atlasUrl) {
-        this.load.atlas(top.key, top.textureUrl, top.atlasUrl);
-      }
-    });
-
-    bottomAssets.forEach((bottom) => {
-      if (bottom.atlasUrl) {
-        this.load.atlas(bottom.key, bottom.textureUrl, bottom.atlasUrl);
-      }
-    });
+    this.load.json(
+      "top-costumes",
+      "../assets/avatar/walk/costumes/top/top1-walk.json"
+    );
+    this.load.atlas(
+      "top-costume-texture",
+      "../assets/avatar/walk/costumes/top/top1-walk.png",
+      "../assets/avatar/walk/costumes/top/top1-walk.json"
+    );
   }
 
   create() {

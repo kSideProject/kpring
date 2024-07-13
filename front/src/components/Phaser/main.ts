@@ -10,7 +10,7 @@ const config: Phaser.Types.Core.GameConfig = {
   parent: "map-container",
   physics: {
     default: "arcade",
-    arcade: { debug: true },
+    arcade: { debug: false },
   },
   scene: [
     //     Boot,

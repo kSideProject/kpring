@@ -1,26 +1,5 @@
 // ** 아바타에 필요한 요소들을 모아 놓은 파일입니다 ** //
 
-// ** 아바타 코스튬
-export const top = [
-  "top1",
-  // "top4",
-  // "top5",
-  // "top6",
-  // "top7",
-  // "top8",
-];
-
-export const bottom = [
-  "bottom1",
-  // "bottom2",
-  // "bottom3",
-  // "bottom4",
-  // "bottom5",
-  // "bottom6",
-  // "bottom7",
-  // "bottom8",
-];
-
 // ** 아바타 피부색
 export const skins = [
   "skin1",
@@ -73,22 +52,5 @@ export const skinAssets = [
     key: "skin8",
     textureUrl: "../assets/avatar/walk/skins/skin8.png",
     atlasUrl: "../assets/avatar/walk/skins/skin8.json",
-  },
-];
-
-// ** 아바타 코스튬 상의
-export const topAssets = [
-  {
-    key: "top1",
-    textureUrl: "../assets/avatar/walk/costumes/top/top1-walk.png",
-    atlasUrl: "../assets/avatar/walk/costumes/top/top1-walk.json",
-  },
-];
-
-export const bottomAssets = [
-  {
-    key: "bottom1",
-    textureUrl: "../assets/avatar/walk/costumes/bottom/bottom1-walk.png",
-    atlasUrl: "../assets/avatar/walk/costumes/bottom/bottom1-walk.json",
   },
 ];

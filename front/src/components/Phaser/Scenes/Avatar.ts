@@ -1,7 +1,6 @@
 import { Scene } from "phaser";
 import { skins } from "../Avatar/avatarAssets";
 import { getRandomCostume } from "../../../utils/randomCostume";
-import { CostumesData } from "../../../types/avatar";
 
 // ** 서버 접속 시 랜덤으로 캐릭터 생성
 const getRandomAssets = (assets: string[]): string => {
@@ -22,40 +21,54 @@ export const createRandomAvatar = (
     const skinSprite = scene.add.sprite(0, 0, randomSkin);
     avatarContainer.add(skinSprite);
 
-    // 아바타 코스튬
-
-    const randomCostumeFrame = getRandomCostume(scene, "top-costume-texture");
-    if (randomCostumeFrame) {
+    // 아바타 코스튬(상의)
+    const randomTopCostumeFrame = getRandomCostume(
+      scene,
+      "top-costume-texture"
+    );
+    if (randomTopCostumeFrame) {
       const costumeSprite = scene.add.sprite(
         0,
         0,
         "top-costume-texture",
+        randomTopCostumeFrame
+      );
+      avatarContainer.add(costumeSprite);
+    }
+
+    // 아바타 코스튬(하의)
+    const randomCostumeFrame = getRandomCostume(
+      scene,
+      "bottom-costume-texture"
+    );
+    if (randomCostumeFrame) {
+      const costumeSprite = scene.add.sprite(
+        0,
+        0,
+        "bottom-costume-texture",
         randomCostumeFrame
+      );
+      avatarContainer.add(costumeSprite);
+    }
+
+    // 아바타 헤어
+    const randomHairFrame = getRandomCostume(scene, "hair-texture");
+    if (randomHairFrame) {
+      const costumeSprite = scene.add.sprite(
+        0,
+        0,
+        "hair-texture",
+        randomHairFrame
       );
       avatarContainer.add(costumeSprite);
     }
 
     scene.physics.world.enable(avatarContainer);
     const body = avatarContainer.body as Phaser.Physics.Arcade.Body;
-    body.setSize(20, 20);
+    body.setSize(50, 50);
 
     return avatarContainer;
   } else {
     throw Error;
   }
-};
-
-// ** 아바타 애니메이션
-export const avatarAnimation = (scene: Scene) => {
-  // scene.anims.create({
-  //   key: `${randomSkin}-walk-down`,
-  //   frames: scene.anims.generateFrameNames(randomSkin, {
-  //     start: 1,
-  //     end: 8,
-  //     prefix: `${randomSkin}-walk-down-`,
-  //     suffix: ".png",
-  //   }),
-  //   frameRate: 20,
-  //   repeat: -1,
-  // });
 };

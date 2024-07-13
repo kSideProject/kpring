@@ -1,5 +1,3 @@
-import { CostumesData } from "../types/avatar";
-
 export const getRandomCostume = (
   scene: Phaser.Scene,
   atlasKey: string
@@ -10,7 +8,7 @@ export const getRandomCostume = (
     .filter((key) => key.endsWith("front-1.png"));
 
   const colorGroups: { [key: string]: string[] } = frames.reduce((acc, key) => {
-    const color = key.split("-")[1]; // 예: 'top1-black-walk-front-1.png'에서 'black' 추출
+    const color = key.split("-")[1];
     if (!acc[color]) {
       acc[color] = [];
     }

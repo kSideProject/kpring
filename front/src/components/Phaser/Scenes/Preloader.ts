@@ -13,14 +13,22 @@ export class Preloader extends Scene {
       }
     });
 
-    this.load.json(
-      "top-costumes",
-      "../assets/avatar/walk/costumes/top/top1-walk.json"
-    );
     this.load.atlas(
       "top-costume-texture",
       "../assets/avatar/walk/costumes/top/top1-walk.png",
       "../assets/avatar/walk/costumes/top/top1-walk.json"
+    );
+
+    this.load.atlas(
+      "bottom-costume-texture",
+      "../assets/avatar/walk/costumes/bottom/bottom1-walk.png",
+      "../assets/avatar/walk/costumes/bottom/bottom1-walk.json"
+    );
+
+    this.load.atlas(
+      "hair-texture",
+      "../assets/avatar/walk/hair/hair1.png",
+      "../assets/avatar/walk/hair/hair1.json"
     );
   }
 

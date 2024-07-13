@@ -13,7 +13,7 @@ token.ts의 두 함수(validateAccessToken, refreshAccessToken)에서 요청을 
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "http://kpring.duckdns.org",
+  baseURL: process.env.REACT_APP_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },

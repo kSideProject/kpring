@@ -1,8 +1,11 @@
 import LoginIcon from "@mui/icons-material/Login";
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import IconButton from "@mui/material/IconButton";
 import Snackbar, { SnackbarCloseReason } from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
 import axios from "axios";
@@ -14,7 +17,7 @@ import type { AlertInfo } from "../../types/join";
 async function login(email: string, password: string) {
   try {
     const response = await axios.post(
-      "http://kpring.duckdns.org/user/api/v1/login",
+      `${process.env.REACT_APP_BASE_URL}/user/api/v1/login`,
       { email, password },
       {
         headers: {
@@ -62,6 +65,7 @@ function LoginBox() {
     message: "",
   });
   const { setTokens } = useLoginStore();
+  const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
 
@@ -73,6 +77,10 @@ function LoginBox() {
     const error = validators[field](value);
     setValues((prevValues) => ({ ...prevValues, [field]: value }));
     setErrors((prevErrors) => ({ ...prevErrors, [`${field}Error`]: error }));
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   const clickSubmitHandler = async (e: React.FormEvent) => {
@@ -148,7 +156,7 @@ function LoginBox() {
             required
             id="user-password"
             label="비밀번호"
-            type="password"
+            type={showPassword ? "text" : "password"}
             placeholder="비밀번호를 입력해주세요."
             autoComplete="password"
             variant="standard"
@@ -157,6 +165,13 @@ function LoginBox() {
             onChange={(e) => onChangeHandler("password", e)}
             error={!!errors.passwordError}
             helperText={errors.passwordError}
+            InputProps={{
+              endAdornment: (
+                <IconButton onClick={togglePasswordVisibility} edge="end">
+                  {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                </IconButton>
+              ),
+            }}
           />
           <div className="mt-[20px] flex justify-center flex-wrap ">
             <Button

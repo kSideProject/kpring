@@ -55,6 +55,16 @@ class RestApiServerController(
       .body(ApiResponse(data = data))
   }
 
+  @GetMapping("/host")
+  fun getOwnedServerList(
+    @RequestHeader("Authorization") token: String,
+  ): ResponseEntity<ApiResponse<List<ServerSimpleInfo>>> {
+    val userInfo = authClient.getTokenInfo(token).data!!
+    val data = getServerUseCase.getOwnedServerList(userInfo.userId)
+    return ResponseEntity.ok()
+      .body(ApiResponse(data = data))
+  }
+
   @GetMapping("/{serverId}")
   fun getServerInfo(
     @PathVariable serverId: String,

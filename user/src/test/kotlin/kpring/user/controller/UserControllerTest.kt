@@ -11,8 +11,11 @@ import kpring.core.auth.dto.response.TokenInfo
 import kpring.core.auth.enums.TokenType
 import kpring.core.global.dto.response.ApiResponse
 import kpring.core.global.exception.ServiceException
+import kpring.core.server.client.ServerClient
+import kpring.core.server.dto.ServerSimpleInfo
+import kpring.core.server.dto.ServerThemeInfo
 import kpring.test.restdoc.dsl.restDoc
-import kpring.test.restdoc.json.JsonDataType.*
+import kpring.test.restdoc.json.JsonDataType.Strings
 import kpring.user.dto.request.CreateUserRequest
 import kpring.user.dto.request.UpdateUserProfileRequest
 import kpring.user.dto.response.CreateUserResponse
@@ -33,8 +36,6 @@ import org.springframework.http.client.MultipartBodyBuilder
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.restdocs.ManualRestDocumentation
 import org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint
-import org.springframework.restdocs.payload.PayloadDocumentation.*
-import org.springframework.restdocs.request.RequestDocumentation.*
 import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.documentationConfiguration
 import org.springframework.test.web.servlet.client.MockMvcWebTestClient
 import org.springframework.web.context.WebApplicationContext
@@ -48,6 +49,7 @@ class UserControllerTest(
   @MockkBean val authClient: AuthClient,
   @MockkBean val userService: UserService,
   @MockkBean val authValidator: AuthValidator,
+  @MockkBean val serverClient: ServerClient,
 ) : DescribeSpec(
     {
 
@@ -111,7 +113,6 @@ class UserControllerTest(
               }
             }
         }
-
         it("회원가입 실패 : 이미 존재하는 이메일") {
           // given
           val request =
@@ -156,7 +157,6 @@ class UserControllerTest(
                   "username" type Strings mean "사용자 이름"
                 }
               }
-
               response {
                 body {
                   "message" type Strings mean "에러 메시지"
@@ -164,7 +164,6 @@ class UserControllerTest(
               }
             }
         }
-
         it("회원가입 실패 : 필수입력 값 미전송") {
           // given
           val request =
@@ -207,7 +206,6 @@ class UserControllerTest(
                   "username" type Strings mean "사용자 이름"
                 }
               }
-
               response {
                 body {
                   "message" type Strings mean "에러 메시지"
@@ -215,7 +213,6 @@ class UserControllerTest(
               }
             }
         }
-
         it("회원가입 실패 : 서버 내부 오류") {
           // given
           val request =
@@ -260,7 +257,6 @@ class UserControllerTest(
                   "username" type Strings mean "사용자 이름"
                 }
               }
-
               response {
                 body {
                   "message" type Strings mean "에러 메시지"
@@ -269,7 +265,6 @@ class UserControllerTest(
             }
         }
       }
-
       describe("회원정보 수정 API") {
         it("회원정보 수정 성공") {
           // given
@@ -318,7 +313,7 @@ class UserControllerTest(
           val result =
             webTestClient.patch()
               .uri("/api/v1/user/{userId}", userId)
-              .header("Authorization", "Bearer token")
+              .header("Authorization", CommonTest.TEST_TOKEN)
               .contentType(MediaType.MULTIPART_FORM_DATA)
               .body(BodyInserters.fromMultipartData(bodyBuilder.build()))
               .exchange()
@@ -363,7 +358,6 @@ class UserControllerTest(
               }
             }
         }
-
         it("회원정보 수정 실패 : 권한이 없는 토큰") {
           // given
           val userId = 1L
@@ -403,7 +397,7 @@ class UserControllerTest(
           val result =
             webTestClient.patch()
               .uri("/api/v1/user/{userId}", userId)
-              .header("Authorization", "Bearer token")
+              .header("Authorization", CommonTest.TEST_TOKEN)
               .contentType(MediaType.MULTIPART_FORM_DATA)
               .body(BodyInserters.fromMultipartData(bodyBuilder.build()))
               .exchange()
@@ -446,7 +440,6 @@ class UserControllerTest(
               }
             }
         }
-
         it("회원정보 수정 실패 : 서버 내부 오류") {
           // given
           val userId = 1L
@@ -484,7 +477,7 @@ class UserControllerTest(
           val result =
             webTestClient.patch()
               .uri("/api/v1/user/{userId}", userId)
-              .header("Authorization", "Bearer token")
+              .header("Authorization", CommonTest.TEST_TOKEN)
               .contentType(MediaType.MULTIPART_FORM_DATA)
               .body(BodyInserters.fromMultipartData(bodyBuilder.build()))
               .exchange()
@@ -527,12 +520,10 @@ class UserControllerTest(
             }
         }
       }
-
       describe("프로필 조회 API") {
         it("조회 성공") {
           // given
           val userId = 1L
-          val token = "Bearer test"
           val data =
             GetUserProfileResponse.builder()
               .userId(userId)
@@ -550,7 +541,7 @@ class UserControllerTest(
           val result =
             webTestClient.get()
               .uri("/api/v1/user/{userId}", userId)
-              .header("Authorization", token)
+              .header("Authorization", CommonTest.TEST_TOKEN)
               .exchange()
 
           // then
@@ -582,11 +573,9 @@ class UserControllerTest(
               }
             }
         }
-
         it("조회 실패 : 권한이 없는 토큰") {
           // given
           val userId = 1L
-          val token = "Bearer test"
           val response =
             FailMessageResponse.builder().message(UserErrorCode.NOT_ALLOWED.message()).build()
           every { authClient.getTokenInfo(any()) } throws ServiceException(UserErrorCode.NOT_ALLOWED)
@@ -595,7 +584,7 @@ class UserControllerTest(
           val result =
             webTestClient.get()
               .uri("/api/v1/user/{userId}", userId)
-              .header("Authorization", token)
+              .header("Authorization", CommonTest.TEST_TOKEN)
               .exchange()
 
           // then
@@ -619,11 +608,9 @@ class UserControllerTest(
               }
             }
         }
-
         it("조회 실패 : 서버 내부 오류") {
           // given
           val userId = 1L
-          val token = "Bearer test"
           every { authClient.getTokenInfo(any()) } throws RuntimeException("서버 내부 오류")
           val response = FailMessageResponse.serverError
 
@@ -631,7 +618,7 @@ class UserControllerTest(
           val result =
             webTestClient.get()
               .uri("/api/v1/user/{userId}", userId)
-              .header("Authorization", token)
+              .header("Authorization", CommonTest.TEST_TOKEN)
               .exchange()
 
           // then
@@ -650,11 +637,12 @@ class UserControllerTest(
                 path { "userId" mean "사용자 아이디" }
                 header { "Authorization" mean "Bearer token" }
               }
-              response { body { "message" type Strings mean "에러 메시지" } }
+              response {
+                body { "message" type Strings mean "에러 메시지" }
+              }
             }
         }
       }
-
       describe("탈퇴 API") {
         it("탈퇴 성공") {
           // given
@@ -664,13 +652,14 @@ class UserControllerTest(
           )
           every { authValidator.checkIfAccessTokenAndGetUserId(any()) } returns userId.toString()
           every { authValidator.checkIfUserIsSelf(any(), any()) } returns Unit
+          every { serverClient.getOwnedServerList(any()) } returns ApiResponse(data = emptyList())
           every { userService.exitUser(userId) } returns true
 
           // when
           val result =
             webTestClient.delete()
               .uri("/api/v1/user/{userId}", userId)
-              .header("Authorization", "Bearer token")
+              .header("Authorization", CommonTest.TEST_TOKEN)
               .exchange()
 
           // then
@@ -693,7 +682,6 @@ class UserControllerTest(
               }
             }
         }
-
         it("탈퇴 실패 : 권한이 없는 토큰") {
           // given
           val userId = 1L
@@ -703,7 +691,7 @@ class UserControllerTest(
           val result =
             webTestClient.delete()
               .uri("/api/v1/user/{userId}", userId)
-              .header("Authorization", "Bearer token")
+              .header("Authorization", CommonTest.TEST_TOKEN)
               .exchange()
 
           // then
@@ -724,7 +712,6 @@ class UserControllerTest(
               }
             }
         }
-
         it("탈퇴 실패 : 서버 내부 오류") {
           // given
           val userId = 1L
@@ -755,6 +742,62 @@ class UserControllerTest(
               }
               response {
                 body { "message" type Strings mean "에러 메시지" }
+              }
+            }
+        }
+        it("탈퇴 실패 : 서버장 권한을 가지고 있어 탈퇴 불가") {
+          // given
+          val serverThemeInfo =
+            ServerThemeInfo(
+              CommonTest.TEST_SERVER_ID,
+              CommonTest.TEST_SERVER_NAME,
+            )
+          val serverList =
+            ServerSimpleInfo(
+              CommonTest.TEST_SERVER_ID,
+              CommonTest.TEST_SERVER_NAME,
+              CommonTest.TEST_USERNAME,
+              false,
+              emptyList(),
+              serverThemeInfo,
+            )
+          every { authClient.getTokenInfo(any()) }.returns(
+            ApiResponse(data = TokenInfo(TokenType.ACCESS, CommonTest.TEST_USER_ID.toString())),
+          )
+          every { authValidator.checkIfAccessTokenAndGetUserId(any()) } returns CommonTest.TEST_USER_ID.toString()
+          every { authValidator.checkIfUserIsSelf(any(), any()) } returns Unit
+          every { serverClient.getOwnedServerList(any()) } returns
+            ApiResponse(
+              data =
+                listOf(
+                  serverList,
+                ),
+            )
+
+          // when
+          val result =
+            webTestClient.delete()
+              .uri("/api/v1/user/{userId}", CommonTest.TEST_USER_ID)
+              .header("Authorization", CommonTest.TEST_TOKEN)
+              .exchange()
+
+          // then
+          val docsRoot =
+            result
+              .expectStatus().is4xxClientError
+              .expectBody()
+
+          // docs
+          docsRoot
+            .restDoc(
+              identifier = "exitUser409",
+              description = "탈퇴 API",
+            ) {
+              request {
+                path { "userId" mean "사용자 아이디" }
+                header {
+                  "Authorization" mean "jwt 토큰 정보"
+                }
               }
             }
         }

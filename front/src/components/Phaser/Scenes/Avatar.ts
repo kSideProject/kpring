@@ -1,6 +1,7 @@
 import { Scene } from "phaser";
 import { skins } from "../Avatar/avatarAssets";
-import { getRandomCostume } from "../../../utils/randomCostume";
+import { getRandomCostume } from "../Avatar/randomCostume";
+import { createAnimations } from "../Avatar/createAnimations";
 
 // ** 서버 접속 시 랜덤으로 캐릭터 생성
 const getRandomAssets = (assets: string[]): string => {
@@ -31,22 +32,22 @@ export const createRandomAvatar = (
         0,
         0,
         "top-costume-texture",
-        randomTopCostumeFrame
+        randomTopCostumeFrame.frame
       );
       avatarContainer.add(costumeSprite);
     }
 
     // 아바타 코스튬(하의)
-    const randomCostumeFrame = getRandomCostume(
+    const randomBottomCostumeFrame = getRandomCostume(
       scene,
       "bottom-costume-texture"
     );
-    if (randomCostumeFrame) {
+    if (randomBottomCostumeFrame) {
       const costumeSprite = scene.add.sprite(
         0,
         0,
         "bottom-costume-texture",
-        randomCostumeFrame
+        randomBottomCostumeFrame.frame
       );
       avatarContainer.add(costumeSprite);
     }
@@ -58,9 +59,22 @@ export const createRandomAvatar = (
         0,
         0,
         "hair-texture",
-        randomHairFrame
+        randomHairFrame.frame
       );
       avatarContainer.add(costumeSprite);
+    }
+
+    if (randomBottomCostumeFrame && randomTopCostumeFrame && randomHairFrame) {
+      createAnimations(
+        scene,
+        randomSkin,
+        randomTopCostumeFrame?.key,
+        randomTopCostumeFrame?.color,
+        randomBottomCostumeFrame?.key,
+        randomBottomCostumeFrame?.color,
+        randomHairFrame?.key,
+        randomHairFrame?.color
+      );
     }
 
     scene.physics.world.enable(avatarContainer);

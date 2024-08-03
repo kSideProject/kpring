@@ -90,6 +90,20 @@ class ServerService(
       }
   }
 
+  override fun getOwnedServerList(userId: String): List<ServerSimpleInfo> {
+    return getServerProfilePort.getOwnedProfiles(userId)
+      .map { profile ->
+        ServerSimpleInfo(
+          id = profile.server.id!!,
+          name = profile.server.name,
+          hostName = profile.server.host.name,
+          bookmarked = profile.bookmarked,
+          categories = profile.server.categories.map(Category::toInfo),
+          theme = profile.server.theme.toInfo(),
+        )
+      }
+  }
+
   @Transactional
   override fun inviteUser(
     serverId: String,

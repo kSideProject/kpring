@@ -62,7 +62,10 @@ class UserServiceImpl(
   }
 
   override fun exitUser(userId: Long): Boolean {
-    TODO("Not yet implemented")
+    val user = getUser(userId)
+    userRepository.delete(user)
+
+    return true
   }
 
   override fun createUser(request: CreateUserRequest): CreateUserResponse {

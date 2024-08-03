@@ -10,6 +10,7 @@ import kpring.server.adapter.output.mongo.repository.ServerProfileRepository
 import kpring.server.adapter.output.mongo.repository.ServerRepository
 import kpring.server.application.port.output.GetServerProfilePort
 import kpring.server.domain.ServerProfile
+import kpring.server.domain.ServerRole
 import org.springframework.stereotype.Component
 
 @Component
@@ -73,6 +74,42 @@ class GetServerProfileMongoImpl(
     val serverMap = mapOf(*servers.toTypedArray())
 
     // mapping
+    return serverProfileEntities.map {
+      val serverEntity = serverMap[it.serverId]!!
+      val server = serverEntity.toDomain()
+      ServerProfile(
+        id = serverEntity.id,
+        server = server,
+        userId = it.userId,
+        name = it.name,
+        imagePath = it.imagePath,
+        role = it.role,
+        bookmarked = it.bookmarked,
+      )
+    }
+  }
+
+  override fun getOwnedProfiles(userId: String): List<ServerProfile> {
+    val qProfile = QServerProfileEntity.serverProfileEntity
+    val serverProfileEntities =
+      serverProfileRepository.findAll(
+        qProfile.userId.eq(userId)
+          .and(qProfile.role.eq(ServerRole.OWNER)),
+      ).toList()
+
+    val targetServerIds =
+      serverProfileEntities
+        .map { it.serverId!! }
+
+    val qServer = QServerEntity.serverEntity
+
+    val servers =
+      serverRepository.findAll(
+        qServer.id.`in`(targetServerIds),
+      ).map { it.id to it }
+
+    val serverMap = mapOf(*servers.toTypedArray())
+
     return serverProfileEntities.map {
       val serverEntity = serverMap[it.serverId]!!
       val server = serverEntity.toDomain()

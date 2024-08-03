@@ -9,7 +9,7 @@ import org.springframework.web.client.support.RestClientAdapter
 import org.springframework.web.service.invoker.HttpServiceProxyFactory
 
 @Configuration
-class ClientConfig {
+class AuthConfig {
   @Value("\${auth.url}")
   private val authUrl: String? = null
 

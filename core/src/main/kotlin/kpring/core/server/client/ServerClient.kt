@@ -14,4 +14,9 @@ interface ServerClient {
     @RequestHeader("Authorization") token: String,
     @ModelAttribute condition: GetServerCondition,
   ): ResponseEntity<ApiResponse<List<ServerSimpleInfo>>>
+
+  @GetExchange("/api/v1/server/host")
+  fun getOwnedServerList(
+    @RequestHeader("Authorization") token: String,
+  ): ApiResponse<List<ServerSimpleInfo>>
 }

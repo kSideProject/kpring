@@ -11,9 +11,19 @@ export class Map extends Scene {
   }
 
   create() {
+    const campingMap = this.make.tilemap({ key: "camping" });
+    const campingGroundTilesets = campingMap.addTilesetImage(
+      "camping_ground_tilesets",
+      "camping_ground_tilesets"
+    );
+
+    if (campingGroundTilesets) {
+      campingMap.createLayer("camping_ground", campingGroundTilesets);
+    }
+
     this.avatar = createRandomAvatar(this, 550, 350);
     this.add.existing(this.avatar);
-    this.cameras.main.setZoom(3);
+    this.cameras.main.setZoom(2);
 
     if (this.input.keyboard) {
       this.keyboards = this.input.keyboard.createCursorKeys();

@@ -11,6 +11,8 @@ export const createAnimations = (
   hairColorKey: string
 ): void => {
   // 피부색
+  const frameRate = 20;
+
   scene.anims.create({
     key: `${skinKey}-walk-left`,
     frames: scene.anims.generateFrameNames(skinKey, {
@@ -19,7 +21,7 @@ export const createAnimations = (
       end: 8,
       suffix: ".png",
     }),
-    frameRate: 10,
+    frameRate: frameRate,
     repeat: -1,
   });
 
@@ -31,7 +33,7 @@ export const createAnimations = (
       end: 8,
       suffix: ".png",
     }),
-    frameRate: 10,
+    frameRate: frameRate,
     repeat: -1,
   });
 
@@ -43,7 +45,7 @@ export const createAnimations = (
       end: 8,
       suffix: ".png",
     }),
-    frameRate: 10,
+    frameRate: frameRate,
     repeat: -1,
   });
 
@@ -55,7 +57,7 @@ export const createAnimations = (
       end: 8,
       suffix: ".png",
     }),
-    frameRate: 10,
+    frameRate: frameRate,
     repeat: -1,
   });
 
@@ -68,7 +70,7 @@ export const createAnimations = (
       end: 8,
       suffix: ".png",
     }),
-    frameRate: 10,
+    frameRate: frameRate,
     repeat: -1,
   });
 
@@ -80,7 +82,7 @@ export const createAnimations = (
       end: 8,
       suffix: ".png",
     }),
-    frameRate: 10,
+    frameRate: frameRate,
     repeat: -1,
   });
 
@@ -92,7 +94,7 @@ export const createAnimations = (
       end: 8,
       suffix: ".png",
     }),
-    frameRate: 10,
+    frameRate: frameRate,
     repeat: -1,
   });
 
@@ -104,7 +106,7 @@ export const createAnimations = (
       end: 8,
       suffix: ".png",
     }),
-    frameRate: 10,
+    frameRate: frameRate,
     repeat: -1,
   });
 
@@ -117,7 +119,7 @@ export const createAnimations = (
       end: 8,
       suffix: ".png",
     }),
-    frameRate: 10,
+    frameRate: frameRate,
     repeat: -1,
   });
 
@@ -129,7 +131,7 @@ export const createAnimations = (
       end: 8,
       suffix: ".png",
     }),
-    frameRate: 10,
+    frameRate: frameRate,
     repeat: -1,
   });
 
@@ -141,7 +143,7 @@ export const createAnimations = (
       end: 8,
       suffix: ".png",
     }),
-    frameRate: 10,
+    frameRate: frameRate,
     repeat: -1,
   });
 
@@ -153,7 +155,7 @@ export const createAnimations = (
       end: 8,
       suffix: ".png",
     }),
-    frameRate: 10,
+    frameRate: frameRate,
     repeat: -1,
   });
 
@@ -166,7 +168,7 @@ export const createAnimations = (
       end: 8,
       suffix: ".png",
     }),
-    frameRate: 10,
+    frameRate: frameRate,
     repeat: -1,
   });
 
@@ -178,7 +180,7 @@ export const createAnimations = (
       end: 8,
       suffix: ".png",
     }),
-    frameRate: 10,
+    frameRate: frameRate,
     repeat: -1,
   });
 
@@ -190,7 +192,7 @@ export const createAnimations = (
       end: 8,
       suffix: ".png",
     }),
-    frameRate: 10,
+    frameRate: frameRate,
     repeat: -1,
   });
 
@@ -202,9 +204,7 @@ export const createAnimations = (
       end: 8,
       suffix: ".png",
     }),
-    frameRate: 10,
+    frameRate: frameRate,
     repeat: -1,
   });
-
-  //액세서리
 };

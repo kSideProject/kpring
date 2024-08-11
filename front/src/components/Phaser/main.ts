@@ -8,18 +8,17 @@ import { Map } from "./Scenes/Map";
 const config: Phaser.Types.Core.GameConfig = {
   type: AUTO,
   parent: "map-container",
+  width: window.innerWidth,
+  height: window.innerHeight,
   physics: {
     default: "arcade",
-    arcade: { debug: false },
+    arcade: { debug: true },
   },
-  scene: [
-    //     Boot,
-    Preloader,
-    Map,
-    //     MainMenu,
-    //     MainGame,
-    //     GameOver
-  ],
+  scale: {
+    mode: Phaser.Scale.RESIZE,
+    autoCenter: Phaser.Scale.CENTER_BOTH,
+  },
+  scene: [Preloader, Map],
 };
 
 const EnterServer = (parent: string) => {

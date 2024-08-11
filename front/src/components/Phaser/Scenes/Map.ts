@@ -95,6 +95,7 @@ export class Map extends Scene {
       tent?.setCollisionByProperty({ collides: true });
 
       const debugGraphic = this.add.graphics().setAlpha(0.7);
+
       trailer?.renderDebug(debugGraphic, {
         tileColor: null,
         collidingTileColor: new Phaser.Display.Color(243, 234, 48, 255),
@@ -136,12 +137,19 @@ export class Map extends Scene {
         collidingTileColor: new Phaser.Display.Color(243, 234, 48, 255),
         faceColor: new Phaser.Display.Color(48, 38, 37, 255),
       });
-    }
+      this.avatar = createRandomAvatar(this, 550, 350);
+      this.add.existing(this.avatar);
+      this.avatar.setScale(2);
+      this.cameras.main.startFollow(this.avatar);
 
-    this.avatar = createRandomAvatar(this, 550, 350);
-    this.add.existing(this.avatar);
-    this.avatar.setScale(2);
-    this.cameras.main.startFollow(this.avatar);
+      if (trailer) this.physics.add.collider(this.avatar, trailer);
+      if (tent) this.physics.add.collider(this.avatar, tent);
+      if (water) this.physics.add.collider(this.avatar, water);
+      if (rv) this.physics.add.collider(this.avatar, rv);
+      if (tree1) this.physics.add.collider(this.avatar, tree1);
+      if (tree2) this.physics.add.collider(this.avatar, tree2);
+      if (treehouse) this.physics.add.collider(this.avatar, treehouse);
+    }
 
     if (this.input.keyboard) {
       this.keyboards = this.input.keyboard.createCursorKeys();

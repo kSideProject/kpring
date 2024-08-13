@@ -19,7 +19,7 @@ export const createRandomAvatar = (
     const avatarContainer = scene.add.container(x, y);
 
     // 아바타 피부색
-    const skinSprite = scene.add.sprite(0, 0, randomSkin);
+    const skinSprite = scene.add.sprite(7, 5, randomSkin);
     avatarContainer.add(skinSprite);
 
     // 아바타 코스튬(상의)
@@ -29,8 +29,8 @@ export const createRandomAvatar = (
     );
     if (randomTopCostumeFrame) {
       const costumeSprite = scene.add.sprite(
-        0,
-        0,
+        7,
+        5,
         "top-costume-texture",
         randomTopCostumeFrame.frame
       );
@@ -44,8 +44,8 @@ export const createRandomAvatar = (
     );
     if (randomBottomCostumeFrame) {
       const costumeSprite = scene.add.sprite(
-        0,
-        0,
+        7,
+        5,
         "bottom-costume-texture",
         randomBottomCostumeFrame.frame
       );
@@ -56,8 +56,8 @@ export const createRandomAvatar = (
     const randomHairFrame = getRandomCostume(scene, "hair-texture");
     if (randomHairFrame) {
       const costumeSprite = scene.add.sprite(
-        0,
-        0,
+        7,
+        5,
         "hair-texture",
         randomHairFrame.frame
       );
@@ -79,7 +79,7 @@ export const createRandomAvatar = (
 
     scene.physics.world.enable(avatarContainer);
     const body = avatarContainer.body as Phaser.Physics.Arcade.Body;
-    body.setSize(50, 50);
+    body.setSize(14, 20);
 
     return avatarContainer;
   } else {

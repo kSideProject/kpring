@@ -7,6 +7,7 @@ import { ServerMap } from "./components/Phaser/ServerMap";
 import Home from "./pages/Home";
 import Join from "./pages/Join";
 import Login from "./pages/Login";
+import VideoCallBoxList from "./components/VideoCall/VideoCallBoxList";
 
 function App() {
   return (

@@ -37,3 +37,16 @@ jobs:
       # Gradle test를 실행한다
       - name: Test with Gradle
         run: ./gradlew --info test
+        if: github.ref != 'refs/heads/dev'
+
+      - name: Test User module with dev profile
+        run: ./gradlew --info test -Dspring.profiles.active=dev --project-dir=user
+        if: github.ref == 'refs/heads/dev'
+
+      - name: Test Server module with dev profile
+        run: ./gradlew --info test -Dspring.profiles.active=dev --project-dir=server
+        if: github.ref == 'refs/heads/dev'
+
+      - name: Test other modules with default profile
+        run: ./gradlew --info test -x :user:test -x :server:test
+        if: github.ref == 'refs/heads/dev'

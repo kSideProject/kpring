@@ -1,7 +1,8 @@
 import React from 'react';
-import OpenViduVideoComponent from './OvVideo';
+import OpenViduVideoComponent from './OpenViduVideoComponent';
 import './UserVideo.css';
 import { StreamManager } from 'openvidu-browser';
+import { Box } from '@mui/material';
 
 
 interface UserVideoComponentProps {
@@ -17,10 +18,10 @@ const UserVideoComponent: React.FC<UserVideoComponentProps> = ({ streamManager }
     return (
         <div>
             {streamManager !== undefined ? (
-                <div className="streamcomponent">
-                    {/* OpenViduVideoComponent : 사용자 비디오 */}
-                    <OpenViduVideoComponent streamManager={streamManager} />
-                    <div><p>{getNicknameTag()}</p></div>
+                <div>
+                    {/* OpenViduVideoComponent : 사용자 비디오 컴포넌트 */}
+                    <OpenViduVideoComponent streamManager={streamManager}/>
+                    <div><p className='absolute bottom-0 left-0 text-white'>{getNicknameTag()}</p></div>
                 </div>
             ) : null}
         </div>

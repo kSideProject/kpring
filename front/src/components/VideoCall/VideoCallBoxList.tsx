@@ -2,8 +2,9 @@ import { Device, OpenVidu, Publisher, Session, StreamManager, } from 'openvidu-b
 
 import axios from 'axios';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import './video.css';
+
 import UserVideoComponent from './UserVideoComponents';
+import { Box } from '@mui/material';
 
 // 서버 주소 (현재는 튜토리얼 서버)
 const APPLICATION_SERVER_URL = "http://localhost:5000/";
@@ -12,23 +13,26 @@ const APPLICATION_SERVER_URL = "http://localhost:5000/";
 // 화상회의 주요 구성 요소 컴포넌트 : 화상회의 참여 및 관리 기능
 const VideoCallBoxList = () => {
     const [mySessionId, setMySessionId] = useState('SessionA') //세션 아이디
-    const [myUserName, setMyUserName] = useState(`Participant${Math.floor(Math.random() * 100)}`) //참가자 닉네임
+    const [myUserName, setMyUserName] = useState(`Participant${Math.floor(Math.random() * 100)}`) //참가자 닉네임(지금은 임의로)
     const [session, setSession] = useState<Session | ''>('');
     const [mainStreamManager, setMainStreamManager] = useState<Publisher | null >(null);
-    const [publisher, setPublisher] = useState<Publisher | null>(null); //로컬 웹캠 스트림
-    const [subscribers, setSubscribers] = useState<StreamManager[]>([]); // 화상 통화에서 다른 사용자 활성 스트림 저장
+    const [publisher, setPublisher] = useState<Publisher | null>(null); //영상 송출자 : 로컬 웹캠 스트림
+    const [subscribers, setSubscribers] = useState<StreamManager[]>([]); // 영상 시청자 : 다른 사용자 활성 스트림
     const [currentVideoDevice, setCurrentVideoDevice] = useState<Device | null>(null);
 
     const OV = useRef(new OpenVidu());
 
+    //세션아이디 변경
     const handleChangeSessionId = useCallback((e : React.ChangeEvent<HTMLInputElement>) => {
         setMySessionId(e.target.value);
     }, []);
 
+    // 유저이름 직접 변경
     const handleChangeUserName = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         setMyUserName(e.target.value);
     }, []);
 
+    // 
     const handleMainVideoStream = useCallback((stream: StreamManager) => {
       const publisher = stream as Publisher; // 타입 변환
   
@@ -37,6 +41,7 @@ const VideoCallBoxList = () => {
       }
   }, [mainStreamManager]);
 
+    // join 버튼을 클릭한 후에 호출됨. (사용자 닉네임 입력, server에서 두개의 토큰을 가져옴)
     const joinSession = useCallback(() => {
         const mySession = OV.current.initSession();
 
@@ -116,12 +121,13 @@ const VideoCallBoxList = () => {
         setPublisher(null);
     }, [session]);
 
+    // 비디오 장치 전환 기능 (이후에는 자동 스위치가 아니라, 목록만 불러와서 사용자가 직접 선택할 수 있게끔 하는게 좋아보임)
     const switchCamera = useCallback(async () => {
         try {
-            const devices = await OV.current.getDevices();
-            const videoDevices = devices.filter(device => device.kind === 'videoinput');
+            const devices = await OV.current.getDevices(); //미디어 장치 목록 가져오기
+            const videoDevices = devices.filter(device => device.kind === 'videoinput'); // 그 중 카메라만 추출
     
-            if (videoDevices && videoDevices.length > 1 && currentVideoDevice) {
+            if (videoDevices && videoDevices.length > 1 && currentVideoDevice) { 
                 const newVideoDevice = videoDevices.filter(device => device.deviceId !== currentVideoDevice.deviceId);
     
                 if (newVideoDevice.length > 0) {
@@ -173,34 +179,35 @@ const VideoCallBoxList = () => {
         };
     }, [leaveSession]);
 
-    /**
+  /**
      * --------------------------------------------
-     * GETTING A TOKEN FROM YOUR APPLICATION SERVER
+     * 애플리케이션 서버에서 토큰 받기
      * --------------------------------------------
-     * The methods below request the creation of a Session and a Token to
-     * your application server. This keeps your OpenVidu deployment secure.
+     * 아래의 메서드는 애플리케이션 서버에 세션과 토큰 생성을 요청합니다.
+     * 이렇게 하면 OpenVidu 배포가 안전하게 유지됩니다.
      *
-     * In this sample code, there is no user control at all. Anybody could
-     * access your application server endpoints! In a real production
-     * environment, your application server must identify the user to allow
-     * access to the endpoints.
+     * 이 샘플 코드에서는 사용자 제어가 전혀 없습니다. 누구든지
+     * 애플리케이션 서버의 엔드포인트에 접근할 수 있습니다! 실제 운영 환경에서는
+     * 애플리케이션 서버가 사용자를 식별하여 엔드포인트에 대한 접근을 허용해야 합니다.
      *
-     * Visit https://docs.openvidu.io/en/stable/application-server to learn
-     * more about the integration of OpenVidu in your application server.
+     * OpenVidu를 애플리케이션 서버에 통합하는 방법에 대한 자세한 내용은
+     * https://docs.openvidu.io/en/stable/application-server 를 방문하세요.
      */
+
+    // 서버에 세션아이디로 getToken
     const getToken = useCallback(async () => {
         return createSession(mySessionId).then(sessionId =>
             createToken(sessionId),
         );
     }, [mySessionId]);
-
+    //세션 id로 세션 생성하고 세션 아이디 반환
     const createSession = async (sessionId : string) => {
         const response = await axios.post(APPLICATION_SERVER_URL + 'api/sessions', { customSessionId: sessionId }, {
             headers: { 'Content-Type': 'application/json', },
         });
         return response.data; // The sessionId
     };
-
+    //세션 아이디로 토큰 요청, 토큰 반환
     const createToken = async (sessionId : string) => {
         const response = await axios.post(APPLICATION_SERVER_URL + 'api/sessions/' + sessionId + '/connections', {}, {
             headers: { 'Content-Type': 'application/json', },
@@ -208,14 +215,13 @@ const VideoCallBoxList = () => {
         return response.data; // The token
     };
     return (
-        <div className="container">
+        <div className='w-100%'>
             {session === '' ? (
                 <div id="join">
                     <div id="join-dialog" className="jumbotron vertical-center">
-                        <h1> Join a video session </h1>
                         <form className="form-group" onSubmit={joinSession}>
                             <p>
-                                <label>Participant: </label>
+                                <label>참가자 이름: </label>
                                 <input
                                     className="form-control"
                                     type="text"
@@ -226,7 +232,7 @@ const VideoCallBoxList = () => {
                                 />
                             </p>
                             <p>
-                                <label> Session: </label>
+                                <label> 서버 이름: </label>
                                 <input
                                     className="form-control"
                                     type="text"
@@ -237,7 +243,7 @@ const VideoCallBoxList = () => {
                                 />
                             </p>
                             <p className="text-center">
-                                <input className="btn btn-lg btn-success" name="commit" type="submit" value="JOIN" />
+                                <input className="text-white bg-black rounded-md" name="commit" type="submit" value="JOIN" />
                             </p>
                         </form>
                     </div>
@@ -247,16 +253,16 @@ const VideoCallBoxList = () => {
             {session !== undefined ? (
                 <div id="session">
                     <div id="session-header">
-                        <h1 id="session-title">{mySessionId}</h1>
+                        <h1 id="session-title">서버 이름 : {mySessionId}</h1>
                         <input
-                            className="btn btn-large btn-danger"
+                            className="text-white bg-black rounded-md"
                             type="button"
                             id="buttonLeaveSession"
                             onClick={leaveSession}
                             value="Leave session"
                         />
                         <input
-                            className="btn btn-large btn-success"
+                            className="text-white bg-black rounded-md"
                             type="button"
                             id="buttonSwitchCamera"
                             onClick={switchCamera}
@@ -264,26 +270,27 @@ const VideoCallBoxList = () => {
                         />
                     </div>
 
-                    {mainStreamManager !== null ? (
+                    {/* {mainStreamManager !== null ? (
                         <div id="main-video" className="col-md-6">
                             {mainStreamManager && <UserVideoComponent streamManager={mainStreamManager} />} 
 
                         </div>
-                    ) : null}
-                    <div id="video-container" className="col-md-6">
+                    ) : null} */}
+                    <Box sx={{ display: 'flex', flexDirection: 'row', gap: '16px' }}>
                         {publisher !== null ? (
-                            <div className="stream-container col-md-6 col-xs-6" onClick={() => handleMainVideoStream(publisher)}>
-                                { publisher && <UserVideoComponent
-                                    streamManager={publisher} />}
-                            </div>
-                        ) : null}
-                        {subscribers.map((sub, i) => (
-                            <div key={sub.id} className="stream-container col-md-6 col-xs-6" onClick={() => handleMainVideoStream(sub)}>
-                                <span>{sub.id}</span>
-                                <UserVideoComponent streamManager={sub} />
-                            </div>
-                        ))}
-                    </div>
+                                <div className='test' onClick={() => handleMainVideoStream(publisher)}>
+                                    { publisher && <UserVideoComponent
+                                        streamManager={publisher} />}
+                                </div>
+                            ) : null}
+                            {subscribers.map((sub, i) => (
+                                <div key={sub.id} onClick={() => handleMainVideoStream(sub)}>
+                                    <UserVideoComponent streamManager={sub} />
+                                </div>
+                            ))}
+                    </Box>
+
+                    
                 </div>
             ) : null}
         </div>

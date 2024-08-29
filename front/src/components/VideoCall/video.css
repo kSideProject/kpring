@@ -1,4 +1,4 @@
-html {
+/* html {
 	position: relative;
 	min-height: 100%;
 }
@@ -221,11 +221,3 @@ a:hover .demo-logo {
 
 
 /* xs ans md screen resolutions*/
-
-@media screen and (max-width: 991px) {
-	.vertical-center {
-		width: 85%;
-		padding-top: 10px;
-		top: 57%;
-	}
-}

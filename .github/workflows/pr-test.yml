@@ -7,6 +7,11 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        module: [user, server]
+
     steps:
       - uses: actions/checkout@v4
 
@@ -37,6 +42,8 @@ jobs:
       # Gradle test를 실행한다
       - name: Test with Gradle
         run: |
-          ./gradlew --info test -Dspring.profiles.active=dev --project-dir=user \
-          && ./gradlew --info test -Dspring.profiles.active=dev --project-dir=server \
-          && ./gradlew --info test -x :user:test -x :server:test
+          if [ "${{ matrix.module }}" == "user" ] || [ "${{ matrix.module }}" == "server" ]; then
+          ./gradlew :${{ matrix.module }}:test -Dspring.profiles.active=dev
+          else
+          ./gradlew --info test
+          fi

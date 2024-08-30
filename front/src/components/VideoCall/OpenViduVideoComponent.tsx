@@ -16,7 +16,7 @@ const OpenViduVideoComponent: React.FC<OpenViduVideoComponentProps> = ({ streamM
         }
     }, [streamManager]);
 
-    return <video className='rounded-lg w-2/6 relative' autoPlay ref={videoRef} />;
+    return <video className='w-40 h-32 rounded-lg' autoPlay ref={videoRef} />;
 }
 
 export default OpenViduVideoComponent;

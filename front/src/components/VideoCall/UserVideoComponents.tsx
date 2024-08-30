@@ -16,15 +16,15 @@ const UserVideoComponent: React.FC<UserVideoComponentProps> = ({ streamManager }
     }
 
     return (
-        <div>
+        <Box sx={{height: '100%'}}>
             {streamManager !== undefined ? (
-                <div>
+                <Box sx={{width: '100%', height: '100%', backgroundColor: 'black', borderRadius: '10px', position: 'relative'}}>
                     {/* OpenViduVideoComponent : 사용자 비디오 컴포넌트 */}
                     <OpenViduVideoComponent streamManager={streamManager}/>
-                    <div><p className='absolute bottom-0 left-0 text-white'>{getNicknameTag()}</p></div>
-                </div>
+                    <div><p className='text-white absolute bottom-0 left-0'>{getNicknameTag()}</p></div>
+                </Box>
             ) : null}
-        </div>
+        </Box>
     );
 }
 

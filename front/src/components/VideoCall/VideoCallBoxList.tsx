@@ -276,9 +276,13 @@ const VideoCallBoxList = () => {
 
                         </div>
                     ) : null} */}
-                    <Box sx={{ display: 'flex', flexDirection: 'row', gap: '16px' }}>
+                    <Box sx={{ 
+                        display: 'flex', 
+                        gap: '16px',
+                        height: '128px' 
+                        }}>
                         {publisher !== null ? (
-                                <div className='test' onClick={() => handleMainVideoStream(publisher)}>
+                                <div onClick={() => handleMainVideoStream(publisher)} className='h-full'>
                                     { publisher && <UserVideoComponent
                                         streamManager={publisher} />}
                                 </div>

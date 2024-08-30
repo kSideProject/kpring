@@ -37,6 +37,6 @@ jobs:
       # Gradle test를 실행한다
       - name: Test with Gradle
         run: |
-          ./gradlew --info :user:test -Dspring.profiles.active=dev \
-          && ./gradlew --info :server:test -Dspring.profiles.active=dev \
+          ./gradlew :user:test -Dspring.profiles.active=dev \
+          && ./gradlew :server:test -Dspring.profiles.active=dev \
           && ./gradlew --info test -x :user:test -x :server:test

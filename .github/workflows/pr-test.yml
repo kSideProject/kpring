@@ -7,11 +7,6 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        module: [user, server]
-
     steps:
       - uses: actions/checkout@v4
 
@@ -42,6 +37,6 @@ jobs:
       # Gradle test를 실행한다
       - name: Test with Gradle
         run: |
-          ./gradlew --info test -Dspring.profiles.active=dev --project-dir=user \
-          && ./gradlew --info test -Dspring.profiles.active=dev --project-dir=server \
+          ./gradlew --info :user:test -Dspring.profiles.active=dev \
+          && ./gradlew --info :server:test -Dspring.profiles.active=dev \
           && ./gradlew --info test -x :user:test -x :server:test

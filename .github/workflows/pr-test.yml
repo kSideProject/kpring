@@ -42,8 +42,6 @@ jobs:
       # Gradle test를 실행한다
       - name: Test with Gradle
         run: |
-          if [ "${{ matrix.module }}" == "user" ] || [ "${{ matrix.module }}" == "server" ]; then
-          ./gradlew :${{ matrix.module }}:test -Dspring.profiles.active=dev
-          else
-          ./gradlew --info test
-          fi
+          ./gradlew --info test -Dspring.profiles.active=dev --project-dir=user \
+          && ./gradlew --info test -Dspring.profiles.active=dev --project-dir=server \
+          && ./gradlew --info test -x :user:test -x :server:test

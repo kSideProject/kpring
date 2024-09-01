@@ -9,6 +9,7 @@ import kpring.chat.global.exception.GlobalException
 import kpring.core.chat.chat.dto.request.CreateChatRequest
 import kpring.core.chat.chat.dto.request.UpdateChatRequest
 import kpring.core.chat.chat.dto.response.ChatResponse
+import kpring.core.chat.model.MessageType
 import kpring.core.server.dto.ServerSimpleInfo
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.PageRequest
@@ -154,7 +155,14 @@ class ChatService(
   private fun convertChatsToResponses(chats: List<Chat>): List<ChatResponse> {
     val chatResponse =
       chats.map { chat ->
-        ChatResponse(chat.id!!, chat.isEdited(), chat.createdAt.toString(), chat.content)
+        ChatResponse(
+          id = chat.id!!,
+          sender = chat.userId,
+          messageType = MessageType.CHAT,
+          isEdited = chat.isEdited(),
+          sentAt = chat.createdAt.toString(),
+          content = chat.content,
+        )
       }
     return chatResponse
   }

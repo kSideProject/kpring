@@ -1,7 +1,11 @@
 package kpring.chat.global.config
 
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.messaging.simp.config.MessageBrokerRegistry
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource
+import org.springframework.web.filter.CorsFilter
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer
@@ -12,6 +16,7 @@ import org.springframework.web.socket.config.annotation.WebSocketTransportRegist
 class WebSocketConfig : WebSocketMessageBrokerConfigurer {
   override fun registerStompEndpoints(registry: StompEndpointRegistry) {
     registry.addEndpoint("/ws")
+      .setAllowedOrigins("http://localhost:63342")
       .withSockJS()
   }
 
@@ -23,5 +28,18 @@ class WebSocketConfig : WebSocketMessageBrokerConfigurer {
   override fun configureWebSocketTransport(registry: WebSocketTransportRegistration) {
     registry.setMessageSizeLimit(4 * 8192)
     registry.setTimeToFirstMessage(30000)
+  }
+
+  @Bean
+  fun corsFilter(): CorsFilter {
+    val config = CorsConfiguration()
+    config.allowCredentials = true
+    config.addAllowedOrigin("http://localhost:63342")
+    config.addAllowedHeader("*")
+    config.addAllowedMethod("*")
+
+    val source: UrlBasedCorsConfigurationSource = UrlBasedCorsConfigurationSource()
+    source.registerCorsConfiguration("/**", config)
+    return CorsFilter(source)
   }
 }

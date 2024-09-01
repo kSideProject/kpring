@@ -4,9 +4,9 @@ import kpring.chat.chat.service.ChatService
 import kpring.chat.global.exception.ErrorCode
 import kpring.chat.global.exception.GlobalException
 import kpring.core.auth.client.AuthClient
-import kpring.core.chat.chat.dto.request.ChatType
 import kpring.core.chat.chat.dto.request.CreateChatRequest
 import kpring.core.chat.chat.dto.request.UpdateChatRequest
+import kpring.core.chat.model.ChatType
 import kpring.core.global.dto.response.ApiResponse
 import kpring.core.server.client.ServerClient
 import kpring.core.server.dto.request.GetServerCondition

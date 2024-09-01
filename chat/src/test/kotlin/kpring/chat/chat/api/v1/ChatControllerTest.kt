@@ -13,10 +13,11 @@ import kpring.chat.global.config.TestMongoConfig
 import kpring.core.auth.client.AuthClient
 import kpring.core.auth.dto.response.TokenInfo
 import kpring.core.auth.enums.TokenType
-import kpring.core.chat.chat.dto.request.ChatType
 import kpring.core.chat.chat.dto.request.CreateChatRequest
 import kpring.core.chat.chat.dto.request.UpdateChatRequest
 import kpring.core.chat.chat.dto.response.ChatResponse
+import kpring.core.chat.model.ChatType
+import kpring.core.chat.model.MessageType
 import kpring.core.global.dto.response.ApiResponse
 import kpring.core.server.client.ServerClient
 import kpring.core.server.dto.ServerSimpleInfo
@@ -123,13 +124,17 @@ class ChatControllerTest(
 
         // Given
         val serverId = "test_server_id"
+        val chatId = ChatTest.TEST_CHAT_ID
+        val userId = CommonTest.TEST_USER_ID
         val data =
           listOf(
             ChatResponse(
-              serverId,
-              false,
-              LocalDateTime.now().toString(),
-              "sad",
+              id = chatId,
+              sender = userId,
+              messageType = MessageType.CHAT,
+              isEdited = false,
+              sentAt = LocalDateTime.now().toString(),
+              content = "content",
             ),
           )
         val serverList =
@@ -215,13 +220,17 @@ class ChatControllerTest(
 
         // Given
         val roomId = "test_room_id"
+        val chatId = ChatTest.TEST_CHAT_ID
+        val userId = CommonTest.TEST_USER_ID
         val data =
           listOf(
             ChatResponse(
-              roomId,
-              false,
-              LocalDateTime.now().toString(),
-              "sad",
+              id = chatId,
+              sender = userId,
+              messageType = MessageType.CHAT,
+              isEdited = false,
+              sentAt = LocalDateTime.now().toString(),
+              content = "content",
             ),
           )
 

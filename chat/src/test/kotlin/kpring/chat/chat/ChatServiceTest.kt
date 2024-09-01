@@ -14,9 +14,9 @@ import kpring.chat.global.ChatTest
 import kpring.chat.global.CommonTest
 import kpring.chat.global.exception.ErrorCode
 import kpring.chat.global.exception.GlobalException
-import kpring.core.chat.chat.dto.request.ChatType
 import kpring.core.chat.chat.dto.request.CreateChatRequest
 import kpring.core.chat.chat.dto.request.UpdateChatRequest
+import kpring.core.chat.model.ChatType
 import kpring.core.server.dto.ServerSimpleInfo
 import org.springframework.beans.factory.annotation.Value
 import java.util.*

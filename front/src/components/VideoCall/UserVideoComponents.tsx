@@ -1,6 +1,5 @@
 import React from 'react';
 import OpenViduVideoComponent from './OpenViduVideoComponent';
-import './UserVideo.css';
 import { StreamManager } from 'openvidu-browser';
 import { Box } from '@mui/material';
 

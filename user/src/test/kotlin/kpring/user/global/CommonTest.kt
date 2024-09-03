@@ -14,5 +14,8 @@ interface CommonTest {
     const val TEST_FRIEND_ID = 2L
     const val TEST_FRIEND_USERNAME = "friend"
     const val TEST_FRIEND_EMAIL = "test2@email.com"
+
+    const val TEST_SERVER_ID = "serverid00"
+    const val TEST_SERVER_NAME = "servername"
   }
 }

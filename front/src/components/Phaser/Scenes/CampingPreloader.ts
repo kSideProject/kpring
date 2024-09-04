@@ -37,6 +37,12 @@ export class CampingPreloader extends Scene {
       "camping_tilesets",
       "../assets/map/camping/camping_tilesets.png"
     );
+
+    this.load.image(
+      "campfire_tilesets",
+      "../assets/map/camping/campfire_tilesets.png"
+    );
+
     this.load.tilemapTiledJSON("camping", "../assets/map/camping/camping.json");
   }
 

@@ -85,9 +85,7 @@ const ServerInfoSidebar: React.FC<ServerInforProps> = ({ close, serverId }) => {
       <Divider />
       <div>
         {selectedServer?.users.map((user) => (
-          <span>
-            {user.name} : {user.id}
-          </span>
+          <span>userID: {user.id}</span>
         ))}
       </div>
 

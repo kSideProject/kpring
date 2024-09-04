@@ -2,8 +2,11 @@ import React from "react";
 import { useThemeStore } from "../../store/useThemeStore";
 import { useNavigate } from "react-router";
 import { ThemeType } from "../../types/server";
+import useEmblaCarousel from "embla-carousel-react";
+import Autoplay from "embla-carousel-autoplay";
 
 const PreviewServerMap = () => {
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay()]);
   const setTheme = useThemeStore((state) => state.setTheme);
   const navigate = useNavigate();
 
@@ -13,18 +16,25 @@ const PreviewServerMap = () => {
   };
 
   return (
-    <div>
-      <div
-        onClick={() =>
-          onClickTheme({ id: "SERVER_THEME_001", name: "숲" }, "camping")
-        }>
-        Camping
-      </div>
-      <div
-        onClick={() =>
-          onClickTheme({ id: "SERVER_THEME_002", name: "오피스" }, "beach")
-        }>
-        Beach
+    <div className="embla">
+      <div className="overflow-hidden" ref={emblaRef}>
+        <div className="embla__container">
+          <div
+            className="embla__slide bg-camping min-h-72 cursor-pointer"
+            onClick={() =>
+              onClickTheme({ id: "SERVER_THEME_001", name: "숲" }, "camping")
+            }></div>
+          <div
+            className="embla__slide bg-beach min-h-72 cursor-pointer"
+            onClick={() =>
+              onClickTheme({ id: "SERVER_THEME_002", name: "오피스" }, "beach")
+            }></div>
+          <div
+            className="embla__slide bg-camping min-h-72 cursor-pointer"
+            onClick={() =>
+              onClickTheme({ id: "SERVER_THEME_002", name: "오피스" }, "beach")
+            }></div>
+        </div>
       </div>
     </div>
   );

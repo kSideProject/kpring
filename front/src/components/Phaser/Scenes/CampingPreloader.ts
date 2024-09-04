@@ -1,7 +1,7 @@
 import { Scene } from "phaser";
 import { skinAssets } from "../Avatar/avatarAssets";
 
-export class Preloader extends Scene {
+export class CampingPreloader extends Scene {
   constructor() {
     super("Preloader");
   }
@@ -34,49 +34,13 @@ export class Preloader extends Scene {
 
     // Map
     this.load.image(
-      "camping_ground_tilesets",
-      "../assets/map/camping/ground_tilesets.png"
+      "camping_tilesets",
+      "../assets/map/camping/camping_tilesets.png"
     );
-
-    this.load.image(
-      "camping_tree1_tilesets",
-      "../assets/map/camping/tree1_tilesets.png"
-    );
-
-    this.load.image(
-      "camping_tree2_tilesets",
-      "../assets/map/camping/tree2_tilesets.png"
-    );
-
-    this.load.image(
-      "camping_rv_tilesets",
-      "../assets/map/camping/rv_tilesets.png"
-    );
-
-    this.load.image(
-      "camping_trailer_tilesets",
-      "../assets/map/camping/trailer_tilesets.png"
-    );
-
-    this.load.image(
-      "camping_tent_tilesets",
-      "../assets/map/camping/tent_tilesets.png"
-    );
-
-    this.load.image(
-      "camping_treehouse_tilesets",
-      "../assets/map/camping/treehouse_tilesets.png"
-    );
-
-    this.load.image(
-      "camping_water_tilesets",
-      "../assets/map/camping/water_tilesets.png"
-    );
-
     this.load.tilemapTiledJSON("camping", "../assets/map/camping/camping.json");
   }
 
   create() {
-    this.scene.start("Map");
+    this.scene.start("CampingMap");
   }
 }

@@ -7,14 +7,13 @@ import {
   FormGroup,
   FormLabel,
   Input,
-  Radio,
-  RadioGroup,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { JwtPayload, jwtDecode } from "jwt-decode";
 import useUpdatedServers from "../../hooks/UpdatedServer";
-import { ServerType, CategoriesType, ThemeType } from "../../types/server";
-import useFetchServers from "../../hooks/FetchServer";
+import { ServerType, CategoriesType } from "../../types/server";
+import ServerThemeSelector from "./ServerThemeSelector";
+import { useThemeStore } from "../../store/useThemeStore";
 
 interface UserIdJwtPayload extends JwtPayload {
   userId: string;
@@ -23,13 +22,14 @@ interface UserIdJwtPayload extends JwtPayload {
 const CreateServerForm = () => {
   const token = localStorage.getItem("dicoTown_AccessToken");
   const { mutate } = useUpdatedServers(token);
-
   const [serverName, setServerName] = useState("");
   const [userId, setUserId] = useState("");
-  const [theme, setTheme] = useState<ThemeType | null>(null);
   const [categories, setCategories] = useState<CategoriesType[]>([]);
+  const [hostName, setHostName] = useState("");
 
-  // 페이지가 로드 되었을 때, userId를 jwt에서 추출.
+  const { selectedTheme } = useThemeStore();
+  console.log(selectedTheme);
+
   useEffect(() => {
     if (token) {
       try {
@@ -52,12 +52,8 @@ const CreateServerForm = () => {
     setCategories((prevCategories) =>
       checked
         ? [...prevCategories, category]
-        : prevCategories.filter((category) => category.id !== value)
+        : prevCategories.filter((category) => category.id !== id)
     );
-  };
-
-  const onChangeThemeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTheme({ id: e.target.id, name: e.target.value });
   };
 
   // 서버 생성 onSubmit Handler
@@ -66,9 +62,10 @@ const CreateServerForm = () => {
 
     const newServer: ServerType = {
       serverName,
+      hostName,
       userId,
-      theme: theme as ThemeType, // 수정예정
-      categories, // 수정예정
+      theme: selectedTheme,
+      categories,
     };
 
     mutate(newServer);
@@ -105,34 +102,7 @@ const CreateServerForm = () => {
 
           <FormControl sx={{ m: 2 }}>
             <FormLabel>서버 테마</FormLabel>
-
-            <RadioGroup onChange={onChangeThemeChange} row>
-              <FormControlLabel
-                labelPlacement="top"
-                id="SERVER_THEME_001"
-                value="forest"
-                control={<Radio />}
-                label={
-                  <img
-                    src="https://images.unsplash.com/photo-1718889339117-d90a40b1250b?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                    width={100}
-                    alt="숲 테마"
-                  />
-                }></FormControlLabel>
-
-              <FormControlLabel
-                labelPlacement="top"
-                id="SERVER_THEME_002"
-                value="office"
-                control={<Radio />}
-                label={
-                  <img
-                    src="https://images.unsplash.com/photo-1718889339117-d90a40b1250b?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                    width={100}
-                    alt="숲 테마"
-                  />
-                }></FormControlLabel>
-            </RadioGroup>
+            <ServerThemeSelector />
           </FormControl>
 
           <Button type="submit">서버생성</Button>

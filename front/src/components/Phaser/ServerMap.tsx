@@ -9,12 +9,13 @@ import VideoCallBoxList from "../VideoCall/VideoCallBoxList";
 import VideoCallToolBar from "../VideoCall/VideoCallToolBar";
 
 export const ServerMap = forwardRef<ServerMapTypes, ServerMapProps>(
-  function ServerMap({ currentActiveScene }, ref) {
+  function ServerMap({ currentActiveScene, selectedTheme }, ref) {
     const mapRef = useRef<Phaser.Game | null>(null!);
 
     useLayoutEffect(() => {
       if (mapRef.current === null) {
-        mapRef.current = StartGame("map-container");
+        mapRef.current = StartGame(selectedTheme, "map-container");
+        console.log(selectedTheme);
 
         if (typeof ref === "function") {
           ref({ server: mapRef.current, scene: null });

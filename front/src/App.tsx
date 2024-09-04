@@ -3,10 +3,10 @@ import "./App.css";
 import AuthLayout from "./components/Auth/AuthLayout";
 import PrivateRoute from "./components/Auth/PrivateRoute";
 import Layout from "./components/Layout/Layout";
-import { ServerMap } from "./components/Phaser/ServerMap";
 import Home from "./pages/Home";
 import Join from "./pages/Join";
 import Login from "./pages/Login";
+import ServerMapWithTheme from "./components/Server/ServerMapWithTheme";
 
 function App() {
   return (
@@ -26,10 +26,19 @@ function App() {
             }
           />
           <Route
-            path="server/:serverId"
+            path="/server/:serverId"
             element={
               <PrivateRoute>
-                <ServerMap />
+                <ServerMapWithTheme />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/:theme"
+            element={
+              <PrivateRoute>
+                <ServerMapWithTheme />
               </PrivateRoute>
             }
           />

@@ -3,9 +3,7 @@ import axios from "axios";
 import { ServerType } from "../types/server";
 
 const createServers = async (data: ServerType, token: string) => {
-  const url = "https://kpring.duckdns.org/server/api/v1/server";
-
-  console.log(data);
+  const url = `${process.env.REACT_APP_BASE_URL}/server/api/v1/server`;
 
   try {
     const response = await axios({
@@ -14,8 +12,9 @@ const createServers = async (data: ServerType, token: string) => {
       data: {
         serverName: data.serverName,
         userId: data.userId,
-        theme: null, // 값이 안들어가요...
-        categories: null, // 값이 안들어가요...
+        hostName: data.hostName,
+        theme: data.theme?.id,
+        categories: data.categories?.map((category) => category.id),
       },
 
       headers: {

@@ -23,7 +23,7 @@ const config: Phaser.Types.Core.GameConfig = {
   },
 };
 
-export const EnterServer = (theme: ThemeType | undefined, parent: string) => {
+export const EnterServer = (theme: ThemeType | null, parent: string) => {
   let scenes: Phaser.Types.Scenes.SceneType[] = [];
 
   if (theme?.name === "숲") {

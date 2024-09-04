@@ -15,7 +15,6 @@ export const ServerMap = forwardRef<ServerMapTypes, ServerMapProps>(
     useLayoutEffect(() => {
       if (mapRef.current === null) {
         mapRef.current = StartGame(selectedTheme, "map-container");
-        console.log(selectedTheme);
 
         if (typeof ref === "function") {
           ref({ server: mapRef.current, scene: null });

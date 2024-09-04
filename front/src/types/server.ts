@@ -9,10 +9,10 @@ export interface CategoriesType {
 }
 
 export interface ServerType {
-  serverName: string;
+  name: string;
   hostName: string;
   userId: string;
-  theme: ThemeType | undefined;
+  theme: ThemeType | null;
   categories: CategoriesType[] | null;
 }
 
@@ -39,4 +39,8 @@ export interface ServerMember {
   id: number;
   name: string;
   profileImage: string;
+}
+
+export interface SelectedType extends ServerType {
+  users: ServerMember[];
 }

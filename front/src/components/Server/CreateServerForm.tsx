@@ -61,7 +61,7 @@ const CreateServerForm = () => {
     e.preventDefault();
 
     const newServer: ServerType = {
-      serverName,
+      name: serverName,
       hostName,
       userId,
       theme: selectedTheme,

@@ -10,7 +10,7 @@ const createServers = async (data: ServerType, token: string) => {
       method: "post",
       url,
       data: {
-        serverName: data.serverName,
+        serverName: data.name,
         userId: data.userId,
         hostName: data.hostName,
         theme: data.theme?.id,

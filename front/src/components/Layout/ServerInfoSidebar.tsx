@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { ServerInforProps } from "../../types/layout";
 import { Divider, Button, styled, Box, Typography } from "@mui/material";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
@@ -10,6 +10,7 @@ import Profile from "../Profile/Profile";
 import useFetchServers from "../../hooks/FetchServer";
 import axios from "axios";
 import { useThemeStore } from "../../store/useThemeStore";
+import { SelectedType, ServerType } from "../../types/server";
 
 const ServerInfoSidebar: React.FC<ServerInforProps> = ({ close, serverId }) => {
   const token = localStorage.getItem("dicoTown_AccessToken");
@@ -26,17 +27,20 @@ const ServerInfoSidebar: React.FC<ServerInforProps> = ({ close, serverId }) => {
   const { isOpen, openModal, closeModal } = useModal();
   const { data } = useFetchServers(token);
   const setTheme = useThemeStore((state) => state.setTheme);
-  const { selectedTheme } = useThemeStore();
+  const [selectedServer, setSelectedServer] = useState<SelectedType>();
 
+  console.log(selectedServer);
   const getSelectedServer = async () => {
     const url = `${process.env.REACT_APP_BASE_URL}/server/api/v1/server/${serverId}`;
 
     try {
       const res = await axios.get(url);
-      const results = res.data.data.theme;
+      const results = res.data.data;
 
       if (results) {
-        setTheme(results);
+        console.log(serverId);
+        setTheme(results.theme);
+        setSelectedServer(results);
         navigate(`server/${serverId}`);
       }
     } catch (error) {
@@ -61,7 +65,7 @@ const ServerInfoSidebar: React.FC<ServerInforProps> = ({ close, serverId }) => {
             width: "100%",
           }}>
           <ArrowBackIosNewIcon onClick={close} />
-          <Typography>서버이름</Typography>
+          <Typography>{selectedServer?.name}</Typography>
           <FavoriteStar id={serverId} />
         </Box>
 
@@ -79,6 +83,13 @@ const ServerInfoSidebar: React.FC<ServerInforProps> = ({ close, serverId }) => {
         </Button>
       </DrawerHeader>
       <Divider />
+      <div>
+        {selectedServer?.users.map((user) => (
+          <span>
+            {user.name} : {user.id}
+          </span>
+        ))}
+      </div>
 
       <ModalComponent isOpen={isOpen}>
         <Profile closeModal={closeModal} />

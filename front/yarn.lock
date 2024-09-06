@@ -7579,6 +7579,11 @@ performance-now@^2.1.0:
   resolved "https://registry.yarnpkg.com/performance-now/-/performance-now-2.1.0.tgz#6309f4e0e5fa913ec1c69307ae364b4b377c9e7b"
   integrity sha512-7EAHlyLHI56VEIdK57uwHdHKIaAGbnXPiw0yWbarQZOKaKpvUIgW0jWRVLiatnM+XXlSwsanIBH/hzGMJulMow==
 
+phaser-animated-tiles-phaser3.5@^2.0.5:
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/phaser-animated-tiles-phaser3.5/-/phaser-animated-tiles-phaser3.5-2.0.5.tgz#9812ae6419c0af8394694e2c48cbd1b9c8217fed"
+  integrity sha512-gYawPPjpl/0l3gWt3UygtvikfBJPwQNoAha+x8BA8YNhOJLh+13kGds4AOdn7a1co2LYzIAfVD0e/DPHCfKM9Q==
+
 phaser@^3.80.1:
   version "3.80.1"
   resolved "https://registry.yarnpkg.com/phaser/-/phaser-3.80.1.tgz#d387d7e04042218f74b9d22e261f437e54464440"

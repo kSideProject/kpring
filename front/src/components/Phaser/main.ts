@@ -7,6 +7,7 @@ import { CampingMap } from "./MapTheme/CampingMap";
 import { BeachPreloader } from "./Scenes/BeachPreloader";
 import { BeachMap } from "./MapTheme/BeachMap";
 import { ThemeType } from "../../types/server";
+import AnimatedTiles from "phaser-animated-tiles-phaser3.5";
 
 const config: Phaser.Types.Core.GameConfig = {
   type: AUTO,
@@ -20,6 +21,16 @@ const config: Phaser.Types.Core.GameConfig = {
   scale: {
     mode: Phaser.Scale.RESIZE,
     autoCenter: Phaser.Scale.CENTER_BOTH,
+  },
+  plugins: {
+    scene: [
+      {
+        key: "AnimatedTiles",
+        plugin: AnimatedTiles,
+        mapping: "animatedTiles",
+        sceneKey: "animatedTiles",
+      },
+    ],
   },
 };
 

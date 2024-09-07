@@ -5,8 +5,8 @@ import kpring.chat.global.exception.ErrorCode
 import kpring.chat.global.exception.GlobalException
 import kpring.core.auth.client.AuthClient
 import kpring.core.chat.chat.dto.request.CreateChatRequest
+import kpring.core.chat.chat.dto.request.UpdateChatRequest
 import kpring.core.chat.model.ChatType
-import kpring.core.global.dto.response.ApiResponse
 import kpring.core.server.client.ServerClient
 import lombok.RequiredArgsConstructor
 import org.slf4j.Logger
@@ -32,18 +32,33 @@ class WebSocketChatController(
   fun createChat(
     @Payload @Validated request: CreateChatRequest,
     headerAccessor: SimpMessageHeaderAccessor,
-  ): ApiResponse<Nothing> {
+  ) {
     val token = headerAccessor.getFirstNativeHeader("Authorization") ?: throw GlobalException(ErrorCode.MISSING_TOKEN)
     val userId = authClient.getTokenInfo(token).data!!.userId
-    val chatroomId = request.id
+    val contextId = request.contextId
 
     val result =
       when (request.type) {
         ChatType.Room -> chatService.createRoomChat(request, userId)
         ChatType.Server -> chatService.createServerChat(request, userId)
       }
-    simpMessagingTemplate.convertAndSend("/topic/chatroom/$chatroomId", result)
+    simpMessagingTemplate.convertAndSend("/topic/chatroom/$contextId", result)
+  }
 
-    return ApiResponse(status = 201)
+  @MessageMapping("/chat/update")
+  fun updateChat(
+    @Payload @Validated request: UpdateChatRequest,
+    headerAccessor: SimpMessageHeaderAccessor,
+  ) {
+    val token = headerAccessor.getFirstNativeHeader("Authorization") ?: throw GlobalException(ErrorCode.MISSING_TOKEN)
+    val userId = authClient.getTokenInfo(token).data!!.userId
+    val contextId = request.contextId
+
+    val result =
+      when (request.type) {
+        ChatType.Room -> chatService.updateRoomChat(request, userId)
+        ChatType.Server -> chatService.updateServerChat(request, userId)
+      }
+    simpMessagingTemplate.convertAndSend("/topic/chatroom/$contextId", result)
   }
 }

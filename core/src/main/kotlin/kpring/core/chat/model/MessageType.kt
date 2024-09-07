@@ -4,6 +4,7 @@ enum class MessageType(val type: String) {
   ENTER("ENTER"),
   INVITATION("INVITATION"),
   CHAT("CHAT"),
-  TALK("TALK"),
+  UPDATE("UPDATE"),
+  DELETE("DELETE"),
   OUT("OUT"),
 }

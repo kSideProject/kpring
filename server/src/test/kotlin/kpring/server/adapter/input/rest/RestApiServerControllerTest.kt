@@ -18,6 +18,7 @@ import kpring.core.server.dto.ServerUserInfo
 import kpring.core.server.dto.request.AddUserAtServerRequest
 import kpring.core.server.dto.request.CreateServerRequest
 import kpring.core.server.dto.request.GetServerCondition
+import kpring.core.server.dto.request.UpdateHostAtServerRequest
 import kpring.core.server.dto.response.CreateServerResponse
 import kpring.server.application.service.CategoryService
 import kpring.server.application.service.ServerService
@@ -66,14 +67,19 @@ class RestApiServerControllerTest(
           val userId = "test_user_id"
           val userName = "test host"
 
-          val request = CreateServerRequest(serverName = "test server", userId = userId, hostName = userName)
+          val request =
+            CreateServerRequest(serverName = "test server", userId = userId, hostName = userName)
           val data =
             CreateServerResponse(
               serverId = "1",
               serverName = request.serverName,
               theme = Theme.default().toInfo(),
               hostName = userName,
-              categories = listOf(Category.SERVER_CATEGORY1, Category.SERVER_CATEGORY2).map(Category::toInfo),
+              categories =
+                listOf(
+                  Category.SERVER_CATEGORY1,
+                  Category.SERVER_CATEGORY2,
+                ).map(Category::toInfo),
             )
 
           every { authClient.getTokenInfo(any()) } returns
@@ -116,7 +122,6 @@ class RestApiServerControllerTest(
                 "categories" type Arrays mean "생성할 서버의 카테고리 목록" optional true
               }
             }
-
             response {
               body {
                 "data.hostName" type Strings mean "생성된 서버의 대표 유저 이름"
@@ -133,12 +138,16 @@ class RestApiServerControllerTest(
             }
           }
         }
-
         it("요청 실패시 : 요청한 유저와 서버 권한을 가진 유저가 일치하지 않는 경우") {
           // given
           val serverOwnerId = "server owner id"
           val serverOwnerName = "server owner name"
-          val request = CreateServerRequest(serverName = "test server", userId = serverOwnerId, hostName = serverOwnerName)
+          val request =
+            CreateServerRequest(
+              serverName = "test server",
+              userId = serverOwnerId,
+              hostName = serverOwnerName,
+            )
 
           every { authClient.getTokenInfo(any()) } returns
             ApiResponse(
@@ -179,7 +188,6 @@ class RestApiServerControllerTest(
                 "categories" type Arrays mean "생성할 서버의 카테고리 목록" optional true
               }
             }
-
             response {
               body {
                 "message" type Strings mean "실패 메시지"
@@ -188,7 +196,6 @@ class RestApiServerControllerTest(
           }
         }
       }
-
       describe("GET /api/v1/server/{serverId}: 서버 조회 api test") {
 
         val url = "/api/v1/server/{serverId}"
@@ -201,10 +208,18 @@ class RestApiServerControllerTest(
               name = "test_server",
               users =
                 listOf(
-                  ServerUserInfo(id = "test_user_id", name = "hong gil dong", profileImage = "/image.png"),
+                  ServerUserInfo(
+                    id = "test_user_id",
+                    name = "hong gil dong",
+                    profileImage = "/image.png",
+                  ),
                 ),
               theme = Theme.default().toInfo(),
-              categories = listOf(Category.SERVER_CATEGORY1, Category.SERVER_CATEGORY2).map(Category::toInfo),
+              categories =
+                listOf(
+                  Category.SERVER_CATEGORY1,
+                  Category.SERVER_CATEGORY2,
+                ).map(Category::toInfo),
             )
           every { serverService.getServerInfo(serverId) } returns data
 
@@ -229,7 +244,6 @@ class RestApiServerControllerTest(
             request {
               path { "serverId" mean "서버 id" }
             }
-
             response {
               body {
                 "data.id" type Strings mean "서버 id"
@@ -248,7 +262,6 @@ class RestApiServerControllerTest(
             }
           }
         }
-
         it("요청 실패 : 존재하지 않은 서버") {
           // given
           val serverId = "not_exist_server_id"
@@ -276,7 +289,6 @@ class RestApiServerControllerTest(
             request {
               path { "serverId" mean "서버 id" }
             }
-
             response {
               body {
                 "message" type Strings mean "실패 관련 메시지"
@@ -285,7 +297,6 @@ class RestApiServerControllerTest(
           }
         }
       }
-
       describe("PUT /api/v1/server/{serverId}/user : 서버 가입 api test") {
         val url = "/api/v1/server/{serverId}/user"
         it("요청 성공시") {
@@ -325,7 +336,6 @@ class RestApiServerControllerTest(
           }
         }
       }
-
       describe("PUT /api/v1/server/{serverId}/invitation/{userId} : 서버 초대 api test") {
         val url = "/api/v1/server/{serverId}/invitation/{userId}"
         it("요청 성공시") {
@@ -368,7 +378,6 @@ class RestApiServerControllerTest(
           }
         }
       }
-
       describe("GET /api/v1/server: 서버 목록 조회 api test") {
 
         val url = "/api/v1/server"
@@ -431,7 +440,6 @@ class RestApiServerControllerTest(
               query { "serverIds" mean "조회시 해당 서버 목록만을 조회합니다. 값이 없다면 조건은 적용되지 않습니다." }
               header { "Authorization" mean "jwt access token" }
             }
-
             response {
               body {
                 "data[].id" type Strings mean "서버 id"
@@ -450,7 +458,6 @@ class RestApiServerControllerTest(
           }
         }
       }
-
       describe("DELETE /api/v1/server/{serverId} : 서버 삭제") {
         val url = "/api/v1/server/{serverId}"
         it("요청 성공시") {
@@ -488,6 +495,55 @@ class RestApiServerControllerTest(
             request {
               header { "Authorization" mean "jwt 사용자 토큰" }
               path { "serverId" mean "서버 id" }
+            }
+          }
+        }
+      }
+      describe("PATCH /api/v1/server/{serverId} : 서버 호스트 권한 상속") {
+        val url = "/api/v1/server/{serverId}"
+        it("요청 성공시") {
+          // given
+          val serverId = "test_server_id"
+          val otherUser = UpdateHostAtServerRequest("test_user_id", "test_user_name")
+          val token = "Bearer mock_token"
+          every { authClient.getTokenInfo(token) } returns
+            ApiResponse(
+              data =
+                TokenInfo(
+                  type = TokenType.ACCESS,
+                  userId = "test_user_id",
+                ),
+            )
+          justRun { serverService.updateServerHost(eq(serverId), any(), any()) }
+
+          // when
+          val result =
+            client.patch()
+              .uri(url, serverId)
+              .header("Authorization", token)
+              .bodyValue(otherUser)
+              .exchange()
+
+          // then
+          val docs =
+            result
+              .expectStatus().isOk
+              .expectBody()
+
+          // docs
+          docs.restDoc(
+            identifier = "update_server_host_200",
+            description = "서버 호스트 권한 상속 api",
+          ) {
+            request {
+              header { "Authorization" mean "jwt 사용자 토큰" }
+              path {
+                "serverId" mean "서버 id"
+              }
+              body {
+                "userId" type Strings mean "서버 호스트 권한을 상속 받을 사용자 id"
+                "userName" type Strings mean "서버 호스트 권한을 상속 받을 사용자 닉네임"
+              }
             }
           }
         }

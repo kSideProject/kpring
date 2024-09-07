@@ -7,10 +7,7 @@ import io.mockk.every
 import io.mockk.mockk
 import kpring.core.global.exception.CommonErrorCode
 import kpring.core.global.exception.ServiceException
-import kpring.server.application.port.output.DeleteServerPort
-import kpring.server.application.port.output.GetServerPort
-import kpring.server.application.port.output.GetServerProfilePort
-import kpring.server.application.port.output.UpdateServerPort
+import kpring.server.application.port.output.*
 import kpring.server.application.service.ServerService
 import kpring.server.domain.ServerProfile
 import kpring.server.domain.ServerRole
@@ -20,8 +17,10 @@ class DeleteServerUseCaseTest(
   val getServerPort: GetServerPort = mockk(),
   val getServerProfilePort: GetServerProfilePort = mockk(),
   val updateServerPort: UpdateServerPort = mockk(),
+  val updateServerProfilePort: UpdateServerProfilePort = mockk(),
   val deleteServerPort: DeleteServerPort = mockk(),
-  val service: ServerService = ServerService(mockk(), getServerPort, getServerProfilePort, updateServerPort, deleteServerPort),
+  val service: ServerService =
+    ServerService(mockk(), getServerPort, getServerProfilePort, updateServerPort, updateServerProfilePort, deleteServerPort),
 ) : DescribeSpec({
     it("삭제하는 서버에 대한 삭제 권한이 없는 유저라면 예외가 발생한다.") {
       // given

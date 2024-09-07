@@ -7,6 +7,8 @@ data class UpdateChatRequest(
   @field:NotNull
   val id: String,
   @field:NotNull
+  val contextId: String,
+  @field:NotNull
   val type: ChatType,
   val content: String,
 )

@@ -6,7 +6,7 @@ import kpring.core.chat.model.ChatType
 
 data class CreateChatRequest(
   @field:NotNull
-  val id: String,
+  val contextId: String,
   @field:NotNull
   val type: ChatType,
   @field:NotBlank

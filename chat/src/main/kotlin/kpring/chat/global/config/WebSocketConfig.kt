@@ -1,5 +1,6 @@
 package kpring.chat.global.config
 
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.messaging.simp.config.MessageBrokerRegistry
@@ -14,10 +15,11 @@ import org.springframework.web.socket.config.annotation.WebSocketTransportRegist
 @Configuration
 @EnableWebSocketMessageBroker
 class WebSocketConfig : WebSocketMessageBrokerConfigurer {
+  @Value("\${url.front}")
+  val frontUrl: String = ":63342"
+
   override fun registerStompEndpoints(registry: StompEndpointRegistry) {
-    registry.addEndpoint("/ws")
-      .setAllowedOrigins("http://localhost:63342")
-      .withSockJS()
+    registry.addEndpoint("/ws").setAllowedOrigins("http://localhost:63342").withSockJS()
   }
 
   override fun configureMessageBroker(config: MessageBrokerRegistry) {
@@ -34,7 +36,7 @@ class WebSocketConfig : WebSocketMessageBrokerConfigurer {
   fun corsFilter(): CorsFilter {
     val config = CorsConfiguration()
     config.allowCredentials = true
-    config.addAllowedOrigin("http://localhost:63342")
+    config.addAllowedOrigin(frontUrl)
     config.addAllowedHeader("*")
     config.addAllowedMethod("*")
 

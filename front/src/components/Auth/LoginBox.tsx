@@ -27,6 +27,9 @@ async function login(email: string, password: string) {
     );
 
     const data = response.data;
+    if (!data.data.accessToken || !data.data.refreshToken) {
+      throw new Error("토큰오류발생! 로그인박스");
+    }
     console.log("로그인 성공:", data);
     return data.data;
   } catch (error) {

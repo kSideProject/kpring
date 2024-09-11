@@ -1,5 +1,6 @@
 package kpring.chat.chat.service
 
+import kpring.chat.chat.api.v1.WebSocketChatController
 import kpring.chat.chat.model.Chat
 import kpring.chat.chat.repository.RoomChatRepository
 import kpring.chat.chat.repository.ServerChatRepository
@@ -11,9 +12,9 @@ import kpring.core.chat.chat.dto.request.UpdateChatRequest
 import kpring.core.chat.chat.dto.response.ChatResponse
 import kpring.core.chat.model.MessageType
 import kpring.core.server.dto.ServerSimpleInfo
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 
 @Service
@@ -23,47 +24,48 @@ class ChatService(
   private val chatRoomRepository: ChatRoomRepository,
   @Value("\${page.size}") val pageSize: Int = 100,
 ) {
+  private val logger: Logger = LoggerFactory.getLogger(WebSocketChatController::class.java)
+
   fun createRoomChat(
     request: CreateChatRequest,
     userId: String,
-  ): Boolean {
+  ): ChatResponse {
     val chat =
       roomChatRepository.save(
         Chat(
           userId = userId,
-          contextId = request.id,
+          contextId = request.contextId,
           content = request.content,
         ),
       )
-    return true
+    return ChatResponse(chat.id!!, userId, MessageType.CHAT, chat.isEdited(), chat.updatedAt.toString(), chat.content)
   }
 
   fun createServerChat(
     request: CreateChatRequest,
     userId: String,
-  ): Boolean {
+  ): ChatResponse {
     val chat =
       serverChatRepository.save(
         Chat(
           userId = userId,
-          contextId = request.id,
+          contextId = request.contextId,
           content = request.content,
         ),
       )
-    return true
+    return ChatResponse(chat.id!!, userId, MessageType.CHAT, chat.isEdited(), chat.updatedAt.toString(), chat.content)
   }
 
   fun getRoomChats(
     chatRoomId: String,
     userId: String,
     page: Int,
-  ): List<ChatResponse> {
+  ): List<Chat> {
     verifyChatRoomAccess(chatRoomId, userId)
 
-    val pageable: Pageable = PageRequest.of(page, pageSize)
-    val roomChats: List<Chat> = roomChatRepository.findAllByContextId(chatRoomId, pageable)
-
-    return convertChatsToResponses(roomChats)
+    val chats: List<Chat> = roomChatRepository.findAllByContextId(chatRoomId)
+    logger.info("chats : $chats")
+    return chats
   }
 
   fun getServerChats(
@@ -71,55 +73,54 @@ class ChatService(
     userId: String,
     page: Int,
     servers: List<ServerSimpleInfo>,
-  ): List<ChatResponse> {
+  ): List<Chat> {
     verifyServerAccess(servers, serverId)
 
-    val pageable: Pageable = PageRequest.of(page, pageSize)
-    val chats: List<Chat> = serverChatRepository.findAllByContextId(serverId, pageable)
+    val chats: List<Chat> = serverChatRepository.findAllByContextId(serverId)
 
-    return convertChatsToResponses(chats)
+    return chats
   }
 
   fun updateRoomChat(
     request: UpdateChatRequest,
     userId: String,
-  ): Boolean {
+  ): ChatResponse {
     val chat = roomChatRepository.findById(request.id).orElseThrow { GlobalException(ErrorCode.CHAT_NOT_FOUND) }
     verifyIfAuthor(userId, chat)
     chat.updateContent(request.content)
     roomChatRepository.save(chat)
-    return true
+    return ChatResponse(chat.id!!, userId, MessageType.UPDATE, chat.isEdited(), chat.updatedAt.toString(), chat.content)
   }
 
   fun updateServerChat(
     request: UpdateChatRequest,
     userId: String,
-  ): Boolean {
+  ): ChatResponse {
     val chat = serverChatRepository.findById(request.id).orElseThrow { GlobalException(ErrorCode.CHAT_NOT_FOUND) }
     verifyIfAuthor(userId, chat)
     chat.updateContent(request.content)
     serverChatRepository.save(chat)
-    return true
+    return ChatResponse(chat.id!!, userId, MessageType.UPDATE, chat.isEdited(), chat.updatedAt.toString(), chat.content)
   }
 
   fun deleteRoomChat(
     chatId: String,
     userId: String,
-  ): Boolean {
+  ): ChatResponse {
     val chat = roomChatRepository.findById(chatId).orElseThrow { GlobalException(ErrorCode.CHAT_NOT_FOUND) }
     verifyIfAuthor(userId, chat)
     roomChatRepository.delete(chat)
-    return true
+    return ChatResponse(chat.id!!, userId, MessageType.DELETE, chat.isEdited(), chat.updatedAt.toString(), chat.content)
   }
 
   fun deleteServerChat(
     chatId: String,
     userId: String,
-  ): Boolean {
+  ): ChatResponse {
     val chat = serverChatRepository.findById(chatId).orElseThrow { GlobalException(ErrorCode.CHAT_NOT_FOUND) }
     verifyIfAuthor(userId, chat)
     serverChatRepository.delete(chat)
-    return true
+    return ChatResponse(chat.id!!, userId, MessageType.DELETE, chat.isEdited(), chat.updatedAt.toString(), chat.content)
   }
 
   private fun verifyIfAuthor(

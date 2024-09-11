@@ -27,9 +27,21 @@ auth:
   url: "http://localhost:30001/"
 url:
   server: "http://localhost:8080/"
+  front : "http://localhost:63342"
 
 page:
   size: 100
 chatroom:
   expiration: 1d
   baseurl: "http://localhost:8081/"
+
+logging:
+  level:
+    org:
+      springframework:
+        web:
+          socket: DEBUG
+        messaging:
+          simp: DEBUG
+    root: INFO
+    kpring.chat.chat.api.v1: DEBUG

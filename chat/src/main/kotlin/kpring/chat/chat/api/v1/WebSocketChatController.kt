@@ -6,9 +6,11 @@ import kpring.chat.global.exception.GlobalException
 import kpring.core.auth.client.AuthClient
 import kpring.core.chat.chat.dto.request.CreateChatRequest
 import kpring.core.chat.chat.dto.request.DeleteChatRequest
+import kpring.core.chat.chat.dto.request.GetChatsRequest
 import kpring.core.chat.chat.dto.request.UpdateChatRequest
 import kpring.core.chat.model.ChatType
 import kpring.core.server.client.ServerClient
+import kpring.core.server.dto.request.GetServerCondition
 import lombok.RequiredArgsConstructor
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -79,6 +81,32 @@ class WebSocketChatController(
         ChatType.Room -> chatService.deleteRoomChat(chatId, userId)
         ChatType.Server -> chatService.deleteServerChat(chatId, userId)
       }
+    simpMessagingTemplate.convertAndSend("/topic/chatroom/$contextId", result)
+  }
+
+  @MessageMapping("/chat")
+  fun getChats(
+    @Payload @Validated request: GetChatsRequest,
+    headerAccessor: SimpMessageHeaderAccessor,
+  ) {
+    val token = headerAccessor.getFirstNativeHeader("Authorization") ?: throw GlobalException(ErrorCode.MISSING_TOKEN)
+    val userId = authClient.getTokenInfo(token).data!!.userId
+    val type = request.type
+    val contextId = request.contextId
+    val page = request.page
+
+    val result =
+      when (type) {
+        ChatType.Room -> chatService.getRoomChats(contextId, userId, page)
+        ChatType.Server ->
+          chatService.getServerChats(
+            contextId,
+            userId,
+            page,
+            serverClient.getServerList(token, GetServerCondition()).body!!.data!!,
+          )
+      }
+    logger.info("Chat result: $result")
     simpMessagingTemplate.convertAndSend("/topic/chatroom/$contextId", result)
   }
 }

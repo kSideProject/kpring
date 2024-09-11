@@ -6,6 +6,9 @@ enum class ErrorCode(val httpStatus: Int, val message: String) {
   // 400
   INVALID_CHAT_TYPE(HttpStatus.BAD_REQUEST.value(), "잘못된 ChatType입니다."),
 
+  // 401
+  MISSING_TOKEN(HttpStatus.UNAUTHORIZED.value(), "인증 토큰이 누락되었습니다."),
+
   // 403
   FORBIDDEN_CHATROOM(HttpStatus.FORBIDDEN.value(), "접근이 제한된 채팅방 입니다"),
   FORBIDDEN_SERVER(HttpStatus.FORBIDDEN.value(), "접근이 제한된 서버 입니다"),

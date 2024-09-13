@@ -10,7 +10,7 @@ const ServerCardList: React.FC<ServerCardListProps> = ({ servers }) => {
       {/* {servers
         .filter((server: ServerType) => favoriteItems.includes(server.serverId))
         .map((server: ServerType) => (
-          // <ServerCard key={server.serverId} server={server} />
+          <ServerCard key={server.serverId} server={server} />
         ))} */}
     </>
   );

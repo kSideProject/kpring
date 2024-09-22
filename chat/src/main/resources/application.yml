@@ -27,7 +27,7 @@ auth:
   url: "http://localhost:30001/"
 url:
   server: "http://localhost:8080/"
-  front : "http://localhost:63342"
+  front : "http://localhost:63343"
 
 page:
   size: 100

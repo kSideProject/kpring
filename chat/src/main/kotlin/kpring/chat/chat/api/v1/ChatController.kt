@@ -43,17 +43,19 @@ class ChatController(
     @RequestParam("type") type: ChatType,
     @RequestParam("id") id: String,
     @RequestParam("page") page: Int,
+    @RequestParam("size") size: Int,
     @RequestHeader("Authorization") token: String,
   ): ResponseEntity<*> {
     val userId = authClient.getTokenInfo(token).data!!.userId
     val result =
       when (type) {
-        ChatType.Room -> chatService.getRoomChats(id, userId, page)
+        ChatType.Room -> chatService.getRoomChats(id, userId, page, size)
         ChatType.Server ->
           chatService.getServerChats(
             id,
             userId,
             page,
+            size,
             serverClient.getServerList(token, GetServerCondition()).body!!.data!!,
           )
       }

@@ -2,6 +2,7 @@ package kpring.chat.chat.service
 
 import kpring.chat.chat.api.v1.WebSocketChatController
 import kpring.chat.chat.model.Chat
+import kpring.chat.chat.repository.RoomChatCustomRepository
 import kpring.chat.chat.repository.RoomChatRepository
 import kpring.chat.chat.repository.ServerChatRepository
 import kpring.chat.chatroom.repository.ChatRoomRepository
@@ -22,6 +23,7 @@ class ChatService(
   private val roomChatRepository: RoomChatRepository,
   private val serverChatRepository: ServerChatRepository,
   private val chatRoomRepository: ChatRoomRepository,
+  private val roomChatCustomRepository: RoomChatCustomRepository,
   @Value("\${page.size}") val pageSize: Int = 100,
 ) {
   private val logger: Logger = LoggerFactory.getLogger(WebSocketChatController::class.java)
@@ -60,10 +62,10 @@ class ChatService(
     chatRoomId: String,
     userId: String,
     page: Int,
+    size: Int,
   ): List<Chat> {
     verifyChatRoomAccess(chatRoomId, userId)
-
-    val chats: List<Chat> = roomChatRepository.findAllByContextId(chatRoomId)
+    val chats: List<Chat> = roomChatCustomRepository.findListByContextIdWithPaging(chatRoomId, page, size)
     logger.info("chats : $chats")
     return chats
   }
@@ -72,12 +74,11 @@ class ChatService(
     serverId: String,
     userId: String,
     page: Int,
+    size: Int,
     servers: List<ServerSimpleInfo>,
   ): List<Chat> {
     verifyServerAccess(servers, serverId)
-
     val chats: List<Chat> = serverChatRepository.findAllByContextId(serverId)
-
     return chats
   }
 

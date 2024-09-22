@@ -94,15 +94,17 @@ class WebSocketChatController(
     val type = request.type
     val contextId = request.contextId
     val page = request.page
+    val size = request.size
 
     val result =
       when (type) {
-        ChatType.Room -> chatService.getRoomChats(contextId, userId, page)
+        ChatType.Room -> chatService.getRoomChats(contextId, userId, page, size)
         ChatType.Server ->
           chatService.getServerChats(
             contextId,
             userId,
             page,
+            size,
             serverClient.getServerList(token, GetServerCondition()).body!!.data!!,
           )
       }

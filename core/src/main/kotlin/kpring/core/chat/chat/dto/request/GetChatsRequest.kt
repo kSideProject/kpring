@@ -10,4 +10,6 @@ data class GetChatsRequest(
   val type: ChatType,
   @field:NotNull
   val page: Int,
+  @field:NotNull
+  val size: Int,
 )

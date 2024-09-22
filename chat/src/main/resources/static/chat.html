@@ -120,9 +120,10 @@
             const id = document.getElementById("getId").value;
             const type = document.getElementById("getChatType").value;
             const page = document.getElementById("getPage").value;
+            const size = 2;
             if (id && page) {
                 stompClient.send(`/app/chat`, { 'Authorization': token },
-                    JSON.stringify({ contextId: id, type: type, page: parseInt(page) })
+                    JSON.stringify({ contextId: id, type: type, page: parseInt(page), size: parseInt(size) })
                 );
             }
         });

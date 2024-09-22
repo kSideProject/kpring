@@ -16,10 +16,10 @@ import org.springframework.web.socket.config.annotation.WebSocketTransportRegist
 @EnableWebSocketMessageBroker
 class WebSocketConfig : WebSocketMessageBrokerConfigurer {
   @Value("\${url.front}")
-  val frontUrl: String = ":63342"
+  val frontUrl: String = ":63343"
 
   override fun registerStompEndpoints(registry: StompEndpointRegistry) {
-    registry.addEndpoint("/ws").setAllowedOrigins("http://localhost:63342").withSockJS()
+    registry.addEndpoint("/ws").setAllowedOrigins(frontUrl).withSockJS()
   }
 
   override fun configureMessageBroker(config: MessageBrokerRegistry) {

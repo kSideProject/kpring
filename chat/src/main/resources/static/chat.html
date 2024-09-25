@@ -23,16 +23,16 @@
 <h2>Create Chat</h2>
 <input type="text" id="chatContent" placeholder="Enter chat content" />
 <select id="chatType">
-    <option value="Room">Room</option>
+    <option value="ROOM">Room</option>
     <option value="Server">Server</option>
 </select>
 <button id="createChatBtn">Create Chat</button>
 
 <h2>Get Chats</h2>
-<input type="text" id="getId" placeholder="Enter chat ID" />
+<input type="text" id="getId" placeholder="Enter chatroom ID" />
 <select id="getChatType">
-    <option value="Room">Room</option>
-    <option value="Server">Server</option>
+    <option value="ROOM">Room</option>
+    <option value="SERVER">Server</option>
 </select>
 <input type="number" id="getPage" placeholder="Enter page number" />
 <button id="getChatsBtn">Get Chats</button>
@@ -45,8 +45,8 @@
 <h2>Delete Chat</h2>
 <input type="text" id="deleteChatId" placeholder="Enter chat ID to delete" />
 <select id="deleteChatType">
-    <option value="Room">Room</option>
-    <option value="Server">Server</option>
+    <option value="ROOM">Room</option>
+    <option value="SERVER">Server</option>
 </select>
 <button id="deleteChatBtn">Delete Chat</button>
 
@@ -95,7 +95,7 @@
             const message = document.getElementById("msg").value;
             if (message.trim() !== "") {
                 stompClient.send(`/app/chat/create`, { 'Authorization': token },
-                    JSON.stringify({ content: message, type: "Room", chatRoomId: chatroomId })
+                    JSON.stringify({ content: message, type: "ROOM", chatRoomId: chatroomId })
                 );
                 document.getElementById("msg").value = "";  // Clear the input field after sending
                 console.log('Message sent successfully!');
@@ -134,7 +134,7 @@
             const content = document.getElementById("updateContent").value;
             if (chatId && content.trim() !== "") {
                 stompClient.send(`/app/chat/update`, { 'Authorization': token },
-                    JSON.stringify({ contextId: chatroomId, id: chatId, content: content, type: "Room" })
+                    JSON.stringify({ contextId: chatroomId, id: chatId, content: content, type: "ROOM" })
                 );
                 document.getElementById("updateChatId").value = "";
                 document.getElementById("updateContent").value = "";

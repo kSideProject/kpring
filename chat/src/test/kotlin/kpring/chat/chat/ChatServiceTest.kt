@@ -5,8 +5,8 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.*
 import kpring.chat.chat.model.Chat
-import kpring.chat.chat.repository.RoomChatRepository
-import kpring.chat.chat.repository.ServerChatRepository
+import kpring.chat.chat.repository.ChatCustomRepository
+import kpring.chat.chat.repository.ChatRepository
 import kpring.chat.chat.service.ChatService
 import kpring.chat.chatroom.repository.ChatRoomRepository
 import kpring.chat.global.ChatRoomTest
@@ -24,24 +24,24 @@ import java.util.*
 class ChatServiceTest(
   @Value("\${page.size}") val pageSize: Int = 100,
 ) : FunSpec({
-    val roomChatRepository = mockk<RoomChatRepository>()
-    val serverChatRepository = mockk<ServerChatRepository>()
+    val chatRepository = mockk<ChatRepository>()
     val chatRoomRepository = mockk<ChatRoomRepository>()
-    val chatService = ChatService(roomChatRepository, serverChatRepository, chatRoomRepository)
+    val chatCustomRepository = mockk<ChatCustomRepository>()
+    val chatService = ChatService(chatRepository, chatRoomRepository, chatCustomRepository)
 
     test("createChat 은 새 RoomChat을 저장해야 한다") {
       // Given
-      val request = CreateChatRequest(id = ChatRoomTest.TEST_ROOM_ID, content = ChatTest.CONTENT, type = ChatType.Room)
+      val request = CreateChatRequest(content = ChatTest.CONTENT, contextId = ChatRoomTest.TEST_ROOM_ID, type = ChatType.ROOM)
       val userId = CommonTest.TEST_USER_ID
       val chatId = ChatTest.TEST_CHAT_ID
-      val roomChat = Chat(chatId, userId, request.id, request.content)
-      every { roomChatRepository.save(any()) } returns roomChat
+      val roomChat = Chat(chatId, userId, ChatType.ROOM, ChatRoomTest.TEST_ROOM_ID, request.content)
+      every { chatRepository.save(any()) } returns roomChat
 
       // When
       chatService.createRoomChat(request, userId)
 
       // Then
-      verify { roomChatRepository.save(any()) }
+      verify { chatRepository.save(any()) }
     }
 
     test("getRoomChats 은 권한이 없는 사용자에게 에러 발생") {
@@ -53,7 +53,7 @@ class ChatServiceTest(
       // When & Then
       val exception =
         shouldThrow<GlobalException> {
-          chatService.getRoomChats(chatRoomId, userId, 1)
+          chatService.getRoomChats(chatRoomId, userId, 0, 1)
         }
       val errorCodeField = GlobalException::class.java.getDeclaredField("errorCode")
       errorCodeField.isAccessible = true
@@ -79,7 +79,7 @@ class ChatServiceTest(
       // When & Then
       val exception =
         shouldThrow<GlobalException> {
-          chatService.getServerChats(serverId1, userId, 1, serverList)
+          chatService.getServerChats(serverId1, userId, 0, 1, serverList)
         }
       val errorCodeField = GlobalException::class.java.getDeclaredField("errorCode")
       errorCodeField.isAccessible = true
@@ -89,26 +89,27 @@ class ChatServiceTest(
 
     test("updateRoomChat 은 권한이 없는 사용자에게 에러 발생") {
       // Given
-      val roomId = "test_room_id"
+      val roomId = ChatRoomTest.TEST_ROOM_ID
       val chatId = "test_chat_id"
       val contentUpdate = "content update"
-      val request = UpdateChatRequest(id = chatId, type = ChatType.Room, content = contentUpdate)
+      val request = UpdateChatRequest(id = chatId, contextId = roomId, type = ChatType.ROOM, content = contentUpdate)
       val anotherUserId = CommonTest.TEST_ANOTHER_USER_ID
       val userId = CommonTest.TEST_USER_ID
       val chat =
         Chat(
           chatId,
           userId,
+          ChatType.ROOM,
           roomId,
           "content",
         )
 
-      every { roomChatRepository.findById(request.id) } returns Optional.of(chat)
+      every { chatRepository.findById(request.id) } returns Optional.of(chat)
 
       // When & Then
       val exception =
         shouldThrow<GlobalException> {
-          chatService.updateRoomChat(request, anotherUserId)
+          chatService.updateChat(request, anotherUserId)
         }
       val errorCodeField = GlobalException::class.java.getDeclaredField("errorCode")
       errorCodeField.isAccessible = true
@@ -121,23 +122,24 @@ class ChatServiceTest(
       val serverId = "test_server_id"
       val chatId = "test_chat_id"
       val contentUpdate = "content update"
-      val request = UpdateChatRequest(id = chatId, type = ChatType.Server, content = contentUpdate)
+      val request = UpdateChatRequest(id = chatId, contextId = serverId, type = ChatType.SERVER, content = contentUpdate)
       val anotherUserId = CommonTest.TEST_ANOTHER_USER_ID
       val userId = CommonTest.TEST_USER_ID
       val chat =
         Chat(
           chatId,
           userId,
+          ChatType.SERVER,
           serverId,
           "content",
         )
 
-      every { serverChatRepository.findById(request.id) } returns Optional.of(chat)
+      every { chatRepository.findById(request.id) } returns Optional.of(chat)
 
       // When & Then
       val exception =
         shouldThrow<GlobalException> {
-          chatService.updateServerChat(request, anotherUserId)
+          chatService.updateChat(request, anotherUserId)
         }
       val errorCodeField = GlobalException::class.java.getDeclaredField("errorCode")
       errorCodeField.isAccessible = true
@@ -150,24 +152,25 @@ class ChatServiceTest(
       val roomId = "test_room_id"
       val chatId = "test_chat_id"
       val contentUpdate = "content update"
-      val request = UpdateChatRequest(id = chatId, type = ChatType.Room, content = contentUpdate)
+      val request = UpdateChatRequest(id = chatId, contextId = roomId, type = ChatType.ROOM, content = contentUpdate)
       val userId = CommonTest.TEST_USER_ID
       val chat =
         Chat(
           chatId,
           userId,
+          ChatType.ROOM,
           roomId,
           "content",
         )
 
-      every { roomChatRepository.findById(request.id) } returns Optional.of(chat)
+      every { chatRepository.findById(request.id) } returns Optional.of(chat)
 
       // When
-      val result = chatService.updateRoomChat(request, userId)
+      val result = chatService.updateChat(request, userId)
 
       // Then
       result shouldBe true
-      verify { roomChatRepository.save(any()) }
+      verify { chatRepository.save(any()) }
     }
 
     test("updateServerChat 은 권한이 있는 사용자의 요청에 따라 Chat 수정") {
@@ -175,25 +178,26 @@ class ChatServiceTest(
       val serverId = "test_server_id"
       val chatId = "test_chat_id"
       val contentUpdate = "content update"
-      val request = UpdateChatRequest(id = chatId, type = ChatType.Server, content = contentUpdate)
+      val request = UpdateChatRequest(id = chatId, contextId = serverId, type = ChatType.SERVER, content = contentUpdate)
       val userId = CommonTest.TEST_USER_ID
       val chat =
         Chat(
           chatId,
           userId,
+          ChatType.SERVER,
           serverId,
           "content",
         )
       val updated =
 
-        every { serverChatRepository.findById(request.id) } returns Optional.of(chat)
+        every { chatRepository.findById(request.id) } returns Optional.of(chat)
 
       // When
-      val result = chatService.updateRoomChat(request, userId)
+      val result = chatService.updateChat(request, userId)
 
       // Then
       result shouldBe true
-      verify { roomChatRepository.save(any()) }
+      verify { chatRepository.save(any()) }
     }
 
     test("deleteServerChat 은 권한이 있는 사용자의 요청에 따라 Chat 삭제") {
@@ -205,15 +209,16 @@ class ChatServiceTest(
         Chat(
           id = chatId,
           userId = userId,
+          type = ChatType.SERVER,
           contextId = serverId,
           content = "content",
         )
 
-      every { serverChatRepository.findById(chatId) } returns Optional.of(chat)
-      every { serverChatRepository.delete(chat) } just Runs
+      every { chatRepository.findById(chatId) } returns Optional.of(chat)
+      every { chatRepository.delete(chat) } just Runs
 
       // When
-      val result = chatService.deleteServerChat(chatId, userId)
+      val result = chatService.deleteChat(chatId, userId)
 
       // Then
       result shouldBe true
@@ -228,15 +233,16 @@ class ChatServiceTest(
         Chat(
           id = chatId,
           userId = userId,
+          ChatType.ROOM,
           contextId = roomId,
           content = "content",
         )
 
-      every { roomChatRepository.findById(chatId) } returns Optional.of(chat)
-      every { roomChatRepository.delete(chat) } just Runs
+      every { chatRepository.findById(chatId) } returns Optional.of(chat)
+      every { chatRepository.delete(chat) } just Runs
 
       // When
-      val result = chatService.deleteRoomChat(chatId, userId)
+      val result = chatService.deleteChat(chatId, userId)
 
       // Then
       result shouldBe true

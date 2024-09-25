@@ -42,8 +42,13 @@ class WebSocketChatController(
 
     val result =
       when (request.type) {
-        ChatType.Room -> chatService.createRoomChat(request, userId)
-        ChatType.Server -> chatService.createServerChat(request, userId)
+        ChatType.ROOM -> chatService.createRoomChat(request, userId)
+        ChatType.SERVER ->
+          chatService.createServerChat(
+            request,
+            userId,
+            serverClient.getServerList(token, GetServerCondition()).body!!.data!!,
+          )
       }
     simpMessagingTemplate.convertAndSend("/topic/chatroom/$contextId", result)
   }
@@ -57,11 +62,7 @@ class WebSocketChatController(
     val userId = authClient.getTokenInfo(token).data!!.userId
     val contextId = request.contextId
 
-    val result =
-      when (request.type) {
-        ChatType.Room -> chatService.updateRoomChat(request, userId)
-        ChatType.Server -> chatService.updateServerChat(request, userId)
-      }
+    val result = chatService.updateChat(request, userId)
     simpMessagingTemplate.convertAndSend("/topic/chatroom/$contextId", result)
   }
 
@@ -72,15 +73,10 @@ class WebSocketChatController(
   ) {
     val token = headerAccessor.getFirstNativeHeader("Authorization") ?: throw GlobalException(ErrorCode.MISSING_TOKEN)
     val userId = authClient.getTokenInfo(token).data!!.userId
-    val type = request.type
     val chatId = request.id
     val contextId = request.contextId
 
-    val result =
-      when (type) {
-        ChatType.Room -> chatService.deleteRoomChat(chatId, userId)
-        ChatType.Server -> chatService.deleteServerChat(chatId, userId)
-      }
+    val result = chatService.deleteChat(chatId, userId)
     simpMessagingTemplate.convertAndSend("/topic/chatroom/$contextId", result)
   }
 
@@ -98,8 +94,8 @@ class WebSocketChatController(
 
     val result =
       when (type) {
-        ChatType.Room -> chatService.getRoomChats(contextId, userId, page, size)
-        ChatType.Server ->
+        ChatType.ROOM -> chatService.getRoomChats(contextId, userId, page, size)
+        ChatType.SERVER ->
           chatService.getServerChats(
             contextId,
             userId,

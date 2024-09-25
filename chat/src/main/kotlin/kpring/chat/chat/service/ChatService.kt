@@ -2,15 +2,15 @@ package kpring.chat.chat.service
 
 import kpring.chat.chat.api.v1.WebSocketChatController
 import kpring.chat.chat.model.Chat
-import kpring.chat.chat.repository.RoomChatCustomRepository
-import kpring.chat.chat.repository.RoomChatRepository
-import kpring.chat.chat.repository.ServerChatRepository
+import kpring.chat.chat.repository.ChatCustomRepository
+import kpring.chat.chat.repository.ChatRepository
 import kpring.chat.chatroom.repository.ChatRoomRepository
 import kpring.chat.global.exception.ErrorCode
 import kpring.chat.global.exception.GlobalException
 import kpring.core.chat.chat.dto.request.CreateChatRequest
 import kpring.core.chat.chat.dto.request.UpdateChatRequest
 import kpring.core.chat.chat.dto.response.ChatResponse
+import kpring.core.chat.model.ChatType
 import kpring.core.chat.model.MessageType
 import kpring.core.server.dto.ServerSimpleInfo
 import org.slf4j.Logger
@@ -20,10 +20,9 @@ import org.springframework.stereotype.Service
 
 @Service
 class ChatService(
-  private val roomChatRepository: RoomChatRepository,
-  private val serverChatRepository: ServerChatRepository,
+  private val chatRepository: ChatRepository,
   private val chatRoomRepository: ChatRoomRepository,
-  private val roomChatCustomRepository: RoomChatCustomRepository,
+  private val chatCustomRepository: ChatCustomRepository,
   @Value("\${page.size}") val pageSize: Int = 100,
 ) {
   private val logger: Logger = LoggerFactory.getLogger(WebSocketChatController::class.java)
@@ -32,10 +31,12 @@ class ChatService(
     request: CreateChatRequest,
     userId: String,
   ): ChatResponse {
+    verifyChatRoomAccess(request.contextId, userId)
     val chat =
-      roomChatRepository.save(
+      chatRepository.save(
         Chat(
           userId = userId,
+          type = request.type,
           contextId = request.contextId,
           content = request.content,
         ),
@@ -46,11 +47,14 @@ class ChatService(
   fun createServerChat(
     request: CreateChatRequest,
     userId: String,
+    servers: List<ServerSimpleInfo>,
   ): ChatResponse {
+    verifyServerAccess(servers, request.contextId)
     val chat =
-      serverChatRepository.save(
+      chatRepository.save(
         Chat(
           userId = userId,
+          type = request.type,
           contextId = request.contextId,
           content = request.content,
         ),
@@ -65,7 +69,7 @@ class ChatService(
     size: Int,
   ): List<Chat> {
     verifyChatRoomAccess(chatRoomId, userId)
-    val chats: List<Chat> = roomChatCustomRepository.findListByContextIdWithPaging(chatRoomId, page, size)
+    val chats: List<Chat> = chatCustomRepository.findListByContextIdWithPaging(chatRoomId, page, size, ChatType.ROOM)
     logger.info("chats : $chats")
     return chats
   }
@@ -78,49 +82,28 @@ class ChatService(
     servers: List<ServerSimpleInfo>,
   ): List<Chat> {
     verifyServerAccess(servers, serverId)
-    val chats: List<Chat> = serverChatRepository.findAllByContextId(serverId)
+    val chats: List<Chat> = chatCustomRepository.findListByContextIdWithPaging(serverId, page, size, ChatType.SERVER)
     return chats
   }
 
-  fun updateRoomChat(
+  fun updateChat(
     request: UpdateChatRequest,
     userId: String,
   ): ChatResponse {
-    val chat = roomChatRepository.findById(request.id).orElseThrow { GlobalException(ErrorCode.CHAT_NOT_FOUND) }
+    val chat = chatRepository.findById(request.id).orElseThrow { GlobalException(ErrorCode.CHAT_NOT_FOUND) }
     verifyIfAuthor(userId, chat)
     chat.updateContent(request.content)
-    roomChatRepository.save(chat)
+    chatRepository.save(chat)
     return ChatResponse(chat.id!!, userId, MessageType.UPDATE, chat.isEdited(), chat.updatedAt.toString(), chat.content)
   }
 
-  fun updateServerChat(
-    request: UpdateChatRequest,
-    userId: String,
-  ): ChatResponse {
-    val chat = serverChatRepository.findById(request.id).orElseThrow { GlobalException(ErrorCode.CHAT_NOT_FOUND) }
-    verifyIfAuthor(userId, chat)
-    chat.updateContent(request.content)
-    serverChatRepository.save(chat)
-    return ChatResponse(chat.id!!, userId, MessageType.UPDATE, chat.isEdited(), chat.updatedAt.toString(), chat.content)
-  }
-
-  fun deleteRoomChat(
+  fun deleteChat(
     chatId: String,
     userId: String,
   ): ChatResponse {
-    val chat = roomChatRepository.findById(chatId).orElseThrow { GlobalException(ErrorCode.CHAT_NOT_FOUND) }
+    val chat = chatRepository.findById(chatId).orElseThrow { GlobalException(ErrorCode.CHAT_NOT_FOUND) }
     verifyIfAuthor(userId, chat)
-    roomChatRepository.delete(chat)
-    return ChatResponse(chat.id!!, userId, MessageType.DELETE, chat.isEdited(), chat.updatedAt.toString(), chat.content)
-  }
-
-  fun deleteServerChat(
-    chatId: String,
-    userId: String,
-  ): ChatResponse {
-    val chat = serverChatRepository.findById(chatId).orElseThrow { GlobalException(ErrorCode.CHAT_NOT_FOUND) }
-    verifyIfAuthor(userId, chat)
-    serverChatRepository.delete(chat)
+    chatRepository.delete(chat)
     return ChatResponse(chat.id!!, userId, MessageType.DELETE, chat.isEdited(), chat.updatedAt.toString(), chat.content)
   }
 

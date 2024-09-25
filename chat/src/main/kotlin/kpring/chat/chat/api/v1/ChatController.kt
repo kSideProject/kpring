@@ -30,8 +30,13 @@ class ChatController(
     val userId = authClient.getTokenInfo(token).data!!.userId
 
     when (request.type) {
-      ChatType.Room -> chatService.createRoomChat(request, userId)
-      ChatType.Server -> chatService.createServerChat(request, userId)
+      ChatType.ROOM -> chatService.createRoomChat(request, userId)
+      ChatType.SERVER ->
+        chatService.createServerChat(
+          request,
+          userId,
+          serverClient.getServerList(token, GetServerCondition()).body!!.data!!,
+        )
       else -> throw GlobalException(ErrorCode.INVALID_CHAT_TYPE)
     }
 
@@ -49,8 +54,8 @@ class ChatController(
     val userId = authClient.getTokenInfo(token).data!!.userId
     val result =
       when (type) {
-        ChatType.Room -> chatService.getRoomChats(id, userId, page, size)
-        ChatType.Server ->
+        ChatType.ROOM -> chatService.getRoomChats(id, userId, page, size)
+        ChatType.SERVER ->
           chatService.getServerChats(
             id,
             userId,
@@ -68,11 +73,7 @@ class ChatController(
     @RequestHeader("Authorization") token: String,
   ): ResponseEntity<*> {
     val userId = authClient.getTokenInfo(token).data!!.userId
-    val result =
-      when (request.type) {
-        ChatType.Room -> chatService.updateRoomChat(request, userId)
-        ChatType.Server -> chatService.updateServerChat(request, userId)
-      }
+    val result = chatService.updateChat(request, userId)
     return ResponseEntity.ok().body(ApiResponse<Nothing>(status = 200))
   }
 
@@ -83,11 +84,7 @@ class ChatController(
     @RequestHeader("Authorization") token: String,
   ): ResponseEntity<*> {
     val userId = authClient.getTokenInfo(token).data!!.userId
-    val result =
-      when (type) {
-        ChatType.Room -> chatService.deleteRoomChat(chatId, userId)
-        ChatType.Server -> chatService.deleteServerChat(chatId, userId)
-      }
+    val result = chatService.deleteChat(chatId, userId)
     return ResponseEntity.ok().body(ApiResponse<Nothing>(status = 200))
   }
 }

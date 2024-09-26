@@ -1,28 +1,19 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ServerInforProps } from "../../types/layout";
-import {
-  Avatar,
-  Badge,
-  Divider,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  Button,
-  styled,
-  Modal,
-  Box,
-  Typography,
-} from "@mui/material";
+import { Divider, Button, styled, Box, Typography } from "@mui/material";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
-import { serverData } from "../../utils/fakeData";
 import { useNavigate } from "react-router-dom";
 import FavoriteStar from "../Home/FavoriteStar";
 import ModalComponent from "../Modal/ModalComponent";
 import useModal from "../../hooks/Modal";
 import Profile from "../Profile/Profile";
+import useFetchServers from "../../hooks/FetchServer";
+import axios from "axios";
+import { useThemeStore } from "../../store/useThemeStore";
+import { SelectedType, ServerType } from "../../types/server";
 
-const ServerInfoSidebar: React.FC<ServerInforProps> = ({ close, serverID }) => {
+const ServerInfoSidebar: React.FC<ServerInforProps> = ({ close, serverId }) => {
+  const token = localStorage.getItem("dicoTown_AccessToken");
   const DrawerHeader = styled("div")(({ theme }) => ({
     display: "flex",
     alignItems: "center",
@@ -34,6 +25,32 @@ const ServerInfoSidebar: React.FC<ServerInforProps> = ({ close, serverID }) => {
   }));
   const navigate = useNavigate();
   const { isOpen, openModal, closeModal } = useModal();
+  const { data } = useFetchServers(token);
+  const setTheme = useThemeStore((state) => state.setTheme);
+  const [selectedServer, setSelectedServer] = useState<SelectedType>();
+
+  console.log(selectedServer);
+  const getSelectedServer = async () => {
+    const url = `${process.env.REACT_APP_BASE_URL}/server/api/v1/server/${serverId}`;
+
+    try {
+      const res = await axios.get(url);
+      const results = res.data.data;
+
+      if (results) {
+        console.log(serverId);
+        setTheme(results.theme);
+        setSelectedServer(results);
+        navigate(`server/${serverId}`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getSelectedServer();
+  }, [serverId]);
 
   return (
     <>
@@ -48,12 +65,12 @@ const ServerInfoSidebar: React.FC<ServerInforProps> = ({ close, serverID }) => {
             width: "100%",
           }}>
           <ArrowBackIosNewIcon onClick={close} />
-          <Typography>서버이름</Typography>
-          <FavoriteStar id={serverID} />
+          <Typography>{selectedServer?.name}</Typography>
+          <FavoriteStar id={serverId} />
         </Box>
 
         <Button
-          onClick={() => navigate(`server/${serverID}`)}
+          onClick={() => getSelectedServer()}
           sx={{
             backgroundColor: "#2A2F4F",
             width: "100%",
@@ -66,29 +83,12 @@ const ServerInfoSidebar: React.FC<ServerInforProps> = ({ close, serverID }) => {
         </Button>
       </DrawerHeader>
       <Divider />
-      <List>
-        {serverData
-          .filter((server) => server.serverId === serverID)
-          .map((member) => {
-            return (
-              <ListItem>
-                <ListItemAvatar onClick={openModal}>
-                  <Badge
-                    color="success"
-                    variant="dot"
-                    overlap="circular"
-                    anchorOrigin={{ vertical: "bottom", horizontal: "right" }}>
-                    <Avatar
-                      alt="user nickname"
-                      src="https://images.unsplash.com/photo-1517849845537-4d257902454a?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                    />
-                  </Badge>
-                </ListItemAvatar>
-                <ListItemText primary={member.members} />
-              </ListItem>
-            );
-          })}
-      </List>
+      <div>
+        {selectedServer?.users.map((user) => (
+          <span>userID: {user.id}</span>
+        ))}
+      </div>
+
       <ModalComponent isOpen={isOpen}>
         <Profile closeModal={closeModal} />
       </ModalComponent>

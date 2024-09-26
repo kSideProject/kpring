@@ -12,9 +12,9 @@ import kpring.server.application.port.output.GetServerPort
 import kpring.server.application.port.output.GetServerProfilePort
 import kpring.server.application.port.output.UpdateServerPort
 import kpring.server.application.service.ServerService
-import kpring.server.domain.Server
 import kpring.server.domain.ServerProfile
 import kpring.server.domain.ServerRole
+import kpring.server.util.testServer
 
 class DeleteServerUseCaseTest(
   val getServerPort: GetServerPort = mockk(),
@@ -25,12 +25,9 @@ class DeleteServerUseCaseTest(
 ) : DescribeSpec({
     it("삭제하는 서버에 대한 삭제 권한이 없는 유저라면 예외가 발생한다.") {
       // given
-      val serverId = "serverId"
-      val userId = "userId"
-      val server =
-        Server(
-          name = "serverName",
-        )
+      val server = testServer()
+      val serverId = server.id!!
+      val userId = server.host.id
       val serverProfile =
         ServerProfile(
           id = null,

@@ -37,6 +37,7 @@ class UserServiceImplTest : FunSpec({
   }
 
   test("회원가입_성공") {
+    // given
     val userId = 1L
     val user =
       User(
@@ -53,8 +54,10 @@ class UserServiceImplTest : FunSpec({
     every { passwordEncoder.encode(createUserRequest.password) } returns ENCODED_PASSWORD
     every { userRepository.save(any()) } returns user
 
+    // when
     val response = userService.createUser(createUserRequest)
 
+    // then
     verify { userRepository.save(any()) }
 
     userId shouldBe response.id
@@ -64,13 +67,17 @@ class UserServiceImplTest : FunSpec({
   }
 
   test("회원가입_실패_이메일중복케이스") {
+    // given
     every { userService.handleDuplicateEmail(TEST_EMAIL) } throws
       ServiceException(UserErrorCode.ALREADY_EXISTS_EMAIL)
 
+    // when
     val exception =
       shouldThrow<ServiceException> {
         userService.handleDuplicateEmail(createUserRequest.email)
       }
+
+    // then
     exception.errorCode.message() shouldBe "이미 존재하는 이메일입니다."
 
     verify { userRepository.save(any()) wasNot Called }

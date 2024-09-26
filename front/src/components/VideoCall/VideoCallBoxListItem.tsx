@@ -1,9 +1,9 @@
-import React, { useEffect, useRef } from 'react'
-import { Member } from '../../types/layout'
+import React from 'react'
 import { Box } from '@mui/material';
+import { ServerMember } from '../../types/server';
 
 interface MemberListItemProps{
-  member: Member;
+  member: ServerMember;
 }
 
 const VideoCallBoxListItem : React.FC<MemberListItemProps>= ({member}) => {
@@ -35,7 +35,7 @@ const VideoCallBoxListItem : React.FC<MemberListItemProps>= ({member}) => {
               position:'absolute',
               bottom: '8px',
               right: '16px'
-              }}>{member.userName}</Box>
+              }}>{member.name}</Box>
           </Box>
         </Box>
     </Box>

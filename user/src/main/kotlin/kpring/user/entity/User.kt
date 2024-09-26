@@ -16,7 +16,12 @@ class User(
   @Column(nullable = false)
   var password: String,
   var file: String?,
-  @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = [CascadeType.ALL])
+  @OneToMany(
+    fetch = FetchType.LAZY,
+    mappedBy = "user",
+    cascade = [CascadeType.ALL],
+    orphanRemoval = true,
+  )
   val friends: MutableSet<Friend> = mutableSetOf(),
   // Other fields and methods...
 ) {
@@ -38,6 +43,11 @@ class User(
         requestStatus = FriendRequestStatus.RECEIVED,
       )
     friends.add(friendRelation)
+  }
+
+  fun removeFriendRelation(friendRelation: Friend) {
+    friends.remove(friendRelation)
+    friendRelation.friend.friends.removeIf { it.friend == this }
   }
 
   fun updateInfo(

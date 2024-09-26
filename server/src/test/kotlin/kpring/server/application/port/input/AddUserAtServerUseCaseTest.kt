@@ -12,9 +12,9 @@ import kpring.server.application.port.output.GetServerPort
 import kpring.server.application.port.output.GetServerProfilePort
 import kpring.server.application.port.output.UpdateServerPort
 import kpring.server.application.service.ServerService
-import kpring.server.domain.Server
 import kpring.server.domain.ServerProfile
 import kpring.server.domain.ServerRole
+import kpring.server.util.testServer
 
 class AddUserAtServerUseCaseTest(
   val getServerPort: GetServerPort = mockk(),
@@ -27,9 +27,12 @@ class AddUserAtServerUseCaseTest(
     it("유저 초대시 초대하는 유저가 권한이 없다면 예외를 던진다") {
       // given
       val invitorId = "invitorId"
-      val userId = "userId"
-      val serverId = "serverId"
-      val server = Server(name = "serverName")
+      val server = testServer()
+      val userId = server.host.id
+      val serverId = server.id!!
+
+      server.invitedUserIds.add(invitorId)
+
       val serverProfile =
         ServerProfile(
           id = null,

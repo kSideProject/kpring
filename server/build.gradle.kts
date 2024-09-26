@@ -67,10 +67,10 @@ kapt {
   annotationProcessor("org.springframework.data.mongodb.repository.support.MongoAnnotationProcessor")
 }
 
-val hostname = "152.70.145.249"
+val hostname = "kpring.duckdns.org"
 
 openapi3 {
-  setServer("http://$hostname/server")
+  setServer("https://$hostname/server")
   title = "Server API"
   description = "API document"
   version = "0.1.0"
@@ -89,13 +89,11 @@ jib {
     }
   }
   to {
-    image = "youdong98/kpring-server-application"
+    image = "kpring/server-application"
     setAllowInsecureRegistries(true)
-    tags = setOf("latest")
+    tags = setOf("latest", version.toString())
   }
   container {
     jvmFlags = listOf("-Xms512m", "-Xmx512m")
   }
 }
-
-tasks.getByName("jib").dependsOn("openapi3")

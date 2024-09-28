@@ -224,13 +224,16 @@ class ChatControllerTest(
               "type" mean "Server / Room"
               "id" mean "서버 ID"
               "page" mean "페이지 번호"
+              "size" mean "페이지 사이즈"
             }
           }
 
           response {
             body {
               "status" type JsonDataType.Integers mean "상태 코드"
-              "data[].id" type JsonDataType.Strings mean "서버 ID"
+              "data[].id" type JsonDataType.Strings mean "채팅 ID"
+              "data[].sender" type JsonDataType.Strings mean "채팅 작성자"
+              "data[].messageType" type JsonDataType.Strings mean "메시지 타입"
               "data[].isEdited" type JsonDataType.Booleans mean "메시지가 수정되었는지 여부"
               "data[].sentAt" type JsonDataType.Strings mean "메시지 생성 시간"
               "data[].content" type JsonDataType.Strings mean "메시지 내용"
@@ -306,13 +309,16 @@ class ChatControllerTest(
               "type" mean "Server / Room"
               "id" mean "채팅방 ID"
               "page" mean "페이지 번호"
+              "size" mean "페이지 사이즈"
             }
           }
 
           response {
             body {
               "status" type JsonDataType.Integers mean "상태 코드"
-              "data[].id" type JsonDataType.Strings mean "채팅방 ID"
+              "data[].id" type JsonDataType.Strings mean "채팅 ID"
+              "data[].sender" type JsonDataType.Strings mean "채팅 작성자"
+              "data[].messageType" type JsonDataType.Strings mean "메시지 타입"
               "data[].isEdited" type JsonDataType.Booleans mean "메시지가 수정되었는지 여부"
               "data[].sentAt" type JsonDataType.Strings mean "메시지 생성 시간"
               "data[].content" type JsonDataType.Strings mean "메시지 내용"
@@ -521,6 +527,7 @@ class ChatControllerTest(
         val result =
           webTestClient.delete().uri(
             URLBuilder(url)
+              .query("type", "ROOM")
               .build(),
             chatId,
           )

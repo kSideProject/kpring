@@ -20,7 +20,9 @@ import kpring.core.chat.model.ChatType
 import kpring.core.chat.model.MessageType
 import kpring.core.global.dto.response.ApiResponse
 import kpring.core.server.client.ServerClient
+import kpring.core.server.dto.CategoryInfo
 import kpring.core.server.dto.ServerSimpleInfo
+import kpring.core.server.dto.ServerThemeInfo
 import kpring.test.restdoc.dsl.restDoc
 import kpring.test.restdoc.json.JsonDataType
 import kpring.test.web.URLBuilder
@@ -142,12 +144,29 @@ class ChatControllerTest(
               content = ChatTest.CONTENT,
             ),
           )
+
+        val categories =
+          listOf(
+            CategoryInfo(
+              id = "category_id",
+              name = "category_name",
+            ),
+          )
+
+        val theme =
+          ServerThemeInfo(
+            id = "theme_id",
+            name = "theme_name",
+          )
         val serverList =
           listOf(
             ServerSimpleInfo(
               id = ContextTest.TEST_SERVER_ID,
               name = "test_server_name",
+              hostName = CommonTest.TEST_USER_ID,
               bookmarked = true,
+              categories = categories,
+              theme = theme,
             ),
           )
 
@@ -382,12 +401,28 @@ class ChatControllerTest(
           )
         val userId = CommonTest.TEST_USER_ID
 
+        val categories =
+          listOf(
+            CategoryInfo(
+              id = "category_id",
+              name = "category_name",
+            ),
+          )
+
+        val theme =
+          ServerThemeInfo(
+            id = "theme_id",
+            name = "theme_name",
+          )
         val serverList =
           listOf(
             ServerSimpleInfo(
               id = ContextTest.TEST_SERVER_ID,
               name = "test_server_name",
+              hostName = CommonTest.TEST_USER_ID,
               bookmarked = true,
+              categories = categories,
+              theme = theme,
             ),
           )
 

@@ -62,7 +62,9 @@ class ChatController(
             page,
             size,
             serverClient.getServerList(token, GetServerCondition()).body!!.data!!,
-          )
+          )else -> {
+          throw GlobalException(ErrorCode.INVALID_CHAT_TYPE)
+        }
       }
     return ResponseEntity.ok().body(ApiResponse(data = result, status = 200))
   }
@@ -79,7 +81,6 @@ class ChatController(
 
   @DeleteMapping("/chat/{chatId}")
   fun deleteChat(
-    @RequestParam("type") type: ChatType,
     @PathVariable("chatId") chatId: String,
     @RequestHeader("Authorization") token: String,
   ): ResponseEntity<*> {

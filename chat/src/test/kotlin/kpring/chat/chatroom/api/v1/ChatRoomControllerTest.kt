@@ -7,8 +7,8 @@ import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import kpring.chat.chatroom.api.v1.ChatRoomController
 import kpring.chat.chatroom.service.ChatRoomService
-import kpring.chat.global.ChatRoomTest
 import kpring.chat.global.CommonTest
+import kpring.chat.global.ContextTest
 import kpring.chat.global.config.TestMongoConfig
 import kpring.core.auth.client.AuthClient
 import kpring.core.auth.dto.response.TokenInfo
@@ -58,7 +58,7 @@ class ChatRoomControllerTest(
       it("getChatRoomInvitation api test") {
 
         // Given
-        val chatRoomId = ChatRoomTest.TEST_ROOM_ID
+        val chatRoomId = ContextTest.TEST_ROOM_ID
         val userId = CommonTest.TEST_USER_ID
         val key = "62e9df6b-13cb-4673-a6fe-8566451b7f15"
         val data = InvitationResponse(key)
@@ -67,7 +67,8 @@ class ChatRoomControllerTest(
           ApiResponse(
             data =
               TokenInfo(
-                type = TokenType.ACCESS, userId = CommonTest.TEST_USER_ID,
+                type = TokenType.ACCESS,
+                userId = CommonTest.TEST_USER_ID,
               ),
           )
 
@@ -109,7 +110,7 @@ class ChatRoomControllerTest(
       it("joinChatRoom api test") {
 
         // Given
-        val chatRoomId = ChatRoomTest.TEST_ROOM_ID
+        val chatRoomId = ContextTest.TEST_ROOM_ID
         val userId = CommonTest.TEST_USER_ID
         val code = "666fcd76027b2432e4b49a0f"
         val data = true
@@ -118,7 +119,8 @@ class ChatRoomControllerTest(
           ApiResponse(
             data =
               TokenInfo(
-                type = TokenType.ACCESS, userId = CommonTest.TEST_USER_ID,
+                type = TokenType.ACCESS,
+                userId = CommonTest.TEST_USER_ID,
               ),
           )
 

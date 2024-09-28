@@ -13,8 +13,12 @@ class Friend(
   private var user: User,
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "friend_id")
-  private var friend: User,
+  var friend: User,
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
   var requestStatus: FriendRequestStatus,
-)
+) {
+  fun updateRequestStatus(requestStatus: FriendRequestStatus) {
+    this.requestStatus = requestStatus
+  }
+}

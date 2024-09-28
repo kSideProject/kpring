@@ -19,6 +19,13 @@ enum class UserErrorCode(
 
   ALREADY_FRIEND(HttpStatus.BAD_REQUEST, "4030", "이미 친구입니다."),
   NOT_SELF_FOLLOW(HttpStatus.BAD_REQUEST, "4031", "자기자신에게 친구요청을 보낼 수 없습니다"),
+
+  FRIENDSHIP_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "4032", "이미 친구입니다."),
+  FRIENDSHIP_NOT_FOUND(HttpStatus.NOT_FOUND, "4033", "해당하는 친구신청이 없습니다."),
+
+  FRIEND_NOT_FOUND(HttpStatus.NOT_FOUND, "4034", "해당하는 친구가 없습니다."),
+
+  SERVER_OWNER_CANNOT_LEAVE(HttpStatus.CONFLICT, "4040", "서버장 권한을 가지고 있어 탈퇴가 불가능합니다."),
   ;
 
   override fun message(): String = this.message

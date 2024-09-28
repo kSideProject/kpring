@@ -18,6 +18,7 @@ import kpring.core.chat.chat.dto.request.CreateChatRequest
 import kpring.core.chat.chat.dto.request.UpdateChatRequest
 import kpring.core.chat.model.ChatType
 import kpring.core.server.dto.ServerSimpleInfo
+import kpring.core.server.dto.ServerThemeInfo
 import org.springframework.beans.factory.annotation.Value
 import java.util.*
 
@@ -73,6 +74,13 @@ class ChatServiceTest(
             id = serverId2,
             name = "test_server_name",
             bookmarked = true,
+            hostName = "test host name",
+            categories = listOf(),
+            theme =
+              ServerThemeInfo(
+                id = "test_theme_id",
+                name = "test_theme_name",
+              ),
           ),
         )
 

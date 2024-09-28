@@ -1,9 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: profile-config
-  namespace: {{ .Release.namespace }}
-  labels:
-    app: profile
-data:
-  profile: {{ .Values.global.profile }}

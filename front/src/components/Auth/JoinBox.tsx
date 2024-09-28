@@ -43,7 +43,7 @@ function JoinBox() {
   const submitJoin = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:30002/api/v1/user",
+        `${process.env.REACT_APP_BASE_URL}/user/api/v1/user`,
         {
           email: values.email,
           password: values.password,

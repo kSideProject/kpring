@@ -27,7 +27,7 @@ class SaveServerPortMongoImpl(
     serverProfileRepository.save(
       ServerProfileEntity(
         id = null,
-        userId = server.users.first(),
+        userId = server.host.id,
         // todo change
         name = "USER_${UUID.randomUUID()}",
         // todo change

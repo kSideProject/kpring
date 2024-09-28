@@ -5,22 +5,26 @@ module.exports = {
     extend: {
       // 기존 색상에서 확장 위해서 extend에 colors 넣는 방식으로 변경
       colors: {
-        dark:{
-          DEFAULT : "#2A2F4F",
+        dark: {
+          DEFAULT: "#2A2F4F",
         },
-        pink:{
-          DEFAULT : "#FDE2F3",
+        pink: {
+          DEFAULT: "#FDE2F3",
         },
-        darkPink:{
-          DEFAULT : "#E5BEEC",
+        darkPink: {
+          DEFAULT: "#E5BEEC",
         },
-        gray:{
-          DEFAULT : "hsla(0, 0%, 100%, .9)"
+        gray: {
+          DEFAULT: "hsla(0, 0%, 100%, .9)",
         },
-        darkGray:{ 
-          DEFAULT : "rgb(39 38 46/var(--tw-text-opacity))"
+        darkGray: {
+          DEFAULT: "rgb(39 38 46/var(--tw-text-opacity))",
         },
       },
+    },
+    backgroundImage: {
+      camping: "url('/public/assets/map/camping/camping.png')",
+      beach: "url('/public/assets/map/beach/beach.png')",
     },
   },
   plugins: [],

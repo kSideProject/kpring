@@ -6,6 +6,7 @@ import kpring.core.server.dto.ServerThemeInfo
 data class CreateServerResponse(
   val serverId: String,
   val serverName: String,
+  val hostName: String,
   val theme: ServerThemeInfo,
   val categories: List<CategoryInfo>,
 )

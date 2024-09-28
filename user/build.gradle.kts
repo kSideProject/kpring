@@ -51,10 +51,10 @@ dependencies {
   implementation("org.springframework.restdocs:spring-restdocs-asciidoctor")
 }
 
-val hostname = "152.70.145.249"
+val hostname = "kpring.duckdns.org"
 
 openapi3 {
-  setServer("http://$hostname/user")
+  setServer("https://$hostname/user")
   title = "User API"
   description = "API document"
   version = "0.1.0"
@@ -73,13 +73,11 @@ jib {
     }
   }
   to {
-    image = "youdong98/kpring-user-application"
+    image = "kpring/user-application"
     setAllowInsecureRegistries(true)
-    tags = setOf("latest")
+    tags = setOf("latest", version.toString())
   }
   container {
     jvmFlags = listOf("-Xms512m", "-Xmx512m")
   }
 }
-
-tasks.getByName("jib").dependsOn("openapi3")

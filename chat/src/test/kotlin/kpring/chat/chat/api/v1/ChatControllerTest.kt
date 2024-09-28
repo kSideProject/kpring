@@ -6,9 +6,9 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import kpring.chat.chat.service.ChatService
-import kpring.chat.global.ChatRoomTest
 import kpring.chat.global.ChatTest
 import kpring.chat.global.CommonTest
+import kpring.chat.global.ContextTest
 import kpring.chat.global.config.TestMongoConfig
 import kpring.core.auth.client.AuthClient
 import kpring.core.auth.dto.response.TokenInfo
@@ -71,12 +71,20 @@ class ChatControllerTest(
       it("createChat api test") {
 
         // Given
-        val content = "create_chat_test"
-        val id = ChatRoomTest.TEST_ROOM_ID
-        val type = ChatType.Room
-        val request = CreateChatRequest(content = content, type = type, id = id)
+        val content = ChatTest.CONTENT
+        val id = ContextTest.TEST_ROOM_ID
+        val type = ChatType.ROOM
+        val request = CreateChatRequest(contextId = id, type = type, content = content)
 
-        val data = true
+        val data =
+          ChatResponse(
+            id = ChatTest.TEST_CHAT_ID,
+            sender = CommonTest.TEST_USER_ID,
+            messageType = MessageType.CHAT,
+            isEdited = false,
+            sentAt = LocalDateTime.now().toString(),
+            content = content,
+          )
 
         every { authClient.getTokenInfo(any()) } returns
           ApiResponse(
@@ -123,24 +131,21 @@ class ChatControllerTest(
       it("getServerChats api test") {
 
         // Given
-        val serverId = "test_server_id"
-        val chatId = ChatTest.TEST_CHAT_ID
-        val userId = CommonTest.TEST_USER_ID
         val data =
           listOf(
             ChatResponse(
-              id = chatId,
-              sender = userId,
+              id = ChatTest.TEST_CHAT_ID,
+              sender = CommonTest.TEST_USER_ID,
               messageType = MessageType.CHAT,
-              isEdited = false,
+              isEdited = true,
               sentAt = LocalDateTime.now().toString(),
-              content = "content",
+              content = ChatTest.CONTENT,
             ),
           )
         val serverList =
           listOf(
             ServerSimpleInfo(
-              id = serverId,
+              id = ContextTest.TEST_SERVER_ID,
               name = "test_server_name",
               bookmarked = true,
             ),
@@ -150,7 +155,8 @@ class ChatControllerTest(
           ApiResponse(
             data =
               TokenInfo(
-                type = TokenType.ACCESS, userId = CommonTest.TEST_USER_ID,
+                type = TokenType.ACCESS,
+                userId = CommonTest.TEST_USER_ID,
               ),
           )
 
@@ -159,10 +165,11 @@ class ChatControllerTest(
 
         every {
           chatService.getServerChats(
-            serverId,
-            CommonTest.TEST_USER_ID,
-            1,
-            serverList,
+            serverId = ContextTest.TEST_SERVER_ID,
+            userId = CommonTest.TEST_USER_ID,
+            page = 0,
+            size = 1,
+            servers = serverList,
           )
         } returns data
 
@@ -170,9 +177,10 @@ class ChatControllerTest(
         val result =
           webTestClient.get().uri(
             URLBuilder(url)
-              .query("id", serverId)
-              .query("type", "Server")
-              .query("page", 1)
+              .query("id", ContextTest.TEST_SERVER_ID)
+              .query("type", "SERVER")
+              .query("page", 0)
+              .query("size", 1)
               .build(),
           )
             .header("Authorization", "Bearer mock_token")
@@ -219,18 +227,15 @@ class ChatControllerTest(
       it("getRoomChats api test") {
 
         // Given
-        val roomId = "test_room_id"
-        val chatId = ChatTest.TEST_CHAT_ID
-        val userId = CommonTest.TEST_USER_ID
         val data =
           listOf(
             ChatResponse(
-              id = chatId,
-              sender = userId,
+              id = ChatTest.TEST_CHAT_ID,
+              sender = CommonTest.TEST_USER_ID,
               messageType = MessageType.CHAT,
-              isEdited = false,
+              isEdited = true,
               sentAt = LocalDateTime.now().toString(),
-              content = "content",
+              content = ChatTest.CONTENT,
             ),
           )
 
@@ -238,15 +243,17 @@ class ChatControllerTest(
           ApiResponse(
             data =
               TokenInfo(
-                type = TokenType.ACCESS, userId = CommonTest.TEST_USER_ID,
+                type = TokenType.ACCESS,
+                userId = CommonTest.TEST_USER_ID,
               ),
           )
 
         every {
           chatService.getRoomChats(
-            roomId,
-            CommonTest.TEST_USER_ID,
-            1,
+            chatRoomId = ContextTest.TEST_ROOM_ID,
+            userId = CommonTest.TEST_USER_ID,
+            page = 0,
+            size = 1,
           )
         } returns data
 
@@ -254,9 +261,10 @@ class ChatControllerTest(
         val result =
           webTestClient.get().uri(
             URLBuilder(url)
-              .query("id", roomId)
-              .query("type", "Room")
-              .query("page", 1)
+              .query("id", ContextTest.TEST_ROOM_ID)
+              .query("type", "ROOM")
+              .query("page", 0)
+              .query("size", 1)
               .build(),
           )
             .header("Authorization", "Bearer mock_token")
@@ -301,25 +309,40 @@ class ChatControllerTest(
       it("updateRoomChat api test") {
 
         // Given
-        val roomId = "test_room_id"
-        val content = "edit test"
-        val request = UpdateChatRequest(id = roomId, type = ChatType.Room, content = content)
+        val request =
+          UpdateChatRequest(
+            id = ChatTest.TEST_CHAT_ID,
+            contextId = ContextTest.TEST_ROOM_ID,
+            type = ChatType.ROOM,
+            content = ChatTest.CONTENT,
+          )
         val userId = CommonTest.TEST_USER_ID
+
+        val data =
+          ChatResponse(
+            id = ChatTest.TEST_CHAT_ID,
+            sender = CommonTest.TEST_USER_ID,
+            messageType = MessageType.CHAT,
+            isEdited = false,
+            sentAt = LocalDateTime.now().toString(),
+            content = ChatTest.CONTENT,
+          )
 
         every { authClient.getTokenInfo(any()) } returns
           ApiResponse(
             data =
               TokenInfo(
-                type = TokenType.ACCESS, userId = userId,
+                type = TokenType.ACCESS,
+                userId = userId,
               ),
           )
 
         every {
-          chatService.updateRoomChat(
+          chatService.updateChat(
             request,
             CommonTest.TEST_USER_ID,
           )
-        } returns true
+        } returns data
 
         // When
         val result =
@@ -350,25 +373,40 @@ class ChatControllerTest(
       it("updateServerChat api test") {
 
         // Given
-        val serverId = "test_server_id"
-        val content = "edit test"
-        val request = UpdateChatRequest(id = serverId, type = ChatType.Server, content = content)
+        val request =
+          UpdateChatRequest(
+            id = ChatTest.TEST_CHAT_ID,
+            contextId = ContextTest.TEST_SERVER_ID,
+            type = ChatType.SERVER,
+            content = ChatTest.CONTENT,
+          )
         val userId = CommonTest.TEST_USER_ID
 
         val serverList =
           listOf(
             ServerSimpleInfo(
-              id = serverId,
+              id = ContextTest.TEST_SERVER_ID,
               name = "test_server_name",
               bookmarked = true,
             ),
+          )
+
+        val data =
+          ChatResponse(
+            id = ChatTest.TEST_CHAT_ID,
+            sender = CommonTest.TEST_USER_ID,
+            messageType = MessageType.UPDATE,
+            isEdited = true,
+            sentAt = LocalDateTime.now().toString(),
+            content = ChatTest.CONTENT,
           )
 
         every { authClient.getTokenInfo(any()) } returns
           ApiResponse(
             data =
               TokenInfo(
-                type = TokenType.ACCESS, userId = userId,
+                type = TokenType.ACCESS,
+                userId = userId,
               ),
           )
 
@@ -376,12 +414,11 @@ class ChatControllerTest(
           ResponseEntity.ok().body(ApiResponse(data = serverList))
 
         every {
-          chatService.updateServerChat(
+          chatService.updateChat(
             request,
             userId,
           )
-        } returns
-          true
+        } returns data
 
         // When
         val result =
@@ -414,8 +451,15 @@ class ChatControllerTest(
     describe("DELETE /api/v1/chat : deleteChat api test") {
 
       val url = "/api/v1/chat/{chatId}"
-      // Given
-      val userId = CommonTest.TEST_USER_ID
+      val data =
+        ChatResponse(
+          id = ChatTest.TEST_CHAT_ID,
+          sender = CommonTest.TEST_USER_ID,
+          messageType = MessageType.DELETE,
+          isEdited = true,
+          sentAt = LocalDateTime.now().toString(),
+          content = ChatTest.CONTENT,
+        )
 
       it("deleteRoomChat api test") {
 
@@ -426,22 +470,22 @@ class ChatControllerTest(
           ApiResponse(
             data =
               TokenInfo(
-                type = TokenType.ACCESS, userId = userId,
+                type = TokenType.ACCESS,
+                userId = CommonTest.TEST_USER_ID,
               ),
           )
 
         every {
-          chatService.deleteRoomChat(
-            chatId,
-            userId,
+          chatService.deleteChat(
+            ChatTest.TEST_CHAT_ID,
+            CommonTest.TEST_USER_ID,
           )
-        } returns true
+        } returns data
 
         // When
         val result =
           webTestClient.delete().uri(
             URLBuilder(url)
-              .query("type", "Room")
               .build(),
             chatId,
           )
@@ -486,16 +530,17 @@ class ChatControllerTest(
           ApiResponse(
             data =
               TokenInfo(
-                type = TokenType.ACCESS, userId = userId,
+                type = TokenType.ACCESS,
+                userId = CommonTest.TEST_USER_ID,
               ),
           )
 
         every {
-          chatService.deleteServerChat(
+          chatService.deleteChat(
             chatId,
-            userId,
+            CommonTest.TEST_USER_ID,
           )
-        } returns true
+        } returns data
 
         // When
         val result =

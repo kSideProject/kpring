@@ -67,11 +67,12 @@ class ChatService(
     userId: String,
     page: Int,
     size: Int,
-  ): List<Chat> {
+  ): List<ChatResponse> {
     verifyChatRoomAccess(chatRoomId, userId)
     val chats: List<Chat> = chatCustomRepository.findListByContextIdWithPaging(chatRoomId, page, size, ChatType.ROOM)
     logger.info("chats : $chats")
-    return chats
+    val responses: List<ChatResponse> = convertChatsToResponses(chats)
+    return responses
   }
 
   fun getServerChats(
@@ -80,10 +81,11 @@ class ChatService(
     page: Int,
     size: Int,
     servers: List<ServerSimpleInfo>,
-  ): List<Chat> {
+  ): List<ChatResponse> {
     verifyServerAccess(servers, serverId)
     val chats: List<Chat> = chatCustomRepository.findListByContextIdWithPaging(serverId, page, size, ChatType.SERVER)
-    return chats
+    val responses: List<ChatResponse> = convertChatsToResponses(chats)
+    return responses
   }
 
   fun updateChat(

@@ -9,14 +9,16 @@ import kpring.chat.chat.repository.ChatCustomRepository
 import kpring.chat.chat.repository.ChatRepository
 import kpring.chat.chat.service.ChatService
 import kpring.chat.chatroom.repository.ChatRoomRepository
-import kpring.chat.global.ChatRoomTest
 import kpring.chat.global.ChatTest
 import kpring.chat.global.CommonTest
+import kpring.chat.global.ContextTest
 import kpring.chat.global.exception.ErrorCode
 import kpring.chat.global.exception.GlobalException
 import kpring.core.chat.chat.dto.request.CreateChatRequest
+import kpring.core.chat.chat.dto.request.DeleteChatRequest
 import kpring.core.chat.chat.dto.request.UpdateChatRequest
 import kpring.core.chat.model.ChatType
+import kpring.core.chat.model.MessageType
 import kpring.core.server.dto.ServerSimpleInfo
 import kpring.core.server.dto.ServerThemeInfo
 import org.springframework.beans.factory.annotation.Value
@@ -32,11 +34,12 @@ class ChatServiceTest(
 
     test("createChat 은 새 RoomChat을 저장해야 한다") {
       // Given
-      val request = CreateChatRequest(content = ChatTest.CONTENT, contextId = ChatRoomTest.TEST_ROOM_ID, type = ChatType.ROOM)
+      val request = CreateChatRequest(content = ChatTest.CONTENT, contextId = ContextTest.TEST_ROOM_ID, type = ChatType.ROOM)
       val userId = CommonTest.TEST_USER_ID
       val chatId = ChatTest.TEST_CHAT_ID
-      val roomChat = Chat(chatId, userId, ChatType.ROOM, ChatRoomTest.TEST_ROOM_ID, request.content)
+      val roomChat = Chat(chatId, userId, ChatType.ROOM, ContextTest.TEST_ROOM_ID, request.content)
       every { chatRepository.save(any()) } returns roomChat
+      every { chatRoomRepository.existsByIdAndMembersContaining(any(), any()) } returns true
 
       // When
       chatService.createRoomChat(request, userId)
@@ -47,7 +50,7 @@ class ChatServiceTest(
 
     test("getRoomChats 은 권한이 없는 사용자에게 에러 발생") {
       // Given
-      val chatRoomId = ChatRoomTest.TEST_ROOM_ID
+      val chatRoomId = ContextTest.TEST_ROOM_ID
       val userId = CommonTest.TEST_ANOTHER_USER_ID
       every { chatRoomRepository.existsByIdAndMembersContaining(chatRoomId, userId) } returns false
 
@@ -97,7 +100,7 @@ class ChatServiceTest(
 
     test("updateRoomChat 은 권한이 없는 사용자에게 에러 발생") {
       // Given
-      val roomId = ChatRoomTest.TEST_ROOM_ID
+      val roomId = ContextTest.TEST_ROOM_ID
       val chatId = "test_chat_id"
       val contentUpdate = "content update"
       val request = UpdateChatRequest(id = chatId, contextId = roomId, type = ChatType.ROOM, content = contentUpdate)
@@ -157,10 +160,16 @@ class ChatServiceTest(
 
     test("updateRoomChat 은 권한이 있는 사용자의 요청에 따라 Chat 수정") {
       // Given
-      val roomId = "test_room_id"
-      val chatId = "test_chat_id"
-      val contentUpdate = "content update"
-      val request = UpdateChatRequest(id = chatId, contextId = roomId, type = ChatType.ROOM, content = contentUpdate)
+      val roomId = ContextTest.TEST_ROOM_ID
+      val chatId = ChatTest.TEST_CHAT_ID
+      val updatedContent = "content update"
+      val request =
+        UpdateChatRequest(
+          id = chatId,
+          contextId = roomId,
+          type = ChatType.ROOM,
+          content = updatedContent,
+        )
       val userId = CommonTest.TEST_USER_ID
       val chat =
         Chat(
@@ -177,7 +186,10 @@ class ChatServiceTest(
       val result = chatService.updateChat(request, userId)
 
       // Then
-      result shouldBe true
+      result.id shouldBe request.id
+      result.content shouldBe request.content
+      result.messageType shouldBe MessageType.UPDATE
+
       verify { chatRepository.save(any()) }
     }
 
@@ -185,8 +197,14 @@ class ChatServiceTest(
       // Given
       val serverId = "test_server_id"
       val chatId = "test_chat_id"
-      val contentUpdate = "content update"
-      val request = UpdateChatRequest(id = chatId, contextId = serverId, type = ChatType.SERVER, content = contentUpdate)
+      val updatedContent = "content update"
+      val request =
+        UpdateChatRequest(
+          id = chatId,
+          contextId = serverId,
+          type = ChatType.SERVER,
+          content = updatedContent,
+        )
       val userId = CommonTest.TEST_USER_ID
       val chat =
         Chat(
@@ -196,15 +214,17 @@ class ChatServiceTest(
           serverId,
           "content",
         )
-      val updated =
 
-        every { chatRepository.findById(request.id) } returns Optional.of(chat)
+      every { chatRepository.findById(request.id) } returns Optional.of(chat)
 
       // When
       val result = chatService.updateChat(request, userId)
 
       // Then
-      result shouldBe true
+      result.id shouldBe request.id
+      result.content shouldBe request.content
+      result.messageType shouldBe MessageType.UPDATE
+
       verify { chatRepository.save(any()) }
     }
 
@@ -213,6 +233,14 @@ class ChatServiceTest(
       val serverId = "test_server_id"
       val chatId = "test_chat_id"
       val userId = CommonTest.TEST_USER_ID
+
+      val request =
+        DeleteChatRequest(
+          id = chatId,
+          contextId = serverId,
+          type = ChatType.SERVER,
+        )
+
       val chat =
         Chat(
           id = chatId,
@@ -229,7 +257,8 @@ class ChatServiceTest(
       val result = chatService.deleteChat(chatId, userId)
 
       // Then
-      result shouldBe true
+      result.id shouldBe request.id
+      result.messageType shouldBe MessageType.DELETE
     }
 
     test("deleteRoomChat 은 권한이 있는 사용자의 요청에 따라 Chat 삭제") {
@@ -237,6 +266,14 @@ class ChatServiceTest(
       val roomId = "test_room_id"
       val chatId = "test_chat_id"
       val userId = CommonTest.TEST_USER_ID
+
+      val request =
+        DeleteChatRequest(
+          id = chatId,
+          contextId = chatId,
+          type = ChatType.SERVER,
+        )
+
       val chat =
         Chat(
           id = chatId,
@@ -253,6 +290,7 @@ class ChatServiceTest(
       val result = chatService.deleteChat(chatId, userId)
 
       // Then
-      result shouldBe true
+      result.id shouldBe request.id
+      result.messageType shouldBe MessageType.DELETE
     }
   })

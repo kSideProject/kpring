@@ -2,6 +2,7 @@ package kpring.chat.chat.model
 
 import kpring.chat.NoArg
 import kpring.chat.global.model.BaseTime
+import kpring.core.chat.model.ChatType
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 
@@ -11,8 +12,8 @@ class Chat(
   @Id
   val id: String? = null,
   val userId: String,
-  // roomId or serverId
-  val contextId: String,
+  val type: ChatType,
+  val contextId: String, // roomId or serverId
   var content: String,
 ) : BaseTime() {
   fun isEdited(): Boolean {

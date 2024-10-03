@@ -1,8 +1,8 @@
-package kpring.core.chat.chat.dto.request
+package kpring.core.chat.model
 
 enum class ChatType(val type: String) {
-  Room("Room"),
-  Server("Server"),
+  ROOM("Room"),
+  SERVER("Server"),
   ;
 
   override fun toString(): String {

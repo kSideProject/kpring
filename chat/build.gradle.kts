@@ -24,6 +24,9 @@ dependencies {
   // core module
   api(project(":core"))
 
+  compileOnly("org.projectlombok:lombok")
+  annotationProcessor("org.projectlombok:lombok")
+
   // mongodb
   implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
   implementation("com.querydsl:querydsl-mongodb:$queryDslVersion") {
@@ -67,6 +70,17 @@ dependencies {
   // default test
   testImplementation("org.springframework.boot:spring-boot-starter-test")
   testImplementation(project(":test"))
+
+  // websocket
+  implementation("org.springframework.boot:spring-boot-starter-websocket")
+  implementation("com.fasterxml.jackson.core:jackson-databind")
+  implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+  implementation("org.jetbrains.kotlin:kotlin-reflect")
+  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+
+  // Web Security
+  implementation("org.springframework.boot:spring-boot-starter-security")
+
 }
 
 kapt {

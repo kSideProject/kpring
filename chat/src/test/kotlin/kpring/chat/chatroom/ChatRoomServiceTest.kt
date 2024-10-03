@@ -9,8 +9,8 @@ import kpring.chat.chatroom.model.ChatRoom
 import kpring.chat.chatroom.repository.ChatRoomRepository
 import kpring.chat.chatroom.service.ChatRoomService
 import kpring.chat.chatroom.service.InvitationService
-import kpring.chat.global.ChatRoomTest
 import kpring.chat.global.CommonTest
+import kpring.chat.global.ContextTest
 import kpring.core.chat.chatroom.dto.request.CreateChatRoomRequest
 import java.util.*
 
@@ -22,7 +22,7 @@ class ChatRoomServiceTest : FunSpec({
 
   test("createChatRoom 는 새 ChatRoom을 저장해야 한다") {
     // Given
-    val request = CreateChatRoomRequest(ChatRoomTest.TEST_MEMBERS)
+    val request = CreateChatRoomRequest(ContextTest.TEST_MEMBERS)
     val chatRoom = ChatRoom()
     every { chatRoomRepository.save(any()) } returns chatRoom
 
@@ -38,9 +38,9 @@ class ChatRoomServiceTest : FunSpec({
     val chatRoom =
       ChatRoom(
         id =
-          ChatRoomTest.TEST_ROOM_ID,
+          ContextTest.TEST_ROOM_ID,
       ).apply {
-        addUsers(ChatRoomTest.TEST_MEMBERS)
+        addUsers(ContextTest.TEST_MEMBERS)
       }
     every { chatRoomRepository.findById(chatRoom.id!!) } returns Optional.of(chatRoom)
     every { chatRoomRepository.save(any()) } returns chatRoom

@@ -8,19 +8,14 @@ import kpring.core.server.dto.ServerUserInfo
 import kpring.core.server.dto.request.AddUserAtServerRequest
 import kpring.core.server.dto.request.CreateServerRequest
 import kpring.core.server.dto.request.GetServerCondition
+import kpring.core.server.dto.request.UpdateHostAtServerRequest
 import kpring.core.server.dto.response.CreateServerResponse
-import kpring.server.application.port.input.AddUserAtServerUseCase
-import kpring.server.application.port.input.CreateServerUseCase
-import kpring.server.application.port.input.DeleteServerUseCase
-import kpring.server.application.port.input.GetServerInfoUseCase
-import kpring.server.application.port.output.DeleteServerPort
-import kpring.server.application.port.output.GetServerPort
-import kpring.server.application.port.output.GetServerProfilePort
-import kpring.server.application.port.output.SaveServerPort
-import kpring.server.application.port.output.UpdateServerPort
+import kpring.server.application.port.input.*
+import kpring.server.application.port.output.*
 import kpring.server.domain.Category
 import kpring.server.domain.Server
 import kpring.server.domain.ServerAuthority
+import kpring.server.domain.ServerRole
 import kpring.server.util.toInfo
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -31,8 +26,13 @@ class ServerService(
   val getServer: GetServerPort,
   val getServerProfilePort: GetServerProfilePort,
   val updateServerPort: UpdateServerPort,
+  val updateServerProfilePort: UpdateServerProfilePort,
   val deleteServerPort: DeleteServerPort,
-) : CreateServerUseCase, GetServerInfoUseCase, AddUserAtServerUseCase, DeleteServerUseCase {
+) : CreateServerUseCase,
+  GetServerInfoUseCase,
+  AddUserAtServerUseCase,
+  DeleteServerUseCase,
+  UpdateHostAtServerUseCase {
   override fun createServer(req: CreateServerRequest): CreateServerResponse {
     val server =
       createServerPort.create(
@@ -140,5 +140,27 @@ class ServerService(
       throw ServiceException(CommonErrorCode.FORBIDDEN)
     }
     deleteServerPort.delete(serverId)
+  }
+
+  override fun updateServerHost(
+    serverId: String,
+    userId: String,
+    otherUser: UpdateHostAtServerRequest,
+  ) {
+    val hostServerProfile = getServerProfilePort.get(serverId, userId)
+    val newHostServerProfile = getServerProfilePort.get(serverId, otherUser.userId)
+
+    if (hostServerProfile.role != ServerRole.OWNER) {
+      throw ServiceException(CommonErrorCode.FORBIDDEN)
+    }
+
+    val server = hostServerProfile.server
+    server.updateServerHost(otherUser.userId, otherUser.userName)
+    updateServerPort.updateServerHost(serverId, userId, otherUser)
+
+    hostServerProfile.updateServerHost(hostServerProfile)
+    newHostServerProfile.updateServerHost(newHostServerProfile)
+    updateServerProfilePort.updateServerHost(hostServerProfile)
+    updateServerProfilePort.updateServerHost(newHostServerProfile)
   }
 }

@@ -2,10 +2,9 @@ package kpring.user.service
 
 import kpring.core.global.exception.ServiceException
 import kpring.user.dto.request.CreateUserRequest
+import kpring.user.dto.request.SearchUserRequest
 import kpring.user.dto.request.UpdateUserProfileRequest
-import kpring.user.dto.response.CreateUserResponse
-import kpring.user.dto.response.GetUserProfileResponse
-import kpring.user.dto.response.UpdateUserProfileResponse
+import kpring.user.dto.response.*
 import kpring.user.entity.User
 import kpring.user.exception.UserErrorCode
 import kpring.user.repository.UserRepository
@@ -84,6 +83,35 @@ class UserServiceImpl(
       )
 
     return CreateUserResponse(user.id, user.email)
+  }
+
+  override fun searchUsers(searchUserRequest: SearchUserRequest): UserSearchResultsResponse {
+    val searchTerm = searchUserRequest.search
+    val searchResults: Set<UserSearchResultResponse> =
+      if (!searchTerm.isNullOrEmpty()) {
+        val usersByEmail: Set<User>? = userRepository.findAllByEmailContaining(searchTerm)
+        val usersByUsername: Set<User>? = userRepository.findAllByUsernameContaining(searchTerm)
+
+        val searchResponseByEmail = getSearchUser(usersByEmail)
+        val searchResponseByUsername = getSearchUser(usersByUsername)
+
+        searchResponseByEmail.union(searchResponseByUsername)
+      } else {
+        emptySet()
+      }
+
+    return UserSearchResultsResponse(searchResults)
+  }
+
+  fun getSearchUser(users: Set<User>?): Set<UserSearchResultResponse> {
+    return users?.map { user ->
+      UserSearchResultResponse(
+        requireNotNull(user.id) { "userId는 null 일 수 없습니다." },
+        user.email,
+        user.username,
+        user.file,
+      )
+    }?.toSet() ?: emptySet()
   }
 
   fun handleDuplicateEmail(email: String) {

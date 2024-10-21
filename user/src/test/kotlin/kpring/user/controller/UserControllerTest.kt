@@ -16,12 +16,11 @@ import kpring.core.server.dto.ServerSimpleInfo
 import kpring.core.server.dto.ServerThemeInfo
 import kpring.test.restdoc.dsl.restDoc
 import kpring.test.restdoc.json.JsonDataType.Strings
+import kpring.test.web.URLBuilder
 import kpring.user.dto.request.CreateUserRequest
+import kpring.user.dto.request.SearchUserRequest
 import kpring.user.dto.request.UpdateUserProfileRequest
-import kpring.user.dto.response.CreateUserResponse
-import kpring.user.dto.response.FailMessageResponse
-import kpring.user.dto.response.GetUserProfileResponse
-import kpring.user.dto.response.UpdateUserProfileResponse
+import kpring.user.dto.response.*
 import kpring.user.exception.UserErrorCode
 import kpring.user.global.AuthValidator
 import kpring.user.global.CommonTest
@@ -797,6 +796,72 @@ class UserControllerTest(
                 path { "userId" mean "사용자 아이디" }
                 header {
                   "Authorization" mean "jwt 토큰 정보"
+                }
+              }
+            }
+        }
+      }
+
+      describe("회원 검색 API") {
+        it("회원 검색 성공") {
+          // given
+          val userId = 1L
+          val searchUserRequest = SearchUserRequest("user")
+          val searchResults =
+            UserSearchResultResponse(
+              CommonTest.TEST_USER_ID,
+              CommonTest.TEST_EMAIL,
+              CommonTest.TEST_USERNAME,
+              CommonTest.TEST_PROFILE_IMG,
+            )
+          val response =
+            UserSearchResultsResponse(
+              setOf(searchResults),
+            )
+
+          every { authClient.getTokenInfo(any()) }.returns(
+            ApiResponse(data = TokenInfo(TokenType.ACCESS, CommonTest.TEST_USER_ID.toString())),
+          )
+          every { authValidator.checkIfAccessTokenAndGetUserId(any()) } returns userId.toString()
+          every { userService.searchUsers(searchUserRequest) } returns response
+
+          // when
+          val result =
+            webTestClient.get()
+              .uri(
+                URLBuilder("/api/v1/user")
+                  .query("search", searchUserRequest.search.toString())
+                  .build(),
+              )
+              .header("Authorization", CommonTest.TEST_TOKEN)
+              .exchange()
+
+          // then
+          val docsRoot =
+            result
+              .expectStatus().isOk
+              .expectBody()
+
+          // docs
+          docsRoot
+            .restDoc(
+              identifier = "searchUsers200",
+              description = "회원 검색 API",
+            ) {
+              request {
+                query {
+                  "search" mean "유저 검색시 필요한 검색어"
+                }
+                header {
+                  "Authorization" mean "jwt 토큰 정보"
+                }
+              }
+              response {
+                body {
+                  "data.users[].userId" type Strings mean "사용자 id"
+                  "data.users[].email" type Strings mean "사용자 이메일"
+                  "data.users[].username" type Strings mean "유저 네임"
+                  "data.users[].file" type Strings mean "사용자 프로필 이미지"
                 }
               }
             }

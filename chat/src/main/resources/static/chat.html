@@ -75,15 +75,13 @@
         stompClient.connect(connectHeaders, function (frame) {
             console.log('Connected: ' + frame);
 
-            const subscribeHeaders = {
-                'Authorization': `Bearer ${token}`,
-                'contextId': chatroomId,
-                'context': 'ROOM'
-            };
-
-            stompClient.subscribe(`/topic/chatroom/${chatroomId}`, function(message) {
-                console.log("Message received:", message);
-            }, subscribeHeaders);
+            stompClient.subscribe(`/topic/chatroom/${chatroomId}`, function (message) {
+                console.log("Received message:", message.body);
+            }, {
+                Authorization: `Bearer ${token}`,
+                ContextId: chatroomId,
+                Context: 'ROOM'
+            });
 
             enableButtonsAfterConnect(token, chatroomId);
         }, function(error) {

@@ -13,7 +13,8 @@ class Chat(
   val id: String? = null,
   val userId: String,
   val type: ChatType,
-  val contextId: String, // roomId or serverId
+  // roomId or serverId
+  val contextId: String,
   var content: String,
 ) : BaseTime() {
   fun isEdited(): Boolean {

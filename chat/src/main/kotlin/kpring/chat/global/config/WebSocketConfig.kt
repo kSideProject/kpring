@@ -29,9 +29,9 @@ import org.springframework.web.socket.config.annotation.WebSocketTransportRegist
 @Configuration
 @EnableWebSocketMessageBroker
 class WebSocketConfig(
-  val authClient: AuthClient,
-  val serverClient: ServerClient,
-  val accessVerifier: AccessVerifier,
+  private val authClient: AuthClient,
+  private val serverClient: ServerClient,
+  private val accessVerifier: AccessVerifier,
 ) : WebSocketMessageBrokerConfigurer {
   @Value("\${url.front}")
   val frontUrl: String = ":63343"
@@ -60,10 +60,7 @@ class WebSocketConfig(
         val simpMessageType = SimpMessageHeaderAccessor.getMessageType(message.headers)
         return when (simpMessageType) {
           SimpMessageType.CONNECT -> handleConnectMessage(message)
-          SimpMessageType.SUBSCRIBE -> {
-            handleSubscribeMessage(message)
-            message
-          }
+          SimpMessageType.SUBSCRIBE -> handleSubscribeMessage(message)
           else -> message
         }
       }
@@ -87,7 +84,7 @@ class WebSocketConfig(
     return message
   }
 
-  private fun handleSubscribeMessage(message: Message<*>) {
+  private fun handleSubscribeMessage(message: Message<*>): Message<*> {
     val headerAccessor = SimpMessageHeaderAccessor.wrap(message)
 
     val token =
@@ -96,22 +93,25 @@ class WebSocketConfig(
         ?: throw GlobalException(ErrorCode.MISSING_TOKEN)
 
     val contextId =
-      headerAccessor.getFirstNativeHeader("contextId")
+      headerAccessor.getFirstNativeHeader("ContextId")
         ?: throw GlobalException(ErrorCode.MISSING_CONTEXTID)
 
     val context =
-      headerAccessor.getFirstNativeHeader("context")
+      headerAccessor.getFirstNativeHeader("Context")
         ?: throw GlobalException(ErrorCode.MISSING_CONTEXT)
+
+    val type =
+      ChatType.valueOf(context)
 
     val userId =
       authClient.getTokenInfo(token).data?.userId
         ?: throw GlobalException(ErrorCode.INVALID_TOKEN)
 
-    when (context) {
-      ChatType.ROOM.toString() -> {
+    when (type) {
+      ChatType.ROOM -> {
         accessVerifier.verifyChatRoomAccess(contextId, userId)
       }
-      ChatType.SERVER.toString() -> {
+      ChatType.SERVER -> {
         val serverList =
           serverClient.getServerList(token, GetServerCondition())
             .body?.data ?: throw GlobalException(ErrorCode.SERVER_ERROR)
@@ -119,6 +119,7 @@ class WebSocketConfig(
       }
       else -> throw GlobalException(ErrorCode.INVALID_CONTEXT)
     }
+    return message
   }
 
   override fun configureClientInboundChannel(registration: ChannelRegistration) {

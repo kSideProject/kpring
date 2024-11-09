@@ -29,7 +29,7 @@ class UserServiceImpl(
 
   override fun getProfile(userId: Long): GetUserProfileResponse {
     val user = getUser(userId)
-    return GetUserProfileResponse(user.id, user.email, user.username)
+    return GetUserProfileResponse(user.id, user.email, user.username, user.file)
   }
 
   override fun updateProfile(

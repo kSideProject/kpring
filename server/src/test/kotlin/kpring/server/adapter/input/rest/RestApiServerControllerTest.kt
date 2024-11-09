@@ -499,6 +499,48 @@ class RestApiServerControllerTest(
           }
         }
       }
+      describe("DELETE /api/v1/server/{serverId}/exit : 서버 탈퇴") {
+        val url = "/api/v1/server/{serverId}/exit"
+        it("요청 성공시") {
+          // given
+          val serverId = "test_server_id"
+          val token = "Bearer mock_token"
+          every { authClient.getTokenInfo(token) } returns
+            ApiResponse(
+              data =
+                TokenInfo(
+                  type = TokenType.ACCESS,
+                  userId = "test_user_id",
+                ),
+            )
+          justRun { serverService.deleteServerMember(eq(serverId), any()) }
+
+          // when
+          val result =
+            client.delete()
+              .uri(url, serverId)
+              .header("Authorization", token)
+              .exchange()
+
+          // then
+          val docs =
+            result
+              .expectStatus().isOk
+              .expectBody()
+
+          // docs
+          docs.restDoc(
+            identifier = "exit_server_200",
+            description = "서버 탈퇴 api",
+          ) {
+            request {
+              header { "Authorization" mean "jwt 사용자 토큰" }
+              path { "serverId" mean "서버 id" }
+            }
+          }
+        }
+      }
+
       describe("PATCH /api/v1/server/{serverId} : 서버 호스트 권한 상속") {
         val url = "/api/v1/server/{serverId}"
         it("요청 성공시") {

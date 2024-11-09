@@ -4,6 +4,7 @@ import kpring.chat.chat.api.v1.WebSocketChatController
 import kpring.chat.chat.model.Chat
 import kpring.chat.chat.repository.ChatCustomRepository
 import kpring.chat.chat.repository.ChatRepository
+import kpring.chat.chatroom.model.EventType
 import kpring.chat.chatroom.repository.ChatRoomRepository
 import kpring.chat.global.exception.ErrorCode
 import kpring.chat.global.exception.GlobalException
@@ -38,7 +39,8 @@ class ChatService(
       chatRepository.save(
         Chat(
           userId = userId,
-          type = request.type,
+          chatType = request.type,
+          eventType = EventType.CHAT,
           contextId = request.contextId,
           content = request.content,
         ),
@@ -56,7 +58,8 @@ class ChatService(
       chatRepository.save(
         Chat(
           userId = userId,
-          type = request.type,
+          chatType = request.type,
+          eventType = EventType.CHAT,
           contextId = request.contextId,
           content = request.content,
         ),

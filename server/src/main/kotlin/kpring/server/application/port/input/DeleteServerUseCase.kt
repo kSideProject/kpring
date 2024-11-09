@@ -5,4 +5,9 @@ interface DeleteServerUseCase {
     serverId: String,
     userId: String,
   )
+
+  fun deleteServerMember(
+    serverId: String,
+    userId: String,
+  )
 }

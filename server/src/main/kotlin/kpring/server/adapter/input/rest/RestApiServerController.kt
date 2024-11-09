@@ -104,6 +104,16 @@ class RestApiServerController(
     return ResponseEntity.ok().build()
   }
 
+  @DeleteMapping("/{serverId}/exit")
+  fun exitServer(
+    @PathVariable serverId: String,
+    @RequestHeader("Authorization") token: String,
+  ): ResponseEntity<Any> {
+    val userInfo = authClient.getTokenInfo(token).data!!
+    deleteServerUseCase.deleteServerMember(serverId, userInfo.userId)
+    return ResponseEntity.ok().build()
+  }
+
   @PatchMapping("/{serverId}")
   fun updateServerHost(
     @PathVariable serverId: String,

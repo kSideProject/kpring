@@ -142,6 +142,17 @@ class ServerService(
     deleteServerPort.delete(serverId)
   }
 
+  override fun deleteServerMember(
+    serverId: String,
+    userId: String,
+  ) {
+    val serverProfile = getServerProfilePort.get(serverId, userId)
+    if (serverProfile.role == ServerRole.OWNER) {
+      throw ServiceException(CommonErrorCode.FORBIDDEN)
+    }
+    deleteServerPort.deleteMember(serverProfile)
+  }
+
   override fun updateServerHost(
     serverId: String,
     userId: String,

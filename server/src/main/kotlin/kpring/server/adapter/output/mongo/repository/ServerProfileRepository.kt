@@ -10,4 +10,9 @@ interface ServerProfileRepository :
   MongoRepository<ServerProfileEntity, String>,
   QuerydslPredicateExecutor<ServerProfileEntity> {
   fun deleteByServerId(serverId: String)
+
+  fun deleteByServerIdAndUserId(
+    serverId: String?,
+    userId: String,
+  )
 }

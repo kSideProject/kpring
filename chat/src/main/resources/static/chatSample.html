@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>WebSocket Chat</title>
+    <title>WebSocket Chat Application</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
@@ -12,6 +12,7 @@
 <div>
     <label for="authToken">Authorization Token:</label>
     <input type="text" id="authToken" placeholder="Enter your token here"/>
+    <input type="text" id="userId" placeholder="Enter user ID here"/>
     <input type="text" id="chatroomId" placeholder="Enter chat room ID"/>
     <button id="connectBtn">Connect</button>
 </div>
@@ -20,11 +21,27 @@
 <input type="text" id="msg" placeholder="Type your message"/>
 <button id="sendBtn">Send Message</button>
 
+<h2>Create Chat Room</h2>
+<input type="text" id="createChatRoomContent" placeholder="Enter room content"/>
+<button id="createChatRoomBtn">Create Chat Room</button>
+
+<h2>Exit Chat Room</h2>
+<input type="text" id="exitChatRoomId" placeholder="Enter chat room ID"/>
+<button id="exitChatRoomBtn">Exit Chat Room</button>
+
+<h2>Invite to Chat Room</h2>
+<input type="text" id="inviteChatRoomId" placeholder="Enter chat room ID"/>
+<button id="inviteChatRoomBtn">Invite to Chat Room</button>
+
+<h2>Join Chat Room</h2>
+<input type="text" id="joinChatRoomCode" placeholder="Enter join code"/>
+<button id="joinChatRoomBtn">Join Chat Room</button>
+
 <h2>Create Chat</h2>
 <input type="text" id="chatContent" placeholder="Enter chat content"/>
 <select id="chatType">
     <option value="ROOM">Room</option>
-    <option value="Server">Server</option>
+    <option value="SERVER">Server</option>
 </select>
 <button id="createChatBtn">Create Chat</button>
 
@@ -54,14 +71,16 @@
     let stompClient = null;
 
     const getToken = () => document.getElementById('authToken').value;
+    const getUserId = () => document.getElementById('userId').value;
     const getChatRoomId = () => document.getElementById('chatroomId').value;
 
     function connectWebSocket() {
         const token = getToken();
         const chatroomId = getChatRoomId();
+        const userId = getUserId();
 
-        if (!token || !chatroomId) {
-            alert('Authorization token and Chatroom ID are required!');
+        if (!token || !chatroomId || !userId) {
+            alert('Authorization token, User ID, and Chatroom ID are required!');
             return;
         }
 
@@ -78,20 +97,22 @@
             stompClient.subscribe(`/topic/chatroom/${chatroomId}`, function (message) {
                 console.log("Received message:", message.body);
             }, {
-                Authorization: `Bearer ${token}`,
-                ContextId: chatroomId,
-                Context: 'ROOM'
+                Authorization: `Bearer ${token}`
             });
 
             enableButtonsAfterConnect(token, chatroomId);
         }, function(error) {
             console.error('Connection error:', error);
-            alert('Connection failed. Please check your token and chat room ID.');
+            alert('Connection failed. Please check your token, user ID, and chat room ID.');
         });
     }
 
     function enableButtonsAfterConnect(token, chatroomId) {
         document.getElementById("sendBtn").disabled = false;
+        document.getElementById("createChatRoomBtn").disabled = false;
+        document.getElementById("exitChatRoomBtn").disabled = false;
+        document.getElementById("inviteChatRoomBtn").disabled = false;
+        document.getElementById("joinChatRoomBtn").disabled = false;
         document.getElementById("createChatBtn").disabled = false;
         document.getElementById("getChatsBtn").disabled = false;
         document.getElementById("updateChatBtn").disabled = false;
@@ -108,7 +129,50 @@
             }
         });
 
-        // Creating a new chat message
+        document.getElementById("createChatRoomBtn").addEventListener("click", function () {
+            const content = document.getElementById("createChatRoomContent").value;
+            if (content.trim() !== "") {
+                stompClient.send(`/app/chatroom/create`, {'Authorization': token},
+                    JSON.stringify({content: content, chatRoomId: chatroomId})
+                );
+                document.getElementById("createChatRoomContent").value = "";
+                console.log('Chat room created successfully!');
+            }
+        });
+
+        document.getElementById("exitChatRoomBtn").addEventListener("click", function () {
+            const chatRoomId = document.getElementById("exitChatRoomId").value;
+            if (chatRoomId) {
+                stompClient.send(`/app/chatroom/exit`, {'Authorization': token},
+                    JSON.stringify({chatRoomId: chatRoomId})
+                );
+                document.getElementById("exitChatRoomId").value = "";
+                console.log('Exited chat room successfully!');
+            }
+        });
+
+        document.getElementById("inviteChatRoomBtn").addEventListener("click", function () {
+            const chatRoomId = document.getElementById("inviteChatRoomId").value;
+            if (chatRoomId) {
+                stompClient.send(`/app/chatroom/invite`, {'Authorization': token},
+                    JSON.stringify({chatRoomId: chatRoomId})
+                );
+                document.getElementById("inviteChatRoomId").value = "";
+                console.log('Invitation sent successfully!');
+            }
+        });
+
+        document.getElementById("joinChatRoomBtn").addEventListener("click", function () {
+            const code = document.getElementById("joinChatRoomCode").value;
+            if (code) {
+                stompClient.send(`/app/chatroom/join`, {'Authorization': token},
+                    JSON.stringify({code: code})
+                );
+                document.getElementById("joinChatRoomCode").value = "";
+                console.log('Joined chat room successfully!');
+            }
+        });
+
         document.getElementById("createChatBtn").addEventListener("click", function () {
             const content = document.getElementById("chatContent").value;
             const type = document.getElementById("chatType").value;
@@ -121,7 +185,6 @@
             }
         });
 
-        // Fetching chat messages
         document.getElementById("getChatsBtn").addEventListener("click", function () {
             const id = document.getElementById("getId").value;
             const type = document.getElementById("getChatType").value;
@@ -134,7 +197,6 @@
             }
         });
 
-        // Updating a chat
         document.getElementById("updateChatBtn").addEventListener("click", function () {
             const chatId = document.getElementById("updateChatId").value;
             const content = document.getElementById("updateContent").value;
@@ -148,7 +210,6 @@
             }
         });
 
-        // Deleting a chat
         document.getElementById("deleteChatBtn").addEventListener("click", function () {
             const chatId = document.getElementById("deleteChatId").value;
             const type = document.getElementById("deleteChatType").value;
@@ -164,6 +225,10 @@
 
     document.addEventListener('DOMContentLoaded', function () {
         document.getElementById("sendBtn").disabled = true;
+        document.getElementById("createChatRoomBtn").disabled = true;
+        document.getElementById("exitChatRoomBtn").disabled = true;
+        document.getElementById("inviteChatRoomBtn").disabled = true;
+        document.getElementById("joinChatRoomBtn").disabled = true;
         document.getElementById("createChatBtn").disabled = true;
         document.getElementById("getChatsBtn").disabled = true;
         document.getElementById("updateChatBtn").disabled = true;

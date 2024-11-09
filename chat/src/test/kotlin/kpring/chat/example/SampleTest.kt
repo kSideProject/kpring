@@ -6,6 +6,7 @@ import io.kotest.matchers.shouldBe
 import kpring.chat.chat.model.Chat
 import kpring.chat.chat.model.QChat
 import kpring.chat.chat.repository.ChatRepository
+import kpring.chat.chatroom.model.EventType
 import kpring.core.chat.model.ChatType
 import kpring.test.testcontainer.SpringTestContext
 import org.springframework.boot.test.context.SpringBootTest
@@ -29,7 +30,13 @@ class SampleTest(
       val chat = QChat.chat
       repeat(5) { idx ->
         chatRepository.save(
-          Chat(userId = "testUserId", type = ChatType.ROOM, contextId = "testRoomId", content = "testContent$idx"),
+          Chat(
+            userId = "testUserId",
+            chatType = ChatType.ROOM,
+            eventType = EventType.CHAT,
+            contextId = "testRoomId",
+            content = "testContent$idx",
+          ),
         )
       }
 
@@ -54,7 +61,13 @@ class SampleTest(
       chatRepository.deleteAll()
       repeat(5) { idx ->
         chatRepository.save(
-          Chat(userId = "testUserId", type = ChatType.ROOM, contextId = "testRoomId", content = "testContent$idx"),
+          Chat(
+            userId = "testUserId",
+            chatType = ChatType.ROOM,
+            eventType = EventType.CHAT,
+            contextId = "testRoomId",
+            content = "testContent$idx",
+          ),
         )
       }
 

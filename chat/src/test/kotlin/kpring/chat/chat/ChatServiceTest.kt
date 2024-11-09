@@ -8,6 +8,7 @@ import kpring.chat.chat.model.Chat
 import kpring.chat.chat.repository.ChatCustomRepository
 import kpring.chat.chat.repository.ChatRepository
 import kpring.chat.chat.service.ChatService
+import kpring.chat.chatroom.model.EventType
 import kpring.chat.chatroom.repository.ChatRoomRepository
 import kpring.chat.global.ChatTest
 import kpring.chat.global.CommonTest
@@ -39,7 +40,7 @@ class ChatServiceTest(
       val request = CreateChatRequest(content = ChatTest.CONTENT, contextId = ContextTest.TEST_ROOM_ID, type = ChatType.ROOM)
       val userId = CommonTest.TEST_USER_ID
       val chatId = ChatTest.TEST_CHAT_ID
-      val roomChat = Chat(chatId, userId, ChatType.ROOM, ContextTest.TEST_ROOM_ID, request.content)
+      val roomChat = Chat(chatId, userId, ChatType.ROOM, EventType.CHAT, ContextTest.TEST_ROOM_ID, request.content)
       every { accessVerifier.verifyChatRoomAccess(any(), any()) } just runs
       every { chatRepository.save(any()) } returns roomChat
       every { chatRoomRepository.existsByIdAndMembersContaining(any(), any()) } returns true
@@ -118,6 +119,7 @@ class ChatServiceTest(
           chatId,
           userId,
           ChatType.ROOM,
+          EventType.CHAT,
           roomId,
           "content",
         )
@@ -148,6 +150,7 @@ class ChatServiceTest(
           chatId,
           userId,
           ChatType.SERVER,
+          EventType.CHAT,
           serverId,
           "content",
         )
@@ -183,6 +186,7 @@ class ChatServiceTest(
           chatId,
           userId,
           ChatType.ROOM,
+          EventType.CHAT,
           roomId,
           "content",
         )
@@ -218,6 +222,7 @@ class ChatServiceTest(
           chatId,
           userId,
           ChatType.SERVER,
+          EventType.CHAT,
           serverId,
           "content",
         )
@@ -252,7 +257,8 @@ class ChatServiceTest(
         Chat(
           id = chatId,
           userId = userId,
-          type = ChatType.SERVER,
+          eventType = EventType.CHAT,
+          chatType = ChatType.SERVER,
           contextId = serverId,
           content = "content",
         )
@@ -285,7 +291,8 @@ class ChatServiceTest(
         Chat(
           id = chatId,
           userId = userId,
-          ChatType.ROOM,
+          chatType = ChatType.ROOM,
+          eventType = EventType.CHAT,
           contextId = roomId,
           content = "content",
         )

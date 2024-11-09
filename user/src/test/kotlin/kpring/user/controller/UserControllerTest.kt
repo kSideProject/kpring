@@ -528,6 +528,7 @@ class UserControllerTest(
               .userId(userId)
               .email(TEST_EMAIL)
               .username(TEST_USERNAME)
+              .filename(CommonTest.TEST_PROFILE_IMG)
               .build()
           val response = ApiResponse(data = data)
           every { authClient.getTokenInfo(any()) }.returns(
@@ -568,6 +569,7 @@ class UserControllerTest(
                   "data.userId" type Strings mean "사용자 아이디"
                   "data.email" type Strings mean "이메일"
                   "data.username" type Strings mean "닉네임"
+                  "data.filename" type Strings mean "프로필 이미지 파일명"
                 }
               }
             }

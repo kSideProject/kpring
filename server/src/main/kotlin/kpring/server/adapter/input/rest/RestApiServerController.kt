@@ -110,7 +110,7 @@ class RestApiServerController(
     @RequestHeader("Authorization") token: String,
   ): ResponseEntity<Any> {
     val userInfo = authClient.getTokenInfo(token).data!!
-
+    deleteServerUseCase.deleteServerMember(serverId, userInfo.userId)
     return ResponseEntity.ok().build()
   }
 

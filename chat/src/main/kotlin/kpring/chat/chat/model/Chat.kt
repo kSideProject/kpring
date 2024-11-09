@@ -1,6 +1,7 @@
 package kpring.chat.chat.model
 
 import kpring.chat.NoArg
+import kpring.chat.chatroom.model.EventType
 import kpring.chat.global.model.BaseTime
 import kpring.core.chat.model.ChatType
 import org.springframework.data.annotation.Id
@@ -12,7 +13,8 @@ class Chat(
   @Id
   val id: String? = null,
   val userId: String,
-  val type: ChatType,
+  val chatType: ChatType,
+  val eventType: EventType,
   // roomId or serverId
   val contextId: String,
   var content: String,

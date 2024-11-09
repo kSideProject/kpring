@@ -11,17 +11,17 @@
 
 <div>
     <label for="authToken">Authorization Token:</label>
-    <input type="text" id="authToken" placeholder="Enter your token here" />
-    <input type="text" id="chatroomId" placeholder="Enter chat room ID" />
+    <input type="text" id="authToken" placeholder="Enter your token here"/>
+    <input type="text" id="chatroomId" placeholder="Enter chat room ID"/>
     <button id="connectBtn">Connect</button>
 </div>
 
 <div id="content"></div>
-<input type="text" id="msg" placeholder="Type your message" />
+<input type="text" id="msg" placeholder="Type your message"/>
 <button id="sendBtn">Send Message</button>
 
 <h2>Create Chat</h2>
-<input type="text" id="chatContent" placeholder="Enter chat content" />
+<input type="text" id="chatContent" placeholder="Enter chat content"/>
 <select id="chatType">
     <option value="ROOM">Room</option>
     <option value="Server">Server</option>
@@ -29,21 +29,21 @@
 <button id="createChatBtn">Create Chat</button>
 
 <h2>Get Chats</h2>
-<input type="text" id="getId" placeholder="Enter chatroom ID" />
+<input type="text" id="getId" placeholder="Enter chatroom ID"/>
 <select id="getChatType">
     <option value="ROOM">Room</option>
     <option value="SERVER">Server</option>
 </select>
-<input type="number" id="getPage" placeholder="Enter page number" />
+<input type="number" id="getPage" placeholder="Enter page number"/>
 <button id="getChatsBtn">Get Chats</button>
 
 <h2>Update Chat</h2>
-<input type="text" id="updateChatId" placeholder="Enter chat ID to update" />
-<input type="text" id="updateContent" placeholder="Enter new content" />
+<input type="text" id="updateChatId" placeholder="Enter chat ID to update"/>
+<input type="text" id="updateContent" placeholder="Enter new content"/>
 <button id="updateChatBtn">Update Chat</button>
 
 <h2>Delete Chat</h2>
-<input type="text" id="deleteChatId" placeholder="Enter chat ID to delete" />
+<input type="text" id="deleteChatId" placeholder="Enter chat ID to delete"/>
 <select id="deleteChatType">
     <option value="ROOM">Room</option>
     <option value="SERVER">Server</option>
@@ -59,6 +59,7 @@
     function connectWebSocket() {
         const token = getToken();
         const chatroomId = getChatRoomId();
+
         if (!token || !chatroomId) {
             alert('Authorization token and Chatroom ID are required!');
             return;
@@ -67,18 +68,24 @@
         const socket = new SockJS('http://localhost:8081/ws');
         stompClient = Stomp.over(socket);
 
-        stompClient.connect({ 'Authorization': `Bearer ${token}` }, function (frame) {
+        const connectHeaders = {
+            'Authorization': `Bearer ${token}`
+        };
+
+        stompClient.connect(connectHeaders, function (frame) {
             console.log('Connected: ' + frame);
 
-            // Send a message to verify access to the chat room
-            stompClient.send(`/app/connect/${chatroomId}`, { 'Authorization': token }, {});
+            stompClient.subscribe(`/topic/chatroom/${chatroomId}`, function (message) {
+                console.log("Received message:", message.body);
+            }, {
+                Authorization: `Bearer ${token}`,
+                ContextId: chatroomId,
+                Context: 'ROOM'
+            });
 
-            // Subscribe to the chat room's topic if access is granted
-            stompClient.subscribe(`/topic/chatroom/${chatroomId}`, {});
             enableButtonsAfterConnect(token, chatroomId);
-
-        }, function (error) {
-            console.error('Connection error: ' + error);
+        }, function(error) {
+            console.error('Connection error:', error);
             alert('Connection failed. Please check your token and chat room ID.');
         });
     }
@@ -90,51 +97,50 @@
         document.getElementById("updateChatBtn").disabled = false;
         document.getElementById("deleteChatBtn").disabled = false;
 
-        // Sending a message to the chat room
-        document.getElementById("sendBtn").addEventListener("click", function() {
+        document.getElementById("sendBtn").addEventListener("click", function () {
             const message = document.getElementById("msg").value;
             if (message.trim() !== "") {
-                stompClient.send(`/app/chat/create`, { 'Authorization': token },
-                    JSON.stringify({ content: message, type: "ROOM", chatRoomId: chatroomId })
+                stompClient.send(`/app/chat/create`, {'Authorization': token},
+                    JSON.stringify({content: message, type: "ROOM", chatRoomId: chatroomId})
                 );
-                document.getElementById("msg").value = "";  // Clear the input field after sending
+                document.getElementById("msg").value = "";
                 console.log('Message sent successfully!');
             }
         });
 
         // Creating a new chat message
-        document.getElementById("createChatBtn").addEventListener("click", function() {
+        document.getElementById("createChatBtn").addEventListener("click", function () {
             const content = document.getElementById("chatContent").value;
             const type = document.getElementById("chatType").value;
             if (content.trim() !== "") {
-                stompClient.send(`/app/chat/create`, { 'Authorization': token },
-                    JSON.stringify({ content: content, type: type, contextId: chatroomId })
+                stompClient.send(`/app/chat/create`, {'Authorization': token},
+                    JSON.stringify({content: content, type: type, contextId: chatroomId})
                 );
-                document.getElementById("chatContent").value = "";  // Clear input field after creation
+                document.getElementById("chatContent").value = "";
                 console.log('Chat created successfully!');
             }
         });
 
         // Fetching chat messages
-        document.getElementById("getChatsBtn").addEventListener("click", function() {
+        document.getElementById("getChatsBtn").addEventListener("click", function () {
             const id = document.getElementById("getId").value;
             const type = document.getElementById("getChatType").value;
             const page = document.getElementById("getPage").value;
             const size = 2;
             if (id && page) {
-                stompClient.send(`/app/chat`, { 'Authorization': token },
-                    JSON.stringify({ contextId: id, type: type, page: parseInt(page), size: parseInt(size) })
+                stompClient.send(`/app/chat`, {'Authorization': token},
+                    JSON.stringify({contextId: id, type: type, page: parseInt(page), size: parseInt(size)})
                 );
             }
         });
 
         // Updating a chat
-        document.getElementById("updateChatBtn").addEventListener("click", function() {
+        document.getElementById("updateChatBtn").addEventListener("click", function () {
             const chatId = document.getElementById("updateChatId").value;
             const content = document.getElementById("updateContent").value;
             if (chatId && content.trim() !== "") {
-                stompClient.send(`/app/chat/update`, { 'Authorization': token },
-                    JSON.stringify({ contextId: chatroomId, id: chatId, content: content, type: "ROOM" })
+                stompClient.send(`/app/chat/update`, {'Authorization': token},
+                    JSON.stringify({contextId: chatroomId, id: chatId, content: content, type: "ROOM"})
                 );
                 document.getElementById("updateChatId").value = "";
                 document.getElementById("updateContent").value = "";
@@ -143,12 +149,12 @@
         });
 
         // Deleting a chat
-        document.getElementById("deleteChatBtn").addEventListener("click", function() {
+        document.getElementById("deleteChatBtn").addEventListener("click", function () {
             const chatId = document.getElementById("deleteChatId").value;
             const type = document.getElementById("deleteChatType").value;
             if (chatId) {
-                stompClient.send(`/app/chat/delete`, { 'Authorization': token },
-                    JSON.stringify({ contextId: chatroomId, id: chatId, type: type })
+                stompClient.send(`/app/chat/delete`, {'Authorization': token},
+                    JSON.stringify({contextId: chatroomId, id: chatId, type: type})
                 );
                 document.getElementById("deleteChatId").value = "";
                 console.log('Chat deleted successfully!');
@@ -156,14 +162,14 @@
         });
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         document.getElementById("sendBtn").disabled = true;
         document.getElementById("createChatBtn").disabled = true;
         document.getElementById("getChatsBtn").disabled = true;
         document.getElementById("updateChatBtn").disabled = true;
         document.getElementById("deleteChatBtn").disabled = true;
 
-        document.getElementById("connectBtn").addEventListener("click", function() {
+        document.getElementById("connectBtn").addEventListener("click", function () {
             connectWebSocket();
         });
     });

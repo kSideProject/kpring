@@ -14,6 +14,7 @@ import kpring.chat.global.CommonTest
 import kpring.chat.global.ContextTest
 import kpring.chat.global.exception.ErrorCode
 import kpring.chat.global.exception.GlobalException
+import kpring.chat.global.util.AccessVerifier
 import kpring.core.chat.chat.dto.request.CreateChatRequest
 import kpring.core.chat.chat.dto.request.DeleteChatRequest
 import kpring.core.chat.chat.dto.request.UpdateChatRequest
@@ -30,7 +31,8 @@ class ChatServiceTest(
     val chatRepository = mockk<ChatRepository>()
     val chatRoomRepository = mockk<ChatRoomRepository>()
     val chatCustomRepository = mockk<ChatCustomRepository>()
-    val chatService = ChatService(chatRepository, chatRoomRepository, chatCustomRepository)
+    val accessVerifier = mockk<AccessVerifier>()
+    val chatService = ChatService(chatRepository, chatRoomRepository, chatCustomRepository, accessVerifier)
 
     test("createChat 은 새 RoomChat을 저장해야 한다") {
       // Given
@@ -38,6 +40,7 @@ class ChatServiceTest(
       val userId = CommonTest.TEST_USER_ID
       val chatId = ChatTest.TEST_CHAT_ID
       val roomChat = Chat(chatId, userId, ChatType.ROOM, ContextTest.TEST_ROOM_ID, request.content)
+      every { accessVerifier.verifyChatRoomAccess(any(), any()) } just runs
       every { chatRepository.save(any()) } returns roomChat
       every { chatRoomRepository.existsByIdAndMembersContaining(any(), any()) } returns true
 
@@ -48,10 +51,12 @@ class ChatServiceTest(
       verify { chatRepository.save(any()) }
     }
 
+    // TODO : AccessVerifier의 Test Code로 옮기기
     test("getRoomChats 은 권한이 없는 사용자에게 에러 발생") {
       // Given
       val chatRoomId = ContextTest.TEST_ROOM_ID
       val userId = CommonTest.TEST_ANOTHER_USER_ID
+      every { accessVerifier.verifyChatRoomAccess(any(), any()) } throws GlobalException(ErrorCode.FORBIDDEN_CHATROOM)
       every { chatRoomRepository.existsByIdAndMembersContaining(chatRoomId, userId) } returns false
 
       // When & Then
@@ -65,6 +70,7 @@ class ChatServiceTest(
       errorCode shouldBe ErrorCode.FORBIDDEN_CHATROOM
     }
 
+    // TODO : AccessVerifier의 Test Code로 옮기기
     test("getServerChats 은 권한이 없는 사용자에게 에러 발생") {
       // Given
       val serverId1 = "test_server_id"
@@ -88,6 +94,7 @@ class ChatServiceTest(
         )
 
       // When & Then
+      every { accessVerifier.verifyServerAccess(any(), any()) } throws GlobalException(ErrorCode.FORBIDDEN_SERVER)
       val exception =
         shouldThrow<GlobalException> {
           chatService.getServerChats(serverId1, userId, 0, 1, serverList)

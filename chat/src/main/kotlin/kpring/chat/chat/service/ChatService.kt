@@ -7,6 +7,7 @@ import kpring.chat.chat.repository.ChatRepository
 import kpring.chat.chatroom.repository.ChatRoomRepository
 import kpring.chat.global.exception.ErrorCode
 import kpring.chat.global.exception.GlobalException
+import kpring.chat.global.util.AccessVerifier
 import kpring.core.chat.chat.dto.request.CreateChatRequest
 import kpring.core.chat.chat.dto.request.UpdateChatRequest
 import kpring.core.chat.chat.dto.response.ChatResponse
@@ -23,6 +24,7 @@ class ChatService(
   private val chatRepository: ChatRepository,
   private val chatRoomRepository: ChatRoomRepository,
   private val chatCustomRepository: ChatCustomRepository,
+  private val accessVerifier: AccessVerifier,
   @Value("\${page.size}") val pageSize: Int = 100,
 ) {
   private val logger: Logger = LoggerFactory.getLogger(WebSocketChatController::class.java)
@@ -31,7 +33,7 @@ class ChatService(
     request: CreateChatRequest,
     userId: String,
   ): ChatResponse {
-    verifyChatRoomAccess(request.contextId, userId)
+    accessVerifier.verifyChatRoomAccess(request.contextId, userId)
     val chat =
       chatRepository.save(
         Chat(
@@ -49,7 +51,7 @@ class ChatService(
     userId: String,
     servers: List<ServerSimpleInfo>,
   ): ChatResponse {
-    verifyServerAccess(servers, request.contextId)
+    accessVerifier.verifyServerAccess(servers, request.contextId)
     val chat =
       chatRepository.save(
         Chat(
@@ -68,7 +70,7 @@ class ChatService(
     page: Int,
     size: Int,
   ): List<ChatResponse> {
-    verifyChatRoomAccess(chatRoomId, userId)
+    accessVerifier.verifyChatRoomAccess(chatRoomId, userId)
     val chats: List<Chat> = chatCustomRepository.findListByContextIdWithPaging(chatRoomId, page, size, ChatType.ROOM)
     logger.info("chats : $chats")
     val responses: List<ChatResponse> = convertChatsToResponses(chats)
@@ -82,7 +84,7 @@ class ChatService(
     size: Int,
     servers: List<ServerSimpleInfo>,
   ): List<ChatResponse> {
-    verifyServerAccess(servers, serverId)
+    accessVerifier.verifyServerAccess(servers, serverId)
     val chats: List<Chat> = chatCustomRepository.findListByContextIdWithPaging(serverId, page, size, ChatType.SERVER)
     val responses: List<ChatResponse> = convertChatsToResponses(chats)
     return responses
@@ -115,27 +117,6 @@ class ChatService(
   ) {
     if (userId != chat.userId) {
       throw GlobalException(ErrorCode.FORBIDDEN_CHAT)
-    }
-  }
-
-  private fun verifyServerAccess(
-    servers: List<ServerSimpleInfo>,
-    serverId: String,
-  ) {
-    servers.forEach { info ->
-      if (info.id.equals(serverId)) {
-        return
-      }
-    }
-    throw GlobalException(ErrorCode.FORBIDDEN_SERVER)
-  }
-
-  private fun verifyChatRoomAccess(
-    chatRoomId: String,
-    userId: String,
-  ) {
-    if (!chatRoomRepository.existsByIdAndMembersContaining(chatRoomId, userId)) {
-      throw GlobalException(ErrorCode.FORBIDDEN_CHATROOM)
     }
   }
 

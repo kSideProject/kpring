@@ -3,7 +3,6 @@ package kpring.chat.chat.api.v1
 import kpring.chat.chat.service.ChatService
 import kpring.chat.global.exception.ErrorCode
 import kpring.chat.global.exception.GlobalException
-import kpring.core.auth.client.AuthClient
 import kpring.core.chat.chat.dto.request.CreateChatRequest
 import kpring.core.chat.chat.dto.request.DeleteChatRequest
 import kpring.core.chat.chat.dto.request.GetChatsRequest
@@ -20,12 +19,12 @@ import org.springframework.messaging.simp.SimpMessageHeaderAccessor
 import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Controller
 import org.springframework.validation.annotation.Validated
+import java.security.Principal
 
 @Controller
 @RequiredArgsConstructor
 class WebSocketChatController(
   private val chatService: ChatService,
-  private val authClient: AuthClient,
   private val serverClient: ServerClient,
   private val simpMessagingTemplate: SimpMessagingTemplate,
 ) {
@@ -34,10 +33,11 @@ class WebSocketChatController(
   @MessageMapping("/chat/create")
   fun createChat(
     @Payload @Validated request: CreateChatRequest,
+    principal: Principal,
     headerAccessor: SimpMessageHeaderAccessor,
   ) {
     val token = headerAccessor.getFirstNativeHeader("Authorization") ?: throw GlobalException(ErrorCode.MISSING_TOKEN)
-    val userId = authClient.getTokenInfo(token).data!!.userId
+    val userId = principal.name
     val contextId = request.contextId
 
     val result =
@@ -56,10 +56,9 @@ class WebSocketChatController(
   @MessageMapping("/chat/update")
   fun updateChat(
     @Payload @Validated request: UpdateChatRequest,
-    headerAccessor: SimpMessageHeaderAccessor,
+    principal: Principal,
   ) {
-    val token = headerAccessor.getFirstNativeHeader("Authorization") ?: throw GlobalException(ErrorCode.MISSING_TOKEN)
-    val userId = authClient.getTokenInfo(token).data!!.userId
+    val userId = principal.name
     val contextId = request.contextId
 
     val result = chatService.updateChat(request, userId)
@@ -69,10 +68,9 @@ class WebSocketChatController(
   @MessageMapping("/chat/delete")
   fun deleteChat(
     @Payload @Validated request: DeleteChatRequest,
-    headerAccessor: SimpMessageHeaderAccessor,
+    principal: Principal,
   ) {
-    val token = headerAccessor.getFirstNativeHeader("Authorization") ?: throw GlobalException(ErrorCode.MISSING_TOKEN)
-    val userId = authClient.getTokenInfo(token).data!!.userId
+    val userId = principal.name
     val chatId = request.id
     val contextId = request.contextId
 
@@ -83,10 +81,11 @@ class WebSocketChatController(
   @MessageMapping("/chat")
   fun getChats(
     @Payload @Validated request: GetChatsRequest,
+    principal: Principal,
     headerAccessor: SimpMessageHeaderAccessor,
   ) {
     val token = headerAccessor.getFirstNativeHeader("Authorization") ?: throw GlobalException(ErrorCode.MISSING_TOKEN)
-    val userId = authClient.getTokenInfo(token).data!!.userId
+    val userId = principal.name
     val type = request.type
     val contextId = request.contextId
     val page = request.page

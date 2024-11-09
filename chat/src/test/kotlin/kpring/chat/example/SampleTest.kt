@@ -21,7 +21,7 @@ class SampleTest(
 ) : DescribeSpec({
 
     beforeTest {
-      chatRepository.deleteAll()
+      // chatRepository.deleteAll()
     }
 
     it("query dsl 적용 테스트") {

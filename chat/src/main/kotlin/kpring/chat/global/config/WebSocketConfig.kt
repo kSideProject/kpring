@@ -61,6 +61,7 @@ class WebSocketConfig(
         return when (simpMessageType) {
           SimpMessageType.CONNECT -> authenticateAndSetPrincipal(message)
           SimpMessageType.SUBSCRIBE -> verifyAccess(message)
+          SimpMessageType.MESSAGE -> verifyAccess(message)
           else -> message
         }
       }

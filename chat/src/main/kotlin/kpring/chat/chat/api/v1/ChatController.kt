@@ -22,6 +22,7 @@ class ChatController(
   private val authClient: AuthClient,
   private val serverClient: ServerClient,
 ) {
+  @Deprecated("WebSocketChatController를 대신 사용")
   @PostMapping("/chat")
   fun createChat(
     @Validated @RequestBody request: CreateChatRequest,
@@ -43,6 +44,7 @@ class ChatController(
     return ResponseEntity(ApiResponse<Nothing>(status = 201), HttpStatus.CREATED)
   }
 
+  @Deprecated("WebSocketChatController를 대신 사용")
   @GetMapping("/chat")
   fun getChats(
     @RequestParam("type") type: ChatType,
@@ -69,6 +71,7 @@ class ChatController(
     return ResponseEntity.ok().body(ApiResponse(data = result, status = 200))
   }
 
+  @Deprecated("WebSocketChatController를 대신 사용")
   @PatchMapping("/chat")
   fun updateChat(
     @Validated @RequestBody request: UpdateChatRequest,
@@ -79,6 +82,7 @@ class ChatController(
     return ResponseEntity.ok().body(ApiResponse<Nothing>(status = 200))
   }
 
+  @Deprecated("WebSocketChatController를 대신 사용")
   @DeleteMapping("/chat/{chatId}")
   fun deleteChat(
     @PathVariable("chatId") chatId: String,

@@ -59,15 +59,16 @@ class WebSocketConfig(
       ): Message<*> {
         val simpMessageType = SimpMessageHeaderAccessor.getMessageType(message.headers)
         return when (simpMessageType) {
-          SimpMessageType.CONNECT -> handleConnectMessage(message)
-          SimpMessageType.SUBSCRIBE -> handleSubscribeMessage(message)
+          SimpMessageType.CONNECT -> authenticateAndSetPrincipal(message)
+          SimpMessageType.SUBSCRIBE -> verifyAccess(message)
+          SimpMessageType.MESSAGE -> verifyAccess(message)
           else -> message
         }
       }
     }
   }
 
-  private fun handleConnectMessage(message: Message<*>): Message<*> {
+  private fun authenticateAndSetPrincipal(message: Message<*>): Message<*> {
     val headerAccessor = SimpMessageHeaderAccessor.wrap(message)
     val token =
       headerAccessor.getFirstNativeHeader("Authorization")
@@ -84,31 +85,25 @@ class WebSocketConfig(
     return message
   }
 
-  private fun handleSubscribeMessage(message: Message<*>): Message<*> {
+  private fun verifyAccess(message: Message<*>): Message<*> {
     val headerAccessor = SimpMessageHeaderAccessor.wrap(message)
+    val token = getTokenFromHeader(headerAccessor)
+    val contextId = getContextIdFromHeader(headerAccessor)
+    val type = ChatType.valueOf(getContext(headerAccessor))
+    verifyAccessByType(type, token, contextId)
+    return message
+  }
 
-    val token =
-      headerAccessor.getFirstNativeHeader("Authorization")
-        ?.removePrefix("Bearer ")
-        ?: throw GlobalException(ErrorCode.MISSING_TOKEN)
-
-    val contextId =
-      headerAccessor.getFirstNativeHeader("ContextId")
-        ?: throw GlobalException(ErrorCode.MISSING_CONTEXTID)
-
-    val context =
-      headerAccessor.getFirstNativeHeader("Context")
-        ?: throw GlobalException(ErrorCode.MISSING_CONTEXT)
-
-    val type =
-      ChatType.valueOf(context)
-
-    val userId =
-      authClient.getTokenInfo(token).data?.userId
-        ?: throw GlobalException(ErrorCode.INVALID_TOKEN)
-
+  private fun verifyAccessByType(
+    type: ChatType,
+    token: String,
+    contextId: String,
+  ) {
     when (type) {
       ChatType.ROOM -> {
+        val userId =
+          authClient.getTokenInfo(token).data?.userId
+            ?: throw GlobalException(ErrorCode.INVALID_TOKEN)
         accessVerifier.verifyChatRoomAccess(contextId, userId)
       }
       ChatType.SERVER -> {
@@ -119,7 +114,22 @@ class WebSocketConfig(
       }
       else -> throw GlobalException(ErrorCode.INVALID_CONTEXT)
     }
-    return message
+  }
+
+  private fun getTokenFromHeader(headerAccessor: SimpMessageHeaderAccessor): String {
+    return headerAccessor.getFirstNativeHeader("Authorization")
+      ?.removePrefix("Bearer ")
+      ?: throw GlobalException(ErrorCode.MISSING_TOKEN)
+  }
+
+  private fun getContextIdFromHeader(headerAccessor: SimpMessageHeaderAccessor): String {
+    return headerAccessor.getFirstNativeHeader("ContextId")
+      ?: throw GlobalException(ErrorCode.MISSING_CONTEXTID)
+  }
+
+  private fun getContext(headerAccessor: SimpMessageHeaderAccessor): String {
+    return headerAccessor.getFirstNativeHeader("Context")
+      ?: throw GlobalException(ErrorCode.MISSING_CONTEXT)
   }
 
   override fun configureClientInboundChannel(registration: ChannelRegistration) {

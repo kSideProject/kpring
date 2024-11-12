@@ -47,6 +47,60 @@ export class CampingPreloader extends Scene {
       }
     );
 
+    this.load.spritesheet(
+      "campfire1_tilesets",
+      "../assets/map/camping/campfire1_tilesets.png",
+      {
+        frameWidth: 32,
+        frameHeight: 32,
+      }
+    );
+
+    this.load.spritesheet(
+      "boat_tilesets",
+      "../assets/map/camping/boat_tilesets.png",
+      {
+        frameWidth: 32,
+        frameHeight: 32,
+      }
+    );
+
+    this.load.spritesheet(
+      "waterfall_tilesets",
+      "../assets/map/camping/waterfall_tilesets.png",
+      {
+        frameWidth: 32,
+        frameHeight: 64,
+      }
+    );
+
+    this.load.spritesheet(
+      "fishing_boat_tilesets_A",
+      "../assets/map/camping/fishing_boat_tilesets_A.png",
+      {
+        frameWidth: 64,
+        frameHeight: 52,
+      }
+    );
+
+    this.load.spritesheet(
+      "fishes_tilesets",
+      "../assets/map/camping/fishes_tilesets.png",
+      {
+        frameWidth: 32,
+        frameHeight: 32,
+      }
+    );
+
+    this.load.spritesheet(
+      "fishes1_tilesets",
+      "../assets/map/camping/fishes1_tilesets.png",
+      {
+        frameWidth: 32,
+        frameHeight: 32,
+      }
+    );
+
     this.load.tilemapTiledJSON("camping", "../assets/map/camping/camping.json");
   }
 

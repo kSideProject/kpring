@@ -80,6 +80,7 @@ export const createRandomAvatar = (
     scene.physics.world.enable(avatarContainer);
     const body = avatarContainer.body as Phaser.Physics.Arcade.Body;
     body.setSize(14, 20);
+    // body.setCollideWorldBounds(true); // 월드 경계와 충돌
 
     return avatarContainer;
   } else {

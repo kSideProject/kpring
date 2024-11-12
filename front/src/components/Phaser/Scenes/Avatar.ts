@@ -77,6 +77,22 @@ export const createRandomAvatar = (
       );
     }
 
+    // 아바타 하단에 사용자 닉네임 추가
+    const userNickName = scene.add.text(
+      0,
+      skinSprite.height / 2 + 10,
+      "nickname",
+      {
+        font: "10px Arial",
+        color: "#ffffff",
+        align: "center",
+      }
+    );
+
+    userNickName.setResolution(2);
+    userNickName.setOrigin(0.35, 0.5);
+    avatarContainer.add(userNickName);
+
     scene.physics.world.enable(avatarContainer);
     const body = avatarContainer.body as Phaser.Physics.Arcade.Body;
     body.setSize(14, 20);

@@ -356,4 +356,53 @@ export const createAnimations = (
     frameRate: frameRate,
     repeat: -1,
   });
+
+  // 헤어
+  scene.anims.create({
+    key: `hair-jump-front`,
+    frames: scene.anims.generateFrameNames("hair-jump-texture", {
+      prefix: `${hairKey}-${hairColorKey}-jump-front-`,
+      start: 1,
+      end: 5,
+      suffix: ".png",
+    }),
+    frameRate: frameRate,
+    repeat: -1,
+  });
+
+  scene.anims.create({
+    key: `hair-jump-back`,
+    frames: scene.anims.generateFrameNames("hair-jump-texture", {
+      prefix: `${hairKey}-${hairColorKey}-jump-back-`,
+      start: 1,
+      end: 5,
+      suffix: ".png",
+    }),
+    frameRate: frameRate,
+    repeat: -1,
+  });
+
+  scene.anims.create({
+    key: `hair-jump-left`,
+    frames: scene.anims.generateFrameNames("hair-jump-texture", {
+      prefix: `${hairKey}-${hairColorKey}-jump-left-`,
+      start: 1,
+      end: 5,
+      suffix: ".png",
+    }),
+    frameRate: frameRate,
+    repeat: -1,
+  });
+
+  scene.anims.create({
+    key: `hair-jump-right`,
+    frames: scene.anims.generateFrameNames("hair-jump-texture", {
+      prefix: `${hairKey}-${hairColorKey}-jump-right-`,
+      start: 1,
+      end: 5,
+      suffix: ".png",
+    }),
+    frameRate: frameRate,
+    repeat: -1,
+  });
 };

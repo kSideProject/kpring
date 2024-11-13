@@ -65,6 +65,7 @@ export const createRandomAvatar = (
         randomHairFrame.frame
       );
       avatarContainer.add(costumeSprite);
+      (avatarContainer as any).hair = randomHairFrame;
     }
 
     if (randomBottomCostumeFrame && randomTopCostumeFrame && randomHairFrame) {

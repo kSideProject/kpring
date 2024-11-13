@@ -54,6 +54,12 @@ export class CampingPreloader extends Scene {
       "../assets/avatar/walk/hair/hair1.json"
     );
 
+    this.load.atlas(
+      "hair-jump-texture",
+      "../assets/avatar/jump/hair/hair1.png",
+      "../assets/avatar/jump/hair/hair1.json"
+    );
+
     // Map
     this.load.image(
       "camping_tilesets",

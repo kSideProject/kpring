@@ -28,18 +28,22 @@ export const controlAvatarAnimations = (
       skinSprite.anims.play(`${skinKey}-jump-left`, true);
       topSprite.anims.play("top-jump-left", true);
       bottomSprite.anims.play("bottom-jump-left", true);
+      hairSprite.anims.play("hair-jump-left", true);
     } else if (facingDirection === ("right" as Direction)) {
       skinSprite.anims.play(`${skinKey}-jump-right`, true);
       topSprite.anims.play("top-jump-right", true);
       bottomSprite.anims.play("bottom-jump-right", true);
+      hairSprite.anims.play("hair-jump-right", true);
     } else if (facingDirection === ("up" as Direction)) {
       skinSprite.anims.play(`${skinKey}-jump-up`, true);
       topSprite.anims.play("top-jump-back", true);
       bottomSprite.anims.play("bottom-jump-back", true);
+      hairSprite.anims.play("hair-jump-back", true);
     } else if (facingDirection === "down") {
       skinSprite.anims.play(`${skinKey}-jump-down`, true);
       topSprite.anims.play("top-jump-front", true);
       bottomSprite.anims.play("bottom-jump-front", true);
+      hairSprite.anims.play("hair-jump-front", true);
     }
     // 점프 애니메이션 종료 후 점프 상태 초기화
     skinSprite.once("animationcomplete", () => {

@@ -56,6 +56,10 @@
     <button id="createChatRoomBtn">Create Chat Room</button>
 </div>
 
+<h2>Expel User</h2>
+<input type="text" id="expelUserId" placeholder="Enter user ID to expel"/>
+<button id="expelUserBtn">Expel User</button>
+
 <script>
     let stompClient = null;
 
@@ -107,6 +111,8 @@
         document.getElementById("updateChatBtn").disabled = false;
         document.getElementById("deleteChatBtn").disabled = false;
         document.getElementById("createChatRoomBtn").disabled = false;
+        document.getElementById("expelUserBtn").disabled = false;
+
 
         document.getElementById("sendBtn").addEventListener("click", function () {
             const message = document.getElementById("msg").value;
@@ -209,6 +215,23 @@
                 console.log('Chat room creation request sent!');
             }
         });
+
+        // Expelling a user from the chat room
+        document.getElementById("expelUserBtn").addEventListener("click", function () {
+            const expelUserId = document.getElementById("expelUserId").value;
+
+            if (expelUserId.trim() !== "") {
+                stompClient.send(`/app/chatroom/expel`, {
+                        Authorization: `Bearer ${token}`,
+                        ContextId: chatroomId,
+                        Context: 'ROOM'
+                    },
+                    JSON.stringify({chatRoomId: chatroomId, expelUserId: expelUserId})
+                );
+                document.getElementById("expelUserId").value = "";
+                console.log('Expel request sent for user:', expelUserId);
+            }
+        });
     }
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -218,6 +241,7 @@
         document.getElementById("updateChatBtn").disabled = true;
         document.getElementById("deleteChatBtn").disabled = true;
         document.getElementById("createChatRoomBtn").disabled = true;
+        document.getElementById("expelUserBtn").disabled = true;
 
         document.getElementById("connectBtn").addEventListener("click", function () {
             connectWebSocket();

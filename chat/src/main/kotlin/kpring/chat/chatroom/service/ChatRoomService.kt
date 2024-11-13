@@ -79,7 +79,7 @@ class ChatRoomService(
     accessVerifier.verifyChatRoomOwner(expelChatRoomRequest.chatRoomId, userId)
     chatRoom.removeUser(expelChatRoomRequest.expelUserId)
     chatRoomRepository.save(chatRoom)
-    return createChatRoomMessage(chatRoom.id!!, "${userId}님이 방에서 내보내졌습니다.", EventType.EXPEL) // TODO : 닉네임으로 변경
+    return createChatRoomMessage(chatRoom.id!!, "${expelChatRoomRequest.expelUserId}님이 방에서 내보내졌습니다.", EventType.EXPEL) // TODO : 닉네임으로 변경
   }
 
   private fun verifyInvitationExistence(invitationInfo: InvitationInfo) {

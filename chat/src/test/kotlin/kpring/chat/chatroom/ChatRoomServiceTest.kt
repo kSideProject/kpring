@@ -29,7 +29,7 @@ class ChatRoomServiceTest : FunSpec({
   test("createChatRoom 는 새 ChatRoom을 저장해야 한다") {
     // Given
     val request = CreateChatRoomRequest(ContextTest.TEST_MEMBERS)
-    val chatRoom = ChatRoom("test_chatroom_id", mutableSetOf(CommonTest.TEST_USER_ID))
+    val chatRoom = ChatRoom("test_chatroom_id", CommonTest.TEST_USER_ID, mutableSetOf(CommonTest.TEST_USER_ID))
     val chat = Chat("chat_id", CommonTest.TEST_USER_ID, ChatType.ROOM, EventType.CHAT, ContextTest.TEST_ROOM_ID, "content")
     every { chatRepository.save(any()) } returns chat
     every { chatRoomRepository.save(any()) } returns chatRoom

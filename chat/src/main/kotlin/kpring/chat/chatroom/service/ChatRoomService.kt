@@ -28,7 +28,7 @@ class ChatRoomService(
     request: CreateChatRoomRequest,
     userId: String,
   ): ChatWrapper {
-    val chatRoom = ChatRoom(members = mutableSetOf(userId))
+    val chatRoom = ChatRoom(ownerId = userId, members = mutableSetOf(userId))
     chatRoom.addUsers(request.users)
     val saved = chatRoomRepository.save(chatRoom)
     return createChatRoomMessage(saved.id!!, "방이 생성되었습니다.", EventType.CREATED)

@@ -258,4 +258,102 @@ export const createAnimations = (
     frameRate: frameRate,
     repeat: -1,
   });
+
+  // 상의
+  scene.anims.create({
+    key: `top-jump-front`,
+    frames: scene.anims.generateFrameNames("top-costume-jump-texture", {
+      prefix: `${topKey}-${topColorKey}-jump-front-`,
+      start: 1,
+      end: 5,
+      suffix: ".png",
+    }),
+    frameRate: frameRate,
+    repeat: -1,
+  });
+
+  scene.anims.create({
+    key: `top-jump-back`,
+    frames: scene.anims.generateFrameNames("top-costume-jump-texture", {
+      prefix: `${topKey}-${topColorKey}-jump-back-`,
+      start: 1,
+      end: 5,
+      suffix: ".png",
+    }),
+    frameRate: frameRate,
+    repeat: -1,
+  });
+
+  scene.anims.create({
+    key: `top-jump-right`,
+    frames: scene.anims.generateFrameNames("top-costume-jump-texture", {
+      prefix: `${topKey}-${topColorKey}-jump-right-`,
+      start: 1,
+      end: 5,
+      suffix: ".png",
+    }),
+    frameRate: frameRate,
+    repeat: -1,
+  });
+
+  scene.anims.create({
+    key: `top-jump-left`,
+    frames: scene.anims.generateFrameNames("top-costume-jump-texture", {
+      prefix: `${topKey}-${topColorKey}-jump-left-`,
+      start: 1,
+      end: 5,
+      suffix: ".png",
+    }),
+    frameRate: frameRate,
+    repeat: -1,
+  });
+
+  // 하의
+  scene.anims.create({
+    key: `bottom-jump-front`,
+    frames: scene.anims.generateFrameNames("bottom-costume-jump-texture", {
+      prefix: `${bottomKey}-${bottomColorKey}-jump-front-`,
+      start: 1,
+      end: 5,
+      suffix: ".png",
+    }),
+    frameRate: frameRate,
+    repeat: -1,
+  });
+
+  scene.anims.create({
+    key: `bottom-jump-back`,
+    frames: scene.anims.generateFrameNames("bottom-costume-jump-texture", {
+      prefix: `${bottomKey}-${bottomColorKey}-jump-back-`,
+      start: 1,
+      end: 5,
+      suffix: ".png",
+    }),
+    frameRate: frameRate,
+    repeat: -1,
+  });
+
+  scene.anims.create({
+    key: `bottom-jump-left`,
+    frames: scene.anims.generateFrameNames("bottom-costume-jump-texture", {
+      prefix: `${bottomKey}-${bottomColorKey}-jump-left-`,
+      start: 1,
+      end: 5,
+      suffix: ".png",
+    }),
+    frameRate: frameRate,
+    repeat: -1,
+  });
+
+  scene.anims.create({
+    key: `bottom-jump-right`,
+    frames: scene.anims.generateFrameNames("bottom-costume-jump-texture", {
+      prefix: `${bottomKey}-${bottomColorKey}-jump-right-`,
+      start: 1,
+      end: 5,
+      suffix: ".png",
+    }),
+    frameRate: frameRate,
+    repeat: -1,
+  });
 };

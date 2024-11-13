@@ -36,6 +36,7 @@ export const createRandomAvatar = (
         randomTopCostumeFrame.frame
       );
       avatarContainer.add(costumeSprite);
+      (avatarContainer as any).topCostume = randomTopCostumeFrame;
     }
 
     // 아바타 코스튬(하의)
@@ -51,6 +52,7 @@ export const createRandomAvatar = (
         randomBottomCostumeFrame.frame
       );
       avatarContainer.add(costumeSprite);
+      (avatarContainer as any).bottomCostume = randomBottomCostumeFrame;
     }
 
     // 아바타 헤어

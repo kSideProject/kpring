@@ -31,9 +31,21 @@ export class CampingPreloader extends Scene {
     );
 
     this.load.atlas(
+      "top-costume-jump-texture",
+      "../assets/avatar/jump/costumes/top/top1-jump.png",
+      "../assets/avatar/jump/costumes/top/top1-jump.json"
+    );
+
+    this.load.atlas(
       "bottom-costume-texture",
       "../assets/avatar/walk/costumes/bottom/bottom1-walk.png",
       "../assets/avatar/walk/costumes/bottom/bottom1-walk.json"
+    );
+
+    this.load.atlas(
+      "bottom-costume-jump-texture",
+      "../assets/avatar/jump/costumes/bottom/bottom1-jump.png",
+      "../assets/avatar/jump/costumes/bottom/bottom1-jump.json"
     );
 
     this.load.atlas(

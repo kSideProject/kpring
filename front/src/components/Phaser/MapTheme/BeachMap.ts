@@ -51,7 +51,7 @@ export class BeachMap extends Scene {
 
   update(): void {
     if (this.keyboards && this.avatar) {
-      controlAvatarAnimations(this.avatar, this.keyboards, randomSkin);
+      // controlAvatarAnimations(this.avatar, this.keyboards, randomSkin);
     }
   }
 }

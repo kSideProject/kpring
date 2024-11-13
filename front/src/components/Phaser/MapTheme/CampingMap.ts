@@ -1,4 +1,4 @@
-import { GameObjects, Scene } from "phaser";
+import { Scene } from "phaser";
 import { createRandomAvatar, randomSkin } from "../Scenes/Avatar";
 import { controlAvatarAnimations } from "../Avatar/controlAvatar";
 import { setupCameraControls } from "../Scenes/cameraControls";
@@ -6,16 +6,18 @@ import { setupCameraControls } from "../Scenes/cameraControls";
 export class CampingMap extends Scene {
   private avatar!: Phaser.GameObjects.Container;
   private keyboards!: Phaser.Types.Input.Keyboard.CursorKeys | null;
-  private isDragging: boolean = false;
-  private dragStartPoint = new Phaser.Math.Vector2();
+  private spaceKey!: Phaser.Input.Keyboard.Key | undefined;
+  private isJumping: boolean = false;
 
   constructor() {
     super("CampingMap");
   }
 
   create() {
+    this.spaceKey = this.input.keyboard?.addKey(
+      Phaser.Input.Keyboard.KeyCodes.SPACE
+    );
     const campingMap = this.make.tilemap({ key: "camping" });
-
     const campingTilesets = campingMap.addTilesetImage(
       "camping_tilesets",
       "camping_tilesets"
@@ -41,6 +43,7 @@ export class CampingMap extends Scene {
       ];
 
       this.avatar = createRandomAvatar(this, 520, 350);
+
       this.add.existing(this.avatar);
       this.cameras.main.startFollow(this.avatar);
       this.cameras.main.setZoom(2);
@@ -118,6 +121,7 @@ export class CampingMap extends Scene {
     }
 
     setupCameraControls(this, this.avatar);
+    this.isJumping = false;
 
     if (this.input.keyboard) {
       this.keyboards = this.input.keyboard.createCursorKeys();
@@ -128,7 +132,13 @@ export class CampingMap extends Scene {
 
   update(): void {
     if (this.keyboards && this.avatar) {
-      controlAvatarAnimations(this.avatar, this.keyboards, randomSkin);
+      controlAvatarAnimations(
+        this.avatar,
+        this.keyboards,
+        randomSkin,
+        this.spaceKey,
+        this.isJumping
+      );
     }
   }
 }

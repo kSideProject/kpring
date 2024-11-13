@@ -10,6 +10,7 @@ export const createAnimations = (
   hairKey: string,
   hairColorKey: string
 ): void => {
+  // === 걸을 때 ===
   // 피부색
   const frameRate = 20;
 
@@ -202,6 +203,56 @@ export const createAnimations = (
       prefix: `${hairKey}-${hairColorKey}-walk-right-`,
       start: 1,
       end: 8,
+      suffix: ".png",
+    }),
+    frameRate: frameRate,
+    repeat: -1,
+  });
+
+  // === 점프할 때 ===
+  // 피부색
+  scene.anims.create({
+    key: `${skinKey}-jump-left`,
+    frames: scene.anims.generateFrameNames(`${skinKey}-jump`, {
+      prefix: `${skinKey}-jump-left-`,
+      start: 1,
+      end: 5,
+      suffix: ".png",
+    }),
+    frameRate: frameRate,
+    repeat: -1,
+  });
+
+  scene.anims.create({
+    key: `${skinKey}-jump-right`,
+    frames: scene.anims.generateFrameNames(`${skinKey}-jump`, {
+      prefix: `${skinKey}-jump-right-`,
+      start: 1,
+      end: 5,
+      suffix: ".png",
+    }),
+    frameRate: frameRate,
+    repeat: -1,
+  });
+
+  scene.anims.create({
+    key: `${skinKey}-jump-down`,
+    frames: scene.anims.generateFrameNames(`${skinKey}-jump`, {
+      prefix: `${skinKey}-jump-down-`,
+      start: 1,
+      end: 5,
+      suffix: ".png",
+    }),
+    frameRate: frameRate,
+    repeat: -1,
+  });
+
+  scene.anims.create({
+    key: `${skinKey}-jump-up`,
+    frames: scene.anims.generateFrameNames(`${skinKey}-jump`, {
+      prefix: `${skinKey}-jump-up-`,
+      start: 1,
+      end: 5,
       suffix: ".png",
     }),
     frameRate: frameRate,

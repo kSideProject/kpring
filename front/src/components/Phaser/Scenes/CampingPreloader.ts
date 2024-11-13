@@ -9,8 +9,18 @@ export class CampingPreloader extends Scene {
   preload() {
     // Avatar
     skinAssets.forEach((skin) => {
+      // 걸을 때, 애니메이션 이미지 파일 및 json파일 프리로드
       if (skin.atlasUrl) {
         this.load.atlas(skin.key, skin.textureUrl, skin.atlasUrl);
+      }
+
+      // 점프할 때, 애니메이션 이미지 파일 및 json파일 프리로드
+      if (skin.jumpTextureUrl && skin.jumpAtlasUrl) {
+        this.load.atlas(
+          `${skin.key}-jump`,
+          skin.jumpTextureUrl,
+          skin.jumpAtlasUrl
+        );
       }
     });
 

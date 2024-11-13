@@ -26,11 +26,8 @@ class ChatCustomRepository(
     val pageable: Pageable = PageRequest.of(page, size, sort)
     var query: Query =
       Query(
-        Criteria.where("contextId")
-          .`is`(contextId)
-          .and("type").`is`(type),
-      )
-        .with(pageable)
+        Criteria.where("contextId").`is`(contextId).and("chatType").`is`(type),
+      ).with(pageable)
     return mongoTemplate.find(query, Chat::class.java)
   }
 
@@ -44,11 +41,8 @@ class ChatCustomRepository(
     val pageable: Pageable = PageRequest.of(page, size, sort)
     val query: Query =
       Query(
-        Criteria.where("contextId")
-          .`is`(contextId)
-          .and("type").`is`(type),
-      )
-        .with(pageable)
+        Criteria.where("contextId").`is`(contextId).and("chatType").`is`(type),
+      ).with(pageable)
     val list: List<Chat> = mongoTemplate.find(query, Chat::class.java)
     return PageableExecutionUtils.getPage(
       list,

@@ -4,8 +4,7 @@ export const controlAvatarAnimations = (
   avatar: Phaser.GameObjects.Container,
   keyboards: Phaser.Types.Input.Keyboard.CursorKeys,
   skinKey: string,
-  spaceKey: Phaser.Input.Keyboard.Key | undefined,
-  isJumping: boolean
+  spaceKey: Phaser.Input.Keyboard.Key | undefined
 ) => {
   const skinSprite = avatar?.list[0] as Phaser.GameObjects.Sprite | null;
   const topSprite = avatar?.list[1] as Phaser.GameObjects.Sprite | null;
@@ -16,30 +15,48 @@ export const controlAvatarAnimations = (
 
   type Direction = "left" | "right" | "up" | "down";
   let facingDirection: Direction = "down";
+  let isJumping = false;
 
   if (!skinSprite || !topSprite || !bottomSprite || !hairSprite) {
     return;
   }
 
+  // 점프 동작 처리
   if (spaceKey?.isDown && !isJumping) {
     isJumping = true;
 
-    if (facingDirection === ("left" as Direction)) {
+    // 점프 시 방향에 맞춰 이동 속도
+    if (keyboards.left?.isDown) {
+      body.setVelocityX(-100);
+      facingDirection = "left";
       skinSprite.anims.play(`${skinKey}-jump-left`, true);
       topSprite.anims.play("top-jump-left", true);
       bottomSprite.anims.play("bottom-jump-left", true);
       hairSprite.anims.play("hair-jump-left", true);
-    } else if (facingDirection === ("right" as Direction)) {
+    } else if (keyboards.right?.isDown) {
+      body.setVelocityX(100);
+      facingDirection = "right";
       skinSprite.anims.play(`${skinKey}-jump-right`, true);
       topSprite.anims.play("top-jump-right", true);
       bottomSprite.anims.play("bottom-jump-right", true);
       hairSprite.anims.play("hair-jump-right", true);
-    } else if (facingDirection === ("up" as Direction)) {
+    } else if (keyboards.up?.isDown) {
+      body.setVelocityY(-100);
+      facingDirection = "up";
       skinSprite.anims.play(`${skinKey}-jump-up`, true);
       topSprite.anims.play("top-jump-back", true);
       bottomSprite.anims.play("bottom-jump-back", true);
       hairSprite.anims.play("hair-jump-back", true);
-    } else if (facingDirection === "down") {
+    } else if (keyboards.down?.isDown) {
+      body.setVelocityY(100);
+      facingDirection = "down";
+      skinSprite.anims.play(`${skinKey}-jump-down`, true);
+      topSprite.anims.play("top-jump-front", true);
+      bottomSprite.anims.play("bottom-jump-front", true);
+      hairSprite.anims.play("hair-jump-front", true);
+    } else {
+      body.setVelocity(0);
+      facingDirection = "down";
       skinSprite.anims.play(`${skinKey}-jump-down`, true);
       topSprite.anims.play("top-jump-front", true);
       bottomSprite.anims.play("bottom-jump-front", true);
@@ -71,7 +88,7 @@ export const controlAvatarAnimations = (
       topSprite.anims.play("top-walk-back", true);
       bottomSprite.anims.play("bottom-walk-back", true);
       hairSprite.anims.play("hair-walk-back", true);
-    } else if (keyboards.down.isDown) {
+    } else if (keyboards.down?.isDown) {
       facingDirection = "down";
       body.setVelocityY(100);
       skinSprite.anims.play(`${skinKey}-walk-down`, true);
@@ -79,6 +96,7 @@ export const controlAvatarAnimations = (
       bottomSprite.anims.play("bottom-walk-front", true);
       hairSprite.anims.play("hair-walk-front", true);
     } else {
+      body.setVelocity(0);
       body.stop();
       skinSprite.anims.stop();
       topSprite.anims.stop();

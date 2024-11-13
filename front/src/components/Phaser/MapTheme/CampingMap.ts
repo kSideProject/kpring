@@ -136,8 +136,7 @@ export class CampingMap extends Scene {
         this.avatar,
         this.keyboards,
         randomSkin,
-        this.spaceKey,
-        this.isJumping
+        this.spaceKey
       );
     }
   }

@@ -14,9 +14,9 @@ enum class ErrorCode(val httpStatus: Int, val message: String) {
   MISSING_TOKEN(HttpStatus.UNAUTHORIZED.value(), "인증 토큰이 누락되었습니다."),
 
   // 403
-  FORBIDDEN_CHATROOM(HttpStatus.FORBIDDEN.value(), "접근이 제한된 채팅방 입니다"),
-  FORBIDDEN_SERVER(HttpStatus.FORBIDDEN.value(), "접근이 제한된 서버 입니다"),
-  FORBIDDEN_CHAT(HttpStatus.FORBIDDEN.value(), "접근이 제한된 채팅 입니다"),
+  FORBIDDEN_CHATROOM(HttpStatus.FORBIDDEN.value(), "채팅방 권한이 없습니다"),
+  FORBIDDEN_SERVER(HttpStatus.FORBIDDEN.value(), "서버 권한이 없습니다"),
+  FORBIDDEN_CHAT(HttpStatus.FORBIDDEN.value(), "채팅 권한이 없습니다"),
 
   // 404
   CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "해당 id로 chatroom을 찾을 수 없습니다"),

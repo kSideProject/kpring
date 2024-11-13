@@ -2,6 +2,7 @@ package kpring.chat.chatroom.api.v1
 
 import kpring.chat.chatroom.service.ChatRoomService
 import kpring.core.chat.chatroom.dto.request.CreateChatRoomRequest
+import kpring.core.chat.chatroom.dto.request.ExpelChatRoomRequest
 import kpring.core.global.dto.response.ApiResponse
 import lombok.RequiredArgsConstructor
 import org.slf4j.Logger
@@ -48,6 +49,16 @@ class WebSocketChatRoomController(
   ) {
     val userId = principal.name
     val result = chatRoomService.joinChatRoom(code, userId)
+    simpMessagingTemplate.convertAndSend("/topic/chatroom/${result.chatRoomId}", ApiResponse(status = 200, data = result.chatResponse))
+  }
+
+  @MessageMapping("/chatroom/expel")
+  fun expelFromChatRoom(
+    @Payload expelChatRoomRequest: ExpelChatRoomRequest,
+    principal: Principal,
+  ) {
+    val userId = principal.name
+    val result = chatRoomService.expelFromChatRoom(expelChatRoomRequest, userId)
     simpMessagingTemplate.convertAndSend("/topic/chatroom/${result.chatRoomId}", ApiResponse(status = 200, data = result.chatResponse))
   }
 }

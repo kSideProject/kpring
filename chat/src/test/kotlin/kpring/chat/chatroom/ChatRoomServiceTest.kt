@@ -258,15 +258,24 @@ class ChatRoomServiceTest : FunSpec({
     test("방장이 아닌 사용자가 추방을 시도하면 예외가 발생해야 한다") {
       // Given
       val chatRoomId = ContextTest.TEST_ROOM_ID
+      val ownerId = "ownerId"
       val userId = "non_owner_user"
       val expelUserId = "user_to_expel"
+      val chatRoom =
+        ChatRoom(
+          id = chatRoomId,
+          ownerId = ownerId,
+          members = mutableSetOf(ownerId, expelUserId),
+        )
       val request = ExpelChatRoomRequest(chatRoomId, expelUserId)
 
+      every { chatRoomRepository.findById(any()) } returns Optional.of(chatRoom)
+      every { accessVerifier.verifyChatRoomOwner(expelUserId, userId) } throws GlobalException(ErrorCode.FORBIDDEN_CHATROOM)
+
       // When & Then
-      shouldThrow<Throwable> {
-        // 예외 발생 시도
+      shouldThrow<GlobalException>({
         chatRoomService.expelFromChatRoom(request, userId)
-      }
+      })
     }
   }
 })

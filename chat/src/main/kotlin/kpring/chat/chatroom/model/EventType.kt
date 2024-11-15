@@ -6,4 +6,5 @@ enum class EventType(val type: String) {
   CREATED("CREATED"),
   CHAT("CHAT"),
   EXIT("EXIT"),
+  EXPEL("EXPEL"),
 }

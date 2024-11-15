@@ -30,4 +30,13 @@ class AccessVerifier(
       throw GlobalException(ErrorCode.FORBIDDEN_CHATROOM)
     }
   }
+
+  fun verifyChatRoomOwner(
+    chatRoomId: String,
+    userId: String,
+  ) {
+    if (!chatRoomRepository.existsByIdAndOwnerId(chatRoomId, userId)) {
+      throw GlobalException(ErrorCode.FORBIDDEN_CHATROOM)
+    }
+  }
 }

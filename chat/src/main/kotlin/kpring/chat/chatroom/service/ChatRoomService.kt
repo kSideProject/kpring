@@ -13,6 +13,7 @@ import kpring.chat.global.util.AccessVerifier
 import kpring.core.chat.chat.dto.response.ChatResponse
 import kpring.core.chat.chat.dto.response.InvitationResponse
 import kpring.core.chat.chatroom.dto.request.CreateChatRoomRequest
+import kpring.core.chat.chatroom.dto.request.ExpelChatRoomRequest
 import kpring.core.chat.model.ChatType
 import kpring.core.chat.model.MessageType
 import org.springframework.stereotype.Service
@@ -68,6 +69,17 @@ class ChatRoomService(
     chatRoom.addUser(userId)
     chatRoomRepository.save(chatRoom)
     return createChatRoomMessage(chatRoom.id!!, "${userId}님이 방에 들어왔습니다.", EventType.ENTER) // TODO : 닉네임으로 변경
+  }
+
+  fun expelFromChatRoom(
+    expelChatRoomRequest: ExpelChatRoomRequest,
+    userId: String,
+  ): ChatWrapper {
+    val chatRoom = getChatRoom(expelChatRoomRequest.chatRoomId)
+    accessVerifier.verifyChatRoomOwner(expelChatRoomRequest.chatRoomId, userId)
+    chatRoom.removeUser(expelChatRoomRequest.expelUserId)
+    chatRoomRepository.save(chatRoom)
+    return createChatRoomMessage(chatRoom.id!!, "${expelChatRoomRequest.expelUserId}님이 방에서 내보내졌습니다.", EventType.EXPEL) // TODO : 닉네임으로 변경
   }
 
   private fun verifyInvitationExistence(invitationInfo: InvitationInfo) {

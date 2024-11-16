@@ -1,4 +1,4 @@
-package kpring.chat.chatroom.model
+package kpring.core.chat.chat.dto.response
 
 enum class EventType(val type: String) {
   ENTER("ENTER"),

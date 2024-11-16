@@ -42,7 +42,7 @@ class WebSocketConfig(
 
   override fun configureMessageBroker(config: MessageBrokerRegistry) {
     config.setApplicationDestinationPrefixes("/app")
-    config.enableSimpleBroker("/topic")
+    config.enableSimpleBroker("/topic", "/queue")
   }
 
   override fun configureWebSocketTransport(registry: WebSocketTransportRegistration) {
@@ -119,17 +119,17 @@ class WebSocketConfig(
   private fun getTokenFromHeader(headerAccessor: SimpMessageHeaderAccessor): String {
     return headerAccessor.getFirstNativeHeader("Authorization")
       ?.removePrefix("Bearer ")
-      ?: throw GlobalException(ErrorCode.MISSING_TOKEN)
+      ?: throw GlobalException(ErrorCode.MISSING_HEADER_INFO)
   }
 
   private fun getContextIdFromHeader(headerAccessor: SimpMessageHeaderAccessor): String {
     return headerAccessor.getFirstNativeHeader("ContextId")
-      ?: throw GlobalException(ErrorCode.MISSING_CONTEXTID)
+      ?: throw GlobalException(ErrorCode.MISSING_HEADER_INFO)
   }
 
   private fun getContext(headerAccessor: SimpMessageHeaderAccessor): String {
     return headerAccessor.getFirstNativeHeader("Context")
-      ?: throw GlobalException(ErrorCode.MISSING_CONTEXT)
+      ?: throw GlobalException(ErrorCode.MISSING_HEADER_INFO)
   }
 
   override fun configureClientInboundChannel(registration: ChannelRegistration) {

@@ -6,7 +6,7 @@ import io.kotest.matchers.shouldBe
 import kpring.chat.chat.model.Chat
 import kpring.chat.chat.model.QChat
 import kpring.chat.chat.repository.ChatRepository
-import kpring.chat.chatroom.model.EventType
+import kpring.core.chat.chat.dto.response.EventType
 import kpring.core.chat.model.ChatType
 import kpring.test.testcontainer.SpringTestContext
 import org.springframework.boot.test.context.SpringBootTest

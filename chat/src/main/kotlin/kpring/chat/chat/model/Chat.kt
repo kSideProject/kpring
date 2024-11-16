@@ -1,8 +1,8 @@
 package kpring.chat.chat.model
 
 import kpring.chat.NoArg
-import kpring.chat.chatroom.model.EventType
 import kpring.chat.global.model.BaseTime
+import kpring.core.chat.chat.dto.response.EventType
 import kpring.core.chat.model.ChatType
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document

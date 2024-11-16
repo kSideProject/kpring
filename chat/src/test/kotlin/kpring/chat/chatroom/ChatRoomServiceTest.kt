@@ -8,7 +8,6 @@ import kpring.chat.chat.model.Chat
 import kpring.chat.chat.repository.ChatRepository
 import kpring.chat.chatroom.dto.InvitationInfo
 import kpring.chat.chatroom.model.ChatRoom
-import kpring.chat.chatroom.model.EventType
 import kpring.chat.chatroom.repository.ChatRoomRepository
 import kpring.chat.chatroom.service.ChatRoomService
 import kpring.chat.chatroom.service.InvitationService
@@ -17,6 +16,7 @@ import kpring.chat.global.ContextTest
 import kpring.chat.global.exception.ErrorCode
 import kpring.chat.global.exception.GlobalException
 import kpring.chat.global.util.AccessVerifier
+import kpring.core.chat.chat.dto.response.EventType
 import kpring.core.chat.chatroom.dto.request.CreateChatRoomRequest
 import kpring.core.chat.chatroom.dto.request.ExpelChatRoomRequest
 import kpring.core.chat.model.ChatType

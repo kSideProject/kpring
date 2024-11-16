@@ -4,7 +4,6 @@ import kpring.chat.chat.api.v1.WebSocketChatController
 import kpring.chat.chat.model.Chat
 import kpring.chat.chat.repository.ChatCustomRepository
 import kpring.chat.chat.repository.ChatRepository
-import kpring.chat.chatroom.model.EventType
 import kpring.chat.chatroom.repository.ChatRoomRepository
 import kpring.chat.global.exception.ErrorCode
 import kpring.chat.global.exception.GlobalException
@@ -12,6 +11,7 @@ import kpring.chat.global.util.AccessVerifier
 import kpring.core.chat.chat.dto.request.CreateChatRequest
 import kpring.core.chat.chat.dto.request.UpdateChatRequest
 import kpring.core.chat.chat.dto.response.ChatResponse
+import kpring.core.chat.chat.dto.response.EventType
 import kpring.core.chat.model.ChatType
 import kpring.core.chat.model.MessageType
 import kpring.core.server.dto.ServerSimpleInfo
@@ -45,7 +45,7 @@ class ChatService(
           content = request.content,
         ),
       )
-    return ChatResponse(chat.id!!, userId, MessageType.CHAT, chat.isEdited(), chat.updatedAt.toString(), chat.content)
+    return ChatResponse(chat.id!!, userId, MessageType.CHAT, EventType.CHAT, chat.isEdited(), chat.updatedAt.toString(), chat.content)
   }
 
   fun createServerChat(
@@ -64,7 +64,7 @@ class ChatService(
           content = request.content,
         ),
       )
-    return ChatResponse(chat.id!!, userId, MessageType.CHAT, chat.isEdited(), chat.updatedAt.toString(), chat.content)
+    return ChatResponse(chat.id!!, userId, MessageType.CHAT, EventType.CHAT, chat.isEdited(), chat.updatedAt.toString(), chat.content)
   }
 
   fun getRoomChats(
@@ -101,7 +101,7 @@ class ChatService(
     verifyIfAuthor(userId, chat)
     chat.updateContent(request.content)
     chatRepository.save(chat)
-    return ChatResponse(chat.id!!, userId, MessageType.UPDATE, chat.isEdited(), chat.updatedAt.toString(), chat.content)
+    return ChatResponse(chat.id!!, userId, MessageType.UPDATE, EventType.CHAT, chat.isEdited(), chat.updatedAt.toString(), chat.content)
   }
 
   fun deleteChat(
@@ -111,7 +111,7 @@ class ChatService(
     val chat = chatRepository.findById(chatId).orElseThrow { GlobalException(ErrorCode.CHAT_NOT_FOUND) }
     verifyIfAuthor(userId, chat)
     chatRepository.delete(chat)
-    return ChatResponse(chat.id!!, userId, MessageType.DELETE, chat.isEdited(), chat.updatedAt.toString(), chat.content)
+    return ChatResponse(chat.id!!, userId, MessageType.DELETE, EventType.CHAT, chat.isEdited(), chat.updatedAt.toString(), chat.content)
   }
 
   private fun verifyIfAuthor(
@@ -130,6 +130,7 @@ class ChatService(
           id = chat.id!!,
           sender = chat.userId,
           messageType = MessageType.CHAT,
+          eventType = EventType.CHAT,
           isEdited = chat.isEdited(),
           sentAt = chat.createdAt.toString(),
           content = chat.content,

@@ -10,6 +10,7 @@ export const createAnimations = (
   hairKey: string,
   hairColorKey: string
 ): void => {
+  // === 걸을 때 ===
   // 피부색
   const frameRate = 20;
 
@@ -202,6 +203,203 @@ export const createAnimations = (
       prefix: `${hairKey}-${hairColorKey}-walk-right-`,
       start: 1,
       end: 8,
+      suffix: ".png",
+    }),
+    frameRate: frameRate,
+    repeat: -1,
+  });
+
+  // === 점프할 때 ===
+  // 피부색
+  scene.anims.create({
+    key: `${skinKey}-jump-left`,
+    frames: scene.anims.generateFrameNames(`${skinKey}-jump`, {
+      prefix: `${skinKey}-jump-left-`,
+      start: 1,
+      end: 5,
+      suffix: ".png",
+    }),
+    frameRate: frameRate,
+    repeat: -1,
+  });
+
+  scene.anims.create({
+    key: `${skinKey}-jump-right`,
+    frames: scene.anims.generateFrameNames(`${skinKey}-jump`, {
+      prefix: `${skinKey}-jump-right-`,
+      start: 1,
+      end: 5,
+      suffix: ".png",
+    }),
+    frameRate: frameRate,
+    repeat: -1,
+  });
+
+  scene.anims.create({
+    key: `${skinKey}-jump-down`,
+    frames: scene.anims.generateFrameNames(`${skinKey}-jump`, {
+      prefix: `${skinKey}-jump-down-`,
+      start: 1,
+      end: 5,
+      suffix: ".png",
+    }),
+    frameRate: frameRate,
+    repeat: -1,
+  });
+
+  scene.anims.create({
+    key: `${skinKey}-jump-up`,
+    frames: scene.anims.generateFrameNames(`${skinKey}-jump`, {
+      prefix: `${skinKey}-jump-up-`,
+      start: 1,
+      end: 5,
+      suffix: ".png",
+    }),
+    frameRate: frameRate,
+    repeat: -1,
+  });
+
+  // 상의
+  scene.anims.create({
+    key: `top-jump-front`,
+    frames: scene.anims.generateFrameNames("top-costume-jump-texture", {
+      prefix: `${topKey}-${topColorKey}-jump-front-`,
+      start: 1,
+      end: 5,
+      suffix: ".png",
+    }),
+    frameRate: frameRate,
+    repeat: -1,
+  });
+
+  scene.anims.create({
+    key: `top-jump-back`,
+    frames: scene.anims.generateFrameNames("top-costume-jump-texture", {
+      prefix: `${topKey}-${topColorKey}-jump-back-`,
+      start: 1,
+      end: 5,
+      suffix: ".png",
+    }),
+    frameRate: frameRate,
+    repeat: -1,
+  });
+
+  scene.anims.create({
+    key: `top-jump-right`,
+    frames: scene.anims.generateFrameNames("top-costume-jump-texture", {
+      prefix: `${topKey}-${topColorKey}-jump-right-`,
+      start: 1,
+      end: 5,
+      suffix: ".png",
+    }),
+    frameRate: frameRate,
+    repeat: -1,
+  });
+
+  scene.anims.create({
+    key: `top-jump-left`,
+    frames: scene.anims.generateFrameNames("top-costume-jump-texture", {
+      prefix: `${topKey}-${topColorKey}-jump-left-`,
+      start: 1,
+      end: 5,
+      suffix: ".png",
+    }),
+    frameRate: frameRate,
+    repeat: -1,
+  });
+
+  // 하의
+  scene.anims.create({
+    key: `bottom-jump-front`,
+    frames: scene.anims.generateFrameNames("bottom-costume-jump-texture", {
+      prefix: `${bottomKey}-${bottomColorKey}-jump-front-`,
+      start: 1,
+      end: 5,
+      suffix: ".png",
+    }),
+    frameRate: frameRate,
+    repeat: -1,
+  });
+
+  scene.anims.create({
+    key: `bottom-jump-back`,
+    frames: scene.anims.generateFrameNames("bottom-costume-jump-texture", {
+      prefix: `${bottomKey}-${bottomColorKey}-jump-back-`,
+      start: 1,
+      end: 5,
+      suffix: ".png",
+    }),
+    frameRate: frameRate,
+    repeat: -1,
+  });
+
+  scene.anims.create({
+    key: `bottom-jump-left`,
+    frames: scene.anims.generateFrameNames("bottom-costume-jump-texture", {
+      prefix: `${bottomKey}-${bottomColorKey}-jump-left-`,
+      start: 1,
+      end: 5,
+      suffix: ".png",
+    }),
+    frameRate: frameRate,
+    repeat: -1,
+  });
+
+  scene.anims.create({
+    key: `bottom-jump-right`,
+    frames: scene.anims.generateFrameNames("bottom-costume-jump-texture", {
+      prefix: `${bottomKey}-${bottomColorKey}-jump-right-`,
+      start: 1,
+      end: 5,
+      suffix: ".png",
+    }),
+    frameRate: frameRate,
+    repeat: -1,
+  });
+
+  // 헤어
+  scene.anims.create({
+    key: `hair-jump-front`,
+    frames: scene.anims.generateFrameNames("hair-jump-texture", {
+      prefix: `${hairKey}-${hairColorKey}-jump-front-`,
+      start: 1,
+      end: 5,
+      suffix: ".png",
+    }),
+    frameRate: frameRate,
+    repeat: -1,
+  });
+
+  scene.anims.create({
+    key: `hair-jump-back`,
+    frames: scene.anims.generateFrameNames("hair-jump-texture", {
+      prefix: `${hairKey}-${hairColorKey}-jump-back-`,
+      start: 1,
+      end: 5,
+      suffix: ".png",
+    }),
+    frameRate: frameRate,
+    repeat: -1,
+  });
+
+  scene.anims.create({
+    key: `hair-jump-left`,
+    frames: scene.anims.generateFrameNames("hair-jump-texture", {
+      prefix: `${hairKey}-${hairColorKey}-jump-left-`,
+      start: 1,
+      end: 5,
+      suffix: ".png",
+    }),
+    frameRate: frameRate,
+    repeat: -1,
+  });
+
+  scene.anims.create({
+    key: `hair-jump-right`,
+    frames: scene.anims.generateFrameNames("hair-jump-texture", {
+      prefix: `${hairKey}-${hairColorKey}-jump-right-`,
+      start: 1,
+      end: 5,
       suffix: ".png",
     }),
     frameRate: frameRate,

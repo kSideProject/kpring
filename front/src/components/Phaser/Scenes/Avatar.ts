@@ -20,6 +20,7 @@ export const createRandomAvatar = (
 
     // 아바타 피부색
     const skinSprite = scene.add.sprite(7, 5, randomSkin);
+    (avatarContainer as any).skinData = randomSkin; // 아바타 피부색 저장
     avatarContainer.add(skinSprite);
 
     // 아바타 코스튬(상의)
@@ -35,6 +36,7 @@ export const createRandomAvatar = (
         randomTopCostumeFrame.frame
       );
       avatarContainer.add(costumeSprite);
+      (avatarContainer as any).topCostume = randomTopCostumeFrame;
     }
 
     // 아바타 코스튬(하의)
@@ -50,6 +52,7 @@ export const createRandomAvatar = (
         randomBottomCostumeFrame.frame
       );
       avatarContainer.add(costumeSprite);
+      (avatarContainer as any).bottomCostume = randomBottomCostumeFrame;
     }
 
     // 아바타 헤어
@@ -62,6 +65,7 @@ export const createRandomAvatar = (
         randomHairFrame.frame
       );
       avatarContainer.add(costumeSprite);
+      (avatarContainer as any).hair = randomHairFrame;
     }
 
     if (randomBottomCostumeFrame && randomTopCostumeFrame && randomHairFrame) {
@@ -77,9 +81,27 @@ export const createRandomAvatar = (
       );
     }
 
+    // 아바타 하단에 사용자 닉네임 추가
+    const userNickName = scene.add.text(
+      0,
+      skinSprite.height / 2 + 10,
+      "nickname",
+      {
+        font: "10px Arial",
+        color: "#ffffff",
+        align: "center",
+      }
+    );
+
+    userNickName.setResolution(2);
+    userNickName.setOrigin(0.35, 0.5);
+    avatarContainer.add(userNickName);
+
     scene.physics.world.enable(avatarContainer);
     const body = avatarContainer.body as Phaser.Physics.Arcade.Body;
     body.setSize(14, 20);
+    // body.setOffset(3, 5);
+    // body.setCollideWorldBounds(true); // 월드 경계와 충돌
 
     return avatarContainer;
   } else {

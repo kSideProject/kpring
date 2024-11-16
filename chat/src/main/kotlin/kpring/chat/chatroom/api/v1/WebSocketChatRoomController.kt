@@ -3,6 +3,7 @@ package kpring.chat.chatroom.api.v1
 import kpring.chat.chatroom.service.ChatRoomService
 import kpring.core.chat.chatroom.dto.request.CreateChatRoomRequest
 import kpring.core.chat.chatroom.dto.request.ExpelChatRoomRequest
+import kpring.core.chat.chatroom.dto.response.MessageStatus
 import kpring.core.global.dto.response.ApiResponse
 import lombok.RequiredArgsConstructor
 import org.slf4j.Logger
@@ -60,5 +61,10 @@ class WebSocketChatRoomController(
     val userId = principal.name
     val result = chatRoomService.expelFromChatRoom(expelChatRoomRequest, userId)
     simpMessagingTemplate.convertAndSend("/topic/chatroom/${result.chatRoomId}", ApiResponse(status = 200, data = result.chatResponse))
+    simpMessagingTemplate.convertAndSendToUser(
+      expelChatRoomRequest.expelUserId,
+      "/queue/disconnect",
+      ApiResponse(status = MessageStatus.DISCONNECT.code, MessageStatus.DISCONNECT.description, data = null),
+    )
   }
 }

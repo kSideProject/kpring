@@ -5,12 +5,12 @@ import kpring.chat.chat.repository.ChatRepository
 import kpring.chat.chatroom.dto.ChatWrapper
 import kpring.chat.chatroom.dto.InvitationInfo
 import kpring.chat.chatroom.model.ChatRoom
-import kpring.chat.chatroom.model.EventType
 import kpring.chat.chatroom.repository.ChatRoomRepository
 import kpring.chat.global.exception.ErrorCode
 import kpring.chat.global.exception.GlobalException
 import kpring.chat.global.util.AccessVerifier
 import kpring.core.chat.chat.dto.response.ChatResponse
+import kpring.core.chat.chat.dto.response.EventType
 import kpring.core.chat.chat.dto.response.InvitationResponse
 import kpring.core.chat.chatroom.dto.request.CreateChatRoomRequest
 import kpring.core.chat.chatroom.dto.request.ExpelChatRoomRequest
@@ -105,7 +105,15 @@ class ChatRoomService(
       )
     return ChatWrapper(
       chatRoomId,
-      ChatResponse(chat.id!!, chat.userId, MessageType.CHAT, chat.isEdited(), chat.updatedAt.toString(), chat.content),
+      ChatResponse(
+        id = chat.id!!,
+        sender = chat.userId,
+        messageType = MessageType.CHAT,
+        isEdited = chat.isEdited(),
+        sentAt = chat.updatedAt.toString(),
+        content = chat.content,
+        eventType = chat.eventType,
+      ),
     )
   }
 

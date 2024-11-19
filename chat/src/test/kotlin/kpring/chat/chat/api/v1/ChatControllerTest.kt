@@ -16,6 +16,7 @@ import kpring.core.auth.enums.TokenType
 import kpring.core.chat.chat.dto.request.CreateChatRequest
 import kpring.core.chat.chat.dto.request.UpdateChatRequest
 import kpring.core.chat.chat.dto.response.ChatResponse
+import kpring.core.chat.chat.dto.response.EventType
 import kpring.core.chat.model.ChatType
 import kpring.core.chat.model.MessageType
 import kpring.core.global.dto.response.ApiResponse
@@ -83,6 +84,7 @@ class ChatControllerTest(
             id = ChatTest.TEST_CHAT_ID,
             sender = CommonTest.TEST_USER_ID,
             messageType = MessageType.CHAT,
+            eventType = EventType.CHAT,
             isEdited = false,
             sentAt = LocalDateTime.now().toString(),
             content = content,
@@ -139,6 +141,7 @@ class ChatControllerTest(
               id = ChatTest.TEST_CHAT_ID,
               sender = CommonTest.TEST_USER_ID,
               messageType = MessageType.CHAT,
+              eventType = EventType.CHAT,
               isEdited = true,
               sentAt = LocalDateTime.now().toString(),
               content = ChatTest.CONTENT,
@@ -234,6 +237,7 @@ class ChatControllerTest(
               "data[].id" type JsonDataType.Strings mean "채팅 ID"
               "data[].sender" type JsonDataType.Strings mean "채팅 작성자"
               "data[].messageType" type JsonDataType.Strings mean "메시지 타입"
+              "data[].eventType" type JsonDataType.Strings mean "이벤트 타입"
               "data[].isEdited" type JsonDataType.Booleans mean "메시지가 수정되었는지 여부"
               "data[].sentAt" type JsonDataType.Strings mean "메시지 생성 시간"
               "data[].content" type JsonDataType.Strings mean "메시지 내용"
@@ -255,6 +259,7 @@ class ChatControllerTest(
               id = ChatTest.TEST_CHAT_ID,
               sender = CommonTest.TEST_USER_ID,
               messageType = MessageType.CHAT,
+              eventType = EventType.CHAT,
               isEdited = true,
               sentAt = LocalDateTime.now().toString(),
               content = ChatTest.CONTENT,
@@ -319,6 +324,7 @@ class ChatControllerTest(
               "data[].id" type JsonDataType.Strings mean "채팅 ID"
               "data[].sender" type JsonDataType.Strings mean "채팅 작성자"
               "data[].messageType" type JsonDataType.Strings mean "메시지 타입"
+              "data[].eventType" type JsonDataType.Strings mean "이벤트 타입"
               "data[].isEdited" type JsonDataType.Booleans mean "메시지가 수정되었는지 여부"
               "data[].sentAt" type JsonDataType.Strings mean "메시지 생성 시간"
               "data[].content" type JsonDataType.Strings mean "메시지 내용"
@@ -348,6 +354,7 @@ class ChatControllerTest(
             id = ChatTest.TEST_CHAT_ID,
             sender = CommonTest.TEST_USER_ID,
             messageType = MessageType.CHAT,
+            eventType = EventType.CHAT,
             isEdited = false,
             sentAt = LocalDateTime.now().toString(),
             content = ChatTest.CONTENT,
@@ -437,6 +444,7 @@ class ChatControllerTest(
             id = ChatTest.TEST_CHAT_ID,
             sender = CommonTest.TEST_USER_ID,
             messageType = MessageType.UPDATE,
+            eventType = EventType.CHAT,
             isEdited = true,
             sentAt = LocalDateTime.now().toString(),
             content = ChatTest.CONTENT,
@@ -497,6 +505,7 @@ class ChatControllerTest(
           id = ChatTest.TEST_CHAT_ID,
           sender = CommonTest.TEST_USER_ID,
           messageType = MessageType.DELETE,
+          eventType = EventType.CHAT,
           isEdited = true,
           sentAt = LocalDateTime.now().toString(),
           content = ChatTest.CONTENT,

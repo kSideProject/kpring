@@ -85,6 +85,7 @@
         stompClient.connect(connectHeaders, function (frame) {
             console.log('Connected: ' + frame);
 
+            //채팅방 메시지 구독
             stompClient.subscribe(`/topic/chatroom/${chatroomId}`, function (message) {
                 console.log("Received message:", message.body);
                 const response = JSON.parse(message.body);
@@ -95,6 +96,16 @@
                 Authorization: `Bearer ${token}`,
                 ContextId: chatroomId,
                 Context: 'ROOM'
+            });
+
+            //disconnect 메시지 구독
+            stompClient.subscribe('/user/queue/disconnect', function (message) {
+                const response = JSON.parse(message.body);
+                console.log("Received disconnect message:", response.message);
+
+                //사용자 강제 로그아웃 로직
+                alert(response.message);
+                stompClient.disconnect(() => console.log('Disconnected from WebSocket'));
             });
 
             enableButtonsAfterConnect(token, chatroomId);

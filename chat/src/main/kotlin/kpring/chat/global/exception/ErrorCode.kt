@@ -5,8 +5,7 @@ import org.springframework.http.HttpStatus
 enum class ErrorCode(val httpStatus: Int, val message: String) {
   // 400
   INVALID_CHAT_TYPE(HttpStatus.BAD_REQUEST.value(), "잘못된 ChatType입니다."),
-  MISSING_CONTEXTID(HttpStatus.BAD_REQUEST.value(), "채팅방ID 혹은 서버ID가 누락되었습니다."),
-  MISSING_CONTEXT(HttpStatus.BAD_REQUEST.value(), "ChatType이 누락되었습니다."),
+  MISSING_HEADER_INFO(HttpStatus.BAD_REQUEST.value(), "필요한 헤더 정보가 누락되었습니다."),
   INVALID_TOKEN(HttpStatus.BAD_REQUEST.value(), "인증 토큰이 유효하지 않습니다."),
   INVALID_CONTEXT(HttpStatus.BAD_REQUEST.value(), "ChatType이 유효하지 않습니다."),
 

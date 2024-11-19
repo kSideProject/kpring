@@ -8,7 +8,6 @@ import io.mockk.junit5.MockKExtension
 import kpring.chat.chat.model.Chat
 import kpring.chat.chatroom.api.v1.ChatRoomController
 import kpring.chat.chatroom.dto.ChatWrapper
-import kpring.chat.chatroom.model.EventType
 import kpring.chat.chatroom.service.ChatRoomService
 import kpring.chat.global.CommonTest
 import kpring.chat.global.ContextTest
@@ -17,6 +16,7 @@ import kpring.core.auth.client.AuthClient
 import kpring.core.auth.dto.response.TokenInfo
 import kpring.core.auth.enums.TokenType
 import kpring.core.chat.chat.dto.response.ChatResponse
+import kpring.core.chat.chat.dto.response.EventType
 import kpring.core.chat.chat.dto.response.InvitationResponse
 import kpring.core.chat.model.ChatType
 import kpring.core.chat.model.MessageType
@@ -129,7 +129,18 @@ class ChatRoomControllerTest(
             content = content,
           )
         val data =
-          ChatWrapper(chatRoomId, ChatResponse("1", userId, MessageType.CHAT, chat.isEdited(), chat.updatedAt.toString(), chat.content))
+          ChatWrapper(
+            chatRoomId,
+            ChatResponse(
+              id = "1",
+              sender = userId,
+              messageType = MessageType.CHAT,
+              eventType = EventType.ENTER,
+              isEdited = chat.isEdited(),
+              sentAt = chat.updatedAt.toString(),
+              content = chat.content,
+            ),
+          )
 
         every { authClient.getTokenInfo(any()) } returns
           ApiResponse(

@@ -8,7 +8,6 @@ import kpring.chat.chat.model.Chat
 import kpring.chat.chat.repository.ChatCustomRepository
 import kpring.chat.chat.repository.ChatRepository
 import kpring.chat.chat.service.ChatService
-import kpring.chat.chatroom.model.EventType
 import kpring.chat.chatroom.repository.ChatRoomRepository
 import kpring.chat.global.ChatTest
 import kpring.chat.global.CommonTest
@@ -19,6 +18,7 @@ import kpring.chat.global.util.AccessVerifier
 import kpring.core.chat.chat.dto.request.CreateChatRequest
 import kpring.core.chat.chat.dto.request.DeleteChatRequest
 import kpring.core.chat.chat.dto.request.UpdateChatRequest
+import kpring.core.chat.chat.dto.response.EventType
 import kpring.core.chat.model.ChatType
 import kpring.core.chat.model.MessageType
 import kpring.core.server.dto.ServerSimpleInfo

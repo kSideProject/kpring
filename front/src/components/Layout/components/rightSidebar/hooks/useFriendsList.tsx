@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { UserFriendsListType } from "../types/friends";
-import { getFriendsData } from "../api/friendsList";
+import { getFriendsData } from "../api/friends";
 
 const useFriendsList = (userId: string | null, token: string | null) => {
   const [friends, setFriends] = useState<UserFriendsListType | undefined>(

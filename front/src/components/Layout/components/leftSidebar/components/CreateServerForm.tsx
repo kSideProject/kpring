@@ -82,14 +82,7 @@ const CreateServerForm = () => {
           placeholder=""
         />
 
-        <TextInput
-          lable="서버카테고리"
-          value={serverName}
-          type=""
-          onChange={onChangeServerName}
-          placeholder=""
-        />
-
+        <Checkbox />
         <Box sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
           <FormControl sx={{ m: 2 }}>
             <FormLabel>서버 카테고리</FormLabel>

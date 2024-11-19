@@ -60,12 +60,20 @@ class WebSocketConfig(
         val simpMessageType = SimpMessageHeaderAccessor.getMessageType(message.headers)
         return when (simpMessageType) {
           SimpMessageType.CONNECT -> authenticateAndSetPrincipal(message)
-          SimpMessageType.SUBSCRIBE -> verifyAccess(message)
+          SimpMessageType.SUBSCRIBE -> filterSubscriptionDestination(message)
           SimpMessageType.MESSAGE -> verifyAccess(message)
           else -> message
         }
       }
     }
+  }
+
+  private fun filterSubscriptionDestination(message: Message<*>): Message<*> {
+    val destination = SimpMessageHeaderAccessor.wrap(message).destination
+    if (destination != null && !destination.startsWith("/user/queue/disconnect")) {
+      return verifyAccess(message)
+    }
+    return message
   }
 
   private fun authenticateAndSetPrincipal(message: Message<*>): Message<*> {

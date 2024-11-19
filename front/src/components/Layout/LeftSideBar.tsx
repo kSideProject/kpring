@@ -7,18 +7,15 @@ import {
   Drawer,
   List,
   ListItem,
-  ListItemAvatar,
-  Tooltip,
 } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 // import useFetchServers from "../../hooks/FetchServer";
 import useModal from "../common/modal/hooks/useModal";
 import { useLoginStore } from "../../store/useLoginStore";
-import CreateServerForm from "../Server/CreateServerForm";
-import ServerInfoSidebar from "./ServerInfoSidebar";
+// import ServerInfoSidebar from "./components/leftSidebar/components/ServerInfoSidebar";
 import { useServerId } from "../../store/useServerId";
-import Modal from "../common/modal/Modal";
+
 const LeftSideBar = () => {
   const DRAWER_WIDTH = 88; // 왼쪽 서버 사이드바 넓이
   const [openServerInfo, setOpenServerInfo] = useState(false); // 서버 인포 사이드바 열기
@@ -109,15 +106,12 @@ const LeftSideBar = () => {
         </Button>
       </Drawer>
       <Drawer open={openServerInfo} variant="persistent">
-        <ServerInfoSidebar
+        {/* <ServerInfoSidebar
           open={openServerInfo}
           close={handleDrawerClose}
           serverId={selectedServerId}
-        />
+        /> */}
       </Drawer>
-      <Modal isOpen={isOpen} closeModal={closeModal}>
-        <CreateServerForm />
-      </Modal>
     </Box>
   );
 };

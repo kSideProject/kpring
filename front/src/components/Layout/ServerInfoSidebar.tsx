@@ -32,7 +32,6 @@ const ServerInfoSidebar: React.FC<ServerInforProps> = ({ close, serverId }) => {
     width: "240px",
   }));
   const navigate = useNavigate();
-  const { isOpen, openModal, closeModal } = useModal();
   // const { data } = useFetchServers(token);
   const setTheme = useThemeStore((state) => state.setTheme);
   const [selectedServer, setSelectedServer] = useState<SelectedType>();

@@ -9,10 +9,11 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { JwtPayload, jwtDecode } from "jwt-decode";
-import useUpdatedServers from "../../hooks/UpdatedServer";
-import { ServerType, CategoriesType } from "../../types/server";
-import ServerThemeSelector from "./ServerThemeSelector";
-import { useThemeStore } from "../../store/useThemeStore";
+import ServerThemeSelector from "../../../../Server/ServerThemeSelector";
+import { CategoriesType, ServerType } from "../../../../../types/server";
+import { useThemeStore } from "../../../../../store/useThemeStore";
+import useUpdatedServers from "../../../../../hooks/UpdatedServer";
+import TextInput from "../../../../common/input/TextInput";
 
 interface UserIdJwtPayload extends JwtPayload {
   userId: string;
@@ -73,12 +74,23 @@ const CreateServerForm = () => {
       <p className="text-lg text-center">새로운 서버 생성</p>
 
       <form onSubmit={onSubmitHandler}>
-        <Box sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-          <FormControl sx={{ m: 2 }}>
-            <FormLabel>서버이름</FormLabel>
-            <Input value={serverName} onChange={onChangeServerName}></Input>
-          </FormControl>
+        <TextInput
+          lable="서버이름"
+          value={serverName}
+          type="text"
+          onChange={onChangeServerName}
+          placeholder=""
+        />
 
+        <TextInput
+          lable="서버카테고리"
+          value={serverName}
+          type=""
+          onChange={onChangeServerName}
+          placeholder=""
+        />
+
+        <Box sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
           <FormControl sx={{ m: 2 }}>
             <FormLabel>서버 카테고리</FormLabel>
             <FormGroup onChange={onChangeCategories}>

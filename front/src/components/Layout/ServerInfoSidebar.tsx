@@ -8,17 +8,10 @@ import { useNavigate } from "react-router-dom";
 // import Profile from "../../Profile/Profile";
 // import useFetchServers from "../../hooks/FetchServer";
 import axios from "axios";
-import useModal from "../common/modal/hooks/useModal";
 import { SelectedType } from "../../types/server";
 import { useThemeStore } from "../../store/useThemeStore";
 import { ServerInforProps } from "../../types/layout";
-import FavoriteStar from "../Home/FavoriteStar";
-import Modal from "../common/modal/Modal";
-import Profile from "../Profile/Profile";
-// import { useThemeStore } from "../../../store/useThemeStore";
-// import { SelectedType, ServerType } from "../../../types/server";
-// import { fetchServers } from "../../../hooks/FetchServer";
-// import Modal from "../modal/Modal";
+import FavoriteStar from "../home/FavoriteStar";
 
 const ServerInfoSidebar: React.FC<ServerInforProps> = ({ close, serverId }) => {
   const token = localStorage.getItem("dicoTown_AccessToken");

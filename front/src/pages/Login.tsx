@@ -1,5 +1,5 @@
 import { ThemeProvider } from "@mui/material/styles";
-import LoginBox from "../components/Auth/LoginBox";
+import LoginBox from "../components/auth/LoginBox";
 import theme from "../theme/themeConfig";
 const Login = () => {
   return (

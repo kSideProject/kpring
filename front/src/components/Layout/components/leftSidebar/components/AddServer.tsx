@@ -1,7 +1,7 @@
 import { IoAddCircle } from "react-icons/io5";
 import useModal from "../../../../common/modal/hooks/useModal";
 import Modal from "../../../../common/modal/Modal";
-import CreateServerForm from "./CreateServerForm";
+import CreateServerForm from "../../../../server/components/CreateServerForm";
 
 const AddServer = () => {
   const { isOpen, openModal, closeModal } = useModal();

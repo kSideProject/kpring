@@ -1,12 +1,12 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import "./App.css";
-import AuthLayout from "./components/Auth/AuthLayout";
-import PrivateRoute from "./components/Auth/PrivateRoute";
-import Layout from "./components/Layout/Layout";
+import AuthLayout from "./components/auth/AuthLayout";
+import PrivateRoute from "./components/auth/PrivateRoute";
+import Layout from "./components/layout/Layout";
 import Home from "./pages/Home";
 import Join from "./pages/Join";
 import Login from "./pages/Login";
-import ServerMapWithTheme from "./components/Server/ServerMapWithTheme";
+import ServerMapWithTheme from "./components/server/ServerMapWithTheme";
 
 function App() {
   return (

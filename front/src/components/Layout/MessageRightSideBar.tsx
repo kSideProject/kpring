@@ -5,7 +5,6 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { SideBarProps } from "../../types/layout";
 import React, { useState } from "react";
 import DropDown from "./DropDown";
-import MemberList from "./MemberList";
 
 const MessageRightSideBar: React.FC<SideBarProps> = ({ close }) => {
   const DrawerHeader = styled("div")(({ theme }) => ({

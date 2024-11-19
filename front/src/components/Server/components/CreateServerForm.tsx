@@ -9,11 +9,11 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { JwtPayload, jwtDecode } from "jwt-decode";
-import ServerThemeSelector from "../../../../Server/ServerThemeSelector";
-import { CategoriesType, ServerType } from "../../../../../types/server";
-import { useThemeStore } from "../../../../../store/useThemeStore";
-import useUpdatedServers from "../../../../../hooks/UpdatedServer";
-import TextInput from "../../../../common/input/TextInput";
+import ServerThemeSelector from "../ServerThemeSelector";
+import { CategoriesType, ServerType } from "../../../types/server";
+import { useThemeStore } from "../../../store/useThemeStore";
+import useUpdatedServers from "../../../hooks/UpdatedServer";
+import TextInput from "../../common/input/TextInput";
 
 interface UserIdJwtPayload extends JwtPayload {
   userId: string;

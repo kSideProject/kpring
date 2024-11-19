@@ -2,9 +2,9 @@ import { List } from "@mui/material";
 import MemberListItem from "./MemberListItem";
 import React from "react";
 import { Member } from "../../types/layout";
-import ModalComponent from "../Modal/ModalComponent";
 import Profile from "../Profile/Profile";
-import useModal from "../../hooks/Modal";
+import useModal from "../common/modal/hooks/useModal";
+import ModalComponent from "../common/modal/Modal";
 
 interface MemberListProps {
   memberList: Member[];
@@ -16,22 +16,23 @@ const MemberList: React.FC<MemberListProps> = ({ memberList }) => {
 
   return (
     <>
-      <List sx={{
-        overflow: 'auto',
-        '&::-webkit-scrollbar': {
-          display: 'none',
-        },
-        '-ms-overflow-style': 'none',
-        'scrollbar-width': 'none',
+      <List
+        sx={{
+          overflow: "auto",
+          "&::-webkit-scrollbar": {
+            display: "none",
+          },
+          "-ms-overflow-style": "none",
+          "scrollbar-width": "none",
         }}>
-        {memberList.map((member,index) => (
-          <MemberListItem member={member} key={index} handleProfileOpen={openModal} />
+        {memberList.map((member, index) => (
+          <MemberListItem
+            member={member}
+            key={index}
+            handleProfileOpen={openModal}
+          />
         ))}
       </List>
-      <ModalComponent isOpen={isOpen}>
-        {/* TODO: API연결되면 props로 유저정보 내려주기 */}
-        <Profile closeModal={closeModal} />
-      </ModalComponent>
     </>
   );
 };

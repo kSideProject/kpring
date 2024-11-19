@@ -1,16 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { ServerInforProps } from "../../types/layout";
+// import { ServerInforProps } from "../../../types/layout";
 import { Divider, Button, styled, Box, Typography } from "@mui/material";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import { useNavigate } from "react-router-dom";
-import FavoriteStar from "../Home/FavoriteStar";
-import ModalComponent from "../Modal/ModalComponent";
-import useModal from "../../hooks/Modal";
-import Profile from "../Profile/Profile";
-import useFetchServers from "../../hooks/FetchServer";
+// import FavoriteStar from "../../Home/FavoriteStar";
+// import useModal from "../../../hooks/Modal";
+// import Profile from "../../Profile/Profile";
+// import useFetchServers from "../../hooks/FetchServer";
 import axios from "axios";
+import useModal from "../common/modal/hooks/useModal";
+import { SelectedType } from "../../types/server";
 import { useThemeStore } from "../../store/useThemeStore";
-import { SelectedType, ServerType } from "../../types/server";
+import { ServerInforProps } from "../../types/layout";
+import FavoriteStar from "../Home/FavoriteStar";
+import Modal from "../common/modal/Modal";
+import Profile from "../Profile/Profile";
+// import { useThemeStore } from "../../../store/useThemeStore";
+// import { SelectedType, ServerType } from "../../../types/server";
+// import { fetchServers } from "../../../hooks/FetchServer";
+// import Modal from "../modal/Modal";
 
 const ServerInfoSidebar: React.FC<ServerInforProps> = ({ close, serverId }) => {
   const token = localStorage.getItem("dicoTown_AccessToken");
@@ -25,11 +33,15 @@ const ServerInfoSidebar: React.FC<ServerInforProps> = ({ close, serverId }) => {
   }));
   const navigate = useNavigate();
   const { isOpen, openModal, closeModal } = useModal();
-  const { data } = useFetchServers(token);
+  // const { data } = useFetchServers(token);
   const setTheme = useThemeStore((state) => state.setTheme);
   const [selectedServer, setSelectedServer] = useState<SelectedType>();
 
-  console.log(selectedServer);
+  // useEffect(() => {
+  //   fetchServers(token);
+  // }, []);
+
+  // console.log(selectedServer);
   const getSelectedServer = async () => {
     const url = `${process.env.REACT_APP_BASE_URL}/server/api/v1/server/${serverId}`;
 
@@ -38,7 +50,7 @@ const ServerInfoSidebar: React.FC<ServerInforProps> = ({ close, serverId }) => {
       const results = res.data.data;
 
       if (results) {
-        console.log(serverId);
+        // console.log(serverId);
         setTheme(results.theme);
         setSelectedServer(results);
         navigate(`server/${serverId}`);
@@ -89,9 +101,9 @@ const ServerInfoSidebar: React.FC<ServerInforProps> = ({ close, serverId }) => {
         ))}
       </div>
 
-      <ModalComponent isOpen={isOpen}>
+      {/* <Modal isOpen={isOpen}>
         <Profile closeModal={closeModal} />
-      </ModalComponent>
+      </Modal> */}
     </>
   );
 };

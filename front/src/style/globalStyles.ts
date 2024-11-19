@@ -2,6 +2,7 @@
 export const globalColors = {
   white: "#ffffff",
   black: "",
+  darkGray: "#313338",
   primary: "#2a2f4f",
   secondary: "#917fb3",
   pink: "#e5beec",

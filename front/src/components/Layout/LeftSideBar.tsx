@@ -12,24 +12,25 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import useFetchServers from "../../hooks/FetchServer";
-import useModal from "../../hooks/Modal";
+// import useFetchServers from "../../hooks/FetchServer";
+import useModal from "../common/modal/hooks/useModal";
 import { useLoginStore } from "../../store/useLoginStore";
-import ModalComponent from "../Modal/ModalComponent";
 import CreateServerForm from "../Server/CreateServerForm";
 import ServerInfoSidebar from "./ServerInfoSidebar";
 import { useServerId } from "../../store/useServerId";
+import Modal from "../common/modal/Modal";
 const LeftSideBar = () => {
   const DRAWER_WIDTH = 88; // 왼쪽 서버 사이드바 넓이
   const [openServerInfo, setOpenServerInfo] = useState(false); // 서버 인포 사이드바 열기
-  const { isOpen, openModal } = useModal();
   // const [serverId, setServerId] = useState("");
   const token = localStorage.getItem("dicoTown_AccessToken");
-  const { data } = useFetchServers(token);
+  // const { data } = useFetchServers(token);
   const { clearTokens } = useLoginStore();
   const navigate = useNavigate();
   const { selectedServerId, setServerId } = useServerId();
+  const { isOpen, openModal, closeModal } = useModal();
 
+  // console.log(data);
   // 왼쪽 멤버 사이드바 오픈 핸들러
   const handleDrawerOpen = (id: string) => {
     setOpenServerInfo((openServerInfo) => !openServerInfo);
@@ -73,7 +74,7 @@ const LeftSideBar = () => {
           </ListItem>
           <Divider />
 
-          {data?.data.map((server) => {
+          {/* {data?.data.map((server) => {
             return (
               <ListItem alignItems="center" key={server.id}>
                 <Tooltip title={server.name}>
@@ -90,7 +91,7 @@ const LeftSideBar = () => {
                 </Tooltip>
               </ListItem>
             );
-          })}
+          })} */}
         </List>
         <Button
           type="submit"
@@ -114,9 +115,9 @@ const LeftSideBar = () => {
           serverId={selectedServerId}
         />
       </Drawer>
-      <ModalComponent isOpen={isOpen}>
-        <CreateServerForm></CreateServerForm>
-      </ModalComponent>
+      <Modal isOpen={isOpen} closeModal={closeModal}>
+        <CreateServerForm />
+      </Modal>
     </Box>
   );
 };

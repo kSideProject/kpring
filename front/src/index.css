@@ -17,11 +17,11 @@ code {
 }
 
 .embla {
-  max-width: 48rem;
+  min-width: 50rem;
   margin: auto;
-  --slide-height: 19rem;
+  --slide-height: 29rem;
   --slide-spacing: 1rem;
-  --slide-size: 70%;
+  --slide-size: 100%;
 }
 .embla__container {
   display: flex;
@@ -31,6 +31,7 @@ code {
 .embla__slide {
   transform: translate3d(0, 0, 0);
   flex: 0 0 var(--slide-size);
+  height: 30rem;
   min-width: 0;
   margin: var(--slide-spacing);
 }

@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Checkbox,
   FormControl,
   FormControlLabel,
@@ -26,9 +25,7 @@ const CreateServerForm = () => {
   const [userId, setUserId] = useState("");
   const [categories, setCategories] = useState<CategoriesType[]>([]);
   const [hostName, setHostName] = useState("");
-
   const { selectedTheme } = useThemeStore();
-  console.log(selectedTheme);
 
   useEffect(() => {
     if (token) {
@@ -57,8 +54,8 @@ const CreateServerForm = () => {
   };
 
   // 서버 생성 onSubmit Handler
-  const onSubmitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const onSubmitHandler = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
 
     const newServer: ServerType = {
       name: serverName,
@@ -72,8 +69,8 @@ const CreateServerForm = () => {
   };
 
   return (
-    <div>
-      <h2>새로운 서버 생성</h2>
+    <div className="">
+      <p className="text-lg text-center">새로운 서버 생성</p>
 
       <form onSubmit={onSubmitHandler}>
         <Box sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
@@ -105,7 +102,7 @@ const CreateServerForm = () => {
             <ServerThemeSelector />
           </FormControl>
 
-          <Button type="submit">서버생성</Button>
+          <button color="bg-sky-600">서버생성</button>
         </Box>
       </form>
     </div>

@@ -4,7 +4,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { SideBarProps } from "../../types/layout";
 import React, { useState } from "react";
-import DropDown from "../Layout/DropDown";
+import DropDown from "./DropDown";
 import MemberList from "./MemberList";
 
 const FriendsRightSideBar: React.FC<SideBarProps> = ({ close }) => {

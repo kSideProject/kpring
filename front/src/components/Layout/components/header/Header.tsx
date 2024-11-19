@@ -1,5 +1,6 @@
-import { ChatBubble, SupervisedUserCircle } from "@mui/icons-material";
 import React from "react";
+import { BsChatQuoteFill } from "react-icons/bs";
+import { RiGroup2Fill } from "react-icons/ri";
 
 const Header = () => {
   return (
@@ -7,9 +8,9 @@ const Header = () => {
       <div>
         <span className="text-white">Dicotown</span>
       </div>
-      <div className="flex justify-center items-center gap-2">
-        <ChatBubble className="text-white" />
-        <SupervisedUserCircle className="text-white" />
+      <div className="flex justify-center items-center gap-3">
+        <BsChatQuoteFill className="text-white" fontSize={24} />
+        <RiGroup2Fill className="text-white" fontSize={24} />
       </div>
     </nav>
   );

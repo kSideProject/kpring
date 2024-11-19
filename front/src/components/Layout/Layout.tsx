@@ -2,14 +2,14 @@ import { ThemeProvider } from "@mui/material/styles";
 import { Outlet } from "react-router-dom";
 import theme from "../../theme/themeConfig";
 // import Header from "./Header";
-import LeftSideBar from "./LeftSideBar";
 import Header from "./components/header/Header";
+import { LeftSidebar } from "./components/leftSidebar/LeftSidebar";
 
 const Layout: React.FC = () => {
   return (
     <div className="relative">
       <Header />
-      <LeftSideBar />
+      <LeftSidebar />
       <main>
         <ThemeProvider theme={theme}>
           <Outlet />

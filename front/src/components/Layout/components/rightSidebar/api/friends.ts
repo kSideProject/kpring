@@ -47,3 +47,26 @@ export const requestFriend = async (
     console.error(error);
   }
 };
+
+// 친구 신청 목록 조회
+export const getRequestedFriendsData = async (
+  userId: string | null,
+  token: string | null
+) => {
+  const url = `${process.env.REACT_APP_BASE_URL}/user/api/v1/user/${userId}/requests`;
+
+  try {
+    const response = await axios({
+      method: "get",
+      url,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    console.log(response.data);
+    return response.data as UserFriendsListType;
+  } catch (error) {
+    console.error(error);
+  }
+};

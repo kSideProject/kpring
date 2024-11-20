@@ -1,7 +1,7 @@
 import React from "react";
-import FriendsList from "./components/FriendsList";
-import MessageList from "./components/MessageList";
 import { IoCloseCircle } from "react-icons/io5";
+import FriendsSidebar from "./components/FriendsSidebar";
+import MessageSidebar from "./components/MessageSidebar";
 
 const RightSidebar = ({
   activeSidebar,
@@ -22,8 +22,8 @@ const RightSidebar = ({
           className="text-3xl text-white hover:text-red-500"
         />
       </div>
-      {activeSidebar === "friends" && <FriendsList />}
-      {activeSidebar === "messages" && <MessageList />}
+      {activeSidebar === "friends" && <FriendsSidebar />}
+      {activeSidebar === "messages" && <MessageSidebar />}
     </div>
   );
 };

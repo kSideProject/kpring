@@ -1,5 +1,9 @@
 import axios from "axios";
-import { UserFriendsListType } from "../types/friends";
+import {
+  GetRequestedFriendsResponseType,
+  NewRequestedFriendsListType,
+  UserFriendsListType,
+} from "../types/friends";
 
 // 현재 유저의 친구 목록 가져오기
 export const getFriendsData = async (
@@ -41,7 +45,6 @@ export const requestFriend = async (
       },
     });
 
-    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error(error);
@@ -64,8 +67,7 @@ export const getRequestedFriendsData = async (
       },
     });
 
-    console.log(response.data);
-    return response.data as UserFriendsListType;
+    return response.data as GetRequestedFriendsResponseType;
   } catch (error) {
     console.error(error);
   }

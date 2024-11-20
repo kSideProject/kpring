@@ -19,6 +19,8 @@ const useFriendsList = (userId: string | null, token: string | null) => {
   useEffect(() => {
     getFriends();
   }, [userId, token]);
+
+  return friends;
 };
 
 export default useFriendsList;

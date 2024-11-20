@@ -16,7 +16,9 @@ const MessageSidebar = () => {
   return (
     <div>
       <MessageTab onClick={handleActiveTab} />
-      {activeTab === "messages" ? <MessageList /> : <NewFriendsList />}
+      <div className="mt-10">
+        {activeTab === "messages" ? <MessageList /> : <NewFriendsList />}
+      </div>
     </div>
   );
 };

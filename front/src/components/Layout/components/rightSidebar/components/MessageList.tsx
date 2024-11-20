@@ -1,7 +1,7 @@
 import React from "react";
 
 const MessageList = () => {
-  return <div>MessageList</div>;
+  return <></>;
 };
 
 export default MessageList;

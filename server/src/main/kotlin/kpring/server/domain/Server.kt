@@ -1,5 +1,6 @@
 package kpring.server.domain
 
+import kpring.core.global.exception.CommonErrorCode
 import kpring.core.global.exception.ServiceException
 import kpring.server.error.ServerErrorCode
 
@@ -20,7 +21,15 @@ class Server(
     hostId: String,
     users: MutableSet<String> = mutableSetOf(),
     invitedUserIds: MutableSet<String> = mutableSetOf(),
-  ) : this(null, name, users, invitedUserIds, initTheme(theme), initCategories(categories), ServerHost(hostName, hostId))
+  ) : this(
+    null,
+    name,
+    users,
+    invitedUserIds,
+    initTheme(theme),
+    initCategories(categories),
+    ServerHost(hostName, hostId),
+  )
 
   companion object {
     // -----------start : 초기화 로직 ------------
@@ -92,6 +101,22 @@ class Server(
       invitedUserIds.add(userId)
     } else {
       throw ServiceException(ServerErrorCode.ALREADY_REGISTERED_USER)
+    }
+  }
+
+  /**
+   * @param userId 권한을 상속받을 유저의 id   *        username 권한을 상속받을 유저의 닉네임
+   * @throws ServiceException userId를 가진 사용자가 해당 서버의 멤버가 아닐 경우
+   */
+  fun updateServerHost(
+    userId: String,
+    username: String,
+  ) {
+    if (users.contains(userId)) {
+      host.id = userId
+      host.name = username
+    } else {
+      throw ServiceException(CommonErrorCode.NOT_FOUND)
     }
   }
 }

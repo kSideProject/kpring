@@ -21,10 +21,10 @@ class AuthClientConfig {
   @Value("\${auth.url}")
   private lateinit var authUrl: String
 
-  @Value("\${auth.read-timeout:1s}")
+  @Value("\${auth.read-timeout:5s}")
   private lateinit var readTimeout: Duration
 
-  @Value("\${auth.connect-timeout:5s}")
+  @Value("\${auth.connect-timeout:10s}")
   private lateinit var connectTimeout: Duration
 
   @Bean

@@ -1,6 +1,6 @@
 package kpring.server.domain
 
 class ServerHost(
-  val name: String,
-  val id: String,
+  var name: String,
+  var id: String,
 )

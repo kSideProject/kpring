@@ -11,4 +11,6 @@ interface GetServerInfoUseCase {
     condition: GetServerCondition,
     userId: String,
   ): List<ServerSimpleInfo>
+
+  fun getOwnedServerList(userId: String): List<ServerSimpleInfo>
 }

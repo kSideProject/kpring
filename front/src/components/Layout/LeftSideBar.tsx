@@ -1,29 +1,34 @@
+import AddIcon from "@mui/icons-material/Add";
 import {
   Avatar,
   Box,
+  Button,
   Divider,
   Drawer,
   List,
   ListItem,
   ListItemAvatar,
-  ListItemButton,
   Tooltip,
 } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
 import { useState } from "react";
-import ServerInfoSidebar from "./ServerInfoSidebar";
-import CreateServerForm from "../Server/CreateServerForm";
-import useModal from "../../hooks/Modal";
-import ModalComponent from "../Modal/ModalComponent";
+import { useNavigate } from "react-router";
 import useFetchServers from "../../hooks/FetchServer";
-
+import useModal from "../../hooks/Modal";
+import { useLoginStore } from "../../store/useLoginStore";
+import ModalComponent from "../Modal/ModalComponent";
+import CreateServerForm from "../Server/CreateServerForm";
+import ServerInfoSidebar from "./ServerInfoSidebar";
+import { useServerId } from "../../store/useServerId";
 const LeftSideBar = () => {
   const DRAWER_WIDTH = 88; // 왼쪽 서버 사이드바 넓이
   const [openServerInfo, setOpenServerInfo] = useState(false); // 서버 인포 사이드바 열기
   const { isOpen, openModal } = useModal();
-  const [serverId, setServerId] = useState("");
+  // const [serverId, setServerId] = useState("");
   const token = localStorage.getItem("dicoTown_AccessToken");
   const { data } = useFetchServers(token);
+  const { clearTokens } = useLoginStore();
+  const navigate = useNavigate();
+  const { selectedServerId, setServerId } = useServerId();
 
   // 왼쪽 멤버 사이드바 오픈 핸들러
   const handleDrawerOpen = (id: string) => {
@@ -34,6 +39,13 @@ const LeftSideBar = () => {
   // 왼쪽 멤버 사이드바 닫기 핸들러
   const handleDrawerClose = () => {
     setOpenServerInfo((openServerInfo) => !openServerInfo);
+  };
+
+  // 로그아웃 핸들러
+  const handleLogout = () => {
+    clearTokens();
+    localStorage.removeItem("dicoTown_AccessToken");
+    navigate("/login");
   };
 
   return (
@@ -80,12 +92,26 @@ const LeftSideBar = () => {
             );
           })}
         </List>
+        <Button
+          type="submit"
+          variant="contained"
+          onClick={handleLogout}
+          sx={{
+            position: "absolute",
+            bottom: "80px",
+            display: "flex",
+            justifyContent: "center",
+            padding: "5px 10px",
+            marginLeft: "6px",
+          }}>
+          로그아웃
+        </Button>
       </Drawer>
       <Drawer open={openServerInfo} variant="persistent">
         <ServerInfoSidebar
           open={openServerInfo}
           close={handleDrawerClose}
-          serverID={serverId}
+          serverId={selectedServerId}
         />
       </Drawer>
       <ModalComponent isOpen={isOpen}>

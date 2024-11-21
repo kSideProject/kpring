@@ -1,19 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ServerInforProps } from "../../types/layout";
-import {
-  Avatar,
-  Badge,
-  Divider,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  Button,
-  styled,
-  Modal,
-  Box,
-  Typography,
-} from "@mui/material";
+import { Divider, Button, styled, Box, Typography } from "@mui/material";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import { useNavigate } from "react-router-dom";
 import FavoriteStar from "../Home/FavoriteStar";
@@ -21,9 +8,11 @@ import ModalComponent from "../Modal/ModalComponent";
 import useModal from "../../hooks/Modal";
 import Profile from "../Profile/Profile";
 import useFetchServers from "../../hooks/FetchServer";
-import { ServerResponseType, ServerType } from "../../types/server";
+import axios from "axios";
+import { useThemeStore } from "../../store/useThemeStore";
+import { SelectedType, ServerType } from "../../types/server";
 
-const ServerInfoSidebar: React.FC<ServerInforProps> = ({ close, serverID }) => {
+const ServerInfoSidebar: React.FC<ServerInforProps> = ({ close, serverId }) => {
   const token = localStorage.getItem("dicoTown_AccessToken");
   const DrawerHeader = styled("div")(({ theme }) => ({
     display: "flex",
@@ -37,6 +26,31 @@ const ServerInfoSidebar: React.FC<ServerInforProps> = ({ close, serverID }) => {
   const navigate = useNavigate();
   const { isOpen, openModal, closeModal } = useModal();
   const { data } = useFetchServers(token);
+  const setTheme = useThemeStore((state) => state.setTheme);
+  const [selectedServer, setSelectedServer] = useState<SelectedType>();
+
+  console.log(selectedServer);
+  const getSelectedServer = async () => {
+    const url = `${process.env.REACT_APP_BASE_URL}/server/api/v1/server/${serverId}`;
+
+    try {
+      const res = await axios.get(url);
+      const results = res.data.data;
+
+      if (results) {
+        console.log(serverId);
+        setTheme(results.theme);
+        setSelectedServer(results);
+        navigate(`server/${serverId}`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getSelectedServer();
+  }, [serverId]);
 
   return (
     <>
@@ -51,12 +65,12 @@ const ServerInfoSidebar: React.FC<ServerInforProps> = ({ close, serverID }) => {
             width: "100%",
           }}>
           <ArrowBackIosNewIcon onClick={close} />
-          <Typography>서버이름</Typography>
-          <FavoriteStar id={serverID} />
+          <Typography>{selectedServer?.name}</Typography>
+          <FavoriteStar id={serverId} />
         </Box>
 
         <Button
-          onClick={() => navigate(`server/${serverID}`)}
+          onClick={() => getSelectedServer()}
           sx={{
             backgroundColor: "#2A2F4F",
             width: "100%",
@@ -69,6 +83,11 @@ const ServerInfoSidebar: React.FC<ServerInforProps> = ({ close, serverID }) => {
         </Button>
       </DrawerHeader>
       <Divider />
+      <div>
+        {selectedServer?.users.map((user) => (
+          <span>userID: {user.id}</span>
+        ))}
+      </div>
 
       <ModalComponent isOpen={isOpen}>
         <Profile closeModal={closeModal} />

@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document
 @Document(collection = "chatrooms")
 class ChatRoom(
   @Id val id: String? = null,
+  val ownerId: String? = null,
   val members: MutableSet<String> = mutableSetOf(),
 ) : BaseTime() {
   fun getUsers(): Set<String> {

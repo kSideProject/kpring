@@ -33,7 +33,7 @@ class ChatRoomService(
     val chatRoom = ChatRoom(ownerId = userId, members = mutableSetOf(userId))
     chatRoom.addUsers(request.users)
     val saved = chatRoomRepository.save(chatRoom)
-    return createChatRoomMessage(saved.id!!, "방이 생성되었습니다.", EventType.CREATED)
+    return createChatRoomMessage(saved.id!!, "방이 생성되었습니다.", EventType.SYSTEM)
   }
 
   fun exitChatRoom(
@@ -44,7 +44,7 @@ class ChatRoomService(
     val chatRoom: ChatRoom = getChatRoom(chatRoomId)
     chatRoom.removeUser(userId)
     chatRoomRepository.save(chatRoom)
-    return createChatRoomMessage(chatRoom.id!!, "${userId}님이 방에서 나갔습니다.", EventType.EXIT) // TODO : 닉네임으로 변경
+    return createChatRoomMessage(chatRoom.id!!, "${userId}님이 방에서 나갔습니다.", EventType.SYSTEM) // TODO : 닉네임으로 변경
   }
 
   fun getChatRoomInvitation(
@@ -69,7 +69,7 @@ class ChatRoomService(
     val chatRoom = getChatRoom(invitationInfo.chatRoomId)
     chatRoom.addUser(userId)
     chatRoomRepository.save(chatRoom)
-    return createChatRoomMessage(chatRoom.id!!, "${userId}님이 방에 들어왔습니다.", EventType.ENTER) // TODO : 닉네임으로 변경
+    return createChatRoomMessage(chatRoom.id!!, "${userId}님이 방에 들어왔습니다.", EventType.SYSTEM) // TODO : 닉네임으로 변경
   }
 
   fun expelFromChatRoom(
@@ -80,7 +80,7 @@ class ChatRoomService(
     accessVerifier.verifyChatRoomOwner(expelChatRoomRequest.chatRoomId, userId)
     chatRoom.removeUser(expelChatRoomRequest.expelUserId)
     chatRoomRepository.save(chatRoom)
-    return createChatRoomMessage(chatRoom.id!!, "${expelChatRoomRequest.expelUserId}님이 방에서 내보내졌습니다.", EventType.EXPEL) // TODO : 닉네임으로 변경
+    return createChatRoomMessage(chatRoom.id!!, "${expelChatRoomRequest.expelUserId}님이 방에서 내보내졌습니다.", EventType.SYSTEM) // TODO : 닉네임으로 변경
   }
 
   fun transferChatRoomOwnerShip(
@@ -89,9 +89,10 @@ class ChatRoomService(
   ): ChatWrapper {
     val chatRoom = getChatRoom(transferChatRoomOwnerRequest.chatRoomId)
     accessVerifier.verifyChatRoomOwner(transferChatRoomOwnerRequest.chatRoomId, userId)
+    accessVerifier.verifyChatRoomOwner(transferChatRoomOwnerRequest.chatRoomId, transferChatRoomOwnerRequest.newOwnerId)
     chatRoom.transferOwnership(transferChatRoomOwnerRequest.newOwnerId)
     chatRoomRepository.save(chatRoom)
-    return createChatRoomMessage(chatRoom.id!!, "${transferChatRoomOwnerRequest.newOwnerId}님이 새 방장으로 임명되었습니다.", EventType.EXPEL) // TODO : 닉네임으로 변경
+    return createChatRoomMessage(chatRoom.id!!, "${transferChatRoomOwnerRequest.newOwnerId}님이 새 방장으로 임명되었습니다.", EventType.CHAT)
   }
 
   private fun verifyInvitationExistence(invitationInfo: InvitationInfo) {

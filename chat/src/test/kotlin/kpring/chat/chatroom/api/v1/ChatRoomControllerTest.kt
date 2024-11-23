@@ -124,7 +124,7 @@ class ChatRoomControllerTest(
           Chat(
             userId = "",
             chatType = ChatType.ROOM,
-            eventType = EventType.ENTER,
+            eventType = EventType.SYSTEM,
             contextId = chatRoomId,
             content = content,
           )
@@ -135,7 +135,7 @@ class ChatRoomControllerTest(
               id = "1",
               sender = userId,
               messageType = MessageType.CHAT,
-              eventType = EventType.ENTER,
+              eventType = EventType.SYSTEM,
               isEdited = chat.isEdited(),
               sentAt = chat.updatedAt.toString(),
               content = chat.content,

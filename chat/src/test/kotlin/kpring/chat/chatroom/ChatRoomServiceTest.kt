@@ -19,6 +19,7 @@ import kpring.chat.global.util.AccessVerifier
 import kpring.core.chat.chat.dto.response.EventType
 import kpring.core.chat.chatroom.dto.request.CreateChatRoomRequest
 import kpring.core.chat.chatroom.dto.request.ExpelChatRoomRequest
+import kpring.core.chat.chatroom.dto.request.TransferChatRoomOwnerRequest
 import kpring.core.chat.model.ChatType
 import kpring.core.chat.model.MessageType
 import java.util.*
@@ -53,7 +54,7 @@ class ChatRoomServiceTest : FunSpec({
           id = "chat_id",
           userId = "",
           chatType = ChatType.ROOM,
-          eventType = EventType.CREATED,
+          eventType = EventType.SYSTEM,
           contextId = chatRoom.id!!,
           content = "방이 생성되었습니다.",
         )
@@ -90,7 +91,7 @@ class ChatRoomServiceTest : FunSpec({
           id = "chat_id",
           userId = "",
           chatType = ChatType.ROOM,
-          eventType = EventType.EXIT,
+          eventType = EventType.SYSTEM,
           contextId = chatRoomId,
           content = "${userId}님이 방에서 나갔습니다.",
         )
@@ -180,7 +181,7 @@ class ChatRoomServiceTest : FunSpec({
           id = "chat_id",
           userId = "",
           chatType = ChatType.ROOM,
-          eventType = EventType.ENTER,
+          eventType = EventType.SYSTEM,
           contextId = chatRoomId,
           content = "${userId}님이 방에 들어왔습니다.",
         )
@@ -236,7 +237,7 @@ class ChatRoomServiceTest : FunSpec({
           id = "chat_id",
           userId = "",
           chatType = ChatType.ROOM,
-          eventType = EventType.EXPEL,
+          eventType = EventType.SYSTEM,
           contextId = chatRoomId,
           content = "${ownerId}님이 방에서 내보내졌습니다.",
         )
@@ -270,12 +271,56 @@ class ChatRoomServiceTest : FunSpec({
       val request = ExpelChatRoomRequest(chatRoomId, expelUserId)
 
       every { chatRoomRepository.findById(any()) } returns Optional.of(chatRoom)
-      every { accessVerifier.verifyChatRoomOwner(expelUserId, userId) } throws GlobalException(ErrorCode.FORBIDDEN_CHATROOM)
+      every {
+        accessVerifier.verifyChatRoomOwner(
+          expelUserId,
+          userId,
+        )
+      } throws GlobalException(ErrorCode.FORBIDDEN_CHATROOM)
 
       // When & Then
       shouldThrow<GlobalException>({
         chatRoomService.expelFromChatRoom(request, userId)
       })
+    }
+
+    test("채팅방 소유권을 성공적으로 위임할 수 있어야 한다") {
+      // Given
+      val chatRoomId = "test_chat_room_id"
+      val currentOwnerId = "current_owner_id"
+      val newOwnerId = "new_owner_id"
+
+      val chatRoom =
+        ChatRoom(
+          id = chatRoomId,
+          ownerId = currentOwnerId,
+          members = mutableSetOf(currentOwnerId, newOwnerId),
+        )
+
+      val expectedChat =
+        Chat(
+          id = "chat_id",
+          userId = "",
+          chatType = ChatType.ROOM,
+          eventType = EventType.SYSTEM,
+          contextId = chatRoomId,
+          content = "${newOwnerId}님이 새 방장으로 임명되었습니다.",
+        )
+
+      val request = TransferChatRoomOwnerRequest(chatRoomId, newOwnerId)
+
+      every { chatRoomRepository.findById(any()) } returns Optional.of(chatRoom)
+      every { accessVerifier.verifyChatRoomOwner(any(), any()) } just runs
+      every { chatRoomRepository.save(any()) } returns chatRoom
+      every { chatRepository.save(any()) } returns expectedChat
+
+      // When
+      val result = chatRoomService.transferChatRoomOwnerShip(request, currentOwnerId)
+
+      // Then
+      verify { accessVerifier.verifyChatRoomOwner(any(), any()) }
+      verify { chatRoomRepository.save(any()) }
+      result.chatResponse.content shouldBe "${newOwnerId}님이 새 방장으로 임명되었습니다."
     }
   }
 })

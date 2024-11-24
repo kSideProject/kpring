@@ -6,7 +6,8 @@ import lombok.Builder;
 public record GetUserProfileResponse(
   Long userId,
   String email,
-  String username
+  String username,
+  String filename
 ) {
 
 }

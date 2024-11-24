@@ -1,5 +1,6 @@
 package kpring.server.adapter.output.mongo
 
+import kpring.core.server.dto.request.UpdateHostAtServerRequest
 import kpring.server.adapter.output.mongo.entity.ServerEntity
 import kpring.server.adapter.output.mongo.entity.ServerProfileEntity
 import kpring.server.adapter.output.mongo.repository.ServerProfileRepository
@@ -45,6 +46,22 @@ class UpdateServerPortMongoImpl(
           .and("invitedUserIds").nin(userId),
       ),
       Update().push("invitedUserIds").value(userId),
+      ServerEntity::class.java,
+    )
+  }
+
+  override fun updateServerHost(
+    serverId: String,
+    userId: String,
+    otherUser: UpdateHostAtServerRequest,
+  ) {
+    template.updateFirst(
+      query(
+        where("_id").`is`(serverId)
+          .and("hostId").`is`(userId),
+      ),
+      Update().set("hostId", otherUser.userId)
+        .set("hostName", otherUser.userName),
       ServerEntity::class.java,
     )
   }

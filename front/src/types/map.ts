@@ -1,3 +1,5 @@
+import { ThemeType } from "./server";
+
 export interface ServerMapTypes {
   server: Phaser.Game | null;
   scene: Phaser.Scene | null;
@@ -6,6 +8,7 @@ export interface ServerMapTypes {
 // 현재 활성화된 씬을 부모 컴포넌트로 전달하는 콜백 함수
 export interface ServerMapProps {
   currentActiveScene?: (scene_instance: Phaser.Scene) => void;
+  selectedTheme: ThemeType | null;
 }
 
 // Tiled Map 레이어 타입

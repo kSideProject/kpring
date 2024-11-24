@@ -8,4 +8,11 @@ import org.springframework.stereotype.Repository
 @Repository
 interface ServerProfileRepository :
   MongoRepository<ServerProfileEntity, String>,
-  QuerydslPredicateExecutor<ServerProfileEntity>
+  QuerydslPredicateExecutor<ServerProfileEntity> {
+  fun deleteByServerId(serverId: String)
+
+  fun deleteByServerIdAndUserId(
+    serverId: String?,
+    userId: String,
+  )
+}

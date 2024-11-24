@@ -14,7 +14,7 @@ export interface SideBarProps {
 export interface ServerInforProps {
   close: () => void;
   open: boolean;
-  serverID: string;
+  serverId: string;
 }
 
 // FIXME :멤버 조회 타입 임의로 지정(이후 API 명세서 수정에 따라 변경 필요)

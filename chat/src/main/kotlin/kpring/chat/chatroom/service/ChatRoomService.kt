@@ -1,43 +1,56 @@
 package kpring.chat.chatroom.service
 
+import kpring.chat.chat.model.Chat
+import kpring.chat.chat.repository.ChatRepository
+import kpring.chat.chatroom.dto.ChatWrapper
 import kpring.chat.chatroom.dto.InvitationInfo
 import kpring.chat.chatroom.model.ChatRoom
 import kpring.chat.chatroom.repository.ChatRoomRepository
 import kpring.chat.global.exception.ErrorCode
 import kpring.chat.global.exception.GlobalException
+import kpring.chat.global.util.AccessVerifier
+import kpring.core.chat.chat.dto.response.ChatResponse
+import kpring.core.chat.chat.dto.response.EventType
 import kpring.core.chat.chat.dto.response.InvitationResponse
 import kpring.core.chat.chatroom.dto.request.CreateChatRoomRequest
+import kpring.core.chat.chatroom.dto.request.ExpelChatRoomRequest
+import kpring.core.chat.model.ChatType
+import kpring.core.chat.model.MessageType
 import org.springframework.stereotype.Service
 
 @Service
 class ChatRoomService(
   private val chatRoomRepository: ChatRoomRepository,
+  private val chatRepository: ChatRepository,
   private val invitationService: InvitationService,
+  private val accessVerifier: AccessVerifier,
 ) {
   fun createChatRoom(
     request: CreateChatRoomRequest,
     userId: String,
-  ) {
-    val chatRoom = ChatRoom(members = mutableSetOf(userId))
+  ): ChatWrapper {
+    val chatRoom = ChatRoom(ownerId = userId, members = mutableSetOf(userId))
     chatRoom.addUsers(request.users)
-    chatRoomRepository.save(chatRoom)
+    val saved = chatRoomRepository.save(chatRoom)
+    return createChatRoomMessage(saved.id!!, "방이 생성되었습니다.", EventType.CREATED)
   }
 
   fun exitChatRoom(
     chatRoomId: String,
     userId: String,
-  ) {
-    verifyChatRoomAccess(chatRoomId, userId)
+  ): ChatWrapper {
+    accessVerifier.verifyChatRoomAccess(chatRoomId, userId)
     val chatRoom: ChatRoom = getChatRoom(chatRoomId)
     chatRoom.removeUser(userId)
     chatRoomRepository.save(chatRoom)
+    return createChatRoomMessage(chatRoom.id!!, "${userId}님이 방에서 나갔습니다.", EventType.EXIT) // TODO : 닉네임으로 변경
   }
 
   fun getChatRoomInvitation(
     chatRoomId: String,
     userId: String,
   ): InvitationResponse {
-    verifyChatRoomAccess(chatRoomId, userId)
+    accessVerifier.verifyChatRoomAccess(chatRoomId, userId)
     var code = invitationService.getInvitation(userId, chatRoomId)
     if (code == null) {
       code = invitationService.setInvitation(userId, chatRoomId)
@@ -49,13 +62,24 @@ class ChatRoomService(
   fun joinChatRoom(
     code: String,
     userId: String,
-  ): Boolean {
+  ): ChatWrapper {
     val invitationInfo = invitationService.getInvitationInfoFromCode(code)
     verifyInvitationExistence(invitationInfo)
     val chatRoom = getChatRoom(invitationInfo.chatRoomId)
     chatRoom.addUser(userId)
     chatRoomRepository.save(chatRoom)
-    return true
+    return createChatRoomMessage(chatRoom.id!!, "${userId}님이 방에 들어왔습니다.", EventType.ENTER) // TODO : 닉네임으로 변경
+  }
+
+  fun expelFromChatRoom(
+    expelChatRoomRequest: ExpelChatRoomRequest,
+    userId: String,
+  ): ChatWrapper {
+    val chatRoom = getChatRoom(expelChatRoomRequest.chatRoomId)
+    accessVerifier.verifyChatRoomOwner(expelChatRoomRequest.chatRoomId, userId)
+    chatRoom.removeUser(expelChatRoomRequest.expelUserId)
+    chatRoomRepository.save(chatRoom)
+    return createChatRoomMessage(chatRoom.id!!, "${expelChatRoomRequest.expelUserId}님이 방에서 내보내졌습니다.", EventType.EXPEL) // TODO : 닉네임으로 변경
   }
 
   private fun verifyInvitationExistence(invitationInfo: InvitationInfo) {
@@ -64,13 +88,33 @@ class ChatRoomService(
     }
   }
 
-  private fun verifyChatRoomAccess(
+  fun createChatRoomMessage(
     chatRoomId: String,
-    userId: String,
-  ) {
-    if (!chatRoomRepository.existsByIdAndMembersContaining(chatRoomId, userId)) {
-      throw GlobalException(ErrorCode.FORBIDDEN_CHATROOM)
-    }
+    content: String,
+    eventType: EventType,
+  ): ChatWrapper {
+    val chat =
+      chatRepository.save(
+        Chat(
+          userId = "",
+          chatType = ChatType.ROOM,
+          eventType = eventType,
+          contextId = chatRoomId,
+          content = content,
+        ),
+      )
+    return ChatWrapper(
+      chatRoomId,
+      ChatResponse(
+        id = chat.id!!,
+        sender = chat.userId,
+        messageType = MessageType.CHAT,
+        isEdited = chat.isEdited(),
+        sentAt = chat.updatedAt.toString(),
+        content = chat.content,
+        eventType = chat.eventType,
+      ),
+    )
   }
 
   private fun getChatRoom(chatRoomId: String): ChatRoom {

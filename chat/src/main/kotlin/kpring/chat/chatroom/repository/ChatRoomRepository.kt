@@ -10,4 +10,9 @@ interface ChatRoomRepository : MongoRepository<ChatRoom, String> {
     roomId: String,
     userId: String,
   ): Boolean
+
+  fun existsByIdAndOwnerId(
+    roomId: String,
+    ownerId: String,
+  ): Boolean
 }

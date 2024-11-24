@@ -14,6 +14,7 @@ class ChatRoomController(
   private val chatRoomService: ChatRoomService,
   private val authClient: AuthClient,
 ) {
+  @Deprecated("WebSocketChatRoomController의 createChatRoom을 이용")
   @PostMapping("/chatroom")
   fun createChatRoom(
     @Validated @RequestBody request: CreateChatRoomRequest,
@@ -25,6 +26,7 @@ class ChatRoomController(
     return ResponseEntity.ok().body(result)
   }
 
+  @Deprecated("WebSocketChatRoomController의 exitChatRoom을 이용")
   @PatchMapping("/chatroom/exit/{chatRoomId}")
   fun exitChatRoom(
     @PathVariable("chatRoomId") chatRoomId: String,
@@ -46,6 +48,7 @@ class ChatRoomController(
     return ResponseEntity.ok().body(ApiResponse(data = result))
   }
 
+  @Deprecated("WebSocketChatRoomController의 joinChatRoom을 이용")
   @PatchMapping("/chatroom/{code}/join")
   fun joinChatRoom(
     @PathVariable("code") code: String,

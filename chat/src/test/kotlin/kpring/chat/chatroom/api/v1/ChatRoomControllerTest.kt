@@ -5,15 +5,21 @@ import com.ninjasquad.springmockk.MockkBean
 import io.kotest.core.spec.style.DescribeSpec
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
+import kpring.chat.chat.model.Chat
 import kpring.chat.chatroom.api.v1.ChatRoomController
+import kpring.chat.chatroom.dto.ChatWrapper
 import kpring.chat.chatroom.service.ChatRoomService
-import kpring.chat.global.ChatRoomTest
 import kpring.chat.global.CommonTest
+import kpring.chat.global.ContextTest
 import kpring.chat.global.config.TestMongoConfig
 import kpring.core.auth.client.AuthClient
 import kpring.core.auth.dto.response.TokenInfo
 import kpring.core.auth.enums.TokenType
+import kpring.core.chat.chat.dto.response.ChatResponse
+import kpring.core.chat.chat.dto.response.EventType
 import kpring.core.chat.chat.dto.response.InvitationResponse
+import kpring.core.chat.model.ChatType
+import kpring.core.chat.model.MessageType
 import kpring.core.global.dto.response.ApiResponse
 import kpring.test.restdoc.dsl.restDoc
 import kpring.test.restdoc.json.JsonDataType
@@ -58,7 +64,7 @@ class ChatRoomControllerTest(
       it("getChatRoomInvitation api test") {
 
         // Given
-        val chatRoomId = ChatRoomTest.TEST_ROOM_ID
+        val chatRoomId = ContextTest.TEST_ROOM_ID
         val userId = CommonTest.TEST_USER_ID
         val key = "62e9df6b-13cb-4673-a6fe-8566451b7f15"
         val data = InvitationResponse(key)
@@ -67,7 +73,8 @@ class ChatRoomControllerTest(
           ApiResponse(
             data =
               TokenInfo(
-                type = TokenType.ACCESS, userId = CommonTest.TEST_USER_ID,
+                type = TokenType.ACCESS,
+                userId = CommonTest.TEST_USER_ID,
               ),
           )
 
@@ -109,16 +116,38 @@ class ChatRoomControllerTest(
       it("joinChatRoom api test") {
 
         // Given
-        val chatRoomId = ChatRoomTest.TEST_ROOM_ID
+        val chatRoomId = ContextTest.TEST_ROOM_ID
         val userId = CommonTest.TEST_USER_ID
         val code = "666fcd76027b2432e4b49a0f"
-        val data = true
+        val content = "${userId}님이 방에 들어왔습니다."
+        val chat =
+          Chat(
+            userId = "",
+            chatType = ChatType.ROOM,
+            eventType = EventType.ENTER,
+            contextId = chatRoomId,
+            content = content,
+          )
+        val data =
+          ChatWrapper(
+            chatRoomId,
+            ChatResponse(
+              id = "1",
+              sender = userId,
+              messageType = MessageType.CHAT,
+              eventType = EventType.ENTER,
+              isEdited = chat.isEdited(),
+              sentAt = chat.updatedAt.toString(),
+              content = chat.content,
+            ),
+          )
 
         every { authClient.getTokenInfo(any()) } returns
           ApiResponse(
             data =
               TokenInfo(
-                type = TokenType.ACCESS, userId = CommonTest.TEST_USER_ID,
+                type = TokenType.ACCESS,
+                userId = CommonTest.TEST_USER_ID,
               ),
           )
 

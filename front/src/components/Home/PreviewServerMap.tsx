@@ -6,7 +6,7 @@ import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 
 const PreviewServerMap = () => {
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay()]);
+  const [emblaRef] = useEmblaCarousel({ loop: true }, [Autoplay()]);
   const setTheme = useThemeStore((state) => state.setTheme);
   const navigate = useNavigate();
 
@@ -18,19 +18,14 @@ const PreviewServerMap = () => {
   return (
     <div className="embla">
       <div className="overflow-hidden" ref={emblaRef}>
-        <div className="embla__container">
+        <div className="embla__container rounded-xl">
           <div
-            className="embla__slide bg-camping min-h-72 cursor-pointer"
+            className="embla__slide bg-camping min-h-72 cursor-pointer bg-no-repeat bg-cover bg-center"
             onClick={() =>
               onClickTheme({ id: "SERVER_THEME_001", name: "숲" }, "camping")
             }></div>
           <div
-            className="embla__slide bg-beach min-h-72 cursor-pointer"
-            onClick={() =>
-              onClickTheme({ id: "SERVER_THEME_002", name: "오피스" }, "beach")
-            }></div>
-          <div
-            className="embla__slide bg-camping min-h-72 cursor-pointer"
+            className="embla__slide bg-beach min-h-72 cursor-pointer bg-no-repeat bg-cover bg-center"
             onClick={() =>
               onClickTheme({ id: "SERVER_THEME_002", name: "오피스" }, "beach")
             }></div>

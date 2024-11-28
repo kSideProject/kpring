@@ -3,6 +3,7 @@ package kpring.chat.chatroom.api.v1
 import kpring.chat.chatroom.service.ChatRoomService
 import kpring.core.chat.chatroom.dto.request.CreateChatRoomRequest
 import kpring.core.chat.chatroom.dto.request.ExpelChatRoomRequest
+import kpring.core.chat.chatroom.dto.request.TransferChatRoomOwnerRequest
 import kpring.core.chat.chatroom.dto.response.MessageStatus
 import kpring.core.global.dto.response.ApiResponse
 import lombok.RequiredArgsConstructor
@@ -66,5 +67,15 @@ class WebSocketChatRoomController(
       "/queue/disconnect",
       ApiResponse(status = MessageStatus.DISCONNECT.code, MessageStatus.DISCONNECT.description, data = null),
     )
+  }
+
+  @MessageMapping("/chatroom/transfer")
+  fun transferChatRoomOwnerShip(
+    @Payload transferChatRoomOwnerRequest: TransferChatRoomOwnerRequest,
+    principal: Principal,
+  ) {
+    val userId = principal.name
+    val result = chatRoomService.transferChatRoomOwnerShip(transferChatRoomOwnerRequest, userId)
+    simpMessagingTemplate.convertAndSend("/topic/chatroom/${result.chatRoomId}", ApiResponse(status = 200, data = result.chatResponse))
   }
 }

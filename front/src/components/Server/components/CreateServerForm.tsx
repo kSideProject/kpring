@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Checkbox,
   FormControl,
   FormControlLabel,
@@ -10,10 +9,11 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { JwtPayload, jwtDecode } from "jwt-decode";
-import useUpdatedServers from "../../hooks/UpdatedServer";
-import { ServerType, CategoriesType } from "../../types/server";
-import ServerThemeSelector from "./ServerThemeSelector";
-import { useThemeStore } from "../../store/useThemeStore";
+import ServerThemeSelector from "../ServerThemeSelector";
+import { CategoriesType, ServerType } from "../../../types/server";
+import { useThemeStore } from "../../../store/useThemeStore";
+import useUpdatedServers from "../../../hooks/UpdatedServer";
+import TextInput from "../../common/input/TextInput";
 
 interface UserIdJwtPayload extends JwtPayload {
   userId: string;
@@ -26,9 +26,7 @@ const CreateServerForm = () => {
   const [userId, setUserId] = useState("");
   const [categories, setCategories] = useState<CategoriesType[]>([]);
   const [hostName, setHostName] = useState("");
-
   const { selectedTheme } = useThemeStore();
-  console.log(selectedTheme);
 
   useEffect(() => {
     if (token) {
@@ -57,8 +55,8 @@ const CreateServerForm = () => {
   };
 
   // 서버 생성 onSubmit Handler
-  const onSubmitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const onSubmitHandler = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
 
     const newServer: ServerType = {
       name: serverName,
@@ -72,16 +70,20 @@ const CreateServerForm = () => {
   };
 
   return (
-    <div>
-      <h2>새로운 서버 생성</h2>
+    <div className="">
+      <p className="text-lg text-center">새로운 서버 생성</p>
 
       <form onSubmit={onSubmitHandler}>
-        <Box sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-          <FormControl sx={{ m: 2 }}>
-            <FormLabel>서버이름</FormLabel>
-            <Input value={serverName} onChange={onChangeServerName}></Input>
-          </FormControl>
+        <TextInput
+          lable="서버이름"
+          value={serverName}
+          type="text"
+          onChange={onChangeServerName}
+          placeholder=""
+        />
 
+        <Checkbox />
+        <Box sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
           <FormControl sx={{ m: 2 }}>
             <FormLabel>서버 카테고리</FormLabel>
             <FormGroup onChange={onChangeCategories}>
@@ -105,7 +107,7 @@ const CreateServerForm = () => {
             <ServerThemeSelector />
           </FormControl>
 
-          <Button type="submit">서버생성</Button>
+          <button color="bg-sky-600">서버생성</button>
         </Box>
       </form>
     </div>

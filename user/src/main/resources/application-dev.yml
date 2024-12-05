@@ -14,7 +14,7 @@ auth:
   url: ${AUTH_SERVICE_URL:http://localhost:8080}
 
 url:
-  server: "http://localhost:8082"
+  server: ${SERVER_SERVICE_URL:http://localhost:8082}
 
 server:
   port: 8081

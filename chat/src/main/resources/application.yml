@@ -26,7 +26,7 @@ server:
 auth:
   url: "http://localhost:30001/"
 url:
-  server: "${SERVER_SERVICE_URL:http://localhost:8080/}"
+  server: ${SERVER_SERVICE_URL:http://localhost:8080/}
   front : "http://localhost:63342"
 
 page:

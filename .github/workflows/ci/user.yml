@@ -43,7 +43,7 @@ jobs:
           yq eval -i '.security[0].bearerAuth = []' ./user/src/main/resources/static/openapi3.yaml
 
       - name: push image using jib
-        run: ./gradlew --info jib
+        run: ./gradlew --info user:jib
 
   tagging:
     needs:

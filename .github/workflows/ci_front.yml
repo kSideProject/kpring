@@ -24,7 +24,7 @@ jobs:
       # Build Docker image
       - name: Build Docker Image
         run: |
-          docker build -t kpring/front_app:$(git rev-parse --short=8 HEAD) .
+          docker build -t kpring/front_app:$(git rev-parse --short=8 HEAD) ./front
 
       # Push Docker image to DockerHub
       - name: Push Docker Image to DockerHub

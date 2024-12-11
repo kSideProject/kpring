@@ -43,7 +43,7 @@ jobs:
           yq eval -i '.security[0].bearerAuth = []' ./server/src/main/resources/static/openapi3.yaml
 
       - name: push image using jib
-        run: ./gradlew --info jib
+        run: ./gradlew --info server:jib
 
   tagging:
     needs:
@@ -53,7 +53,11 @@ jobs:
       - name: checkout
         uses: actions/checkout@v4
 
-      - name: set tag
+      - if: github.event.inputs.version != 'latest'
+        name: checkout
+        run: git checkout ${{ github.event.inputs.version }}
+
+      - name: set image tag
         run: |
           echo "IMAGE_TAG=$(git rev-parse --short=8 HEAD)" >> $GITHUB_ENV
 
@@ -75,4 +79,4 @@ jobs:
           source: .
           destination_repo: kSideProject/kpring-infra
           deploy_key: ${{ secrets.SSH_PRIVATE_KEY }}
-          commit_message: 'ci: update server image'
+          commit_message: 'ci: update server image version=${{ github.event.inputs.version }}'

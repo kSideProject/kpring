@@ -9,11 +9,11 @@ on:
 
 jobs:
   build:
+    if: github.event.inputs.version == 'latest'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - if: github.event.inputs.version != 'latest'
         name: checkout
         run: git checkout ${{ github.event.inputs.version }}
 

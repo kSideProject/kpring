@@ -15,9 +15,6 @@ jobs:
       - uses: actions/checkout@v4
         name: checkout
 
-      - name: checkout
-        run: git checkout ${{ github.event.inputs.version }}
-
       - name: set up jdk 21
         uses: actions/setup-java@v4
         with:

@@ -1,0 +1,82 @@
+name: User micro service CI
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '배포하고자 하는 버전을 입력해주세요. 최신 버전이라면 생략해주세요. (git commit id 앞 8자리)'
+        default: 'latest'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - if: github.event.inputs.version != 'latest'
+        name: checkout
+        run: git checkout ${{ github.event.inputs.version }}
+
+      - name: set up jdk 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '21'
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: make api documents
+        run: ./gradlew --info user:openapi3
+
+      - name: configure openapi3 spec
+        run: |
+          yq eval -i '.components.securitySchemes.bearerAuth.type = "http"' ./user/src/main/resources/static/openapi3.yaml
+          yq eval -i '.components.securitySchemes.bearerAuth.scheme = "bearer"' ./user/src/main/resources/static/openapi3.yaml
+          yq eval -i '.components.securitySchemes.bearerAuth.bearerFormat = "JWT"' ./user/src/main/resources/static/openapi3.yaml
+          yq eval -i '.security[0].bearerAuth = []' ./user/src/main/resources/static/openapi3.yaml
+
+      - name: push image using jib
+        run: ./gradlew --info jib
+
+  tagging:
+    needs:
+      - build
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - if: github.event.inputs.version != 'latest'
+        name: checkout
+        run: git checkout ${{ github.event.inputs.version }}
+
+      - name: set image tag
+        run: |
+          echo "IMAGE_TAG=$(git rev-parse --short=8 HEAD)" >> $GITHUB_ENV
+
+      - name: checkout infra repository
+        uses: actions/checkout@v4
+        with:
+          repository: kSideProject/kpring-infra
+          ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          ref: main
+
+      - name: edit infra repository image tag
+        run: |
+          echo 'env(IMAGE_TAG)'
+          yq eval -i '.service.tag = env(IMAGE_TAG)' ./charts/user/values.yaml
+
+      - name: commit
+        uses: leigholiver/commit-with-deploy-key@v1.0.4
+        with:
+          source: .
+          destination_repo: kSideProject/kpring-infra
+          deploy_key: ${{ secrets.SSH_PRIVATE_KEY }}
+          commit_message: 'ci: update user image version=${{ github.event.inputs.version }}'

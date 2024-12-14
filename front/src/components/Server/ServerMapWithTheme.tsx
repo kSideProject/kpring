@@ -1,6 +1,6 @@
 import React from "react";
 import { useThemeStore } from "../../store/useThemeStore";
-import { ServerMap } from "../phaser/ServerMap";
+import { ServerMap } from "../Phaser/ServerMap";
 
 const ServerMapWithTheme = () => {
   const selectedTheme = useThemeStore((state) => state.selectedTheme);

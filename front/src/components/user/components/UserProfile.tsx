@@ -3,7 +3,7 @@ import { useLoginStore } from "../../../store/useLoginStore";
 import Button from "../../common/button/Button";
 import useProfile from "../hooks/useProfile";
 import Avatar from "boring-avatars";
-import CurrentUserAvatar from "../../layout/components/leftSidebar/components/CurrentUserAvatar";
+import CurrentUserAvatar from "../../Layout/components/leftSidebar/components/CurrentUserAvatar";
 
 const UserProfile = () => {
   const token = localStorage.getItem("dicoTown_AccessToken");

@@ -1,8 +1,8 @@
 package kpring.user.controller
 
 import kpring.core.global.dto.response.ApiResponse
-import kpring.user.dto.request.LoginRequest
-import kpring.user.dto.request.LogoutRequest
+import kpring.core.user.dto.request.LoginRequest
+import kpring.core.user.dto.request.LogoutRequest
 import kpring.user.service.LoginService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*

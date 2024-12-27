@@ -2,10 +2,10 @@ package kpring.user.controller
 
 import kpring.core.auth.client.AuthClient
 import kpring.core.global.dto.response.ApiResponse
-import kpring.user.dto.response.AddFriendResponse
-import kpring.user.dto.response.DeleteFriendResponse
-import kpring.user.dto.response.GetFriendRequestsResponse
-import kpring.user.dto.response.GetFriendsResponse
+import kpring.core.user.dto.response.AddFriendResponse
+import kpring.core.user.dto.response.DeleteFriendResponse
+import kpring.core.user.dto.response.GetFriendRequestsResponse
+import kpring.core.user.dto.response.GetFriendsResponse
 import kpring.user.global.AuthValidator
 import kpring.user.service.FriendService
 import org.springframework.http.ResponseEntity

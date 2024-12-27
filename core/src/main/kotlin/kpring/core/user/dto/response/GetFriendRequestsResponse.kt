@@ -1,4 +1,4 @@
-package kpring.user.dto.response
+package kpring.core.user.dto.response
 
 data class GetFriendRequestsResponse(
   val userId: Long,

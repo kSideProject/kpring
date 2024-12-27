@@ -1,7 +1,7 @@
 package kpring.user.exception
 
 import kpring.core.global.exception.ServiceException
-import kpring.user.dto.response.FailMessageResponse
+import kpring.core.user.dto.response.FailMessageResponse
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
@@ -30,7 +30,7 @@ class ExceptionController {
 
   @ExceptionHandler(MethodArgumentNotValidException::class)
   fun handleMethodArgumentNotValidException(e: MethodArgumentNotValidException): ResponseEntity<FailMessageResponse> {
-    val response = FailMessageResponse(e.bindingResult.allErrors[0].defaultMessage)
+    val response = FailMessageResponse(e.bindingResult.allErrors[0].defaultMessage!!)
     return ResponseEntity.badRequest().body(response)
   }
 

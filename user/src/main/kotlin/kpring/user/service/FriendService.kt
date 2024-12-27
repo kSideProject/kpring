@@ -1,9 +1,9 @@
 package kpring.user.service
 
-import kpring.user.dto.response.AddFriendResponse
-import kpring.user.dto.response.DeleteFriendResponse
-import kpring.user.dto.response.GetFriendRequestsResponse
-import kpring.user.dto.response.GetFriendsResponse
+import kpring.core.user.dto.response.AddFriendResponse
+import kpring.core.user.dto.response.DeleteFriendResponse
+import kpring.core.user.dto.response.GetFriendRequestsResponse
+import kpring.core.user.dto.response.GetFriendsResponse
 
 interface FriendService {
   /**

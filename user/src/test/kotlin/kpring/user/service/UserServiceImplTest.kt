@@ -5,7 +5,7 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.*
 import kpring.core.global.exception.ServiceException
-import kpring.user.dto.request.CreateUserRequest
+import kpring.core.user.dto.request.CreateUserRequest
 import kpring.user.entity.User
 import kpring.user.exception.UserErrorCode
 import kpring.user.repository.UserRepository

@@ -3,6 +3,7 @@ package kpring.user.dto.request
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 import jakarta.validation.Validation
+import kpring.core.user.dto.request.CreateUserRequest
 
 class CreateUserRequestTest : StringSpec({
 

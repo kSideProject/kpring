@@ -1,4 +1,4 @@
-package kpring.user.dto.response
+package kpring.core.user.dto.response
 
 import java.nio.file.Path
 

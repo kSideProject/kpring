@@ -10,10 +10,10 @@ import kpring.core.auth.dto.response.TokenInfo
 import kpring.core.auth.enums.TokenType
 import kpring.core.global.dto.response.ApiResponse
 import kpring.core.global.exception.ServiceException
+import kpring.core.user.dto.response.*
 import kpring.test.restdoc.dsl.restDoc
 import kpring.test.restdoc.json.JsonDataType
 import kpring.test.restdoc.json.JsonDataType.*
-import kpring.user.dto.response.*
 import kpring.user.exception.UserErrorCode
 import kpring.user.global.AuthValidator
 import kpring.user.global.CommonTest
@@ -111,7 +111,7 @@ internal class FriendControllerTest(
       it("친구신청 실패 : 권한이 없는 토큰") {
         // given
         val response =
-          FailMessageResponse.builder().message(UserErrorCode.NOT_ALLOWED.message()).build()
+          FailMessageResponse(UserErrorCode.NOT_ALLOWED.message())
         every { authClient.getTokenInfo(any()) } throws ServiceException(UserErrorCode.NOT_ALLOWED)
 
         // when
@@ -262,8 +262,7 @@ internal class FriendControllerTest(
       }
       it("친구신청 조회 실패 : 권한이 없는 토큰") {
         // given
-        val response =
-          FailMessageResponse.builder().message(UserErrorCode.NOT_ALLOWED.message()).build()
+        val response = FailMessageResponse(UserErrorCode.NOT_ALLOWED.message())
         every { authClient.getTokenInfo(any()) } throws ServiceException(UserErrorCode.NOT_ALLOWED)
 
         // when
@@ -403,7 +402,7 @@ internal class FriendControllerTest(
       it("친구신청 수락 실패 : 권한이 없는 토큰") {
         // given
         val response =
-          FailMessageResponse.builder().message(UserErrorCode.NOT_ALLOWED.message()).build()
+          FailMessageResponse(UserErrorCode.NOT_ALLOWED.message())
         every { authClient.getTokenInfo(any()) } throws ServiceException(UserErrorCode.NOT_ALLOWED)
 
         // when
@@ -550,8 +549,7 @@ internal class FriendControllerTest(
         }
         it("친구삭제 실패 : 권한이 없는 토큰") {
           // given
-          val response =
-            FailMessageResponse.builder().message(UserErrorCode.NOT_ALLOWED.message()).build()
+          val response = FailMessageResponse(UserErrorCode.NOT_ALLOWED.message())
           every { authClient.getTokenInfo(any()) } throws ServiceException(UserErrorCode.NOT_ALLOWED)
 
           // when
@@ -710,7 +708,7 @@ internal class FriendControllerTest(
         it("친구조회 실패 : 권한이 없는 토큰") {
           // given
           val response =
-            FailMessageResponse.builder().message(UserErrorCode.NOT_ALLOWED.message()).build()
+            FailMessageResponse(UserErrorCode.NOT_ALLOWED.message())
           every { authClient.getTokenInfo(any()) } throws ServiceException(UserErrorCode.NOT_ALLOWED)
 
           // when

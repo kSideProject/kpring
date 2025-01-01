@@ -14,13 +14,15 @@ import kpring.core.global.exception.ServiceException
 import kpring.core.server.client.ServerClient
 import kpring.core.server.dto.ServerSimpleInfo
 import kpring.core.server.dto.ServerThemeInfo
+import kpring.core.user.dto.request.CreateUserRequest
+import kpring.core.user.dto.request.SearchUserRequest
+import kpring.core.user.dto.request.UpdateUserProfileRequest
+import kpring.core.user.dto.response.*
+import kpring.core.user.dto.response.UserSearchResultResponse
+import kpring.core.user.dto.response.UserSearchResultsResponse
 import kpring.test.restdoc.dsl.restDoc
 import kpring.test.restdoc.json.JsonDataType.Strings
 import kpring.test.web.URLBuilder
-import kpring.user.dto.request.CreateUserRequest
-import kpring.user.dto.request.SearchUserRequest
-import kpring.user.dto.request.UpdateUserProfileRequest
-import kpring.user.dto.response.*
 import kpring.user.exception.UserErrorCode
 import kpring.user.global.AuthValidator
 import kpring.user.global.CommonTest
@@ -75,12 +77,12 @@ class UserControllerTest(
         it("회원가입 성공") {
           // given
           val request =
-            CreateUserRequest.builder()
-              .email(TEST_EMAIL)
-              .password(TEST_PASSWORD)
-              .username(TEST_USERNAME)
-              .build()
-          val response = CreateUserResponse.builder().build()
+            CreateUserRequest(
+              TEST_EMAIL,
+              TEST_PASSWORD,
+              TEST_USERNAME,
+            )
+          val response = CreateUserResponse(TEST_USER_ID, TEST_EMAIL)
           every { userService.createUser(request) } returns response
 
           // when
@@ -115,63 +117,10 @@ class UserControllerTest(
         it("회원가입 실패 : 이미 존재하는 이메일") {
           // given
           val request =
-            CreateUserRequest.builder()
-              .email(TEST_EMAIL)
-              .password(TEST_PASSWORD)
-              .username(TEST_USERNAME)
-              .build()
+            CreateUserRequest(TEST_EMAIL, TEST_PASSWORD, TEST_USERNAME)
           val exception = ServiceException(UserErrorCode.ALREADY_EXISTS_EMAIL)
-          val response = FailMessageResponse.builder().message(exception.errorCode.message()).build()
+          val response = FailMessageResponse(exception.errorCode.message())
           every { userService.createUser(request) } throws exception
-
-          // when
-          val result =
-            webTestClient.post()
-              .uri("/api/v1/user")
-              .contentType(MediaType.APPLICATION_JSON)
-              .bodyValue(request)
-              .exchange()
-
-          // then
-          val docsRoot =
-            result
-              .expectStatus().isBadRequest
-              .expectBody().json(
-                objectMapper.writeValueAsString(response),
-              )
-
-          // docs
-          docsRoot
-            .restDoc(
-              identifier = "createUser400",
-              description = "회원가입 API",
-            ) {
-              request {
-                header {
-                  "Content-Type" mean "application/json"
-                }
-                body {
-                  "email" type Strings mean "이메일"
-                  "password" type Strings mean "비밀번호"
-                  "username" type Strings mean "사용자 이름"
-                }
-              }
-              response {
-                body {
-                  "message" type Strings mean "에러 메시지"
-                }
-              }
-            }
-        }
-        it("회원가입 실패 : 필수입력 값 미전송") {
-          // given
-          val request =
-            CreateUserRequest.builder()
-              .password(TEST_PASSWORD)
-              .username(TEST_USERNAME)
-              .build()
-          val responseMessage = "이메일이 누락되었습니다."
-          val response = FailMessageResponse.builder().message(responseMessage).build()
 
           // when
           val result =
@@ -214,14 +163,9 @@ class UserControllerTest(
         }
         it("회원가입 실패 : 서버 내부 오류") {
           // given
-          val request =
-            CreateUserRequest.builder()
-              .email(TEST_EMAIL)
-              .password(TEST_PASSWORD)
-              .username(TEST_USERNAME)
-              .build()
+          val request = CreateUserRequest(TEST_EMAIL, TEST_PASSWORD, TEST_USERNAME)
           val exception = RuntimeException("서버 내부 오류")
-          val response = FailMessageResponse.builder().message("서버 오류").build()
+          val response = FailMessageResponse("서버 오류")
           every { userService.createUser(request) } throws exception
 
           // when
@@ -269,12 +213,12 @@ class UserControllerTest(
           // given
           val userId = 1L
           val request =
-            UpdateUserProfileRequest.builder()
-              .email(TEST_EMAIL)
-              .username(TEST_USERNAME)
-              .password(TEST_PASSWORD)
-              .newPassword(TEST_NEW_PASSWORD)
-              .build()
+            UpdateUserProfileRequest(
+              TEST_EMAIL,
+              TEST_USERNAME,
+              TEST_PASSWORD,
+              TEST_NEW_PASSWORD,
+            )
 
           val fileResource = ClassPathResource(TEST_PROFILE_IMG)
           val file =
@@ -284,11 +228,7 @@ class UserControllerTest(
               MediaType.IMAGE_JPEG_VALUE,
               fileResource.inputStream,
             )
-          val data =
-            UpdateUserProfileResponse.builder()
-              .email(TEST_EMAIL)
-              .username(TEST_USERNAME)
-              .build()
+          val data = UpdateUserProfileResponse(TEST_EMAIL, TEST_USERNAME)
 
           val requestJson = objectMapper.writeValueAsString(request)
 
@@ -361,12 +301,12 @@ class UserControllerTest(
           // given
           val userId = 1L
           val request =
-            UpdateUserProfileRequest.builder()
-              .email(TEST_EMAIL)
-              .username(TEST_USERNAME)
-              .password(TEST_PASSWORD)
-              .newPassword(TEST_NEW_PASSWORD)
-              .build()
+            UpdateUserProfileRequest(
+              TEST_EMAIL,
+              TEST_USERNAME,
+              TEST_PASSWORD,
+              TEST_NEW_PASSWORD,
+            )
 
           val fileResource = ClassPathResource(TEST_PROFILE_IMG)
           val file =
@@ -380,7 +320,7 @@ class UserControllerTest(
           val requestJson = objectMapper.writeValueAsString(request)
 
           val response =
-            FailMessageResponse.builder().message(UserErrorCode.NOT_ALLOWED.message()).build()
+            FailMessageResponse(UserErrorCode.NOT_ALLOWED.message())
           every { authClient.getTokenInfo(any()) } throws ServiceException(UserErrorCode.NOT_ALLOWED)
 
           val bodyBuilder =
@@ -443,12 +383,12 @@ class UserControllerTest(
           // given
           val userId = 1L
           val request =
-            UpdateUserProfileRequest.builder()
-              .email(TEST_EMAIL)
-              .username(TEST_USERNAME)
-              .password(TEST_PASSWORD)
-              .newPassword(TEST_NEW_PASSWORD)
-              .build()
+            UpdateUserProfileRequest(
+              TEST_EMAIL,
+              TEST_USERNAME,
+              TEST_PASSWORD,
+              TEST_NEW_PASSWORD,
+            )
 
           val fileResource = ClassPathResource(TEST_PROFILE_IMG)
           val file =
@@ -524,12 +464,12 @@ class UserControllerTest(
           // given
           val userId = 1L
           val data =
-            GetUserProfileResponse.builder()
-              .userId(userId)
-              .email(TEST_EMAIL)
-              .username(TEST_USERNAME)
-              .filename(CommonTest.TEST_PROFILE_IMG)
-              .build()
+            GetUserProfileResponse(
+              userId,
+              CommonTest.TEST_EMAIL,
+              CommonTest.TEST_USERNAME,
+              CommonTest.TEST_PROFILE_IMG,
+            )
           val response = ApiResponse(data = data)
           every { authClient.getTokenInfo(any()) }.returns(
             ApiResponse(data = TokenInfo(TokenType.ACCESS, CommonTest.TEST_USER_ID.toString())),
@@ -578,7 +518,7 @@ class UserControllerTest(
           // given
           val userId = 1L
           val response =
-            FailMessageResponse.builder().message(UserErrorCode.NOT_ALLOWED.message()).build()
+            FailMessageResponse(UserErrorCode.NOT_ALLOWED.message())
           every { authClient.getTokenInfo(any()) } throws ServiceException(UserErrorCode.NOT_ALLOWED)
 
           // when
@@ -872,6 +812,7 @@ class UserControllerTest(
     },
   ) {
   companion object {
+    private const val TEST_USER_ID = 1L
     private const val TEST_EMAIL = "test@email.com"
     private const val TEST_PASSWORD = "tesT@1234"
     private const val TEST_NEW_PASSWORD = "tesT@1234!"

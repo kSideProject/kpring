@@ -1,7 +1,7 @@
 package kpring.user.service
 
 import kpring.core.global.exception.ServiceException
-import kpring.user.dto.response.*
+import kpring.core.user.dto.response.*
 import kpring.user.entity.Friend
 import kpring.user.entity.FriendRequestStatus
 import kpring.user.entity.User

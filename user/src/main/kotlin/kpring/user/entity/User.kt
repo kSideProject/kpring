@@ -1,7 +1,7 @@
 package kpring.user.entity
 
 import jakarta.persistence.*
-import kpring.user.dto.request.UpdateUserProfileRequest
+import kpring.core.user.dto.request.UpdateUserProfileRequest
 
 @Entity
 @Table(name = "tb_user")

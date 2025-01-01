@@ -6,11 +6,12 @@ import io.kotest.core.spec.style.FeatureSpec
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import kpring.core.global.dto.response.ApiResponse
+import kpring.core.user.dto.request.LoginRequest
+import kpring.core.user.dto.request.LogoutRequest
+import kpring.core.user.dto.response.LoginResponse
 import kpring.test.restdoc.dsl.restDoc
-import kpring.test.restdoc.json.JsonDataType.*
-import kpring.user.dto.request.LoginRequest
-import kpring.user.dto.request.LogoutRequest
-import kpring.user.dto.response.LoginResponse
+import kpring.test.restdoc.json.JsonDataType.Strings
+import kpring.user.global.CommonTest
 import kpring.user.service.LoginService
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -49,16 +50,9 @@ class LoginControllerTest(
       scenario("200 OK 로그인 성공") {
         // given
         val request =
-          LoginRequest.builder()
-            .email("test@email.com")
-            .password("tesT@1234")
-            .build()
+          LoginRequest(CommonTest.TEST_EMAIL, CommonTest.TEST_PASSWORD)
 
-        val data =
-          LoginResponse.builder()
-            .accessToken("accessToken")
-            .refreshToken("refreshToken")
-            .build()
+        val data = LoginResponse("accessToken", "refreshToken")
 
         val response = ApiResponse(data = data)
         every { loginService.login(request) } returns data
@@ -94,7 +88,7 @@ class LoginControllerTest(
 
       scenario("400 BAD_REQUEST 로그인 실패") {
         // given
-        val request = LoginRequest.builder().email("test@gmail.com").password("TestPW1234!").build()
+        val request = LoginRequest(CommonTest.TEST_EMAIL, CommonTest.TEST_PASSWORD)
         every { loginService.login(request) } throws IllegalArgumentException("Invalid email")
 
         // when
@@ -124,7 +118,7 @@ class LoginControllerTest(
 
       scenario("500 INTERNAL_SERVER_ERROR 로그인 실패") {
         // given
-        val request = LoginRequest.builder().email("test@naver.com").password("TestPW1234!").build()
+        val request = LoginRequest(CommonTest.TEST_EMAIL, CommonTest.TEST_PASSWORD)
         every { loginService.login(request) } throws RuntimeException("Internal server error")
 
         // when
@@ -157,7 +151,7 @@ class LoginControllerTest(
       scenario("200 OK 로그아웃 성공") {
         // given
         val request =
-          LogoutRequest.builder().accessToken("accessToken").refreshToken("refreshToken").build()
+          LogoutRequest("accessToken", "refresh")
         every { loginService.logout(request) } returns Unit
 
         // when
@@ -186,7 +180,7 @@ class LoginControllerTest(
       scenario("400 BAD_REQUEST 로그아웃 실패") {
         // given
         val request =
-          LogoutRequest.builder().accessToken("accessToken").refreshToken("refreshToken").build()
+          LogoutRequest("accessToken", "refreshToken")
         every { loginService.logout(request) } throws IllegalArgumentException("Invalid token")
 
         // when
@@ -215,7 +209,7 @@ class LoginControllerTest(
       scenario("500 INTERNAL_SERVER_ERROR 로그아웃 실패") {
         // given
         val request =
-          LogoutRequest.builder().accessToken("accessToken").refreshToken("refreshToken").build()
+          LogoutRequest("accessToken", "refreshToken")
         every { loginService.logout(request) } throws RuntimeException("Internal server error")
 
         // when

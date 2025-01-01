@@ -1,10 +1,12 @@
 package kpring.user.service
 
 import kpring.core.global.exception.ServiceException
-import kpring.user.dto.request.CreateUserRequest
-import kpring.user.dto.request.SearchUserRequest
-import kpring.user.dto.request.UpdateUserProfileRequest
-import kpring.user.dto.response.*
+import kpring.core.user.dto.request.CreateUserRequest
+import kpring.core.user.dto.request.SearchUserRequest
+import kpring.core.user.dto.request.UpdateUserProfileRequest
+import kpring.core.user.dto.response.*
+import kpring.core.user.dto.response.UserSearchResultResponse
+import kpring.core.user.dto.response.UserSearchResultsResponse
 import kpring.user.entity.User
 import kpring.user.exception.UserErrorCode
 import kpring.user.repository.UserRepository
@@ -29,7 +31,7 @@ class UserServiceImpl(
 
   override fun getProfile(userId: Long): GetUserProfileResponse {
     val user = getUser(userId)
-    return GetUserProfileResponse(user.id, user.email, user.username, user.file)
+    return GetUserProfileResponse(user.id!!, user.email, user.username, user.file)
   }
 
   override fun updateProfile(
@@ -82,7 +84,7 @@ class UserServiceImpl(
         ),
       )
 
-    return CreateUserResponse(user.id, user.email)
+    return CreateUserResponse(user.id!!, user.email)
   }
 
   override fun searchUsers(searchUserRequest: SearchUserRequest): UserSearchResultsResponse {

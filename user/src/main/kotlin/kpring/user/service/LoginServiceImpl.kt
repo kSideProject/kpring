@@ -4,9 +4,9 @@ import kpring.core.auth.client.AuthClient
 import kpring.core.auth.dto.request.CreateTokenRequest
 import kpring.core.auth.dto.response.CreateTokenResponse
 import kpring.core.global.exception.ServiceException
-import kpring.user.dto.request.LoginRequest
-import kpring.user.dto.request.LogoutRequest
-import kpring.user.dto.response.LoginResponse
+import kpring.core.user.dto.request.LoginRequest
+import kpring.core.user.dto.request.LogoutRequest
+import kpring.core.user.dto.response.LoginResponse
 import kpring.user.exception.UserErrorCode
 import kpring.user.repository.UserRepository
 import org.springframework.http.ResponseEntity

@@ -77,7 +77,7 @@ const CreateServerForm: React.FC = () => {
         }}
         selectedTheme={serverFormValues.theme}
       />
-      <Button color="">서버생성</Button>
+      <Button style={`bg-primary text-white`}>서버생성</Button>
     </form>
   );
 };

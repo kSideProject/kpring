@@ -21,7 +21,7 @@ const LeftSideBar = () => {
           nickname={userProfile?.data.username}
           onAvatarClick={() => openModal("profile")}
           onAddServerClick={() => openModal("addServer")}></AvatarWithAddServer>
-        <Divider />
+        <Divider style={`bg-black`} />
         <ServerList />
       </div>
 

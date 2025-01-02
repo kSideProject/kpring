@@ -2,12 +2,11 @@ import React from "react";
 
 type TextProps = {
   children: React.ReactNode;
-  color: string;
-  size: string;
+  styles: string;
 };
 
-const Text: React.FC<TextProps> = ({ children, color, size }) => {
-  return <p className={`${color} ${size}`}>{children}</p>;
+const Text: React.FC<TextProps> = ({ children, styles }) => {
+  return <p className={`${styles}`}>{children}</p>;
 };
 
 export default Text;

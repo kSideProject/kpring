@@ -16,7 +16,7 @@ const ServerCardItem: React.FC<ServerCardItemProps> = ({
       <Avatar name={serverName} variant="beam" square height={100}>
         <Avatar />
       </Avatar>
-      <Text color="black" size="23">
+      <Text styles="text-h2 font-bold text-black">
         {serverName}
         {categories
           ? ` - ${categories.map((category) => category.name).join(", ")}`

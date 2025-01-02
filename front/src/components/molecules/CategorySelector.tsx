@@ -19,9 +19,7 @@ const CategorySelector: React.FC<CategorySelectorProps> = ({
 
   return (
     <div className="flex flex-col">
-      <Text color="" size="">
-        카테고리
-      </Text>
+      <Text styles="text-h2 font-bold text-black">카테고리</Text>
       <div className="flex flex-row justify-center items-center gap-3">
         {categories?.map((category) => (
           <RadioButton

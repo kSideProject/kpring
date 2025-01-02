@@ -76,13 +76,13 @@ const AddFriendForm = () => {
                 (friend) => friend.friendId === results.userId
               ) ? (
                 <Button
-                  color="bg-sky-200"
+                  style={`bg-primary text-white`}
                   onClick={() => handleDeleteFriend(results.userId)}>
                   친구끊기
                 </Button>
               ) : (
                 <Button
-                  color="bg-sky-200"
+                  style={`bg-primary text-white`}
                   onClick={() => handleRequestFriend(results.userId)}>
                   친구요청
                 </Button>

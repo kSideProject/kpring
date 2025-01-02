@@ -24,9 +24,7 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({
 }) => {
   return (
     <div className="flex flex-col">
-      <Text color="" size="">
-        테마
-      </Text>
+      <Text styles="text-h2 font-bold text-black">테마</Text>
       <div className="flex flex-row justify-center items-center gap-3">
         {themeObj.map((theme) => (
           <RadioButton

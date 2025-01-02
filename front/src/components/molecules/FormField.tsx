@@ -9,6 +9,7 @@ type FormFieldProps = {
   placeholder?: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   message: string;
+  style?: string;
 };
 
 const FormField: React.FC<FormFieldProps> = ({
@@ -19,9 +20,10 @@ const FormField: React.FC<FormFieldProps> = ({
   onChange,
   message,
   name,
+  style,
 }) => {
   return (
-    <div>
+    <div className="flex flex-col gap-1">
       <TextInput
         value={value}
         name={name}
@@ -29,6 +31,7 @@ const FormField: React.FC<FormFieldProps> = ({
         label={label}
         placeholder={placeholder}
         onChange={onChange}
+        style={style}
       />
       <Message value={message} />
     </div>

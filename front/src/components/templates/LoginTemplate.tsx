@@ -6,13 +6,18 @@ import Divider from "../atoms/Divider";
 const LoginTemplate = () => {
   const navigate = useNavigate();
   return (
-    <div className="flex flex-col justify-center items-center">
+    <div className="w-96 flex flex-col justify-center items-center gap-5">
       <LoginForm />
-      <Divider />
-      <span>계정이 없으신가요?</span>
-      <Button onClick={() => navigate("/join")} color="bg-dark">
-        회원가입
-      </Button>
+      <Divider style={`bg-white`} />
+      <span className="text-white ">
+        계정이 없으신가요?{" "}
+        <span
+          className="text-secondary underline font-bold cursor-pointer"
+          onClick={() => navigate("/join")}>
+          회원가입
+        </span>
+        을 클릭해 주세요.
+      </span>
     </div>
   );
 };

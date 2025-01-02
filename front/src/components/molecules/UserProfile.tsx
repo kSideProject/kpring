@@ -25,9 +25,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
     <div>
       <div className="flex ">
         <Avatar name={nickname} size={48} variant="beam" />
-        <Text color="red" size="xl">
-          {nickname}
-        </Text>
+        <Text styles="text-h2 font-bold text-black">{nickname}</Text>
       </div>
 
       <div>
@@ -40,11 +38,11 @@ const UserProfile: React.FC<UserProfileProps> = ({
 
       <div>
         {isCurrentUser ? (
-          <Button onClick={() => onLogout} color="">
+          <Button onClick={() => onLogout} style={`bg-primary text-white`}>
             로그아웃
           </Button>
         ) : (
-          <Button onClick={() => onSendDM} color="">
+          <Button onClick={() => onSendDM} style={`bg-primary text-white`}>
             메세지보내기
           </Button>
         )}

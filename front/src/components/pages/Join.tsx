@@ -3,10 +3,8 @@ import JoinTemplate from "../templates/JoinTemplate";
 
 const Join = () => {
   return (
-    <div className="h-screen flex flex-col items-center justify-center">
-      <Text color="text-dark" size="32">
-        회원가입
-      </Text>
+    <div className="bg-black h-svh flex flex-col items-center justify-center">
+      <Text styles="text-h4 text-white font-bold mb-5">회원가입</Text>
       <JoinTemplate />
     </div>
   );

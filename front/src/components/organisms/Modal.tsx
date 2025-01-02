@@ -20,9 +20,7 @@ const Modal: React.FC<ModalProps> = ({
     <div className="fixed inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
         <div className="flex justify-between">
-          <Text size="text-xl" color="black">
-            {title}
-          </Text>
+          <Text styles="text-h2 font-bold text-black">{title}</Text>
           <IoCloseCircle
             onClick={closeModal}
             className="text-3xl mb-3 hover:text-red-500"

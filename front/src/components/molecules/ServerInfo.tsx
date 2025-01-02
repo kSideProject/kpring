@@ -21,18 +21,16 @@ const ServerInfo: React.FC<ServerInfoProps> = ({
 }) => {
   return (
     <div>
-      <Text color="red" size="23">
+      <Text styles="text-h2 font-bold text-black">
         {categories?.map((category) => category.name).join(", ")}
       </Text>
-      <Text color="red" size="23">
-        {hostName}
-      </Text>
+      <Text styles="text-h2 font-bold text-black">{hostName}</Text>
       <FavoriteStar id={serverId} />
 
-      <Button onClick={onDelete} color="red">
+      <Button onClick={onDelete} style={`bg-primary text-white`}>
         서버삭제
       </Button>
-      <Button onClick={onEnter} color="red">
+      <Button onClick={onEnter} style={`bg-primary text-white`}>
         서버입장
       </Button>
     </div>

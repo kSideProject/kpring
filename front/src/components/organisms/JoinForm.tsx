@@ -33,13 +33,14 @@ const JoinForm = () => {
     }
   };
   return (
-    <form className="flex flex-col gap-3">
+    <form className="w-96 flex flex-col gap-5" onSubmit={clickSubmitHandler}>
       <FormField
         value={values.email}
         label="Email"
         name="email"
         type="email"
         onChange={onChangeHandler("email")}
+        style={`text-white font-bold`}
         message={errors.email}
       />
       <FormField
@@ -48,6 +49,7 @@ const JoinForm = () => {
         label="Nickname"
         type="text"
         onChange={onChangeHandler("nickname")}
+        style={`text-white font-bold`}
         message={errors.nickname}
       />
       <FormField
@@ -56,6 +58,7 @@ const JoinForm = () => {
         label="Password"
         type="password"
         onChange={onChangeHandler("password")}
+        style={`text-white font-bold`}
         message={errors.password}
       />
       <FormField
@@ -64,11 +67,14 @@ const JoinForm = () => {
         label="Confirm Password"
         type="password"
         onChange={onChangeHandler("passwordConfirm")}
+        style={`text-white font-bold`}
         message={errors.passwordConfirm}
       />
 
-      <Button color="" onClick={clickSubmitHandler}>
-        회원가입
+      <Button
+        style={`bg-primary text-white transition duration-300 hover:bg-secondary hover:text-primary`}
+        type="submit">
+        가입하기
       </Button>
     </form>
   );

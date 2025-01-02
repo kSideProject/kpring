@@ -7,6 +7,7 @@ type TextInputProps = {
   label?: string;
   placeholder?: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  style?: string;
 };
 
 // TODO: 스타일 변경
@@ -17,11 +18,12 @@ const TextInput: React.FC<TextInputProps> = ({
   onChange,
   placeholder,
   name,
+  style,
 }) => {
   const id = `input-${label || Math.random().toString(36).substring(2, 5)}`;
   return (
-    <label htmlFor={id}>
-      {label && <span className="">{label}</span>}
+    <label htmlFor={id} className={`text-bold ${style}`}>
+      {label && <span>{label}</span>}
       <input
         id={id}
         name={name}
@@ -29,7 +31,7 @@ const TextInput: React.FC<TextInputProps> = ({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className="bg-slate-200 rounded-md p-2 w-full"
+        className="text-black bg-white rounded-md p-2 w-full focus:border-tertiary focus:border-2 focus:outline-none"
       />
     </label>
   );

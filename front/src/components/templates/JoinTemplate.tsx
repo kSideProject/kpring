@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router";
 import JoinForm from "../organisms/JoinForm";
-import Button from "../atoms/Button";
 import Divider from "../atoms/Divider";
 
 const JoinTemplate = () => {

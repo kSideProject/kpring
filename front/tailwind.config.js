@@ -10,6 +10,8 @@ module.exports = {
         quaternary: "#d5d4ff",
         white: "#f7f7f7",
         black: "#2f2f2f",
+        darkBlack: "#191A1E",
+        gray: "#697484",
         disabled: "#d9d9d9",
         error: "#ff5a48",
         confirm: "#3cf584",

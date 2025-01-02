@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router";
 import LoginForm from "../organisms/LoginForm";
-import Button from "../atoms/Button";
 import Divider from "../atoms/Divider";
 
 const LoginTemplate = () => {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getTokenExpiration } from "../api/token";
+import { getTokenExpiration } from "../api/auth";
 
 export function useTokenExpirationCheck(token: string, alertTime: number) {
   const [showAlert, setShowAlert] = useState(false);

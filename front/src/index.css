@@ -35,3 +35,7 @@ code {
   min-width: 0;
   margin: var(--slide-spacing);
 }
+
+/* .stream-container {
+  padding: 0;
+} */

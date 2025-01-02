@@ -1,30 +1,37 @@
-export interface ThemeType {
-  id: string;
-  name: string;
-}
-
-export interface CategoriesType {
-  id: string;
-  name: string;
-}
-
-export interface ServerType {
-  name: string;
-  hostName: string;
-  userId: string;
+export type ServerType = {
+  serverName: string;
+  userId: string | null;
+  hostName: string | null;
   theme: ThemeType | null;
   categories: CategoriesType[] | null;
-}
+};
 
-export interface ServerResponseType {
+export type ThemeType = {
+  id: string;
+  name: string;
+};
+
+export type CategoriesType = {
+  id: string;
+  name: string;
+};
+
+export type GetServerType = {
   id: string;
   name: string;
   bookmarked: boolean;
-}
+  hostName: string;
+  categories: CategoriesType[] | null;
+  theme: ThemeType | null;
+};
 
-export interface FetchedServerType {
-  data: ServerResponseType[];
-}
+export type CategoriesResponseType = {
+  data: CategoriesType[];
+};
+
+export type ServerResponseType = {
+  data: GetServerType[];
+};
 
 export interface ServerCardProps {
   server: ServerType;
@@ -44,3 +51,22 @@ export interface ServerMember {
 export interface SelectedType extends ServerType {
   users: ServerMember[];
 }
+
+// 서버 생성
+export type CreateServerRequest = {
+  serverName: string;
+  userId: string;
+  hostName: string;
+  theme: string;
+  categories: string[];
+};
+
+export type CreateServerResponse = {
+  data: {
+    serverId: string;
+    serverName: string;
+    hostName: string;
+    theme: ThemeType | null;
+    categories: CategoriesType[] | null;
+  };
+};

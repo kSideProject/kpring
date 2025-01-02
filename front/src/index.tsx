@@ -1,30 +1,12 @@
-import { ThemeProvider } from "@emotion/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { useNavigate } from "react-router";
-import { BrowserRouter } from "react-router-dom";
-import App from "./App";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 import { useLoginStore } from "./store/useLoginStore";
-import theme from "./theme/themeConfig";
-import interceptorSetup from "./utils/axiosInterceptor";
-
-interface InterceptorSetupProps {
-  children: React.ReactNode;
-}
-
-// axios 인터셉터 설정 컴포넌트
-const InterceptorSetup: React.FC<InterceptorSetupProps> = ({ children }) => {
-  const store = useLoginStore();
-  const navigate = useNavigate();
-  React.useEffect(() => {
-    interceptorSetup(store, navigate);
-  }, [store, navigate]);
-
-  return <>{children}</>;
-};
+import interceptorSetup from "./api/axios/axiosInterceptor";
+import { RouterProvider } from "react-router-dom";
+import router from "./router";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -32,15 +14,21 @@ const root = ReactDOM.createRoot(
 
 const queryClient = new QueryClient();
 
+// axios 인터셉터 설정 컴포넌트
+const InterceptorSetup = () => {
+  const store = useLoginStore();
+
+  React.useEffect(() => {
+    interceptorSetup(store);
+  }, [store]);
+
+  return null;
+};
+
 root.render(
   <QueryClientProvider client={queryClient}>
-    <ThemeProvider theme={theme}>
-      <BrowserRouter>
-        <InterceptorSetup>
-          <App />
-        </InterceptorSetup>
-      </BrowserRouter>
-    </ThemeProvider>
+    <RouterProvider router={router} />
+    <InterceptorSetup />
   </QueryClientProvider>
 );
 

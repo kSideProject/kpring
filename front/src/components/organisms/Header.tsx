@@ -6,8 +6,10 @@ import { IoPersonAddSharp } from "react-icons/io5";
 import useModal from "@/hooks/common/useModal";
 import Modal from "./Modal";
 import AddFriendForm from "../molecules/AddFriendForm";
+import { useNavigate } from "react-router";
 
 const Header: React.FC = () => {
+  const navigate = useNavigate();
   const { isOpen, openModal, closeModal } = useModal();
   const [activeSideBar, setActiveSideBar] = useState<
     "friends" | "messages" | null
@@ -19,24 +21,26 @@ const Header: React.FC = () => {
   const handleAddFriend = () => openModal("addFriend");
 
   return (
-    <nav className="flex justify-between items-center p-4 min-h-14 bg-black">
-      <div>
-        <span className="text-white">Dicotown</span>
-      </div>
-      <div className="flex justify-center items-center gap-3">
+    <nav className="flex justify-between items-center px-5 min-h-14 bg-tertiary">
+      <span
+        className="text-white font-bold cursor-pointer"
+        onClick={() => navigate("/")}>
+        Dicotown
+      </span>
+      <div className="flex justify-center items-center gap-4">
         <BsChatQuoteFill
-          className="text-white"
+          className="text-white cursor-pointer transition duration-300 hover:text-secondary"
           fontSize={24}
           onClick={handleOpenMessageList}
         />
         <RiGroup2Fill
-          className="text-white"
+          className="text-white cursor-pointer transition duration-300 hover:text-secondary"
           fontSize={24}
           onClick={handleOpenFriendsList}
         />
 
         <IoPersonAddSharp
-          className="text-white"
+          className="text-white cursor-pointer transition duration-300 hover:text-secondary"
           fontSize={20}
           onClick={handleAddFriend}
         />

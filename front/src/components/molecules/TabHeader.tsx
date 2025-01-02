@@ -12,7 +12,7 @@ const TabHeader: React.FC<TabHeaderProps> = ({
   onTabChange,
 }) => {
   return (
-    <div>
+    <div className="flex flex-row gap-3">
       {tabs.map((tab) => (
         <TabButton
           key={tab.id}

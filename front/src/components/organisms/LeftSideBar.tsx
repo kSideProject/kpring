@@ -16,13 +16,15 @@ const LeftSideBar = () => {
 
   return (
     <React.Fragment>
-      <div className="max-w-20 h-screen flex flex-col items-center p-4 bg-slate-300">
+      <div className="flex flex-col group-hover:items-start p-2 transition-all duration-300">
         <AvatarWithAddServer
           nickname={userProfile?.data.username}
           onAvatarClick={() => openModal("profile")}
           onAddServerClick={() => openModal("addServer")}></AvatarWithAddServer>
         <Divider style={`bg-black`} />
-        <ServerList />
+        <div className="flex flex-col group-hover:items-start p-2 transition-all duration-300">
+          <ServerList />
+        </div>
       </div>
 
       {isOpen && modalType === "profile" && (

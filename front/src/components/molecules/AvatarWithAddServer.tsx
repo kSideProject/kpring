@@ -13,9 +13,28 @@ const AvatarWithAddServer: React.FC<AvatarWithAddServerProps> = ({
   onAddServerClick,
 }) => {
   return (
-    <div className="flex flex-col gap-3">
-      <Avatar name={nickname} onClick={onAvatarClick} variant="beam" />
-      <IoAddCircle fontSize="48" onClick={onAddServerClick} />
+    <div className="flex flex-col gap-2 group-hover:items-start w-full p-2">
+      <div
+        className="flex items-center ml-1 gap-2 cursor-pointer"
+        onClick={onAvatarClick}>
+        <Avatar
+          name={nickname}
+          variant="beam"
+          size={42}
+          className="transition duration-300 hover:opacity-80 shadow-sm"
+        />
+        <span className="hidden group-hover:inline-block text-small font-semibold">
+          {nickname}
+        </span>
+      </div>
+      <div
+        className="flex items-center gap-2 cursor-pointer"
+        onClick={onAddServerClick}>
+        <IoAddCircle fontSize="48" />
+        <span className="hidden group-hover:inline-block text-small font-semibold">
+          서버 추가
+        </span>
+      </div>
     </div>
   );
 };

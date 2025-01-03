@@ -34,15 +34,19 @@ const ServerList: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col ml-1 group-hover:items-start gap-3">
       {servers?.map((server) => (
-        <Avatar
-          key={server.id}
-          name={server.name}
-          variant="bauhaus"
-          size={40}
-          onClick={() => openSelectedServer(server.id)}
-        />
+        <div className="flex items-center gap-2 cursor-pointer" key={server.id}>
+          <Avatar
+            name={server.name}
+            variant="bauhaus"
+            size={40}
+            onClick={() => openSelectedServer(server.id)}
+          />
+          <span className="hidden group-hover:inline-block text-small font-semibold">
+            {server.name}
+          </span>
+        </div>
       ))}
 
       {selectedServer?.map((server) => (

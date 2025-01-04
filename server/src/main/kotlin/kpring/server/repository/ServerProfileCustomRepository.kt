@@ -19,4 +19,6 @@ interface ServerProfileCustomRepository {
   fun getOwnedProfiles(userId: String): List<ServerProfile>
 
   fun getAll(serverId: String): List<ServerProfile>
+
+  fun updateBookmarkStatus(serverProfile: ServerProfile)
 }

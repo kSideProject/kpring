@@ -171,6 +171,21 @@ class ServerProfileCustomRepositoryImpl(
     }
   }
 
+  override fun updateBookmarkStatus(serverProfile: ServerProfile) {
+    val newBookmarkStatus = !serverProfile.bookmarked
+    val result =
+      template.updateFirst(
+        Query.query(
+          Criteria.where("_id").`is`(serverProfile.id),
+        ),
+        Update().set("bookmarked", newBookmarkStatus),
+        ServerProfileEntity::class.java,
+      )
+    println("@@@Check : ${result.matchedCount} modified ${result.modifiedCount}")
+
+    serverProfileRepository.save(ServerProfileEntity(serverProfile))
+  }
+
   /**
    * serverIds 목록 중에서 condition에 포함되는 serverId만 검색한다.
    * 만약 condition이 없는 경우에는 serverIds 목록 전체를 검색한다.

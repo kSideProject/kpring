@@ -183,4 +183,16 @@ class ServerServiceImpl(
 
     return serverEntity.toDomain()
   }
+
+  override fun updateServerBookmarkStatus(
+    serverId: String,
+    userId: String,
+  ): Boolean {
+    val serverProfile = serverProfileCustomRepository.get(serverId, userId)
+
+    serverProfile.updateBookmarkStatus(serverProfile)
+    serverProfileCustomRepository.updateBookmarkStatus(serverProfile)
+
+    return serverProfile.bookmarked
+  }
 }

@@ -7,7 +7,7 @@ class ServerProfile(
   val imagePath: String,
   val server: Server,
   var role: ServerRole = ServerRole.MEMBER,
-  val bookmarked: Boolean = false,
+  var bookmarked: Boolean = false,
 ) {
   /**
    * @param authority 확인할 권한
@@ -29,5 +29,9 @@ class ServerProfile(
     } else if (serverProfile.role == ServerRole.MEMBER) {
       serverProfile.role = ServerRole.OWNER
     }
+  }
+
+  fun updateBookmarkStatus(serverProfile: ServerProfile) {
+    serverProfile.bookmarked = !serverProfile.bookmarked
   }
 }

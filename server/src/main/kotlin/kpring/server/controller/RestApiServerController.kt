@@ -120,4 +120,14 @@ class RestApiServerController(
     serverService.updateServerHost(serverId, userInfo.userId, otherUser)
     return ResponseEntity.ok().build()
   }
+
+  @PatchMapping("/{serverId}/bookmark")
+  fun updateServerBookmarkStatus(
+    @PathVariable serverId: String,
+    @RequestHeader("Authorization") token: String,
+  ): ResponseEntity<Any> {
+    val userInfo = authClient.getTokenInfo(token).data!!
+    val result = serverService.updateServerBookmarkStatus(serverId, userInfo.userId)
+    return ResponseEntity.ok().body(ApiResponse(data = result))
+  }
 }

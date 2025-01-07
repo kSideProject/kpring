@@ -51,4 +51,9 @@ interface ServerService {
   fun delete(serverId: String)
 
   fun get(id: String): Server
+
+  fun updateServerBookmarkStatus(
+    serverId: String,
+    userId: String,
+  ): Boolean
 }

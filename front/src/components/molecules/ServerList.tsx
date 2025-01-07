@@ -8,6 +8,7 @@ import { GetServerType } from "@/types/server";
 import { deleteServer } from "@/api/server";
 import { useLoginStore } from "@/store/useLoginStore";
 import { useNavigate } from "react-router";
+import { useThemeStore } from "@/store/useThemeStore";
 
 const ServerList: React.FC = () => {
   const { accessToken } = useLoginStore();
@@ -15,8 +16,8 @@ const ServerList: React.FC = () => {
   const { isOpen, closeModal, openModal } = useModal();
   const [selectedServer, setSelectedServer] = useState<GetServerType[]>();
   const navigate = useNavigate();
+  const { selectedTheme, setSelectedTheme } = useThemeStore();
 
-  console.log(servers);
   const openSelectedServer = (id: string) => {
     openModal("server");
     const filtered = servers?.filter((server) => server.id === id);
@@ -25,7 +26,12 @@ const ServerList: React.FC = () => {
 
   const enterServerHandler = (id: string) => {
     navigate(`server/${id}`);
+    const server = servers?.find((server) => server.id === id);
+    if (server) {
+      setSelectedTheme(server.theme);
+    }
     closeModal("server");
+    console.log(selectedTheme);
   };
 
   const deleteServerHandler = (id: string) => {
@@ -36,13 +42,11 @@ const ServerList: React.FC = () => {
   return (
     <div className="flex flex-col ml-1 group-hover:items-start gap-3">
       {servers?.map((server) => (
-        <div className="flex items-center gap-2 cursor-pointer" key={server.id}>
-          <Avatar
-            name={server.name}
-            variant="bauhaus"
-            size={40}
-            onClick={() => openSelectedServer(server.id)}
-          />
+        <div
+          className="flex items-center gap-2 cursor-pointer"
+          key={server.id}
+          onClick={() => openSelectedServer(server.id)}>
+          <Avatar name={server.name} variant="bauhaus" size={40} />
           <span className="hidden group-hover:inline-block text-small font-semibold">
             {server.name}
           </span>

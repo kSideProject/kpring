@@ -18,6 +18,10 @@ class ExpireTokenRepository(
       .awaitSingle()
   }
 
+  suspend fun isBlacklisted(tokenId: String): Boolean {
+    return redisTemplate.hasKey(tokenId).awaitSingle()
+  }
+
   suspend fun expireToken(
     tokenId: String,
     expiredAt: LocalDateTime,

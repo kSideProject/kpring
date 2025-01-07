@@ -89,6 +89,9 @@ class TokenService(
     val isExpired = !tokenRepository.isExpired(token)
     if (!isExpired) throw ServiceException(AuthErrorCode.TOKEN_EXPIRED)
 
+    val isBlacklisted = tokenRepository.isBlacklisted(jwt.id)
+    if (isBlacklisted) throw ServiceException(AuthErrorCode.TOKEN_EXPIRED)
+
     return TokenInfo(jwt.type, jwt.userId)
   }
 }

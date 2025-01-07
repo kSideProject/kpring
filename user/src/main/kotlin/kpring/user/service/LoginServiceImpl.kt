@@ -31,7 +31,8 @@ class LoginServiceImpl(
   }
 
   override fun logout(request: LogoutRequest) {
-    TODO("Not yet implemented")
+    authClient.deleteToken(request.accessToken)
+    authClient.deleteToken(request.refreshToken)
   }
 
   fun handleTokenResponse(tokenResponse: ResponseEntity<CreateTokenResponse>): LoginResponse {

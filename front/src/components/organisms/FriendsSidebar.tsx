@@ -3,7 +3,11 @@ import React from "react";
 import FriendItem from "../molecules/FriendItem";
 
 type FriendsSideBarProps = {
-  onAvatarClick: () => void;
+  onAvatarClick: (friend: {
+    friendId: string;
+    username: string;
+    email: string;
+  }) => void;
 };
 
 const FriendsSideBar: React.FC<FriendsSideBarProps> = ({ onAvatarClick }) => {
@@ -12,13 +16,18 @@ const FriendsSideBar: React.FC<FriendsSideBarProps> = ({ onAvatarClick }) => {
   return (
     <React.Fragment>
       <ul>
-        {friends?.friends.map((friend) => (
-          <FriendItem
-            key={friend.friendId}
-            username={friend.username}
-            onAvatarClick={onAvatarClick}
-          />
-        ))}
+        {friends?.friends
+          .sort((a, b) => a.username.localeCompare(b.username))
+          .map((friend) => (
+            <FriendItem
+              key={friend.friendId}
+              username={friend.username}
+              userId={friend.friendId}
+              email={friend.email}
+              selectecUserId={friend.friendId}
+              onAvatarClick={() => onAvatarClick(friend)}
+            />
+          ))}
       </ul>
     </React.Fragment>
   );

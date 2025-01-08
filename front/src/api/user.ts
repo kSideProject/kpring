@@ -90,6 +90,34 @@ export const searchUser = async (
     console.log(error);
   }
 };
+// 사용자 프로필 수정
+export const editUserProfile = async (
+  userId: string,
+  token: string,
+  editValues: UserTypes.EditProfileFormValues
+) => {
+  try {
+    const response = await axiosInstance({
+      ...USER_API.PATCH_REQUEST.editProfile,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+      data: {
+        userId,
+        email: editValues.email,
+        username: editValues.nickname,
+        password: editValues.password,
+        newPassword: editValues.newPassword,
+      },
+    });
+    console.log(response.data);
+
+    // return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 // 사용자 프로필 조회
 export const getUserProfile = async (
@@ -178,6 +206,22 @@ export const deleteFriend = async (
   try {
     const response = await axiosInstance({
       ...USER_API.DELETE_REQUEST.deleteFriend(userId, friendId),
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    console.log(response.data);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// 회원 탈퇴
+export const deleteUser = async (userId: string, token: string) => {
+  try {
+    const response = await axiosInstance({
+      ...USER_API.DELETE_REQUEST.deleteAccount(userId),
       headers: {
         Authorization: `Bearer ${token}`,
       },

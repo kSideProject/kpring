@@ -37,6 +37,13 @@ export type SearchUserResultsResponse = {
     users: SearchUsers[];
   };
 };
+// 사용자 프로필 수정
+export type EditProfileFormValues = {
+  email: string;
+  nickname: string;
+  password: string;
+  newPassword: string;
+};
 
 //  유저 프로필 조회
 export type UserProfile = {

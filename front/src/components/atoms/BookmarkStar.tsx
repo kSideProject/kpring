@@ -17,7 +17,7 @@ const FavoriteStar: React.FC<BookmarkStarProps> = ({ id }) => {
   };
   return (
     <div onClick={handleBookmarkClick}>
-      {!isBookmark ? <IoStarOutline /> : <IoStar />}
+      {!isBookmark ? <IoStarOutline size={28} /> : <IoStar size={28} />}
     </div>
   );
 };

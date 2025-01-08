@@ -1,7 +1,6 @@
 import useServers from "@/hooks/server/useServers";
 import Avatar from "boring-avatars";
 import Modal from "../organisms/Modal";
-import useModal from "@/hooks/common/useModal";
 import ServerInfo from "./ServerInfo";
 import { useState } from "react";
 import { GetServerType } from "@/types/server";
@@ -9,34 +8,34 @@ import { deleteServer } from "@/api/server";
 import { useLoginStore } from "@/store/useLoginStore";
 import { useNavigate } from "react-router";
 import { useThemeStore } from "@/store/useThemeStore";
+import useModalStore from "@/store/useModalStore";
 
 const ServerList: React.FC = () => {
   const { accessToken } = useLoginStore();
   const { servers } = useServers();
-  const { isOpen, closeModal, openModal } = useModal();
   const [selectedServer, setSelectedServer] = useState<GetServerType[]>();
   const navigate = useNavigate();
   const { selectedTheme, setSelectedTheme } = useThemeStore();
+  const { openModal, closeModal, modalType, isOpen } = useModalStore();
 
   const openSelectedServer = (id: string) => {
-    openModal("server");
+    openModal("showServer");
     const filtered = servers?.filter((server) => server.id === id);
     setSelectedServer(filtered);
   };
 
   const enterServerHandler = (id: string) => {
     navigate(`server/${id}`);
+    closeModal();
     const server = servers?.find((server) => server.id === id);
     if (server) {
       setSelectedTheme(server.theme);
     }
-    closeModal("server");
-    console.log(selectedTheme);
   };
 
   const deleteServerHandler = (id: string) => {
     deleteServer(id, accessToken);
-    closeModal("server");
+    closeModal();
   };
 
   return (
@@ -53,21 +52,19 @@ const ServerList: React.FC = () => {
         </div>
       ))}
 
-      {selectedServer?.map((server) => (
-        <Modal
-          key={server.id}
-          title={server.name}
-          isOpen={isOpen}
-          closeModal={() => closeModal("server")}>
-          <ServerInfo
-            hostName={server.hostName}
-            serverId={server.id}
-            categories={server.categories}
-            onDelete={() => deleteServerHandler(server.id)}
-            onEnter={() => enterServerHandler(server.id)}
-          />
-        </Modal>
-      ))}
+      {isOpen &&
+        modalType === "showServer" &&
+        selectedServer?.map((server) => (
+          <Modal key={server.id} title={server.name}>
+            <ServerInfo
+              hostName={server.hostName}
+              serverId={server.id}
+              categories={server.categories}
+              onDelete={() => deleteServerHandler(server.id)}
+              onEnter={() => enterServerHandler(server.id)}
+            />
+          </Modal>
+        ))}
     </div>
   );
 };

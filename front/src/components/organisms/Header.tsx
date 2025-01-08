@@ -3,14 +3,14 @@ import { BsChatQuoteFill } from "react-icons/bs";
 import { RiGroup2Fill } from "react-icons/ri";
 import RightSideBar from "./RightSideBar";
 import { IoPersonAddSharp } from "react-icons/io5";
-import useModal from "@/hooks/common/useModal";
 import Modal from "./Modal";
 import AddFriendForm from "../molecules/AddFriendForm";
 import { useNavigate } from "react-router";
+import useModalStore from "@/store/useModalStore";
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
-  const { isOpen, openModal, closeModal } = useModal();
+  const { isOpen, openModal, closeModal, modalType } = useModalStore();
   const [activeSideBar, setActiveSideBar] = useState<
     "friends" | "messages" | null
   >(null);
@@ -50,12 +50,11 @@ const Header: React.FC = () => {
           onClose={handleCloseSidebar}
         />
       </div>
-      <Modal
-        isOpen={isOpen}
-        title="친구 추가"
-        closeModal={() => closeModal(null)}>
-        <AddFriendForm />
-      </Modal>
+      {isOpen && modalType === "addFriend" && (
+        <Modal title="친구 추가">
+          <AddFriendForm />
+        </Modal>
+      )}
     </nav>
   );
 };

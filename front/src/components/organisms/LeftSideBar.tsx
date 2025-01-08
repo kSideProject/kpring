@@ -1,5 +1,4 @@
 import React from "react";
-import useModal from "@/hooks/common/useModal";
 import AvatarWithAddServer from "../molecules/AvatarWithAddServer";
 import Modal from "./Modal";
 import useUserProfile from "@/hooks/user/useUserProfile";
@@ -7,9 +6,10 @@ import UserProfile from "../molecules/UserProfile";
 import CreateServerForm from "./CreateServerForm";
 import Divider from "../atoms/Divider";
 import ServerList from "../molecules/ServerList";
+import useModalStore from "@/store/useModalStore";
 
 const LeftSideBar = () => {
-  const { isOpen, openModal, closeModal, modalType } = useModal();
+  const { isOpen, openModal, modalType } = useModalStore();
   const { userProfile } = useUserProfile();
 
   const onLogout = () => {};
@@ -19,7 +19,7 @@ const LeftSideBar = () => {
       <div className="flex flex-col group-hover:items-start p-2 transition-all duration-300">
         <AvatarWithAddServer
           nickname={userProfile?.data.username}
-          onAvatarClick={() => openModal("profile")}
+          onAvatarClick={() => openModal("showProfile")}
           onAddServerClick={() => openModal("addServer")}></AvatarWithAddServer>
         <Divider style={`bg-black`} />
         <div className="flex flex-col group-hover:items-start p-2 transition-all duration-300">
@@ -27,27 +27,21 @@ const LeftSideBar = () => {
         </div>
       </div>
 
-      {isOpen && modalType === "profile" && (
-        <Modal
-          isOpen={isOpen}
-          closeModal={() => closeModal(null)}
-          title="유저 프로필">
+      {isOpen && modalType === "showProfile" && (
+        <Modal title="유저 프로필">
           <UserProfile
             nickname={userProfile?.data.username}
+            email={userProfile?.data.email}
+            selectedUserId={userProfile?.data.userId}
             onLogout={onLogout}
             isCurrentUser
-            onEditProfile={onLogout}
-            onDeleteFriend={onLogout}
             onSendDM={onLogout}
           />
         </Modal>
       )}
 
       {isOpen && modalType === "addServer" && (
-        <Modal
-          isOpen={isOpen}
-          closeModal={() => closeModal(null)}
-          title="새로운 서버 생성">
+        <Modal title="새로운 서버 생성">
           <CreateServerForm />
         </Modal>
       )}

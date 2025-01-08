@@ -8,11 +8,13 @@ import useUserProfile from "@/hooks/user/useUserProfile";
 import { createServer } from "@/api/server";
 import { useLoginStore } from "@/store/useLoginStore";
 import { CreateServerRequest } from "@/types/server";
+import useModalStore from "@/store/useModalStore";
 
 const CreateServerForm: React.FC = () => {
   const userId = Cookies.get("userId");
   const { accessToken } = useLoginStore();
   const { userProfile } = useUserProfile();
+  const { closeModal } = useModalStore();
 
   const [serverFormValues, setServerFormValues] = useState<CreateServerRequest>(
     {
@@ -46,9 +48,11 @@ const CreateServerForm: React.FC = () => {
 
   const onSubmitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    closeModal();
 
     try {
       const response = await createServer(accessToken, serverFormValues);
+
       return response;
     } catch (error) {
       console.error(error);
@@ -56,11 +60,12 @@ const CreateServerForm: React.FC = () => {
   };
 
   return (
-    <form className="flex flex-col gap-5" onSubmit={onSubmitForm}>
+    <form className="flex flex-col gap-5 mt-5" onSubmit={onSubmitForm}>
       <FormField
         label="서버명"
         name="serverName"
         value={serverFormValues.serverName}
+        style={`text-h6 font-bold text-black`}
         onChange={(e) => onChangeServerValues("serverName", e.target.value)}
         message=""
       />

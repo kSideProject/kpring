@@ -3,9 +3,11 @@ import ServerCards from "../templates/ServerCards";
 
 const Home = () => {
   return (
-    <div className="max-w-7xl p-7">
-      <Hero />
-      <ServerCards />
+    <div className="bg-black w-full min-h-screen">
+      <div className="w-[80%] mx-auto">
+        <Hero />
+        <ServerCards />
+      </div>
     </div>
   );
 };

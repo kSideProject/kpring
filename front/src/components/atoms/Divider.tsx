@@ -1,7 +1,11 @@
 import React from "react";
 
-const Divider = () => {
-  return <div className="w-full h-[1px] bg-black m-3"></div>;
+interface DividerProps {
+  style: string;
+}
+
+const Divider: React.FC<DividerProps> = ({ style }) => {
+  return <div className={`w-full h-[.5px] ${style}`}></div>;
 };
 
 export default Divider;

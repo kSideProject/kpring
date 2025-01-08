@@ -4,8 +4,9 @@ import Join from "./components/pages/Join";
 import Login from "./components/pages/Login";
 import PrivateRoute from "./utils/PrivateRoute";
 import Home from "./components/pages/Home";
-import ServerMapWithTheme from "./components/Server/ServerMapWithTheme";
 import AuthLayout from "./utils/AuthLayout";
+import EditProfile from "./components/pages/EditProfile";
+import Server from "./components/pages/Server";
 
 const router = createBrowserRouter([
   {
@@ -36,15 +37,16 @@ const router = createBrowserRouter([
         path: "/server/:serverId",
         element: (
           <PrivateRoute>
-            <ServerMapWithTheme />
+            <Server />
           </PrivateRoute>
         ),
       },
+
       {
-        path: "/:theme",
+        path: "/profile",
         element: (
           <PrivateRoute>
-            <ServerMapWithTheme />
+            <EditProfile />
           </PrivateRoute>
         ),
       },

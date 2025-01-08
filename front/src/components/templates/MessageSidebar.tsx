@@ -13,11 +13,13 @@ const MessageSidebar = () => {
 
   return (
     <div>
-      <Tabs
-        tabs={messageTab}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-      />
+      <div className="flex justify-center mb-5">
+        <Tabs
+          tabs={messageTab}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
+      </div>
 
       {activeTab === "message" ? <MessageList /> : <RequestedFriendsList />}
     </div>

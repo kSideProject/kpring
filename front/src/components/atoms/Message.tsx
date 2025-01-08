@@ -6,7 +6,7 @@ type MessageProps = {
 
 // TODO: 스타일 변경
 const Message: React.FC<MessageProps> = ({ value }) => {
-  return <p className="text-red-500">{value}</p>;
+  return <p className="text-error text-small font-bold">{value}</p>;
 };
 
 export default Message;

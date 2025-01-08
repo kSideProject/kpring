@@ -4,8 +4,9 @@ type ButtonProps<
   children: React.ReactNode;
   icon?: React.ReactNode;
   onClick?: (e: E) => void;
-  color: string;
+  style?: string;
   disabled?: boolean;
+  type?: "button" | "submit" | "reset";
 };
 
 // TODO: 스타일 변경
@@ -13,13 +14,15 @@ const Button: React.FC<ButtonProps> = ({
   children,
   icon,
   onClick,
-  color,
+  style,
+  type,
   disabled = false,
 }) => {
   return (
     <button
-      className={`flex justify-center items-center text-center ${color} px-3 py-1.5 rounded-md w-full`}
+      className={`flex justify-center items-center gap-1 text-center px-3 py-2 rounded-md w-full font-bold ${style}`}
       onClick={onClick}
+      type={type}
       disabled={disabled}>
       {icon}
       {children}

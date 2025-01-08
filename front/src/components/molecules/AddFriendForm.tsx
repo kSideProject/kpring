@@ -4,9 +4,9 @@ import FriendItem from "./FriendItem";
 import { deleteFriend, requestFriend, searchUser } from "@/api/user";
 import { useLoginStore } from "@/store/useLoginStore";
 import { SearchUsers } from "@/types/user";
-import Button from "../atoms/Button";
 import useFriendsList from "@/hooks/user/useFriendsList";
 import Cookies from "js-cookie";
+import { HiUser, HiUserAdd, HiUserRemove } from "react-icons/hi";
 
 const AddFriendForm = () => {
   const [searchValue, setSearchValue] = useState("");
@@ -14,6 +14,8 @@ const AddFriendForm = () => {
   const userId = Cookies.get("userId");
   const { friends } = useFriendsList();
   const { accessToken } = useLoginStore();
+
+  console.log(userId);
 
   const handleSearchFriend = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -55,40 +57,57 @@ const AddFriendForm = () => {
         <FormField
           value={searchValue}
           name="search friend"
+          placeholder="회원검색"
+          style={`text-black font-bold`}
           onChange={(e) => {
             setSearchValue(e.target.value);
           }}
           message=""
         />
       </form>
-      <ul>
-        {searchResults.length > 0 &&
-          searchResults.map((results) => (
-            <div
-              className="flex items-center justify-between gap-3"
-              key={results.userId}>
-              <FriendItem
-                username={results.username}
-                onAvatarClick={() => {}}
-              />
 
-              {friends?.friends.some(
-                (friend) => friend.friendId === results.userId
-              ) ? (
-                <Button
-                  color="bg-sky-200"
-                  onClick={() => handleDeleteFriend(results.userId)}>
-                  친구끊기
-                </Button>
-              ) : (
-                <Button
-                  color="bg-sky-200"
-                  onClick={() => handleRequestFriend(results.userId)}>
-                  친구요청
-                </Button>
-              )}
-            </div>
-          ))}
+      <ul className="mt-5">
+        {searchResults.length > 0 ? (
+          searchResults
+            .filter((results) => String(results.userId) !== String(userId))
+            .map((result) => {
+              const isFriend = friends?.friends.some(
+                (friend) => friend.friendId === result.userId
+              );
+
+              return (
+                <div
+                  className="flex items-center justify-between gap-3"
+                  key={result.userId}>
+                  <FriendItem
+                    username={result.username}
+                    email={result.email}
+                    userId={result.userId}
+                    selectecUserId={result.userId}
+                    onAvatarClick={() => {}}
+                  />
+
+                  {isFriend ? (
+                    <HiUserRemove
+                      className="bg-red-500 text-white px-3 py-1 rounded"
+                      size={40}
+                      onClick={() => handleDeleteFriend(result.userId)}
+                    />
+                  ) : (
+                    <HiUserAdd
+                      className="bg-primary text-blue-50 px-2 py-1 rounded cursor-pointer"
+                      size={40}
+                      onClick={() => handleRequestFriend(result.userId)}
+                    />
+                  )}
+                </div>
+              );
+            })
+        ) : (
+          <span className="flex justify-center font-bold text-black">
+            검색 결과가 없습니다.
+          </span>
+        )}
       </ul>
     </div>
   );

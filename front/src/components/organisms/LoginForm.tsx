@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router";
-import { RiLoginBoxFill } from "react-icons/ri";
 import { useLoginStore } from "@/store/useLoginStore";
 import { useLoginValidator } from "@/hooks/user/useLoginValidator";
 import { login } from "@/api/user";
@@ -39,12 +38,13 @@ const LoginForm = () => {
     }
   };
   return (
-    <form onSubmit={clickSubmitHandler} className="w-96 flex flex-col gap-3">
+    <form className="w-96 flex flex-col gap-5" onSubmit={clickSubmitHandler}>
       <FormField
         value={values.email}
         name="email"
         label="Email"
         type="email"
+        style={`text-white font-bold`}
         onChange={onChangeHandler("email")}
         message={errors.email}
       />
@@ -53,14 +53,14 @@ const LoginForm = () => {
         name="password"
         label="Password"
         type="password"
+        style={`text-white font-bold`}
         onChange={onChangeHandler("password")}
         message={errors.password}
       />
 
       <Button
-        color="bg-dark"
-        onClick={clickSubmitHandler}
-        icon={<RiLoginBoxFill />}>
+        style={`bg-primary text-white transition duration-300 hover:bg-secondary hover:text-primary`}
+        type="submit">
         로그인
       </Button>
     </form>

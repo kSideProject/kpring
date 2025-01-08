@@ -32,9 +32,10 @@ const ServerCards = () => {
           onTabChange={setActiveTab}
         />
       </div>
-      <div className="flex flex-row flex-wrap gap-3">
+      <div className="grid grid-cols-2 gap-5 md:grid-cols-3">
         {filteredServers?.map((server) => (
           <ServerCardItem
+            id={server.id}
             key={server.id}
             serverName={server.name}
             categories={server.categories || undefined}

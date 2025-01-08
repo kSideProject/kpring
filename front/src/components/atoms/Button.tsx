@@ -20,7 +20,7 @@ const Button: React.FC<ButtonProps> = ({
 }) => {
   return (
     <button
-      className={`flex justify-center items-center text-center px-3 py-2 rounded-md w-full font-bold ${style}`}
+      className={`flex justify-center items-center gap-1 text-center px-3 py-2 rounded-md w-full font-bold ${style}`}
       onClick={onClick}
       type={type}
       disabled={disabled}>

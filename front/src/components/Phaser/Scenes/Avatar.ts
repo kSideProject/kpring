@@ -13,7 +13,8 @@ export const randomSkin = getRandomAssets(skins);
 export const createRandomAvatar = (
   scene: Scene,
   x: number,
-  y: number
+  y: number,
+  nickname: string
 ): Phaser.GameObjects.Container => {
   if (scene.textures.exists(randomSkin)) {
     const avatarContainer = scene.add.container(x, y);
@@ -85,7 +86,7 @@ export const createRandomAvatar = (
     const userNickName = scene.add.text(
       0,
       skinSprite.height / 2 + 10,
-      "nickname",
+      nickname,
       {
         font: "10px Arial",
         color: "#ffffff",

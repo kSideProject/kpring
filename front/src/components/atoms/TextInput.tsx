@@ -22,7 +22,7 @@ const TextInput: React.FC<TextInputProps> = ({
 }) => {
   const id = `input-${label || Math.random().toString(36).substring(2, 5)}`;
   return (
-    <label htmlFor={id} className={`text-bold ${style}`}>
+    <label htmlFor={id} className={`${style}`}>
       {label && <span>{label}</span>}
       <input
         id={id}
@@ -31,7 +31,7 @@ const TextInput: React.FC<TextInputProps> = ({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className="text-black bg-white rounded-md p-2 w-full focus:border-tertiary focus:border-2 focus:outline-none"
+        className="text-black bg-quaternary rounded-md p-2 w-full focus:border-tertiary focus:border-2 focus:outline-none"
       />
     </label>
   );

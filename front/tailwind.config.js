@@ -12,6 +12,7 @@ module.exports = {
         black: "#2f2f2f",
         darkBlack: "#191A1E",
         gray: "#697484",
+        lightGray: "#f0f2f5",
         disabled: "#d9d9d9",
         error: "#ff5a48",
         confirm: "#3cf584",
@@ -34,9 +35,14 @@ module.exports = {
         thin: 300,
       },
     },
-    backgroundImage: {
-      camping: "url('/public/assets/map/camping/camping.png')",
-      beach: "url('/public/assets/map/beach/beach.png')",
+    keyframes: {
+      "move-gradient": {
+        "0%": { backgroundPosition: "10% 50%" },
+        "100%": { backgroundPosition: "100% 50%" },
+      },
+    },
+    animation: {
+      "move-gradient": "move-gradient 3s infinite alternate",
     },
   },
   plugins: [],

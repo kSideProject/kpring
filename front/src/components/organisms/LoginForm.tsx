@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router";
-import { RiLoginBoxFill } from "react-icons/ri";
 import { useLoginStore } from "@/store/useLoginStore";
 import { useLoginValidator } from "@/hooks/user/useLoginValidator";
 import { login } from "@/api/user";

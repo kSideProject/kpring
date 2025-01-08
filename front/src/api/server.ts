@@ -70,3 +70,20 @@ export const createServer = async (
     throw new Error("");
   }
 };
+
+// 서버 탈퇴
+export const leaveServer = async (serverId: string, token: string) => {
+  console.log(serverId, token);
+  try {
+    await axiosInstance({
+      ...SERVER_API.DELETE_REQUEST.leaveServer(serverId),
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    console.log("서버탈퇴 성공");
+  } catch (error) {
+    throw new Error("탈퇴실패");
+  }
+};

@@ -7,13 +7,53 @@ export class CampingMap extends Scene {
   private avatar!: Phaser.GameObjects.Container;
   private keyboards!: Phaser.Types.Input.Keyboard.CursorKeys | null;
   private spaceKey!: Phaser.Input.Keyboard.Key | undefined;
+  private chatText!: Phaser.GameObjects.Text | null;
   private isJumping: boolean = false;
+  private nickname: string = "";
+  private boundHandleChatMessage: (event: Event) => void;
 
-  constructor() {
+  constructor(nickname: string) {
     super("CampingMap");
+    this.nickname = nickname;
+    this.boundHandleChatMessage = this.handleChatMessage.bind(this);
+  }
+
+  handleChatMessage = (event: Event) => {
+    const customEvent = event as CustomEvent<string>;
+    const message = customEvent.detail;
+
+    if (!this.scene.isActive() || !this.avatar) {
+      return;
+    }
+
+    if (this.chatText) {
+      this.chatText.destroy();
+    }
+
+    this.chatText = this.add.text(this.avatar.x, this.avatar.y - 50, message, {
+      font: "14px Arial",
+      color: "#ffffff",
+      backgroundColor: "#000000",
+      padding: { x: 10, y: 5 },
+    });
+
+    this.chatText.setOrigin(0.5, 1);
+
+    this.time.delayedCall(3000, () => {
+      if (this.chatText) {
+        this.chatText.destroy();
+        this.chatText = null;
+      }
+    });
+  };
+
+  init(data: { nickname: string }) {
+    this.nickname = data.nickname || "Guest";
   }
 
   create() {
+    window.addEventListener("chatMessage", this.boundHandleChatMessage);
+    // this.avatar = this.add.container(300, 300);
     this.spaceKey = this.input.keyboard?.addKey(
       Phaser.Input.Keyboard.KeyCodes.SPACE
     );
@@ -22,7 +62,6 @@ export class CampingMap extends Scene {
       "camping_tilesets",
       "camping_tilesets"
     );
-
     if (campingTilesets) {
       const layers = [
         "bottom_ground_layer",
@@ -42,9 +81,9 @@ export class CampingMap extends Scene {
         "rv_layer",
       ];
 
-      this.avatar = createRandomAvatar(this, 520, 350);
-
+      this.avatar = createRandomAvatar(this, 520, 350, this.nickname);
       this.add.existing(this.avatar);
+
       this.cameras.main.startFollow(this.avatar);
       this.cameras.main.setZoom(2);
       this.avatar.setDepth(10);
@@ -139,5 +178,9 @@ export class CampingMap extends Scene {
         this.spaceKey
       );
     }
+  }
+
+  shutdown() {
+    window.removeEventListener("chatMessage", this.boundHandleChatMessage);
   }
 }

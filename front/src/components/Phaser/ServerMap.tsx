@@ -8,10 +8,16 @@ import { ServerMapProps, ServerMapTypes } from "../../types/map";
 import VideoCallBoxList from "../VideoCall/VideoCallBoxList";
 import VideoCallToolBar from "../VideoCall/VideoCallToolBar";
 import { useThemeStore } from "@/store/useThemeStore";
+import useUserProfile from "@/hooks/user/useUserProfile";
+import ChatInput from "../organisms/ChatBox";
+import ChatBox from "../organisms/ChatBox";
 
 export const ServerMap = forwardRef<ServerMapTypes, ServerMapProps>(
   function ServerMap({ currentActiveScene }, ref) {
     const mapRef = useRef<Phaser.Game | null>(null!);
+    const nickname = useUserProfile();
+
+    console.log(nickname.userProfile?.data.username);
 
     const selectedTheme = useThemeStore((state) => state.selectedTheme);
     useLayoutEffect(() => {
@@ -20,7 +26,11 @@ export const ServerMap = forwardRef<ServerMapTypes, ServerMapProps>(
         mapRef.current = null;
       }
 
-      mapRef.current = StartGame(selectedTheme, "map-container");
+      mapRef.current = StartGame(
+        selectedTheme,
+        "map-container",
+        nickname.userProfile?.data.username || ""
+      );
       if (typeof ref === "function") {
         ref({ server: mapRef.current, scene: null });
       } else if (ref) {
@@ -54,10 +64,9 @@ export const ServerMap = forwardRef<ServerMapTypes, ServerMapProps>(
 
     return (
       <div id="map-container">
-        <div className="absolute flex left-36 top-20">
-          <VideoCallBoxList />
+        <div className="absolute">
+          <ChatBox />
         </div>
-
         <div className="fixed bottom-[20px] left-1/2 -translate-x-1/3">
           <VideoCallToolBar />
         </div>

@@ -34,15 +34,27 @@ const config: Phaser.Types.Core.GameConfig = {
   },
 };
 
-export const EnterServer = (theme: ThemeType | null, parent: string) => {
-  let scenes: Phaser.Types.Scenes.SceneType[] = [];
+export const EnterServer = (
+  theme: ThemeType | null,
+  parent: string,
+  nickname: string
+) => {
+  const game = new Game({ ...config, parent, scene: [] });
 
   if (theme?.name === "숲") {
-    scenes = [CampingPreloader, CampingMap];
+    game.scene.add("CampingPreloader", CampingPreloader, true);
+    game.scene.add("CampingMap", CampingMap, false);
+
+    game.scene.start("CampingPreloader");
+    game.scene.start("CampingMap", { nickname });
   } else if (theme?.name === "오피스") {
-    scenes = [BeachPreloader, BeachMap];
+    game.scene.add("BeachPreloader", BeachPreloader, true);
+    game.scene.add("BeachMap", BeachMap, false);
+
+    game.scene.start("BeachPreloader");
+    game.scene.start("BeachMap", { nickname });
   }
-  return new Game({ ...config, parent, scene: scenes });
+  return game;
 };
 
 export default EnterServer;
